@@ -123,7 +123,7 @@ struct scr2 match_line(uint8_t x,  uint8_t y)
     match.patrn = bp;
     match.color = bc;
 
-    return matc
+    return match;
 }
 
 /**
