@@ -381,11 +381,12 @@ vdp__fastcopy_nametable_di_loop:
  */
 void vdp_clear_grp1(byte color)
 {
-        vdp_memset(vdp_base_names_grp1, 768, 0);
+        vdp_memset(vdp_base_names_grp1, 256 * 3, 0);
         vdp_memset(vdp_base_color_grp1, 8, color);
-        vdp_memset(vdp_base_color_grp1+0x800, 8, color);
-        vdp_memset(vdp_base_color_grp1+0x1000, 8, color);
+        vdp_memset(vdp_base_color_grp1 + 0x800, 8, color);
+        vdp_memset(vdp_base_color_grp1 + 0x1000, 8, color);
 }
+
 
 void vdp_print_grp1(char x, char y, char *msg)
 {
