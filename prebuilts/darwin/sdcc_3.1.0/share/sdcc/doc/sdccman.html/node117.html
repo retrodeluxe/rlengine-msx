@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.5.6 Command-Line Options</TITLE>
+<META NAME="description" CONTENT="4.5.6 Command-Line Options">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node118.html">
+<LINK REL="previous" HREF="node116.html">
+<LINK REL="up" HREF="node111.html">
+<LINK REL="next" HREF="node118.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2505"
+  HREF="node118.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2499"
+  HREF="node111.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2493"
+  HREF="node116.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2501"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2503"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2506"
+  HREF="node118.html">4.5.7 Environment Variables</A>
+<B> Up:</B> <A NAME="tex2html2500"
+  HREF="node111.html">4.5 The PIC14 port</A>
+<B> Previous:</B> <A NAME="tex2html2494"
+  HREF="node116.html">4.5.5 Linking and Assembling</A>
+ &nbsp; <B>  <A NAME="tex2html2502"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2504"
+  HREF="node194.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00556000000000000000">
+4.5.6 Command-Line Options</A>
+</H2>
+
+<P>
+Besides the switches common to all SDCC backends, the PIC14 port accepts
+the following options (for an updated list see sdcc --help):
+<DL>
+<DT><STRONG>--debug-xtra<A NAME="3034"></A></STRONG></DT>
+<DD>emit
+debug info in assembly output
+</DD>
+<DT><STRONG>--no-pcode-opt<A NAME="3035"></A></STRONG></DT>
+<DD>disable
+(slightly faulty) optimization on pCode
+</DD>
+<DT><STRONG>--stack-loc<A NAME="3036"></A></STRONG></DT>
+<DD>sets
+the lowest address of the argument passing stack (defaults to a suitably
+large shared databank to reduce BANKSEL overhead)
+</DD>
+<DT><STRONG>--stack-size<A NAME="3037"></A></STRONG></DT>
+<DD>sets
+the size if the argument passing stack (default: 16, minimum: 4)
+</DD>
+<DT><STRONG>--use-non-free<A NAME="3038"></A></STRONG></DT>
+<DD>make
+non-free device headers and libraries available in the compiler's
+search paths (implicit -I and -L options)
+</DD>
+</DL>
+
+<P>
+<BR><HR>
+<ADDRESS>
+
+2011-11-22
+</ADDRESS>
+</BODY>
+</HTML>

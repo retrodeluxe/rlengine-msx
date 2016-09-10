@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.6.10 Adding New Devices to the Port</TITLE>
+<META NAME="description" CONTENT="4.6.10 Adding New Devices to the Port">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node132.html">
+<LINK REL="previous" HREF="node130.html">
+<LINK REL="up" HREF="node121.html">
+<LINK REL="next" HREF="node132.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2744"
+  HREF="node132.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2738"
+  HREF="node121.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2732"
+  HREF="node130.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2740"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2742"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2745"
+  HREF="node132.html">4.6.11 Memory Models</A>
+<B> Up:</B> <A NAME="tex2html2739"
+  HREF="node121.html">4.6 The PIC16 port</A>
+<B> Previous:</B> <A NAME="tex2html2733"
+  HREF="node130.html">4.6.9 Libraries</A>
+ &nbsp; <B>  <A NAME="tex2html2741"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2743"
+  HREF="node194.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION005610000000000000000">
+4.6.10 Adding New Devices to the Port</A>
+</H2>
+
+<P>
+Adding support for a new 16bit PIC MCU requires the following steps:
+
+<OL>
+<LI>Create picDEVICE.c and picDEVICE.h from pDEVICE.inc using
+<BR><TT>perl /path/to/sdcc/support/scripts/inc2h-pic16.pl &#92;</TT>&nbsp;
+<BR><TT>/path/to/gputils/header/pDEVICE.inc</TT>
+</LI>
+<LI><TT>mv picDEVICE.h /path/to/sdcc/device/include/pic16</TT>
+</LI>
+<LI><TT>mv picDEVICE.c /path/to/sdcc/device/lib/pic16/libdev</TT>
+</LI>
+<LI>Add DEVICE to <TT>/path/to/sdcc/device/lib/pic16/pics.all</TT>
+<BR>
+Note: No 18f prefix here!
+</LI>
+<LI>Either
+
+<P>
+
+<OL>
+<LI>add the new device to <TT>/path/to/sdcc/device/lib/pic16/libio/*.ignore</TT>
+to suppress building any of the I/O libraries for the new device<A NAME="tex2html55"
+  HREF="footnode.html#foot6080"><SUP>4.2</SUP></A>, or
+</LI>
+<LI>add the device (family) to <TT>/path/to/sdcc/support/scripts/pic18fam-h-gen.pl</TT>
+to assign I/O styles, run the <TT>pic18fam-h-gen.pl</TT> script to
+generate <TT>pic18fam.h.gen</TT>, replace your existing <TT>pic18fam.h</TT>
+with the generated file, and (if required) implement new I/O styles
+in <TT>/path/to/sdcc/device/include/pic16/{adc,i2c,usart}.h</TT>
+and <TT>/path/to/sdcc/device/lib/pic16/libio/*/*.</TT>
+</LI>
+</OL>
+</LI>
+<LI>Edit <TT>/path/to/sdcc/device/include/pic16/pic18fregs.h</TT>
+<BR>
+The file format is self-explanatory, just add
+<BR><TT>#elif defined(picDEVICE)</TT>&nbsp;
+<BR><TT>#  include &lt;picDEVICE.h&gt;</TT>
+<BR>
+at the right place (keep the file sorted, please).
+</LI>
+<LI>Edit <TT>/path/to/sdcc/device/include/pic16devices.txt</TT>&nbsp;
+<BR>
+Copy and modify an existing entry or create a new one and insert
+it at the correct place (keep the file sorted, please).
+</LI>
+<LI><A NAME="enu:pic16-edit-makefile-am"></A>Add the device to <TT>/path/to/sdcc/device/lib/pic16/libdev/Makefile.am</TT>
+<BR>
+Copy an existing entry and adjust the device name.
+</LI>
+<LI><A NAME="enu:pic16-edit-libio-makefile-am"></A>Add the device to <TT>/path/to/sdcc/device/lib/pic16/libio/Makefile.am</TT>
+<BR>
+Copy the record from the 18f2220 and adjust the device name.
+<BR>
+If the new device does not offer ADC, I<IMG
+ WIDTH="10" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img4.png"
+ ALT="$^{\text{2}}$">C, and/or
+(E)USART functionality as assumed by the library, or if you added
+the new device to <TT>.../libio/{adc,i2c,usart}.ignore</TT>, remove
+the lines with references to <TT>adc/*.c</TT>, <TT>i2c/*.c</TT>,
+or <TT>usart/*.c</TT>, respectively.
+</LI>
+<LI>Update <TT>libdev/Makefile.in</TT> and <TT>libio/Makefile.in</TT>
+using
+<BR><TT>./bootstrap.sh</TT>
+<BR>
+in <TT>/path/to/sdcc/device/lib/pic16</TT>.
+</LI>
+<LI>Recompile the pic16 libraries as described in <A HREF="node130.html#sub:pic16Libraries">4.6.9</A>.
+</LI>
+</OL>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2744"
+  HREF="node132.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2738"
+  HREF="node121.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2732"
+  HREF="node130.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2740"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2742"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2745"
+  HREF="node132.html">4.6.11 Memory Models</A>
+<B> Up:</B> <A NAME="tex2html2739"
+  HREF="node121.html">4.6 The PIC16 port</A>
+<B> Previous:</B> <A NAME="tex2html2733"
+  HREF="node130.html">4.6.9 Libraries</A>
+ &nbsp; <B>  <A NAME="tex2html2741"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2743"
+  HREF="node194.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+
+2011-11-22
+</ADDRESS>
+</BODY>
+</HTML>

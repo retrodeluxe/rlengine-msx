@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.5.4 Configuration Bits</TITLE>
+<META NAME="description" CONTENT="4.5.4 Configuration Bits">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node116.html">
+<LINK REL="previous" HREF="node114.html">
+<LINK REL="up" HREF="node111.html">
+<LINK REL="next" HREF="node116.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2477"
+  HREF="node116.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2471"
+  HREF="node111.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2465"
+  HREF="node114.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2473"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2475"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2478"
+  HREF="node116.html">4.5.5 Linking and Assembling</A>
+<B> Up:</B> <A NAME="tex2html2472"
+  HREF="node111.html">4.5 The PIC14 port</A>
+<B> Previous:</B> <A NAME="tex2html2466"
+  HREF="node114.html">4.5.3 Interrupt Code</A>
+ &nbsp; <B>  <A NAME="tex2html2474"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2476"
+  HREF="node194.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00554000000000000000">
+4.5.4 Configuration Bits</A>
+</H2>
+
+<P>
+Configuration bits (also known as fuses) can be configured using `<TT>__code</TT>'
+and `<TT>__at</TT>' modifiers. Possible options should be ANDed
+and can be found in your processor header file. Example for PIC16F88:
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>#include&nbsp;&lt;pic16f88.h&gt;&nbsp;//Contains&nbsp;config&nbsp;addresses&nbsp;and&nbsp;options&nbsp;
+<BR>#include&nbsp;&lt;stdint.h&gt;&nbsp;//Needed&nbsp;for&nbsp;uint16_t&nbsp;
+<BR>&nbsp;
+<BR>
+static&nbsp;__code&nbsp;uint16_t&nbsp;__at&nbsp;(_CONFIG1)&nbsp;configword1&nbsp;=&nbsp;_INTRC_IO&nbsp;&amp;&nbsp;
+<BR>&nbsp;&nbsp;_CP_ALL&nbsp;&amp;&nbsp;_WDT_OFF&nbsp;&amp;&nbsp;[...];&nbsp;
+<BR>
+static&nbsp;__code&nbsp;uint16_t&nbsp;__at&nbsp;(_CONFIG2)&nbsp;configword2&nbsp;=&nbsp;[...];
+</DD>
+</DL>Although data type is ignored if the address (<TT>__at()</TT>) refers
+to a config word location, using a type large enough for the configuration
+word (<TT>uint16_t</TT> in this case) is recommended to prevent changes
+in the compiler (implicit, early range check and enforcement) from
+breaking the definition.
+<BR>
+<BR>
+If your processor header file doesn't contain config addresses
+you can declare it manually or use a literal address:
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>static&nbsp;__code&nbsp;uint16_t&nbsp;__at&nbsp;(0x2007)&nbsp;configword1&nbsp;=&nbsp;_INTRC_IO&nbsp;&amp;&nbsp;
+<BR>&nbsp;&nbsp;_CP_ALL&nbsp;&amp;&nbsp;_WDT_OFF&nbsp;&amp;&nbsp;[...];
+</DD>
+</DL>
+<P>
+<BR><HR>
+<ADDRESS>
+
+2011-11-22
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.1.1 Single Source File Projects</TITLE>
+<META NAME="description" CONTENT="3.1.1 Single Source File Projects">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node40.html">
+<LINK REL="previous" HREF="node38.html">
+<LINK REL="up" HREF="node38.html">
+<LINK REL="next" HREF="node40.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1267"
+  HREF="node40.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1261"
+  HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1255"
+  HREF="node38.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1263"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html1265"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1268"
+  HREF="node40.html">3.1.2 Postprocessing the Intel</A>
+<B> Up:</B> <A NAME="tex2html1262"
+  HREF="node38.html">3.1 Compiling</A>
+<B> Previous:</B> <A NAME="tex2html1256"
+  HREF="node38.html">3.1 Compiling</A>
+ &nbsp; <B>  <A NAME="tex2html1264"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1266"
+  HREF="node194.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00411000000000000000">
+3.1.1 Single Source File Projects</A>
+</H2>
+
+<P>
+For single source file 8051 projects the process is very simple. Compile
+your programs with the following command <I><B>sdcc
+sourcefile.c.</B></I> This will compile, assemble and link
+your source file. Output files are as follows:
+
+<UL>
+<LI>sourcefile.asm<A NAME="685"></A> - Assembler source<A NAME="686"></A>
+file created by the compiler
+</LI>
+<LI>sourcefile.lst<A NAME="687"></A> - Assembler listing<A NAME="688"></A>
+file created by the Assembler
+</LI>
+<LI>sourcefile.rst<A NAME="689"></A> - Assembler listing<A NAME="690"></A>
+file updated with linkedit information, created by linkage editor
+</LI>
+<LI>sourcefile.sym<A NAME="691"></A> - symbol listing<A NAME="692"></A>
+for the sourcefile, created by the assembler
+</LI>
+<LI>sourcefile.rel<A NAME="693"></A> - Object file<A NAME="694"></A>
+created by the assembler, input to Linkage editor
+</LI>
+<LI>sourcefile.map<A NAME="695"></A> - The memory map<A NAME="696"></A>
+for the load module, created by the Linker
+</LI>
+<LI>sourcefile.mem<A NAME="697"></A> - A file with a summary of the memory
+usage
+</LI>
+<LI>sourcefile.ihx<A NAME="698"></A> - The load module in Intel hex format<A NAME="699"></A>
+(you can select the Motorola S19 format<A NAME="700"></A>
+with --out-fmt-s19<A NAME="701"></A>. If you
+need another format you might want to use <I><I>objdump</I></I><A NAME="703"></A>
+or <I><I>srecord</I></I><A NAME="705"></A>
+- see also section sub:Postprocessing-the-Intel). Both formats
+are documented in the documentation of srecord<A NAME="707"></A>
+</LI>
+<LI>sourcefile.adb<A NAME="708"></A> - An intermediate file containing
+debug information needed to create the .cdb file (with --debug<A NAME="709"></A>) 
+</LI>
+<LI>sourcefile.cdb<A NAME="710"></A> - An optional file (with --debug)
+containing debug information. The format is documented in cdbfileformat.pdf
+</LI>
+<LI>sourcefile. - (no extension)<A NAME="711"></A> An optional
+AOMF or AOMF51<A NAME="712"></A> <A NAME="OMF_file"></A>file containing
+debug information (generated with option --debug). The (Intel)
+<I>a</I>bsolute <I>o</I>bject <I>m</I>odule <I>f</I>ormat is a subformat
+of the OMF51 format and is commonly used by third party tools (debuggers<A NAME="718"></A>,
+simulators, emulators).
+</LI>
+<LI>sourcefile.dump*<A NAME="5564"></A> - Dump file to debug the
+compiler it self (generated with option --dumpall) (see section
+<A HREF="node55.html#sub:Intermediate-Dump-Options">3.2.10</A>&nbsp; and section <A HREF="node190.html#sub:The-anatomy-of">9.1</A>&nbsp;''Anatomy
+of the compiler'').
+</LI>
+</UL>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1267"
+  HREF="node40.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1261"
+  HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1255"
+  HREF="node38.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1263"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html1265"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html1268"
+  HREF="node40.html">3.1.2 Postprocessing the Intel</A>
+<B> Up:</B> <A NAME="tex2html1262"
+  HREF="node38.html">3.1 Compiling</A>
+<B> Previous:</B> <A NAME="tex2html1256"
+  HREF="node38.html">3.1 Compiling</A>
+ &nbsp; <B>  <A NAME="tex2html1264"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html1266"
+  HREF="node194.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+
+2011-11-22
+</ADDRESS>
+</BODY>
+</HTML>

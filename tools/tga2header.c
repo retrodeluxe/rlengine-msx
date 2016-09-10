@@ -371,7 +371,7 @@ void dump_sprite_file(FILE *fd)
 {
     struct fbit *idx = image_out_4bit;
     uint8_t color, colcnt = 0, np = 0;
-    char dataname[50];
+    char dataname[]="sprite";
     short ranidx;
 
     ranidx = random(100);
@@ -385,8 +385,9 @@ void dump_sprite_file(FILE *fd)
     //
     // XXX: black color is ignored; need to process ALPHA
 
-    strcpy(dataname,&input_file[11]);
-    dataname[strlen(&input_file[11])-4]='\0';
+    // how to process this?
+    //strcpy(dataname,&input_file[11]);
+    //dataname[strlen(&input_file[11])-4]='\0';
 
     fprintf(fd, "const unsigned char %s[] = {\n", dataname);
 

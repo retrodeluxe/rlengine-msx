@@ -1,0 +1,325 @@
+ASxxxx Linker V02.00 + NoICE + sdld,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.	.ABS.                             00000000    00000000 =           0. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+           00000000  .__.ABS.                           _memset
+           00000000  l__CABS                         
+           00000000  l__GSFINAL                      
+           00000000  l__GSINIT                       
+           00000000  l__HOME                         
+           00000000  l__OVERLAY                      
+           00000042  l__BOOT                         
+           00000242  l__DATA                         
+           00004000  s__BOOT                         
+           0000403A  s__CODE                         
+           000050C2  l__CODE                         
+           000090FC  s__DATA                         
+           0000933E  s__CABS                         
+           0000933E  s__GSFINAL                      
+           0000933E  s__GSINIT                       
+           0000933E  s__HOME                         
+           0000933E  s__OVERLAY                      
+
+ASxxxx Linker V02.00 + NoICE + sdld,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               0000403A    000050C2 =       20674. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+           0000403A  _main                              vdp_test
+           0000403A  _main_start                        vdp_test
+           00004046  _main_end                          vdp_test
+           00004046  _sprite                            vdp_test
+           00004587  _testmap                           vdp_test
+           000047CD  _pattern_bank_0                    vdp_test
+           00004FCE  _color_bank_0                      vdp_test
+           000057CF  _pattern_bank_1                    vdp_test
+           00005FD0  _color_bank_1                      vdp_test
+           000067D1  _pattern_bank_2                    vdp_test
+           00006FD2  _color_bank_2                      vdp_test
+           000077D3  _test_text_mode                    vdp_test
+           000077D3  _test_text_mode_start              vdp_test
+           000077DC  _gfx_dyntile_init                  gfx
+           000077DC  _gfx_dyntile_init_start            gfx
+           000077DC  _test_text_mode_end                vdp_test
+           000077F7  _gfx_dyntile_init_end              gfx
+           00007B7D  _gfx_dyntile_clear                 gfx
+           00007B7D  _gfx_dyntile_clear_start           gfx
+           00007BF5  _gfx_dyntile_clear_end             gfx
+           00007BF5  _gfx_sprite_show                   gfx
+           00007BF5  _gfx_sprite_show_start             gfx
+           00007CC2  _gfx_sprite_move                   gfx
+           00007CC2  _gfx_sprite_move_start             gfx
+           00007CC2  _gfx_sprite_show_end               gfx
+           00007CC7  _gfx_sprite_clear                  gfx
+           00007CC7  _gfx_sprite_clear_start            gfx
+           00007CC7  _gfx_sprite_move_end               gfx
+           00007D3F  _gfx_dyntile_show                  gfx
+           00007D3F  _gfx_dyntile_show_start            gfx
+           00007D3F  _gfx_sprite_clear_end              gfx
+           00007E0C  _gfx_dyntile_show_end              gfx
+           00007E0C  _gfx_tileset_to_vram               gfx
+           00007E0C  _gfx_tileset_to_vram_start         gfx
+           00007EB3  _gfx_tilemap_clip                  gfx
+           00007EB3  _gfx_tilemap_clip_start            gfx
+           00007EB3  _gfx_tileset_to_vram_end           gfx
+           00007FB3  _gfx_tilemap_clip_end              gfx
+           00008055  _irq_init                          irq
+           00008055  _irq_init_start                    irq
+           0000805B  _irq_init_end                      irq
+           0000805B  _irq_start                         irq
+           0000805B  _irq_start_start                   irq
+           0000807C  _irq_register                      irq
+           0000807C  _irq_register_start                irq
+           0000807C  _irq_start_end                     irq
+           000080BA  _irq_register_end                  irq
+           000080BA  _psg_set_all                       psg
+           000080BA  _psg_set_all_start                 psg
+           000080D9  _psg_set_all_end                   psg
+ASxxxx Linker V02.00 + NoICE + sdld,  page 3.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               0000403A    000050C2 =       20674. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+           000080D9  _psg_set_tone                      psg
+           000080D9  _psg_set_tone_start                psg
+           000080FF  _psg_set_noise                     psg
+           000080FF  _psg_set_noise_start               psg
+           000080FF  _psg_set_tone_end                  psg
+           00008116  _psg_set_mixer                     psg
+           00008116  _psg_set_mixer_start               psg
+           00008116  _psg_set_noise_end                 psg
+           00008136  _psg_set_mixer_end                 psg
+           00008136  _psg_set_vol                       psg
+           00008136  _psg_set_vol_start                 psg
+           00008150  _psg_set_envelope                  psg
+           00008150  _psg_set_envelope_start            psg
+           00008150  _psg_set_vol_end                   psg
+           0000817B  _psg_set_envelope_end              psg
+           0000817B  _spr_init                          spr
+           0000817B  _spr_init_start                    spr
+           000081BC  _spr_init_end                      spr
+           000081BC  _spr_stick2coords                  spr
+           00008220  _spr_valloc                        spr
+           00008220  _spr_valloc_start                  spr
+           00008346  _spr_valloc_end                    spr
+           00008346  _spr_vfree                         spr
+           00008346  _spr_vfree_start                   spr
+           000083D9  _spr_vfree_end                     spr
+           00008484  _spr_show                          spr
+           00008484  _spr_show_start                    spr
+           000084E4  _spr_hide                          spr
+           000084E4  _spr_hide_start                    spr
+           000084E4  _spr_show_end                      spr
+           0000851A  _spr_hide_end                      spr
+           0000851A  _spr_set_pos                       spr
+           0000851A  _spr_set_pos_start                 spr
+           0000855C  _spr_set_plane_colors              spr
+           0000855C  _spr_set_plane_colors_start        spr
+           0000855C  _spr_set_pos_end                   spr
+           000085AF  _spr_move                          spr
+           000085AF  _spr_move_start                    spr
+           000085AF  _spr_set_plane_colors_end          spr
+           000086FB  _spr_move_end                      spr
+           000086FC  _sys_reboot                        sys
+           000086FC  _sys_reboot_start                  sys
+           00008700  _sys_get_key                       sys
+           00008700  _sys_get_key_start                 sys
+           00008700  _sys_reboot_end                    sys
+           00008714  _sys_get_key_end                   sys
+           00008714  _sys_get_stick                     sys
+           00008714  _sys_get_stick_start               sys
+           00008726  _sys_get_stick_end                 sys
+           00008726  _sys_memcpy                        sys
+           00008726  _sys_memcpy_start                  sys
+ASxxxx Linker V02.00 + NoICE + sdld,  page 4.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               0000403A    000050C2 =       20674. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+           00008745  _sys_memcpy_end                    sys
+           00008756  _printn                            util
+           00008756  _printn_start                      util
+           000087C9  _printn_end                        util
+           00008878  _log                               util
+           00008878  _log_start                         util
+           000088A6  _log_end                           util
+           000088A6  _rle_inflate                       util
+           000088A6  _rle_inflate_start                 util
+           00008964  _blk_inflate                       util
+           00008964  _blk_inflate_start                 util
+           00008964  _rle_inflate_end                   util
+           00008A67  _blk_inflate_end                   util
+           00008A67  _lzfx_decompress                   util
+           00008A67  _lzfx_decompress_start             util
+           00008CFC  _lzfx_decompress_end               util
+           00008CFC  _vdp_screen_disable                vdp
+           00008CFC  _vdp_screen_disable_start          vdp
+           00008D00  _vdp_screen_disable_end            vdp
+           00008D00  _vdp_screen_enable                 vdp
+           00008D00  _vdp_screen_enable_start           vdp
+           00008D04  _vdp_screen_enable_end             vdp
+           00008D04  _vdp_set_mode                      vdp
+           00008D04  _vdp_set_mode_start                vdp
+           00008D28  _vdp_set_color                     vdp
+           00008D28  _vdp_set_color_start               vdp
+           00008D28  _vdp_set_mode_end                  vdp
+           00008D48  _vdp_poke                          vdp
+           00008D48  _vdp_poke_start                    vdp
+           00008D48  _vdp_set_color_end                 vdp
+           00008D6A  _vdp_peek                          vdp
+           00008D6A  _vdp_peek_start                    vdp
+           00008D6A  _vdp_poke_end                      vdp
+           00008D86  _vdp_memset                        vdp
+           00008D86  _vdp_memset_start                  vdp
+           00008D86  _vdp_peek_end                      vdp
+           00008DB5  _vdp_copy_to_vram                  vdp
+           00008DB5  _vdp_copy_to_vram_start            vdp
+           00008DB5  _vdp_memset_end                    vdp
+           00008DE6  _vdp_copy_to_vram_end              vdp
+           00008DE6  _vdp_fastcopy16                    vdp
+           00008DE6  _vdp_fastcopy16_start              vdp
+           00008E2A  _vdp_copy_from_vram                vdp
+           00008E2A  _vdp_copy_from_vram_start          vdp
+           00008E2A  _vdp_fastcopy16_end                vdp
+           00008E5E  _vdp_copy_from_vram_end            vdp
+           00008E5E  _vdp_set_hw_sprite                 vdp
+           00008E5E  _vdp_set_hw_sprite_start           vdp
+           00008E8C  _vdp_set_hw_sprite_di              vdp
+           00008E8C  _vdp_set_hw_sprite_di_start        vdp
+           00008E8C  _vdp_set_hw_sprite_end             vdp
+ASxxxx Linker V02.00 + NoICE + sdld,  page 5.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               0000403A    000050C2 =       20674. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+           00008EBC  _vdp_init_hw_sprites               vdp
+           00008EBC  _vdp_init_hw_sprites_start         vdp
+           00008EBC  _vdp_set_hw_sprite_di_end          vdp
+           00008EF7  _vdp_fastcopy_nametable            vdp
+           00008EF7  _vdp_fastcopy_nametable_start      vdp
+           00008EF7  _vdp_init_hw_sprites_end           vdp
+           00008F2D  _vdp_fastcopy_nametable_di         vdp
+           00008F2D  _vdp_fastcopy_nametable_di_start   vdp
+           00008F2D  _vdp_fastcopy_nametable_end        vdp
+           00008F61  _vdp_clear_grp1                    vdp
+           00008F61  _vdp_clear_grp1_start              vdp
+           00008F61  _vdp_fastcopy_nametable_di_end     vdp
+           00008FB6  _vdp_clear_grp1_end                vdp
+           00008FB6  _vdp_print_grp1                    vdp
+           00008FB6  _vdp_print_grp1_start              vdp
+           00009015  __sdcc_call_hl                     
+           00009015  _vdp_print_grp1_end                vdp
+           00009016  __moduchar_rrx_s                   
+           0000901D  __moduchar_rrx_hds                 
+           00009022  __moduint_rrx_s                    
+           00009028  __moduint_rrx_hds                  
+           0000902D  __divuint_rrx_s                    
+           00009035  __divuchar_rrx_s                   
+           0000903C  __divu8                            
+           0000903C  __divuchar_rrx_hds                 
+           0000903F  __divu16                           
+           0000903F  __divuint_rrx_hds                  
+           00009071  __muluchar_rrx_s                   
+           00009083  __mulsuchar_rrx_s                  
+           0000908D  __muluschar_rrx_s                  
+           00009097  __mulschar_rrx_s                   
+           0000909E  __mulschar_rrx_hds                 
+           000090AA  __mulint_rrx_s                     
+           000090B0  __mulint_rrx_hds                   
+           000090B0  __muluchar_rrx_hds                 
+           000090B2  __mul16                            
+           000090C6  _memset                            _memset
+           000090C6  _memset_start                      _memset
+           000090FC  _memset_end                        _memset
+
+ASxxxx Linker V02.00 + NoICE + sdld,  page 6.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_DATA                               000090FC    00000242 =         578. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+           000090FC  _dyn_quad_list                     gfx
+           00009120  _dyn_sprite_list                   gfx
+           00009150  _timed_procs                       irq
+ASxxxx Linker V02.00 + NoICE + sdld,  page 7.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_BOOT                               00004000    00000042 =          66. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V02.00 + NoICE + sdld,  page 8.
+
+Files Linked                              [ module(s) ]
+
+/Users/geijoenr/Projects/MSX/rlengine-msx1/test/vdp_test/out/bin/vdp_test.rel
+                                          [ vdp_test ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/test/vdp_test/out/bin/dummy.rel
+                                          [ dummy ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/gfx.rel
+                                          [ gfx ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/irq.rel
+                                          [ irq ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/psg.rel
+                                          [ psg ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/spr.rel
+                                          [ spr ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/sys.rel
+                                          [ sys ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/util.rel
+                                          [ util ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/vdp.rel
+                                          [ vdp ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/boot32k.rel
+                                          [  ]
+
+
+Libraries Linked                          [ object file ]
+
+/Users/geijoenr/Projects/MSX/rlengine-msx1//prebuilts/darwin/sdcc_3.1.0/share/sdcc/lib/z80/z80.lib
+                                          [ crtcall.rel ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1//prebuilts/darwin/sdcc_3.1.0/share/sdcc/lib/z80/z80.lib
+                                          [ modunsigned.rel ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1//prebuilts/darwin/sdcc_3.1.0/share/sdcc/lib/z80/z80.lib
+                                          [ divunsigned.rel ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1//prebuilts/darwin/sdcc_3.1.0/share/sdcc/lib/z80/z80.lib
+                                          [ mulchar.rel ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1//prebuilts/darwin/sdcc_3.1.0/share/sdcc/lib/z80/z80.lib
+                                          [ mul.rel ]
+/Users/geijoenr/Projects/MSX/rlengine-msx1//prebuilts/darwin/sdcc_3.1.0/share/sdcc/lib/z80/z80.lib
+                                          [ _memset.rel ]
+
+ASxxxx Linker V02.00 + NoICE + sdld,  page 9.
+
+User Base Address Definitions
+
+_BOOT=0x4000
+_CODE=0x403A
+
+

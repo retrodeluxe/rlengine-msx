@@ -1,0 +1,27 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods + Flat24  (Zilog Z80 / Hitachi HD64180), page 1.
+
+Symbol Table
+
+    .__.ABS.                                                    =  0000 G
+  0 __str_0                                                        0034 R
+  0 _main                                                          0000 GR
+  0 _main_end                                                      0034 GR
+  0 _main_start                                                    0000 GR
+    _sys_get_key                                                   **** GX
+    _sys_reboot                                                    **** GX
+    _vdp_clear_grp1                                                **** GX
+    _vdp_print_grp1                                                **** GX
+    _vdp_set_color                                                 **** GX
+    _vdp_set_mode                                                  **** GX
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods + Flat24  (Zilog Z80 / Hitachi HD64180), page 2.
+
+Area Table
+
+   0 _CODE                                      size   3E   flags 0
+   1 _DATA                                      size    0   flags 0
+   2 _OVERLAY                                   size    0   flags 0
+   3 _HOME                                      size    0   flags 0
+   4 _GSINIT                                    size    0   flags 0
+   5 _GSFINAL                                   size    0   flags 0
+   6 _CABS                                      size    0   flags 0

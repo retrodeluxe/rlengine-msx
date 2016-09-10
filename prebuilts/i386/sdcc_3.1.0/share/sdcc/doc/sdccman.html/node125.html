@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.6.4 Preprocessor Macros</TITLE>
+<META NAME="description" CONTENT="4.6.4 Preprocessor Macros">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node126.html">
+<LINK REL="previous" HREF="node124.html">
+<LINK REL="up" HREF="node121.html">
+<LINK REL="next" HREF="node126.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2658"
+  HREF="node126.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2652"
+  HREF="node121.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2646"
+  HREF="node124.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2654"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2656"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2659"
+  HREF="node126.html">4.6.5 Directories</A>
+<B> Up:</B> <A NAME="tex2html2653"
+  HREF="node121.html">4.6 The PIC16 port</A>
+<B> Previous:</B> <A NAME="tex2html2647"
+  HREF="node124.html">4.6.3 Environment Variables</A>
+ &nbsp; <B>  <A NAME="tex2html2655"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2657"
+  HREF="node194.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00564000000000000000"></A><A NAME="3165"></A>
+<BR>
+4.6.4 Preprocessor Macros
+</H2>
+
+<P>
+PIC16<A NAME="3166"></A> port defines the following preprocessor macros
+while translating a source.
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Macro</TD>
+<TD ALIGN="CENTER">Description</TD>
+</TR>
+<TR><TD ALIGN="CENTER">SDCC_pic16<A NAME="3170"></A></TD>
+<TD ALIGN="CENTER">Port identification</TD>
+</TR>
+<TR><TD ALIGN="CENTER">__pic16<A NAME="3171"></A></TD>
+<TD ALIGN="CENTER">Port identification (same as above)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">pic18fxxxx<A NAME="3172"></A></TD>
+<TD ALIGN="CENTER">MCU Identification. <I>xxxx</I> is the microcontrol identification
+number, i.e. 452, 6620, etc</TD>
+</TR>
+<TR><TD ALIGN="CENTER">__18Fxxxx<A NAME="3174"></A></TD>
+<TD ALIGN="CENTER">MCU Identification (same as above)</TD>
+</TR>
+<TR><TD ALIGN="CENTER">STACK_MODEL_nnn<A NAME="3175"></A></TD>
+<TD ALIGN="CENTER">nnn = SMALL or LARGE respectively according to the stack model used</TD>
+</TR>
+</TABLE>
+</DIV>
+<P>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+In addition the following macros are defined when calling
+assembler:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Macro</TD>
+<TD ALIGN="CENTER">Description</TD>
+</TR>
+<TR><TD ALIGN="CENTER">__18Fxxxx</TD>
+<TD ALIGN="CENTER">MCU Identification. <I>xxxx</I> is the microcontrol identification
+number, i.e. 452, 6620, etc</TD>
+</TR>
+<TR><TD ALIGN="CENTER">SDCC_MODEL_nnn</TD>
+<TD ALIGN="CENTER">nnn = SMALL or LARGE respectively according to the memory model used
+for SDCC</TD>
+</TR>
+<TR><TD ALIGN="CENTER">STACK_MODEL_nnn</TD>
+<TD ALIGN="CENTER">nnn = SMALL or LARGE respectively according to the stack model used</TD>
+</TR>
+</TABLE>
+</DIV>
+<P>
+<DIV ALIGN="CENTER">
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2658"
+  HREF="node126.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2652"
+  HREF="node121.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2646"
+  HREF="node124.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2654"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2656"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2659"
+  HREF="node126.html">4.6.5 Directories</A>
+<B> Up:</B> <A NAME="tex2html2653"
+  HREF="node121.html">4.6 The PIC16 port</A>
+<B> Previous:</B> <A NAME="tex2html2647"
+  HREF="node124.html">4.6.3 Environment Variables</A>
+ &nbsp; <B>  <A NAME="tex2html2655"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2657"
+  HREF="node194.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+
+2011-11-22
+</ADDRESS>
+</BODY>
+</HTML>

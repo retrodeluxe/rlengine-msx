@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #######
 #
 # Read json tile data from Tiled and generate a C header

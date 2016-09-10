@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.5.8 The Library</TITLE>
+<META NAME="description" CONTENT="4.5.8 The Library">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node120.html">
+<LINK REL="previous" HREF="node118.html">
+<LINK REL="up" HREF="node111.html">
+<LINK REL="next" HREF="node120.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2533"
+  HREF="node120.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2527"
+  HREF="node111.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2521"
+  HREF="node118.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2529"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2531"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2534"
+  HREF="node120.html">4.5.9 Known Bugs</A>
+<B> Up:</B> <A NAME="tex2html2528"
+  HREF="node111.html">4.5 The PIC14 port</A>
+<B> Previous:</B> <A NAME="tex2html2522"
+  HREF="node118.html">4.5.7 Environment Variables</A>
+ &nbsp; <B>  <A NAME="tex2html2530"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2532"
+  HREF="node194.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2535"
+  HREF="node119.html#SECTION00558100000000000000">4.5.8.1 Enhanced cores</A>
+<LI><A NAME="tex2html2536"
+  HREF="node119.html#SECTION00558200000000000000">4.5.8.2 Accessing bits of special function registers</A>
+<LI><A NAME="tex2html2537"
+  HREF="node119.html#SECTION00558300000000000000">4.5.8.3 Naming of special function registers</A>
+<LI><A NAME="tex2html2538"
+  HREF="node119.html#SECTION00558400000000000000">4.5.8.4 error: missing definition for symbol ``__gptrget1''</A>
+<LI><A NAME="tex2html2539"
+  HREF="node119.html#SECTION00558500000000000000">4.5.8.5 Processor mismatch in file ``XXX''.</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00558000000000000000">
+4.5.8 The Library</A>
+</H2>
+
+<P>
+The PIC14 library currently only contains support routines required
+by the compiler to implement multiplication, division, and floating
+point support. No libc-like replacement is available at the moment,
+though many of the common sdcc library sources (in <TT>device/lib</TT>)
+should also compile with the PIC14 port.
+
+<P>
+
+<H3><A NAME="SECTION00558100000000000000">
+4.5.8.1 Enhanced cores</A>
+</H3>
+
+<P>
+SDCC/PIC14 has experimental support for devices with the enhanced
+14-bit cores (such as pic12f1822). Due to differences in required
+code, the libraries provided with SDCC (<TT>libm.lib</TT> and <TT>libsdcc.lib</TT>)
+are now provided in two variants: <TT>libm.lib</TT> and <TT>libsdcc.lib</TT>
+are compiled for the regular, non-enhanced devices. <TT>libme.lib</TT>
+and <TT>libsdcce.lib</TT> (note the trailing '<TT>e</TT>') are compiled
+for enhanced devices. When linking manually, make sure to select the
+proper variant!
+
+<P>
+When SDCC is used to invoke the linker, SDCC will automatically select
+the <TT>libsdcc.lib</TT>-variant suitable for the target device. However,
+no such magic has been conjured up for <TT>libm.lib</TT>!
+
+<P>
+
+<H3><A NAME="SECTION00558200000000000000">
+4.5.8.2 Accessing bits of special function registers</A>
+</H3>
+
+<P>
+Individual bits within SFRs can be accessed either using <TT>&lt;sfrname&gt;bits.&lt;bitname&gt;</TT>
+or using a shorthand <TT>&lt;bitname&gt;</TT>, which is defined in the respective
+device header for all <TT>&lt;bitname&gt;</TT>s. In order to avoid polluting
+the global namespace with the names of all the bits, you can <TT>#define
+NO_BIT_DEFINES</TT> before inclusion of the device header file.
+
+<P>
+
+<H3><A NAME="SECTION00558300000000000000"></A><A NAME="sub:Naming-of-special"></A>
+<BR>
+4.5.8.3 Naming of special function registers
+</H3>
+
+<P>
+If <TT>NO_BIT_DEFINES</TT> is used, individual bits of the SFRs
+can be accessed as <TT>&lt;sfrname&gt;bits.&lt;bitname&gt;</TT>. With the 3.1.0
+release, the previously used <TT>&lt;sfrname&gt;_bits.&lt;bitname&gt;</TT> (note
+the underscore) is deprecated. This was done to align the naming conventions
+with the PIC16 port and competing compiler vendors. To avoid polluting
+the global namespace with the legacy names, you can prevent their
+definition using <TT>#define NO_LEGACY_NAMES</TT> prior to the
+inclusion of the device header.
+
+<P>
+You <TT><B>must</B></TT> also <TT>#define NO_BIT_DEFINES</TT>
+in order to access SFRs as <TT>&lt;sfrname&gt;bits.&lt;bitname&gt;</TT>, otherwise
+<TT>&lt;bitname&gt;</TT> will expand to <TT>&lt;sfrname&gt;bits.&lt;bitname&gt;</TT>,
+yielding the undefined expression <TT>&lt;sfrname&gt;bits.&lt;sfrname&gt;bits.&lt;bitname&gt;</TT>.
+
+<P>
+
+<H3><A NAME="SECTION00558400000000000000">
+4.5.8.4 error: missing definition for symbol ``__gptrget1''</A>
+</H3>
+
+<P>
+The PIC14 port uses library routines to provide more complex operations
+like multiplication, division/modulus and (generic) pointer dereferencing.
+In order to add these routines to your project, you must link with
+PIC14's <TT>libsdcc.lib</TT>. For single source file projects this
+is done automatically, more complex projects must add <TT>libsdcc.lib</TT>
+to the linker's arguments. Make sure you also add an include path
+for the library (using the -I switch to the linker)!
+
+<P>
+
+<H3><A NAME="SECTION00558500000000000000">
+4.5.8.5 Processor mismatch in file ``XXX''.</A>
+</H3>
+
+<P>
+This warning can usually be ignored due to the very good compatibility
+amongst 14bit PIC<A NAME="3077"></A> devices.
+
+<P>
+You might also consider recompiling the library for your specific
+device by changing the ARCH=p16f877 (default target) entry in <TT>device/lib/pic/Makefile.in</TT>
+and <TT>device/lib/pic/Makefile</TT> to reflect your device. This
+might even improve performance for smaller devices as unnecessary
+BANKSELs might be removed.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2533"
+  HREF="node120.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2527"
+  HREF="node111.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2521"
+  HREF="node118.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2529"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html2531"
+  HREF="node194.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2534"
+  HREF="node120.html">4.5.9 Known Bugs</A>
+<B> Up:</B> <A NAME="tex2html2528"
+  HREF="node111.html">4.5 The PIC14 port</A>
+<B> Previous:</B> <A NAME="tex2html2522"
+  HREF="node118.html">4.5.7 Environment Variables</A>
+ &nbsp; <B>  <A NAME="tex2html2530"
+  HREF="node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html2532"
+  HREF="node194.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+
+2011-11-22
+</ADDRESS>
+</BODY>
+</HTML>

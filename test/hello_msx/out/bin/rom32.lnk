@@ -1,0 +1,15 @@
+-mwxuy
+-i /Users/geijoenr/Projects/MSX/rlengine-msx1/test/hello_msx/out/bin/hello_msx.ihx
+-b _BOOT=0x4000
+-b _CODE=0x403A
+-l z80
+/Users/geijoenr/Projects/MSX/rlengine-msx1/test/hello_msx/out/bin/hello_msx.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/gfx.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/irq.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/psg.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/spr.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/sys.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/util.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/vdp.rel
+/Users/geijoenr/Projects/MSX/rlengine-msx1/out/bin/boot32k.rel
+-e
