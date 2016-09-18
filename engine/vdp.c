@@ -391,7 +391,7 @@ void vdp_clear_grp1(byte color)
 void vdp_print_grp1(char x, char y, char *msg)
 {
         register char c;
-        register addr = vdp_base_names_grp1 + y * 32 + x;
+        register uint addr = vdp_base_names_grp1 + y * 32 + x;
 
         while ((c = *msg++ ) != '\0') {
                 vdp_poke(addr++, c);
