@@ -26,6 +26,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_32
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-b _CODE=0x4042" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
+	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
