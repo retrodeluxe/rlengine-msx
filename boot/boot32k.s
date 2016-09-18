@@ -11,8 +11,8 @@
 
 		; The following code sets bank 2 to the same slot as bank 1 and continues
 		; execution.
-		ld sp,#0xfc4a
 bootstrap:
+		ld sp,#0xfc4a
        	ld a,#0xC9
       	ld (nopret),A
 nopret:	nop
