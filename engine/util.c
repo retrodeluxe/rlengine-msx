@@ -20,14 +20,18 @@
 #include <stdarg.h>
 
 #ifdef DEBUG
+
 /**
- * send a char to the printer port
+ * send a char to the debug port
  */
 static void putchar(char c)
 {
-	__asm ld a, 4(ix)
-	    call 0x00a5 __endasm;
-
+	__asm
+	ld a,#0x63
+	out (0x2e),a
+	ld a, 4(ix)
+	out (0x2f),a
+	__endasm;
 }
 
 /*
