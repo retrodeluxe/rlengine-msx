@@ -370,25 +370,45 @@ void dump_sprite_file(FILE *fd)
     struct fbit *idx = image_out_4bit;
     uint8_t color, colcnt = 0, np = 0;
     char *dataname, *filename, *path;
+    uint8_t used_colors[16], used_cnt = 0;
 
     path = strdup(input_file);
     filename = basename(path);
     dataname = strdup(filename);
-
     dataname[strlen(dataname)-4]='\0';
 
     fprintf(fd, "#ifndef _GENERATED_SPRITES_H_%s\n", dataname);
     fprintf(fd, "#define _GENERATED_SPRITES_H_%s\n", dataname);
 
-        printf("fine\n");
+
+    fprintf(fd, "const unsigned char %s_color[] = { ", dataname);
+
+    do {
+        for (color = 1; color < 16; color++) {
+            if (pattern_has_color(idx, color)) {
+                fprintf(fd, "%d,", color);
+            }
+        }
+        if (++colcnt > (tga.width / 16) - 1) {
+            colcnt = 0;
+            idx += tga.width * 16;
+        } else {
+            idx += 16;
+        }
+        np++;
+    } while (idx < image_out_4bit + (tga.width * tga.height) - 1);
+
+    fprintf(fd, "0 };\n");
+
+    colcnt = 0; idx = image_out_4bit; np = 0;
+
     fprintf(fd, "const unsigned char %s[] = {\n", dataname);
 
     do {
         for (color = 1; color < 16; color++) {
             if (pattern_has_color(idx, color)) {
 
-                fprintf(fd,"/* patrn %d color %d */\n",np, color);
-                // add color to the list, then 
+                fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);    
 
                 dump_sprite_8x8_block(fd, idx, color);
                 dump_sprite_8x8_block(fd, idx + tga.width * 8, color);
