@@ -3,6 +3,6 @@ SUBDIRS := $(wildcard */Makefile)
 all clean: $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) -C $(dir $@) $(MAKEFLAGS) $(MAKECMDGOALS)
+	$(MAKE) -C $(dir $@) $(MAKECMDGOALS)
 
 .PHONY: all clean $(SUBDIRS)

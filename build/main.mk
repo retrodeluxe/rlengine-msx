@@ -14,23 +14,24 @@ export BUILD_OUT_TOOLS = $(BUILD_OUT)/tools
 DEFAULT_GOAL := rle
 $(DEFAULT_GOAL):
 
+export MAKEFLAGS :=
+
 # warning 59: function must return value, in low level asm functions,
 #             we directly set hl with return value without using local vars
 #  
-export ENGINE_CFLAGS  := -mz80 --disable-warning 59 -I $(TOP)/engine
+export ENGINE_CFLAGS  := -mz80 --fno-omit-frame-pointer --disable-warning 59 -I $(TOP)/engine
 export ENGINE_LDFLAGS := --no-std-crt0 --use-stdout
 export ENGINE_ASFLAGS := -plosff
 
-# XXX: Paths to SDCC (this should come from environment)
-
-export SDCC_ROOT := $(TOP)/prebuilts/darwin/sdcc_3.1.0
-
+export ARCH := $(shell uname -p)
+#export SDCC_ROOT := $(TOP)/prebuilts/i386/sdcc_3.1.0
+export SDCC_ROOT := $(TOP)/prebuilts/$(ARCH)/sdcc_3.6.0
 export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
 export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
 export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
 export SDCC_LIB := $(SDCC_ROOT)/share/sdcc/lib/z80
 
-export HOSTCC	:= gcc
+export HOSTCC	:= gcc-4.9
 export TILED2H  := $(RLE_TOOLS)/map2header.py
 
 # Build Commands
@@ -52,7 +53,7 @@ rle: outdirs
 #
 .PHONY: test
 test:
-	$(MAKE) -C $(RLE_TEST) $(MAKEFLAGS) all
+	$(MAKE) -C $(RLE_TEST) all
 rle: test
 
 clean:
