@@ -11,7 +11,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include <getopt.h>
-
+#include <libgen.h>
 #define PALSIZE 16
 #define MAX_SCR2_SIZE   6144
 
@@ -19,6 +19,7 @@ struct rgb {
     uint8_t r;
     uint8_t g;
     uint8_t b;
+    uint8_t a;
 };
 
 struct scr2 {
@@ -195,11 +196,8 @@ int tga2msx_palette()
 
 int verify_header(struct tga_header *header)
 {
-    // XXX : detect flips. support alpha.
 
-    if ((header->imagetype != 2)                /* rgb */
-        || (header->bits != 24)                 /* 24 bits */
-        || ((header->descriptor & 0x0F) != 0)){ /* no alpha */
+    if ((header->imagetype != 2)) {
         return 1;
     }
     return 0;
@@ -371,24 +369,18 @@ void dump_sprite_file(FILE *fd)
 {
     struct fbit *idx = image_out_4bit;
     uint8_t color, colcnt = 0, np = 0;
-    char dataname[]="sprite";
-    short ranidx;
+    char *dataname, *filename, *path;
 
-    ranidx = random(100);
+    path = strdup(input_file);
+    filename = basename(path);
+    dataname = strdup(filename);
 
-    fprintf(fd, "#ifndef _GENERATED_SPRITES_H_%d\n", ranidx);
-    fprintf(fd, "#define _GENERATED_SPRITES_H_%d\n", ranidx);
+    dataname[strlen(dataname)-4]='\0';
 
-    // XXX: need to provide a table containing the colors
-    // for each pattern, so that it doesn't have to be edited
-    // manually on the other side right?
-    //
-    // XXX: black color is ignored; need to process ALPHA
+    fprintf(fd, "#ifndef _GENERATED_SPRITES_H_%s\n", dataname);
+    fprintf(fd, "#define _GENERATED_SPRITES_H_%s\n", dataname);
 
-    // how to process this?
-    //strcpy(dataname,&input_file[11]);
-    //dataname[strlen(&input_file[11])-4]='\0';
-
+        printf("fine\n");
     fprintf(fd, "const unsigned char %s[] = {\n", dataname);
 
     do {
@@ -396,6 +388,8 @@ void dump_sprite_file(FILE *fd)
             if (pattern_has_color(idx, color)) {
 
                 fprintf(fd,"/* patrn %d color %d */\n",np, color);
+                // add color to the list, then 
+
                 dump_sprite_8x8_block(fd, idx, color);
                 dump_sprite_8x8_block(fd, idx + tga.width * 8, color);
                 dump_sprite_8x8_block(fd, idx + 8, color);
