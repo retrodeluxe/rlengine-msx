@@ -27,10 +27,12 @@
 static void putchar(char c)
 {
 	__asm
+	di
 	ld a,#0x63
 	out (0x2e),a
 	ld a, 4(ix)
 	out (0x2f),a
+	ei
 	__endasm;
 }
 
@@ -84,10 +86,37 @@ void log(int level, char *fmt, ...)
 {
 	va_list args;
 
-	if (level >= LOGLEVEL) {
+	if (level <= LOGLEVEL) {
+		putchar('[');
+		switch (level) {
+			case LOG_ERROR: 
+				putchar('E');
+				break;
+			case LOG_DEBUG: 
+				putchar('D');
+				break;
+			case LOG_WARNING:
+				putchar('W');
+				break; 
+			case LOG_INFO:
+				putchar('I');
+				break;
+			case LOG_VERBOSE:
+				putchar('V');
+				break;
+			case LOG_ENTRY:
+				putchar('>');
+				break;
+			case LOG_EXIT:
+				putchar('<');
+				break;
+		}
+		putchar (']');
+		putchar (' ');
 		va_start(args, fmt);
 		vprintk(fmt, args);
 		va_end(args);
+		putchar ('\r');
 	}
 }
 #endif

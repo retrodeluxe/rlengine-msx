@@ -5,12 +5,15 @@
 /* -- debug -- */
 #define DEBUG
 
-#define LVLDEBUG   1
-#define LVLWARNING 2
-#define LVLINFO    3
-#define LVLVERBOSE 4
+#define LOG_ERROR   0
+#define LOG_DEBUG   1
+#define LOG_WARNING 2
+#define LOG_INFO    3
+#define LOG_VERBOSE 4
+#define LOG_ENTRY   5
+#define LOG_EXIT  	6
 
-#define LOGLEVEL 1
+#define LOGLEVEL 7
 /* -- debug -- */
 
 #define false 0
@@ -181,7 +184,7 @@ extern void irq_register(void (*func), byte tic_rate, byte sec_rate);
 #define vdp_base_sppat_grp1     0x3800
 
 #define vdp_hw_max_sprites      32
-#define vdp_hw_max_patterns     256
+#define vdp_hw_max_patterns     255
 #define gfx_screen_tile_w       32
 #define gfx_screen_tile_h       24
 
@@ -243,17 +246,21 @@ extern void blk_inflate(byte * dict, byte * in, byte * out, uint data_size,
 extern void log(int level, char *fmt, ...);
 extern void dump_vram(int start_addr, int end_addr);
 
-#define LOGD(_fmt, ...)  log(LVLDEBUG, _fmt, ##__VA_ARGS__)
-#define LOGW(_fmt, ...)  log(LVLWARNING ,_fmt, ##__VA_ARGS__)
-#define LOGI(_fmt, ...)  log(LVLINFO, _fmt, ##__VA_ARGS__)
-#define LOGV(_fmt, ...)  log(LVLVERBOSE, _fmt, ##__VA_ARGS__)
-
+#define log_d(_fmt, ...)  log(LOG_DEBUG, _fmt, ##__VA_ARGS__)
+#define log_w(_fmt, ...)  log(LOG_WARNING ,_fmt, ##__VA_ARGS__)
+#define log_i(_fmt, ...)  log(LOG_INFO, _fmt, ##__VA_ARGS__)
+#define log_v(_fmt, ...)  log(LOG_VERBOSE, _fmt, ##__VA_ARGS__)
+#define log_e(_fmt, ...)  log(LOG_ERROR, _fmt, ##__VA_ARGS__)
+#define log_entry(_fmt, ...)  log(LOG_ENTRY, _fmt, ##__VA_ARGS__)
+#define log_exit(_fmt, ...)  log(LOG_EXIT, _fmt, ##__VA_ARGS__)
 #else
-
-#define LOGD(_fmt, ...)
-#define LOGW(_fmt, ...)
-#define LOGI(_fmt, ...)
-#define LOGV(_fmt, ...)
+#define log_d(_fmt, ...) 
+#define log_w(_fmt, ...)  
+#define log_i(_fmt, ...)  
+#define log_v(_fmt, ...)  
+#define log_e(_fmt, ...)  
+#define log_entry(_fmt, ...)  
+#define log_exit(_fmt, ...) 
 
 #endif				/* DEBUG */
 
