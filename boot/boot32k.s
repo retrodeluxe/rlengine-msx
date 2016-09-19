@@ -12,7 +12,7 @@
 		; The following code sets bank 2 to the same slot as bank 1 and continues
 		; execution.
 bootstrap:
-		ld sp,#0xfc4a
+		ld sp,#0xf379
        	ld a,#0xC9
       	ld (nopret),A
 nopret:	nop
