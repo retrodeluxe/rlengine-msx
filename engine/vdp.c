@@ -67,8 +67,10 @@ void vdp_set_color(char ink, char border)
         sla A
         sla A
         add A,B
+        di
         out	(#0x99),A
 	ld	A,#0x87
+        ei
 	out	(#0x99),A
         __endasm;
 }
@@ -83,13 +85,13 @@ void vdp_poke(uint address, byte value)
         di
         ld l,4(ix)
         ld h,5(ix)
-        di
         ld a,l
+        di
         out (0x99),a
         ld a,h
         add a,#0x40
-        out (0x99),a
         ei
+        out (0x99),a
         ld a,6(ix)
         out (0x98),a
         ei
@@ -105,9 +107,11 @@ byte vdp_peek(uint address)
         ld l,4(ix)
         ld h,5(ix)
         ld a,l
+        di
         out (0x99),a
         ld a,h
         add a,#0x40
+        ei
         out (0x99),a
         in a,(0x98)
         ld l,a
@@ -125,13 +129,13 @@ void vdp_memset(uint vaddress, uint size, byte value)
         ld  l,4(ix)     ; vaddress
         ld  h,5(ix)
         in a,(0x99)
-        di
         ld a,l
+        di
         out (0x99),a
         ld a,h
         add a,#0x40
-        out (0x99),a
         ei
+        out (0x99),a
         ld e,6(ix)      ;length
         ld d,7(ix)
         ld a,8(ix)      ;value
@@ -162,8 +166,8 @@ void vdp_copy_to_vram(byte *buffer, uint vaddress, uint length)
         out (0x99),a
         ld a,h
         add a,#0x40
+        ei
         out (0x99),a
-        //ei
         ld l,4(ix) ;address
         ld h,5(ix)
         ld e,8(ix) ;length
@@ -191,11 +195,12 @@ void vdp_fastcopy16(byte *src_ram, uint dst_vram)
         ld  l,6(ix) ; dst vram
         ld  h,7(ix)
         in a,(0x99)
-        di
         ld a,l
+        di
         out (0x99),a
         ld a,h
         add a,#0x40
+        ei
         out (0x99),a
         ld l,4(ix)  ; src ram
         ld h,5(ix)
@@ -233,13 +238,13 @@ void vdp_copy_from_vram(uint vaddress, byte *buffer, uint length)
         ld e,8(ix) ;length
         ld d,9(ix)
         in a,(0x99)
-        di
         ld a,c
+        di
         out (0x99),a
         ld a,b
         add a,#0x40
-        out (0x99),a
         ei
+        out (0x99),a
         in a,(0x98)
         ld c,#0x98
 vdp__copy_from_vram_loop:
@@ -308,8 +313,10 @@ $2:
         and #0xfc
         or b
         ld (hl),a
+        di
         out (0x99),a
         ld a,#0x81
+        ei
         out (0x99),a
         __endasm;
 }
@@ -324,8 +331,8 @@ void vdp_fastcopy_nametable(byte *buffer)
         out  (0x99),a
         ld   a,h
         add  a,#0x40
-        out  (0x99),a
         ei
+        out  (0x99),a
         ld   b,#96    ; 96*8 = 768 blocks
         ld   l,4(ix)  ; buffer address
         ld   h,5(ix)
