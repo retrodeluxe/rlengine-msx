@@ -391,7 +391,7 @@ void dump_sprite_file(FILE *fd)
         }
         if (++colcnt > (tga.width / 16) - 1) {
             colcnt = 0;
-            idx += tga.width * 16;
+            idx += tga.width * 15 + 16;
         } else {
             idx += 16;
         }
@@ -417,10 +417,9 @@ void dump_sprite_file(FILE *fd)
             }
         }
         /* move to the next block */
-
         if (++colcnt > (tga.width / 16) - 1) {
             colcnt = 0;
-            idx += tga.width * 16;
+            idx += tga.width * 15 + 16;
         } else {
             idx += 16;
         }
