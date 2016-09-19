@@ -110,7 +110,7 @@ static byte gfx_dyntile_set(struct gfx_tilemap_object *obj, byte bank,
 	}
 
 	if (last_free == 0xff) {	/* we are full */
-		LOGW("GFX\t WARNING dyntile bank [%d] full\n", bank);
+		log_w("GFX\t WARNING dyntile bank [%d] full\n", bank);
 		return 0;
 	}
 
@@ -141,13 +141,13 @@ static byte gfx_sprite_set(struct gfx_sprite_def *spr, byte bank,
 			last_free = i;
 		} else if (dyn_sprite_list[bank][i] == spr->tile) {
 			/* tile exists */
-			LOGD("spr tile %d exists\n", spr->tile);
+			log_d("spr tile %d exists\n", spr->tile);
 			return QUAD_TO_TILE(sprite_quad[i]);
 		}
 	}
 
 	if (last_free == 0xff) {	/* we are full */
-		LOGW("GFX\t WARNING sprite bank [%d] full\n", bank);
+		log_w("GFX\t WARNING sprite bank [%d] full\n", bank);
 		return 0;
 	}
 
