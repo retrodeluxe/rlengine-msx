@@ -18,6 +18,7 @@
  */
 
 #include "msx.h"
+#include "vdp.h"
 
 static char t_spritesize;
 

@@ -18,6 +18,9 @@
  */
 
 #include "msx.h"
+#include "vdp.h"
+#include "sprite.h"
+#include "log.h"
 
 static byte spr_attr_valloc[vdp_hw_max_sprites];
 static byte spr_patt_valloc[vdp_hw_max_patterns];

@@ -18,7 +18,8 @@
  */
 
 #include "msx.h"
-
+#include "vdp.h"
+#include "log.h"
 
 /*
  * divide tile banks in quads of 2x2 tiles, and set three groups
