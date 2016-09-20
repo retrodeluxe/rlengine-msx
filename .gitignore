@@ -30,3 +30,14 @@
 
 # Debug files
 *.dSYM/
+
+# msx specific files
+*.rst
+*.map
+*.bin
+*.ihx
+*.lst
+*.asm
+*.rel
+*.sym
+*.lnk
