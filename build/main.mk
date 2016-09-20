@@ -24,7 +24,6 @@ export ENGINE_LDFLAGS := --no-std-crt0 --use-stdout
 export ENGINE_ASFLAGS := -plosff
 
 export ARCH := $(shell uname -p)
-#export SDCC_ROOT := $(TOP)/prebuilts/i386/sdcc_3.1.0
 export SDCC_ROOT := $(TOP)/prebuilts/$(ARCH)/sdcc_3.6.0
 export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
 export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
