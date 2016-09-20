@@ -5,15 +5,13 @@
  */
 
 #include "msx.h"
+#include "vdp.h"
 #include "gen/vdp_test.h"
 
 void main()
 {
 	
-	test_text_mode();
-
-	vdp_set_mode(VDP_MODE_GRP1);
-
+	vdp_set_mode(vdp_grp1);
 
 	// I think I need some more highlevel stuff
 
@@ -40,15 +38,4 @@ void main()
 //extern void vdp_fastcopy_nametable_di(byte * buffer);
 //extern void vdp_fastcopy16(byte * src_ram, uint dst_vram);
 //extern void vdp_clear_grp1(byte color);
-
-
-}
-
-void test_text_mode() {
-	vdp_set_mode(VDP_MODE_TEXT);
-
-	// clear screen?
-
-	// how to write text?
-	// how to set columns? not really needed
 }
