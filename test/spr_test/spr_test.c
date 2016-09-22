@@ -4,31 +4,37 @@
  *
  */
 
+#define DEBUG
+
 #include "msx.h"
 #include "vdp.h"
 #include "sprite.h"
 #include "gen/spr_test.h"
+#include <stdlib.h>
 
 /**
  * Global data is placed in 0xC000 (RAM page 2) in 32K roms by default
  */
-struct spr_sprite_def bee;
-struct spr_sprite_def ratspr;
-struct spr_sprite_def egg;
+struct spr_sprite_pattern_set bee_patt;
+struct spr_sprite_pattern_set rat_patt;
+struct spr_sprite_pattern_set egg_patt;
+struct spr_sprite_def eggspr;
+
 struct vdp_hw_sprite bee_hw;
-	
+
+struct spr_sprite_def bee[10];
+struct spr_sprite_def rats[10];
+
 /**
  * NOTE : any initialized global data must be constant.
  */ 
 const byte control_patt[8] = {255,255,255,255,255,255,255,255};
 const byte control_colors [1] = {6};
 
-
-
 void main()
 {
 	unsigned int count = 0;
-	byte dir = 1;
+	byte i;
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
@@ -51,49 +57,37 @@ void main()
 	/**
 	 * Single layer sprites with animation in two directions
 	 */
-	DEFINE_HW_SPRITE(bee, SPR_SIZE_16x16, 1, 2, SPR_DIR_LR, 10, bee1, bee1_color);
-	DEFINE_HW_SPRITE(ratspr, SPR_SIZE_16x16, 1, 2, SPR_DIR_LR, 10, rat, rat_color);
-	DEFINE_HW_SPRITE(egg, SPR_SIZE_16x16, 2, 3, SPR_DIR_LRUP, 10, eggerland, eggerland_color);
+	SPR_DEFINE_PATTERN_SET(bee_patt, spr_size_big, 1, 2, 2, bee1);
+	SPR_DEFINE_PATTERN_SET(rat_patt, spr_size_big, 1, 2, 2, rat);
+	SPR_DEFINE_PATTERN_SET(egg_patt, spr_size_big, 2, 3, 4, eggerland);
 
-	// the HW Sprite uses a pattern, that is allocated; if the pattern is already allocate,
-	// there is no need to allocate it twice... so, how do we handle this?
-	// 
-	// DEFINE_SPRITE_PATTERN(spr_hw_pattern, size, planes, steps, directions, pattern)
-	// DEFINE_SPRITE(spr, animation, pattern_handle, color) 
+	spr_valloc_pattern_set(&bee_patt);
+	spr_valloc_pattern_set(&rat_patt);
+	spr_valloc_pattern_set(&egg_patt);
 
-	// handle = spr_valloc_pattern(spr_pattern)
-	// DEFINE_SPRITE(spr, anim, pattern, color)
-	// spr_valloc_sprite(); --> this will reserve the attributes needed for this sprite in particular
-	// spr_set_pos()
-	// set_show
-	// spr_move
+	for (i = 0; i< 10; i++) {
+		SPR_DEFINE_SPRITE(bee[i], &bee_patt, 10, bee1_color);
+		SPR_DEFINE_SPRITE(rats[i], &rat_patt, 10, rat_color);
+		// set in random initial positions
+		spr_set_pos(&bee[i], i * 20, i * 20);
+		spr_set_pos(&rats[i], 16 + i * 20, 16 + i * 20);
+		spr_show(&bee[i]);
+		spr_show(&rats[i]);
+	}
 
-	// this demo should actually be able to show up to 32 sprites on screen :) but only with the set of patterns we already have
+	SPR_DEFINE_SPRITE(eggspr, &egg_patt, 10, eggerland_color);
+	spr_set_pos(&eggspr, 100, 100);
+	spr_show(&eggspr);
 
-
-	spr_valloc(&egg);	
-	spr_valloc(&bee);
-	spr_valloc(&ratspr);
-	spr_set_pos(&bee, 0, 60);
-	spr_set_pos(&ratspr, 0, 120);
-	spr_set_pos(&egg, 100, 100);
-	spr_show(&bee);
-	spr_show(&ratspr);
-	spr_show(&egg);
-
-
-	dir = 0;
 	do {
 		do {
 			// delay a few ms
 		} while (count++ < 0x01ff);
 		count=0;
-		dir = sys_get_stick(0);
-		spr_move(&bee,7,1,0);
-		spr_move(&ratspr,3,1,0);
-		if (dir != 0)
-			spr_move(&egg,dir,1,0);
-		
+		for (i = 0; i< 10; i++) {
+			spr_animate(&bee[i],1,-1,0);
+			spr_animate(&rats[i],-1,1,0);
+		}
 	} while (1);
 
 }
