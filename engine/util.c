@@ -17,8 +17,10 @@
  *
  */
 #include "msx.h"
+#include "log.h"
 #include <stdarg.h>
 
+#define DEBUG
 #ifdef DEBUG
 
 /**
