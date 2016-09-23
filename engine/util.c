@@ -17,6 +17,7 @@
  *
  */
 #include "msx.h"
+#include "sys.h"
 #include "log.h"
 #include <stdarg.h>
 

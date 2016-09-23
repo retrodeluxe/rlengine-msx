@@ -5,6 +5,7 @@
  */
 
 #include "msx.h"
+#include "sys.h"
 #include "vdp.h"
 
 void main()

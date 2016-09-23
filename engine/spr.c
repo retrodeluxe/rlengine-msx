@@ -18,6 +18,7 @@
  */
 
 #include "msx.h"
+#include "sys.h"
 #include "vdp.h"
 #include "sprite.h"
 #include "log.h"

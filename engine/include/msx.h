@@ -2,6 +2,8 @@
 #ifndef _MSX_H_
 #define _MSX_H_
 
+#define DEBUG
+
 // try compile with C99 and use bool 
 #define false 0
 #define true  1
@@ -16,16 +18,6 @@ typedef unsigned char byte;
 
 #define asm__di                 __asm di __endasm
 #define asm__ei                 __asm ei __endasm
-#define irq_tics_cycle          60
-#define irq_secs_cycle          60
-#define irq_rate_1_hz           irq_tics_cycle
-#define irq_rate_2_hz           irq_tics_cycle/2
-#define irq_rate_5_hz           irq_tics_cycle/5
-#define irq_rate_10_hz          irq_tics_cycle/10
-#define irq_rate_60_hz          1
-#define irq_rate_1_sec          1
-#define irq_rate_6_sec          irq_secs_cycle/10
-#define irq_rate_10_sec         irq_secs_cycle/6
 
 struct gfx_tilebank {
 	const byte *pattern;
@@ -97,22 +89,6 @@ struct ay_reg_map {
 };
 
 extern const struct spr_delta_pos spr_stick2coords[];
-
-extern void sys_reboot();
-extern void sys_init_rom_32k();
-extern byte sys_get_key(byte line);
-extern byte sys_get_stick(byte port);
-extern void sys_memcpy(byte * dst, byte * src, uint size);
-#define         sys_memset __builtin_memset
-#define         sys_init_stack(X)   __asm     \
-                                    di        \
-                                    ld sp,(X) \
-                                    ei        \
-                                    __endasm
-
-extern void irq_init(void);
-extern void irq_start(void);
-extern void irq_register(void (*func), byte tic_rate, byte sec_rate);
 
 extern void gfx_dyntile_show(struct gfx_tilemap_object *obj,
 			     struct gfx_tilebank *tilebank, byte x, byte y,

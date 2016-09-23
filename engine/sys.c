@@ -18,6 +18,17 @@
  */
 
 #include "msx.h"
+#include "sys.h"
+#include "log.h"
+
+static unsigned int sys_secs;
+static unsigned int sys_msec;
+static byte i;
+
+struct sys_pr {
+    byte np;
+    struct sys_proc  proc[MAX_PROCS];
+} sys_procs;
 
 void sys_reboot()
 {
@@ -66,3 +77,88 @@ void sys_memcpy(byte *dst, byte *src, uint size)
         __endasm;
 }
 
+/**
+ * sys_proc_register:
+ *      register a function to be run from the interrupt handler
+ */
+void sys_proc_register(void (*func))
+{
+    sys_procs.proc[sys_procs.np++].func = func;
+}
+
+/**
+ * sys_irq_handler:
+ *      irq handler using
+ */
+static void sys_irq_handler(void)
+{
+        // I think I should save more registers here...
+        __asm
+        di
+        in a,(#0x99)
+        push af
+        push bc
+        push de
+        push hl
+        push ix
+        push iy
+        __endasm;
+
+        sys_msec = sys_msec + MSEC_PER_TICK;
+        if (sys_msec > 1000) {
+            sys_secs++;
+        }
+
+        for (i=0; i < sys_procs.np; i++)
+            (sys_procs.proc[i].func)();
+
+        __asm
+        pop iy
+        pop ix
+        pop hl
+        pop de
+        pop bc
+        pop af
+        ei
+        __endasm;
+}
+
+/**
+ * sys_irq_init
+ *      register irq handler using BIOS hook
+ */
+void sys_irq_init()
+{
+        byte lsb, msb;
+        void (*handler)();
+        byte *hook = BIOS_INT_HOOK;
+
+        sys_msec = 0;
+        sys_secs = 0;
+        sys_procs.np = 0;
+
+        handler = sys_irq_handler;
+        lsb=(byte) handler & 255;
+        msb=(byte) (((int)handler >> 8) & 255);
+
+        asm__di;
+        *(hook)   = 0xc3; /* jp  */
+        *(hook+1) = lsb;
+        *(hook+2) = msb;
+        *(hook+3) = 0xc9; /* ret */
+        *(hook+4) = 0xc9; /* ret */
+        asm__ei;
+}
+
+
+/**
+ * sys_sleep:
+ *      just wait in the "main thread". During this time only interrupt driven execution
+ *      will happen.
+ */
+void sys_sleep(unsigned int time_ms)
+{
+    unsigned int start_ms = sys_msec;
+    while (sys_msec - start_ms < time_ms) {
+    };
+}

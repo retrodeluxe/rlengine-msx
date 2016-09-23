@@ -19,6 +19,7 @@
 
 #include "msx.h"
 #include "vdp.h"
+#include "sys.h"
 #include "log.h"
 
 /*
