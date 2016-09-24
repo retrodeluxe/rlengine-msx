@@ -80,6 +80,7 @@ void sys_memcpy(byte *dst, byte *src, uint size)
 /**
  * sys_proc_register:
  *      register a function to be run from the interrupt handler
+ *      any registered caller must run with _interrupts disabled_
  */
 void sys_proc_register(void (*func))
 {
@@ -92,35 +93,12 @@ void sys_proc_register(void (*func))
  */
 static void sys_irq_handler(void)
 {
-        // I think I should save more registers here...
-        __asm
-        di
-        in a,(#0x99)
-        push af
-        push bc
-        push de
-        push hl
-        push ix
-        push iy
-        __endasm;
-
-        sys_msec = sys_msec + MSEC_PER_TICK;
-        if (sys_msec > 1000) {
-            sys_secs++;
-        }
-
-        for (i=0; i < sys_procs.np; i++)
-            (sys_procs.proc[i].func)();
-
-        __asm
-        pop iy
-        pop ix
-        pop hl
-        pop de
-        pop bc
-        pop af
-        ei
-        __endasm;
+    sys_msec = sys_msec + MSEC_PER_TICK;
+    if (sys_msec > 1000) {
+        sys_secs++;
+    }
+    for (i=0; i < sys_procs.np; i++)
+        (sys_procs.proc[i].func)();
 }
 
 /**
@@ -129,25 +107,25 @@ static void sys_irq_handler(void)
  */
 void sys_irq_init()
 {
-        byte lsb, msb;
-        void (*handler)();
-        byte *hook = BIOS_INT_HOOK;
+    byte lsb, msb;
+    void (*handler)();
+    byte *hook = BIOS_INT_HOOK;
 
-        sys_msec = 0;
-        sys_secs = 0;
-        sys_procs.np = 0;
+    sys_msec = 0;
+    sys_secs = 0;
+    sys_procs.np = 0;
 
-        handler = sys_irq_handler;
-        lsb=(byte) handler & 255;
-        msb=(byte) (((int)handler >> 8) & 255);
+    handler = sys_irq_handler;
+    lsb=(byte) handler & 255;
+    msb=(byte) (((int)handler >> 8) & 255);
 
-        asm__di;
-        *(hook)   = 0xc3; /* jp  */
-        *(hook+1) = lsb;
-        *(hook+2) = msb;
-        *(hook+3) = 0xc9; /* ret */
-        *(hook+4) = 0xc9; /* ret */
-        asm__ei;
+    asm__di;
+    *(hook)   = 0xc3; /* jp  */
+    *(hook+1) = lsb;
+    *(hook+2) = msb;
+    *(hook+3) = 0xc9; /* ret */
+    *(hook+4) = 0xc9; /* ret */
+    asm__ei;
 }
 
 
