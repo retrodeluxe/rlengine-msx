@@ -88,8 +88,10 @@ void spr_update(struct spr_sprite_def *sp)
 {
 	byte i;
 	spr_calc_patterns(sp);
-	for (i = 0; i < sp->pattern_set->n_planes; i++)
-		vdp_set_hw_sprite(sp->aidx + i, &sp->planes[i]);
+	for (i = 0; i < sp->pattern_set->n_planes; i++) {
+		vdp_set_hw_sprite_di((byte *)(&sp->planes[i]), sp->aidx + i);
+	}
+
 }
 
 /**

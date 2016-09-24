@@ -258,24 +258,23 @@ vdp__copy_from_vram_loop:
 }
 
 
-void vdp_set_hw_sprite(char spi, struct vdp_hw_sprite *spr)
+void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi)
 {
         vdp_copy_to_vram((byte*)spr, vdp_base_spatr_grp1+(spi<<2),sizeof(struct vdp_hw_sprite));
 }
 
-void vdp_set_hw_sprite_di(byte *spr, byte spi)
+void vdp_set_hw_sprite_di(byte *spr, uint spi)
 {
         spr;
         spi;
 
         __asm
-        xor a
-        ld b,a
-        ld c,6(ix) ; spi
+        ld c,6(ix)
+        ld b,7(ix)
         sla c
         sla c
         ld  hl,#vdp_base_spatr_grp1
-        add hl,bc
+        add hl,bc    
         ld a,l
         out (0x99),a
         ld a,h
@@ -283,11 +282,16 @@ void vdp_set_hw_sprite_di(byte *spr, byte spi)
         out (0x99),a
         ld l,4(ix) ; buffer address
         ld h,5(ix)
+        xor a
+        ld d,a
+        ld e,#4
         ld c,#0x98
+loop_2:
         outi
-        outi
-        outi
-        outi
+        dec de
+        ld a,d
+        or e
+        jr nz,loop_2
         __endasm;
 }
 

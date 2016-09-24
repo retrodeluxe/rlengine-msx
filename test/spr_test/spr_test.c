@@ -50,7 +50,7 @@ void main()
 	bee_hw.y = 100;
 	bee_hw.pattern = 0;
 	bee_hw.color = 15;
-	vdp_set_hw_sprite(0, &bee_hw);
+	vdp_set_hw_sprite(&bee_hw, 0);
 
 	do {
 	} while (sys_get_key(8) & 1);
