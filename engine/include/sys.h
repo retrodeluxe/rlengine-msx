@@ -3,7 +3,8 @@
 
 #define MSEC_PER_TICK   16      // assume 60Hz
 #define MAX_PROCS 		10
-#define BIOS_INT_HOOK  	0xFD9F
+
+#define BIOS_INT_HOOK 	0xFD9A
 
 struct sys_proc {
     void  (*func)();
