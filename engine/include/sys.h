@@ -19,5 +19,7 @@ extern void sys_memcpy(byte * dst, byte * src, uint size);
 extern void sys_proc_register(void (*func));
 extern void sys_irq_init();
 extern void sys_sleep(unsigned int time_ms);
+extern uint sys_gettime_secs();
+extern uint sys_gettime_msec();
 
 #endif

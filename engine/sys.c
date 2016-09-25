@@ -95,6 +95,7 @@ static void sys_irq_handler(void)
 {
     sys_msec = sys_msec + MSEC_PER_TICK;
     if (sys_msec > 1000) {
+        sys_msec = 0;
         sys_secs++;
     }
     for (i=0; i < sys_procs.np; i++)
@@ -140,3 +141,14 @@ void sys_sleep(unsigned int time_ms)
     while (sys_msec - start_ms < time_ms) {
     };
 }
+
+uint sys_gettime_secs()
+{
+    return sys_secs;
+}
+
+uint sys_gettime_msec()
+{
+    return sys_msec;
+}
+
