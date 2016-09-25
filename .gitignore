@@ -41,3 +41,5 @@
 *.rel
 *.sym
 *.lnk
+
+.DS_Store
