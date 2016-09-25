@@ -95,9 +95,6 @@ void main()
 	wq_start();
 
 	INIT_WORK(work1,update_bees1,0);
-	INIT_WORK(work2,update_bees2,0);
-	INIT_WORK(work3,update_rats1,0);
-	INIT_WORK(work4,update_rats2,0);
 
 	queue_delayed_work(&work1,2,0,0);
 
