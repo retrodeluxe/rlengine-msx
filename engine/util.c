@@ -30,12 +30,10 @@
 static void putchar(char c)
 {
 	__asm
-	di
 	ld a,#0x63
 	out (0x2e),a
 	ld a, 4(ix)
 	out (0x2f),a
-	ei
 	__endasm;
 }
 
@@ -44,7 +42,7 @@ static void putchar(char c)
  */
 void printn(unsigned int n, char b)
 {
-	register char a, r;
+	unsigned int a,r;
 
 	if (a = n / b)
 		printn(a, b);
@@ -59,7 +57,8 @@ void printn(unsigned int n, char b)
 static void vprintk(char *fmt, va_list args)
 {
 	register char *s;
-	register char c, d;
+	register char c;
+	unsigned int d;
 
  loop:
 	while ((c = *fmt++) != '%') {
