@@ -432,15 +432,26 @@ void dump_sprite_file(FILE *fd)
 }
 
 
-void dump_tile_bank(int bank, struct scr2 *buffer, FILE *file)
+void dump_tiles(struct scr2 *buffer, FILE *file)
 {
     struct scr2 *p;
     int bytectr=0, cnt;
+    char *dataname, *filename, *path;
 
-    fprintf(file,"const unsigned char pattern_bank_%d[]={\n",bank);
+    path = strdup(input_file);
+    filename = basename(path);
+    dataname = strdup(filename);
+    dataname[strlen(dataname)-4]='\0';
 
-    p = buffer + 2048 * bank;
-    for (cnt = 0; cnt < 2048; p++, cnt++) {
+    fprintf(file,"#ifndef _GENERATED_TILESET_H_%s\n", dataname);
+    fprintf(file,"#define _GENERATED_TILESET_H_%s\n", dataname);
+
+    fprintf(file,"const unsigned char %s_tile_w = %d;\n", dataname, tga.width / 8);
+    fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8); 
+    fprintf(file,"const unsigned char %s_tile[]={\n",dataname);
+
+    p = buffer;
+    for (cnt = 0; cnt < (tga.width * tga.height / 8) ; p++, cnt++) {
         if(bytectr++ > 6) {
             fprintf(file,"0x%2.2X,\n",p->patrn);
             bytectr=0;
@@ -450,10 +461,10 @@ void dump_tile_bank(int bank, struct scr2 *buffer, FILE *file)
     }
     fprintf(file,"0x%2.2X};\n\n",p->patrn);
 
-    fprintf(file,"const unsigned char color_bank_%d[]={\n",bank);
+    fprintf(file,"const unsigned char %s_tile_color[]={\n",dataname);
 
-    p = buffer + 2048 * bank;
-    for (cnt = 0; cnt < 2048; p++, cnt++) {
+    p = buffer;
+    for (cnt = 0; cnt < (tga.width * tga.height / 8); p++, cnt++) {
         if(bytectr++ > 6) {
             fprintf(file,"0x%2.2X,\n",p->color);
             bytectr=0;
@@ -469,12 +480,8 @@ void dump_tile_bank(int bank, struct scr2 *buffer, FILE *file)
 void dump_tile_file(FILE *fd)
 {
 
-    fprintf(fd,"#ifndef _GENERATED_TILESET_H_\n");
-    fprintf(fd,"#define _GENERATED_TILESET_H_\n");
-
-    dump_tile_bank(0, image_out_scr2, fd);
-    dump_tile_bank(1, image_out_scr2, fd);
-    dump_tile_bank(2, image_out_scr2, fd);
+   
+    dump_tiles(image_out_scr2, fd);
 
     fprintf(fd,"#endif\n");
 }
@@ -594,9 +601,12 @@ int main(int argc, char **argv)
 
     result = load_image(fileidx, argc, argv);
 
-    if (!strcmp(type,"TILE") && (tga.width != 256 || tga.height != 192)) {
+    // handle this...
+
+    if (!strcmp(type,"TILE") && ((tga.width > 255 || tga.height > 63) ||
+                (tga.width % 8 != 0 || tga.height % 8 != 0))) {
          fprintf(stderr, "When generating TILE output, \ 
-                        input file must be exactly 256x192\n");
+                        input file size must have width and heigth multiple of 8 and be smaller than 256x64.\n");
         return -1;
     }
 
