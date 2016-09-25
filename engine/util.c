@@ -88,6 +88,10 @@ void log(int level, char *fmt, ...)
 {
 	va_list args;
 
+	printn(sys_gettime_secs(), 10);
+	putchar(':');
+	printn(sys_gettime_msec(), 10);
+	putchar(' ');
 	if (level <= LOGLEVEL) {
 		putchar('[');
 		switch (level) {
