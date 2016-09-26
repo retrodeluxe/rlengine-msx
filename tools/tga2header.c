@@ -76,7 +76,7 @@ struct fbit *image_out_4bit;    /* image out in 4bit pal format  */
 
 char *input_file;               /* name of input file used to name data */
 
-uint16_t rgb_square_error(uint8_t clr, uint8_t x, uint8_t y)
+uint16_t rgb_square_error(uint8_t clr, uint16_t x, uint16_t y)
 {
     int16_t u0,u1,u2;
     uint8_t col = image_out_4bit[ x + y * tga.width].color;
@@ -89,10 +89,11 @@ uint16_t rgb_square_error(uint8_t clr, uint8_t x, uint8_t y)
 }
 
 
-struct scr2 match_line(uint8_t x,  uint8_t y)
+struct scr2 match_line(uint16_t x,  uint16_t y)
 {
     int i;
-    uint8_t c1, c2, xx;
+    uint8_t c1, c2;
+    uint16_t xx;
     uint8_t bp = 0, bc = 0;
     uint16_t cp, cs, bs = INT_MAX;
     uint16_t mc1, mc2;
@@ -132,7 +133,7 @@ struct scr2 match_line(uint8_t x,  uint8_t y)
  */
 int tga2msx_scr2_tiles()
 {
-    uint8_t x, y, j;
+    uint16_t x, y, j;
     uint16_t yy, qe;
     struct scr2 *dst = image_out_scr2;
 
@@ -603,10 +604,10 @@ int main(int argc, char **argv)
 
     // handle this...
 
-    if (!strcmp(type,"TILE") && ((tga.width > 255 || tga.height > 63) ||
+    if (!strcmp(type,"TILE") && ((tga.width / 8 * tga.height > 2048) ||
                 (tga.width % 8 != 0 || tga.height % 8 != 0))) {
          fprintf(stderr, "When generating TILE output, \ 
-                        input file size must have width and heigth multiple of 8 and be smaller than 256x64.\n");
+                        input file size must have width and heigth multiple of 8 and be smaller than 256x64 pixels (16Kb).\n");
         return -1;
     }
 
