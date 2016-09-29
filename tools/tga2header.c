@@ -82,9 +82,9 @@ uint16_t rgb_square_error(uint8_t clr, uint16_t x, uint16_t y)
     uint8_t col = image_out_4bit[ x + y * tga.width].color;
 
     /* confusing , but works */
-    u0 = (palette[col].b - palette[clr].r);
+    u0 = (palette[col].r - palette[clr].r);
     u1 = (palette[col].g - palette[clr].g);
-    u2 = (palette[col].r - palette[clr].b);
+    u2 = (palette[col].b - palette[clr].b);
     return u0 * u0 + u1 * u1 + u2 * u2;
 }
 
@@ -154,12 +154,15 @@ int tga2msx_scr2_tiles()
 uint8_t find_min_sqerr_color(struct rgb *col, struct rgb *pal)
 {
     uint8_t i, best = PALSIZE;
-    uint16_t er, eg, eb, se, least = INT_MAX;
+    double er, eg, eb, se, least = INT_MAX;
+
+    // This requires fine tuning, is not accurate enough to
+    // match properly different shades of the same color.
 
     for (i = 0; i < PALSIZE; i++) {
-        er = col->r - pal[i].r;
-        eg = col->g - pal[i].g;
-        eb = col->b - pal[i].b;
+        er = (col->b - pal[i].r) * 0.4;
+        eg = (col->g - pal[i].g) * 0.75;
+        eb = (col->r - pal[i].b) * 0.8;
         se = er * er + eg * eg + eb * eb;
 
         if (se < least) {
@@ -173,10 +176,10 @@ uint8_t find_min_sqerr_color(struct rgb *col, struct rgb *pal)
 
 void dump_4bitimage()
 {
-    uint8_t i,j;
+    uint16_t i,j;
 
-    for (j = 0; j < 32; j++) {
-        for(i = 0; i < 32; i++) {
+    for (j = 0; j < tga.height; j++) {
+        for(i = 0; i < tga.width; i++) {
             printf("0x%2.2X,",(image_out_4bit + i + j * tga.width)->color);
         }
         printf("\n");
@@ -614,6 +617,7 @@ int main(int argc, char **argv)
 
     if ((result == 0) && do_full) {
         result = tga2msx_palette();
+        //dump_4bitimage();
         result = tga2msx_scr2_tiles();
     }
 
