@@ -278,29 +278,3 @@ void gfx_dyntile_show(struct gfx_tilemap_object *obj,
 
 	//LOGD("GFX\t drawing object [%d] using tile [%d]\n",obj->tile,id);
 }
-
-void gfx_tileset_to_vram(struct gfx_tileset *ts, byte bank)
-{
-	uint offset, length;
-
-	offset = 256 * 8 * bank + ts->start * 8;
-	length = (ts->end - ts->start + 1) * 8;
-	vdp_copy_to_vram(ts->bank->pattern, vdp_base_chars_grp1 + offset,
-			 length);
-	vdp_copy_to_vram(ts->bank->color, vdp_base_color_grp1 + offset, length);
-}
-
-void gfx_tilemap_clip(struct gfx_tilemap *tm,
-		      struct gfx_viewport *vp, byte * scrbuf,
-		      struct gfx_map_pos *p)
-{
-	byte i;
-	byte *ptr = scrbuf + vp->x + vp->y * gfx_screen_tile_w;
-	byte *src = tm->map + p->x + p->y * tm->w;
-
-	for (i = 0; i <= vp->h; i++) {
-		sys_memcpy(ptr, src, vp->w);
-		ptr += gfx_screen_tile_w;
-		src += tm->w;
-	}
-}

@@ -100,10 +100,6 @@ extern void gfx_sprite_move(struct gfx_sprite_def *spr, byte dir, byte steps,
 			    char collision);
 extern void gfx_sprite_clear(struct gfx_sprite_def *spr);
 extern void gfx_dyntile_clear(struct gfx_tilemap_object *obj);
-extern void gfx_tileset_to_vram(struct gfx_tileset *ts, byte bank);
-extern void gfx_tilemap_clip(struct gfx_tilemap *tm, struct gfx_viewport *vp,
-			     byte * scrbuf, struct gfx_map_pos *p);
-#define         gfx_set_tile_vram(_x,_y,_tile) vdp_poke(vdp_base_names_grp1+32*_y+_x, _tile)
 
 extern void psg_set_all(struct ay_reg_map *regs);
 extern void psg_set_tone(unsigned int period, byte chan);
