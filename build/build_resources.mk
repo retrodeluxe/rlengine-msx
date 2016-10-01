@@ -15,7 +15,7 @@ all: $(built_spr_res) $(built_map_res) $(built_til_res) | $(TGA2H) $(TILED2H)
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json
 	mkdir -p $(LOCAL_BUILD_OUT_GEN)
-	$(TILED2H) -s $^ -b > $@
+	$(TILED2H) -s $^ > $@
 	@echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 
 $(built_til_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_TIL)/%.tga
