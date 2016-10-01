@@ -24,13 +24,19 @@ export ENGINE_LDFLAGS := --no-std-crt0 --use-stdout
 export ENGINE_ASFLAGS := -plosff
 
 export ARCH := $(shell uname -p)
-export SDCC_ROOT := $(TOP)/prebuilts/$(ARCH)/sdcc_3.6.0
-export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
-export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
-export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
+#export SDCC_ROOT := $(TOP)/prebuilts/$(ARCH)/sdcc_3.5.0
+#export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
+#export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
+#export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
+#export SDCC_LIB := $(SDCC_ROOT)/share/sdcc/lib/z80
+
+export SDCC_ROOT := /usr/
+export CROSS_CC := sdcc
+export CROSS_AS := sdasz80
+export CROSS_LD := sdldz80
 export SDCC_LIB := $(SDCC_ROOT)/share/sdcc/lib/z80
 
-export HOSTCC	:= gcc-4.9
+export HOSTCC	:= gcc
 export TILED2H  := $(RLE_TOOLS)/map2header.py
 
 # Build Commands
