@@ -41,6 +41,7 @@
 
 import json
 import sys
+import os
 from optparse import OptionParser
 
 class TileObject:
@@ -155,7 +156,7 @@ class TileMapWriter:
         def mod_256(self, x):
             # tile indexes from Tiled are expressed as int + 1
             # we need to reference a single bank w.r.t 0
-            return (x % 256) - 1
+            return (x % 256)
 
         def compress_layer(self,layer):
             #print ("DEBUG: size before dict replace : %s" % len(layer))
@@ -177,13 +178,80 @@ class TileMapWriter:
             return (len(self.block_dict),len(cmpr2),compr)
 
         def dump(self):
-            w = self.tilemap['width']
-            h = self.tilemap['height']
-            # now the name of the layer determines the type of dump
+            object_types = {}
+            special_properties = {}
+            max_object_size = 1;
             for layer in self.tilemap['layers']:
-                name = layer['name']
-                # Map, Objects, Enemy
-                if 'tilemap' in name:
+                if 'objectgroup' in layer['type']:
+                 ## Scan object types
+                    for item in layer['objects']:
+                        # find all types or names
+                        _type = item['type']
+                        if _type == '':
+                            _type = item['name']
+                        object_types[_type] = item['properties'].keys()
+                        length = len(item['properties'].keys())
+                        if length > max_object_size:
+                            max_object_size = length
+                        ## find special properties that require enums
+                        for _property in item['properties'].keys():
+                            value = item['properties'][_property]
+                            if (not value.isdigit() and not value.replace('.','').isdigit()):
+                                if not _property in special_properties:
+                                    special_properties[_property] = {}
+                                special_properties[_property][value.encode('ascii','ignore')] = '1'
+
+            ## dump defines to identify each object type
+            if len(object_types.keys()) > 0:
+                print "\nenum object_type {"
+                for key in object_types.keys():
+                    print ("        %s, " % key.upper())
+                print ("};\n")
+
+            ## dump enums to identify certain string properties
+            for key in special_properties:
+                print ("\nenum object_property_%s {" % key.encode('ascii', 'ignore'))
+                for _property in special_properties[key]:
+                    print ("    %s, " % _property.upper())
+                print ("};\n")
+
+            ## dump object structures
+            for key in object_types.keys():
+                print ("struct map_object_%s {" % key)
+                if len(object_types[key]) > 0:
+                    for _property in object_types[key]:
+                        if _property in special_properties:
+                            print ("     enum object_property_%s %s;" % (_property, _property))
+                        else:
+                            print ("     unsigned char %s;" % _property)
+                else:
+                    print ("     unsigned char dummy;")
+                print ("};\n")
+
+            if len(object_types.keys()) > 0:
+                print ("union map_object {")
+                for key in object_types.keys():
+                    print ("    struct map_object_%s %s;" % (key, key))
+                print ("};")
+
+            print "struct map_object_item {"
+            print ("    enum object_type type;")
+            print ("    signed int x;")
+            print ("    signed int y;")
+            print ("    unsigned char w;")
+            print ("    unsigned char h;")
+            print ("    unsigned char visible;")
+            if len(object_types.keys()) > 0:
+                print ("    union map_object object;")
+            print "};\n"
+
+            # different type of dump depending of type
+            for layer in self.tilemap['layers']:
+                ## first dump tile layers
+                if 'tilelayer' in layer['type']:
+                    w = layer['width']
+                    h = layer['height']
+                    name = layer['name'].replace(' ','_')
                     print ("const unsigned char %s_w = %s;" % (name,w)) 
                     print ("const unsigned char %s_h = %s;" % (name,h))
                     if self.rle or self.block:
@@ -199,35 +267,43 @@ class TileMapWriter:
                     else:
                         print ("const unsigned char %s[] = {" % name)
                         for tile in layer['data']:
-                                print ("%s," % ((tile % 256) - 1) ),
+                            val = (tile % 256)
+                            print ("%s," % val),
                         print "0 };"
-                else:
-                    ct = 0
-                    objects = []
-                    for tile in layer['data']:
-                        ct=ct+1
-                        if tile != 0:
-                            y = ct / w
-                            x = ct - y * w
-                            if not len(objects):
-                                objects.append(TileObject(x,y,tile))
+                elif 'objectgroup' in layer['type']:
+                    count = 0
+                    name = layer['name'].replace(' ','_')
+                    print ("/* cast to map_object_item */")
+                    print ("const unsigned char %s[] = {" % name)
+                    for item in layer['objects']:
+                        print ("    /* object %s */" % count)
+                        #print ("    {")
+                        _type = item['type']
+                        if _type == '':
+                            _type = item['name']
+                        print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'],  item['y'],  item['width'], item['height'], 1 if item['visible'] else 0))
+                        #print ("        { ");
+                        #print ("        { .%s = { " % _type);
+                        for _property in item['properties'].keys():
+                            value = item['properties'][_property]
+                            if _property in special_properties:
+                                print ("    %s, " % value.upper())
+                            elif not value.isdigit() and value.replace('.','').isdigit:
+                                print ("    %s, " % value.replace('.',''))
                             else:
-                                tile_placed = False
-                                for object_ in objects:
-                                    if object_.add(x,y,tile):
-                                        tile_placed = True
-                                        break
-                                if not tile_placed:
-                                    objects.append(TileObject(x,y,tile))
-                                
-                    # dump all the enemies one by one
-                    print ("const struct gfx__object %s[] = {" % name)
-                    for object_ in objects:
-                        object_.dump()      
-                        print ","
-                    print "{0,0,0}};"
-
-        
+                                ## regular numeric value
+                                print ("    %s, " % value)
+                        ## add at least one empty prop
+                        if len(item['properties'].keys()) == 0:
+                            print ("        0,")
+                        ## add padding if needed
+                        #padding = max_object_size - len(item['properties'].keys())
+                        #for i in xrange(padding):
+                        #    print ("            0,")
+                        #print ("        },");
+                        #print ("    },")
+                        count = count + 1
+                    print "};"
 
 class TiledJsonReader:
         """ reads a json file saved from tiled"""
@@ -238,6 +314,10 @@ class TiledJsonReader:
             self.tilemap = Tilemap()
           
         def read(self):
+            self.tilemap['version'] = self.decoded['version']
+            self.tilemap['orientation'] = self.decoded['orientation']
+            self.tilemap['tilewidth'] = self.decoded['tilewidth']
+            self.tilemap['tileheight'] = self.decoded['tileheight']
             self.tilemap['width'] = self.decoded['width']
             self.tilemap['height'] = self.decoded['height'] 
             self.tilemap['tilesets'] = self.decoded['tilesets']
@@ -245,19 +325,10 @@ class TiledJsonReader:
             return self.tilemap
 
 
-def dump_header():
-        print "/*"
-        print " *   AUTOGENERATED HEADER FILE"
-        print " *" 
-        print " */"
-        print "#ifndef __GFX_OBJECT"
-        print "#define __GFX_OBJECT" 
-        print " struct gfx__object {"
-        print "         unsigned  char  x;"
-        print "         unsigned  char  y;" 
-        print "         unsigned  char  tile;"
-        print "};"
-        print "#endif"
+def dump_header(filename):
+    name, ext = os.path.splitext(os.path.basename(filename))
+    print ("#ifndef __MAP_DATA_%s" % name)
+    print ("#define __MAP_DATA_%s" % name)
 
 if __name__ == '__main__':
 
@@ -274,9 +345,10 @@ if __name__ == '__main__':
         print "required source"
         sys.exit(1) 
 
-    dump_header()
+    dump_header(opts.source)
     reader = TiledJsonReader(opts.source)
     writer = TileMapWriter(reader.read(),opts.rle, opts.block)
-    writer.dump()   
+    writer.dump()
+    print "#endif"
 
 
