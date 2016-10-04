@@ -173,9 +173,13 @@ class TileMapWriter:
                 cmpr2 = cmpr1
             compr = []
             if self.block:
+                #print ("DICT : %s =" % self._expand_block_keys())
                 compr.extend(self._expand_block_keys())
-            compr.extend(cmpr2)
-            return (len(self.block_dict),len(cmpr2),compr)
+                return (self._expand_block_keys(), cmpr1)
+
+            #print ("MAP : %s = " % cmpr2)
+            #compr.extend(cmpr2)
+            return (None, compr1)
 
         def dump(self):
             object_types = {}
@@ -257,12 +261,16 @@ class TileMapWriter:
                     if self.rle or self.block:
                         # if compressed, need additional size data
                         #
-                        (dsize, csize, compr_layer) = self.compress_layer(layer['data']) 
-                        print ("const unsigned char %s_dict_size = %s;" % (name,dsize)) 
-                        print ("const unsigned int %s_cmpr_size = %s;" % (name,csize)) 
+                        (_dict, compr_layer) = self.compress_layer(layer['data'])
+                        print ("const unsigned char %s_dict_size = %s;" % (name, len(_dict)))
+                        print ("const unsigned int %s_cmpr_size = %s;" % (name, len(compr_layer)))
+                        print ("const unsigned char %s_cmpr_dict[] = {" % name)
+                        for tile in _dict:
+                            print ("%s," % tile ),
+                        print "0 };"
                         print ("const unsigned char %s[] = {" % name)
                         for tile in compr_layer:
-                                print ("%s," % tile ),
+                            print ("%s," % tile ),
                         print "0 };"
                     else:
                         print ("const unsigned char %s[] = {" % name)
