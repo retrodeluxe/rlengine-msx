@@ -19,7 +19,9 @@
 struct spr_sprite_pattern_set bee_patt;
 struct spr_sprite_pattern_set rat_patt;
 struct spr_sprite_pattern_set egg_patt;
+struct spr_sprite_pattern_set monk_patt;
 struct spr_sprite_def eggspr;
+struct spr_sprite_def monk;
 
 struct vdp_hw_sprite bee_hw;
 
@@ -58,9 +60,9 @@ void main()
 	/**
 	 * Single layer sprites with animation in two directions
 	 */
-	SPR_DEFINE_PATTERN_SET(bee_patt, spr_size_big, 1, 2, 2, bee1);
-	SPR_DEFINE_PATTERN_SET(rat_patt, spr_size_big, 1, 2, 2, rat);
-	SPR_DEFINE_PATTERN_SET(egg_patt, spr_size_big, 2, 3, 4, eggerland);
+	SPR_DEFINE_PATTERN_SET(bee_patt, SPR_SIZE_16x16, 1, 2, 2, bee1);
+	SPR_DEFINE_PATTERN_SET(rat_patt, SPR_SIZE_16x16, 1, 2, 2, rat);
+	SPR_DEFINE_PATTERN_SET(egg_patt, SPR_SIZE_16x16, 2, 3, 4, eggerland);
 
 	spr_valloc_pattern_set(&bee_patt);
 	spr_valloc_pattern_set(&rat_patt);
@@ -89,7 +91,25 @@ void main()
 			spr_animate(&bee[i],1,-1,0);
 			spr_animate(&rats[i],-1,1,0);
 		}
-	} while (1);
+	} while (sys_get_key(8) & 1);
 
+	spr_init(1, 0);
+	/**
+	 * Composite sprites
+	 */
+	SPR_DEFINE_PATTERN_SET(monk_patt, SPR_SIZE_16x32, 1, 2, 4, monk1);
+	spr_valloc_pattern_set(&monk_patt);
+
+	SPR_DEFINE_SPRITE(monk, &monk_patt, 10, monk1_color);
+	spr_set_pos(&monk, 100, 100);
+	spr_show(&monk);
+
+	do {
+		do {
+			// delay a few ms
+		} while (count++ < 0x01ff);
+		count=0;
+		spr_animate(&monk,-1,0,0);
+	} while (sys_get_key(8) & 1);
 }
 

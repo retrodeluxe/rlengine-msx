@@ -2,8 +2,11 @@
 #define _MSX_H_SPRITE
 
 
-#define spr_size_small	1
-#define spr_size_big	4
+#define SPR_SIZE_8x8	1
+#define SPR_SIZE_16x16	4
+#define SPR_SIZE_16x32	8
+//#define SPR_SIZE_32x16	8
+
 #define spr_dir_lr 		1
 #define spr_dir_lrud 	2
 #define spr_dir_lrudc 	3
@@ -29,7 +32,7 @@ struct spr_sprite_pattern_set {
  */
 struct spr_sprite_def {
 	byte aidx;
-	struct vdp_hw_sprite planes[3];
+	struct vdp_hw_sprite planes[6];
 	struct spr_sprite_pattern_set *pattern_set;
 	byte cur_dir;
 	byte cur_anim_step;

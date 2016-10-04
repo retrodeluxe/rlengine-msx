@@ -74,14 +74,26 @@ void spr_vfree_pattern_set(struct spr_sprite_pattern_set *ps)
 
 static void spr_calc_patterns(struct spr_sprite_def *sp)
 {
-	byte i, base, frame;
+	byte i, base, base2, frame;
 	
 	struct spr_sprite_pattern_set *ps = sp->pattern_set;
-
-	base = sp->cur_dir * ps->n_anim_steps * (ps->size * ps->n_planes);
-	frame = sp->cur_anim_step * (ps->size * ps->n_planes);
-	for (i = 0; i < ps->n_planes; i++)
-		(sp->planes[i]).pattern = ps->pidx + base + frame + i * ps->size ;
+	switch (ps->size) {
+		case SPR_SIZE_16x16:
+			base = sp->cur_dir * ps->n_anim_steps * (ps->size * ps->n_planes);
+			frame = sp->cur_anim_step * (ps->size * ps->n_planes);
+			for (i = 0; i < ps->n_planes; i++)
+				(sp->planes[i]).pattern = ps->pidx + base + frame + i * ps->size;
+			break;
+		case SPR_SIZE_16x32:
+			base = sp->cur_dir * ps->n_anim_steps * (SPR_SIZE_16x16 * ps->n_planes);
+			base2 = base + ps->n_planes * ps->n_dirs * ps->n_anim_steps * SPR_SIZE_16x16;
+			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
+			for (i = 0; i < ps->n_planes; i++) {
+				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
+				(sp->planes[i+3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
+			}
+			break;
+	}
 }
 
 void spr_update(struct spr_sprite_def *sp)
@@ -90,6 +102,8 @@ void spr_update(struct spr_sprite_def *sp)
 	spr_calc_patterns(sp);
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
 		vdp_set_hw_sprite_di((byte *)(&sp->planes[i]), sp->aidx + i);
+		if (sp->pattern_set->size == SPR_SIZE_16x32)
+			vdp_set_hw_sprite_di((byte *)(&sp->planes[i+3]), sp->aidx + i + sp->pattern_set->n_planes);
 	}
 
 }
@@ -101,6 +115,8 @@ byte spr_show(struct spr_sprite_def *sp)
 {
 	byte i, idx, n, f = 0;
 	n = sp->pattern_set->n_planes;
+	if (sp->pattern_set->size == SPR_SIZE_16x32)
+		n = n * 2;
 	for (i = 0; i < vdp_hw_max_sprites - 1; i++) {
 		f = f * spr_attr_valloc[i] + spr_attr_valloc[i];
 		if (f == n) {
@@ -127,14 +143,22 @@ void spr_set_pos(struct spr_sprite_def *sp, byte xp, byte yp)
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
 		(sp->planes[i]).x = xp;
 		(sp->planes[i]).y = yp;
+		if (sp->pattern_set->size == SPR_SIZE_16x32) {
+			(sp->planes[i+ 3]).x = xp;
+			(sp->planes[i+ 3]).y = yp + 16;
+		}
 	}
 }
 
 void spr_set_plane_colors(struct spr_sprite_def *sp, byte * colors)
 {
 	byte i;
-	for (i = 0; i < sp->pattern_set->n_planes; i++)
+	for (i = 0; i < sp->pattern_set->n_planes; i++) {
 		(sp->planes[i]).color = colors[i];
+		if (sp->pattern_set->size == SPR_SIZE_16x32) {
+			(sp->planes[i + 3]).color = colors[i];
+		}
+	}
 }
 
 /**
