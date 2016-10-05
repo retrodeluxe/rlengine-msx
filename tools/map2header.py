@@ -240,8 +240,8 @@ class TileMapWriter:
 
             print "struct map_object_item {"
             print ("    enum object_type type;")
-            print ("    signed int x;")
-            print ("    signed int y;")
+            print ("    unsigned char x;")
+            print ("    unsigned char y;")
             print ("    unsigned char w;")
             print ("    unsigned char h;")
             print ("    unsigned char visible;")
@@ -282,6 +282,7 @@ class TileMapWriter:
                     count = 0
                     name = layer['name'].replace(' ','_')
                     print ("/* cast to map_object_item */")
+                    print ("const unsigned char %s_nitems = %s;" % (name, len(layer['objects'])))
                     print ("const unsigned char %s[] = {" % name)
                     for item in layer['objects']:
                         print ("    /* object %s */" % count)
@@ -289,7 +290,7 @@ class TileMapWriter:
                         _type = item['type']
                         if _type == '':
                             _type = item['name']
-                        print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'],  item['y'],  item['width'], item['height'], 1 if item['visible'] else 0))
+                        print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'] % 256,  item['y'] % 256,  item['width'], item['height'], 1 if item['visible'] else 0))
                         #print ("        { ");
                         #print ("        { .%s = { " % _type);
                         for _property in item['properties'].keys():
@@ -297,9 +298,12 @@ class TileMapWriter:
                             if _property in special_properties:
                                 print ("    %s, " % value.upper())
                             elif not value.isdigit() and value.replace('.','').isdigit:
-                                print ("    %s, " % value.replace('.',''))
+                                print ("    %s, " % (value.replace('.','')))
+                            elif value.isdigit():
+                                wrap = int(value) % 256
+                                ## regular numeric value, wrapped to byte
+                                print ("    %s, " % wrap)
                             else:
-                                ## regular numeric value
                                 print ("    %s, " % value)
                         ## add at least one empty prop
                         if len(item['properties'].keys()) == 0:
