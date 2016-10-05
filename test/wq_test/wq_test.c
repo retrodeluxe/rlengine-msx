@@ -94,9 +94,9 @@ void main()
 	sys_irq_init();
 	wq_start();
 
-	INIT_WORK(work1,update_bees1,0);
+	INIT_WORK(work1,update_bees1);
 
-	queue_delayed_work(&work1,2,0,0);
+	queue_delayed_work(&work1,2,0);
 
 	do {
 		sys_sleep(20);
@@ -109,7 +109,7 @@ void update_bees1() {
 	for (i = 0; i< 4; i++)  {
 		spr_animate(&bee[i],-1,0,0);	
 	}
-	queue_delayed_work(&work1,0,100,0);
+	queue_delayed_work(&work1,0,100);
 }
 
 void update_bees2() {

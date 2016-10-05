@@ -37,8 +37,8 @@ struct work_queue wq, delayed_wq;
 static void wq_run()
 {
     if (wq.head != wq.tail) {
-        //log_d("run head=%d\n",wq.head);
-        (wq.cq[wq.head].func)();
+        (wq.cq[wq.head]->func)();
+        wq.cq[wq.head]->pending = 0;
         if (++wq.head > WQ_BUF_SIZE - 1) {
             wq.head = 0;
         }
@@ -51,17 +51,17 @@ static void wq_delayed_run()
     uint msec = sys_gettime_msec();
     signed int delta_secs, delta_msec;
     if (delayed_wq.head != delayed_wq.tail) {
-        delta_secs = delayed_wq.cq[delayed_wq.head].alarm_secs - secs;
-        delta_msec = delayed_wq.cq[delayed_wq.head].alarm_msec - msec;
+        delta_secs = delayed_wq.cq[delayed_wq.head]->alarm_secs - secs;
+        delta_msec = delayed_wq.cq[delayed_wq.head]->alarm_msec - msec;
         if (delta_secs < 0 || (delta_secs <= 0 && delta_msec < 50)) {
-            //log_d("run secs=%d %d\n",delta_secs, delta_msec);
-            (delayed_wq.cq[delayed_wq.head].func)();
+            (delayed_wq.cq[delayed_wq.head]->func)();
+            delayed_wq.cq[delayed_wq.head]->pending = 0;
+            if (++delayed_wq.head > WQ_BUF_SIZE - 1) {
+                delayed_wq.head = 0;
+            }
         } else {
-            //log_d("requeue\n");
-            queue_delayed_work(&delayed_wq.cq[delayed_wq.head], delta_secs, delta_msec, delayed_wq.cq[delayed_wq.head].data);
-        }
-        if (++delayed_wq.head > WQ_BUF_SIZE - 1) {
-            delayed_wq.head = 0;
+            delayed_wq.cq[delayed_wq.head]->alarm_secs = delta_secs;
+            delayed_wq.cq[delayed_wq.head]->alarm_msec = delta_msec;
         }
     }
 }
@@ -76,11 +76,11 @@ void wq_start()
     sys_proc_register(wq_delayed_run);
 }
 
-int queue_work(struct work_struct *work, char data)
+int queue_work(struct work_struct *work)
 {
     if (wq.tail < (wq.head - 1) || wq.tail >= wq.head) {
-        wq.cq[wq.tail].func = work->func;
-        wq.cq[wq.tail].data = data;
+        work->pending = 1;
+        wq.cq[wq.tail] = work;
         if (++wq.tail > WQ_BUF_SIZE - 1) {
             wq.tail = 0;
         }
@@ -89,25 +89,23 @@ int queue_work(struct work_struct *work, char data)
     return 1;
 }
 
-
-int queue_delayed_work(struct work_struct *work, uint delay_secs, uint delay_msec, char data)
+int queue_delayed_work(struct work_struct *work, uint delay_secs, uint delay_msec)
 {
     uint secs = sys_gettime_secs();
     uint msec = sys_gettime_msec();
     if (delayed_wq.tail < (delayed_wq.head - 1) ||
             delayed_wq.tail >= delayed_wq.head) {
-        delayed_wq.cq[delayed_wq.tail].func = work->func;
-        delayed_wq.cq[delayed_wq.tail].data = data;
         if (delay_secs != 0 || delay_msec != 0) {
             if (msec + delay_msec > 1000) {
-                 delayed_wq.cq[delayed_wq.tail].alarm_secs = secs + delay_secs + 1;
-                delayed_wq.cq[delayed_wq.tail].alarm_msec = msec + delay_msec - 1000;
+                work->alarm_secs = secs + delay_secs + 1;
+                work->alarm_msec = msec + delay_msec - 1000;
             } else {
-                delayed_wq.cq[delayed_wq.tail].alarm_secs = secs + delay_secs;
-                delayed_wq.cq[delayed_wq.tail].alarm_msec = msec + delay_msec;
+                work->alarm_secs = secs + delay_secs;
+                work->alarm_msec = msec + delay_msec;
             }
         }
-        //log_d("queue_delayed [%d, %d] (%d, %d)\n",  delayed_wq.tail, delayed_wq.head, delayed_wq.cq[delayed_wq.tail].alarm_secs,delayed_wq.cq[delayed_wq.tail].alarm_msec);
+        work->pending = 1;
+        delayed_wq.cq[delayed_wq.tail] = work;
         if (++delayed_wq.tail > WQ_BUF_SIZE - 1) {
             delayed_wq.tail = 0;
         }
