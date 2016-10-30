@@ -4,7 +4,7 @@
 
 #define DEBUG
 
-// try compile with C99 and use bool 
+// try compile with C99 and use bool
 #define false 0
 #define true  1
 
@@ -71,22 +71,6 @@ struct gfx_map_pos {
 #define gfx_screen_tile_w       32
 #define gfx_screen_tile_h       24
 
-struct ay_reg_map {
-	byte A_tone_fine;
-	byte A_tone_coarse;
-	byte B_tone_fine;
-	byte B_tone_coarse;
-	byte C_tone_fine;
-	byte C_tone_coarse;
-	byte Noise_period;
-	byte Mixer_Ctl;
-	byte A_Amp_Ctl;
-	byte B_Amp_Ctl;
-	byte C_Amp_Ctl;
-	byte Env_period_fine;
-	byte Env_period_coarse;
-	byte Env_shape;
-};
 
 extern const struct spr_delta_pos spr_stick2coords[];
 
@@ -100,13 +84,6 @@ extern void gfx_sprite_move(struct gfx_sprite_def *spr, byte dir, byte steps,
 			    char collision);
 extern void gfx_sprite_clear(struct gfx_sprite_def *spr);
 extern void gfx_dyntile_clear(struct gfx_tilemap_object *obj);
-
-extern void psg_set_all(struct ay_reg_map *regs);
-extern void psg_set_tone(unsigned int period, byte chan);
-extern void psg_set_noise(byte period);
-extern void psg_set_mixer(byte mixval);
-extern void psg_set_vol(byte chan, byte vol);
-extern void psg_set_envelope(unsigned int period, byte shape);
 
 extern void blk_inflate(byte * dict, byte * in, byte * out, uint data_size,
 			byte width);
