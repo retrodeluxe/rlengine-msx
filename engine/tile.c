@@ -22,7 +22,7 @@
 #include "tile.h"
 #include "log.h"
 
-void tile_set_to_vram_bank(struct tile_set *ts, byte bank, byte pos)
+void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 {
 	uint16_t size, offset;
 	offset = 256 * 8 * bank + pos * 8;
@@ -31,7 +31,7 @@ void tile_set_to_vram_bank(struct tile_set *ts, byte bank, byte pos)
 	vdp_copy_to_vram(ts->color, vdp_base_color_grp1 + offset, size);
 }
 
-void tile_set_to_vram(struct tile_set *ts, byte pos)
+void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 {
 	tile_set_to_vram_bank(ts, 0, pos);
 	tile_set_to_vram_bank(ts, 1, pos);
@@ -39,12 +39,12 @@ void tile_set_to_vram(struct tile_set *ts, byte pos)
 }
 
 void tile_map_clip(struct tile_map *tm,
-		      struct gfx_viewport *vp, byte * scrbuf,
+		      struct gfx_viewport *vp, uint8_t * scrbuf,
 		      struct gfx_map_pos *p)
 {
-	byte i;
-	byte *ptr = scrbuf + vp->x + vp->y * gfx_screen_tile_w;
-	byte *src = tm->map + p->x + p->y * tm->w;
+	uint8_t i;
+	uint8_t *ptr = scrbuf + vp->x + vp->y * gfx_screen_tile_w;
+	uint8_t *src = tm->map + p->x + p->y * tm->w;
 
 	for (i = 0; i <= vp->h; i++) {
 		sys_memcpy(ptr, src, vp->w);

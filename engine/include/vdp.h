@@ -33,29 +33,29 @@
 #define vdp_hw_max_patterns     255
 
 struct vdp_hw_sprite {
-	byte y;
-	byte x;
-	byte pattern;
-	byte color;
+	uint8_t y;
+	uint8_t x;
+	uint8_t pattern;
+	uint8_t color;
 };
 
 extern void vdp_screen_disable(void);
 extern void vdp_screen_enable(void);
 extern void vdp_set_mode(char mode);
 extern void vdp_set_color(char ink, char border);
-extern void vdp_poke(uint16_t address, byte value);
-extern byte vdp_peek(uint16_t address);
-extern void vdp_memset(uint16_t vaddress, uint16_t size, byte value);
-extern void vdp_copy_to_vram(byte * buffer, uint16_t vaddress, uint16_t length);
-extern void vdp_copy_to_vram_di(byte * buffer, uint16_t vaddress, uint16_t length);
-extern void vdp_copy_from_vram(uint16_t vaddress, byte * buffer, uint16_t length);
+extern void vdp_poke(uint16_t address, uint8_t value);
+extern uint8_t vdp_peek(uint16_t address);
+extern void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value);
+extern void vdp_copy_to_vram(uint8_t * buffer, uint16_t vaddress, uint16_t length);
+extern void vdp_copy_to_vram_di(uint8_t * buffer, uint16_t vaddress, uint16_t length);
+extern void vdp_copy_from_vram(uint16_t vaddress, uint8_t * buffer, uint16_t length);
 extern void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi);
-extern void vdp_set_hw_sprite_di(byte * spr, uint16_t spi);
+extern void vdp_set_hw_sprite_di(uint8_t * spr, uint16_t spi);
 extern void vdp_init_hw_sprites(char spritesize, char zoom);
-extern void vdp_fastcopy_nametable(byte * buffer);
-extern void vdp_fastcopy_nametable_di(byte * buffer);
-extern void vdp_fastcopy16(byte * src_ram, uint16_t dst_vram);
-extern void vdp_clear_grp1(byte color);
+extern void vdp_fastcopy_nametable(uint8_t * buffer);
+extern void vdp_fastcopy_nametable_di(uint8_t * buffer);
+extern void vdp_fastcopy16(uint8_t * src_ram, uint16_t dst_vram);
+extern void vdp_clear_grp1(uint8_t color);
 extern void vdp_print_grp1(char x, char y, char *msg);
 
 #endif

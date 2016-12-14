@@ -18,12 +18,12 @@
  *		a set of sprite patterns plus data used for animation
  */
 struct spr_sprite_pattern_set {
-	byte pidx;
-	byte size;
-	byte n_planes;
-	byte n_dirs;
-	byte n_anim_steps;
-	const byte *patterns;
+	uint8_t pidx;
+	uint8_t size;
+	uint8_t n_planes;
+	uint8_t n_dirs;
+	uint8_t n_anim_steps;
+	const uint8_t *patterns;
 };
 
 /**
@@ -31,15 +31,15 @@ struct spr_sprite_pattern_set {
  *		copy of sprite attributes as in vram plus animation status
  */
 struct spr_sprite_def {
-	byte aidx;
+	uint8_t aidx;
 	struct vdp_hw_sprite planes[6];
 	struct spr_sprite_pattern_set *pattern_set;
-	byte cur_dir;
-	byte cur_anim_step;
+	uint8_t cur_dir;
+	uint8_t cur_anim_step;
 	char auto_inc_x;
 	char auto_inc_y;
-	byte anim_ctr;
-	byte anim_ctr_treshold;
+	uint8_t anim_ctr;
+	uint8_t anim_ctr_treshold;
 };
 
 
@@ -65,11 +65,11 @@ struct spr_delta_pos {
  																			spr_set_plane_colors(&(X),(COLORS))
 
 extern void spr_init(char spritesize, char zoom);
-extern byte spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps);
+extern uint8_t spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps);
 extern void spr_vfree_pattern_set(struct spr_sprite_pattern_set *ps);
-extern void spr_set_pos(struct spr_sprite_def *sp, byte x, byte y);
-extern void spr_set_plane_colors(struct spr_sprite_def *sp, byte * colors);
-extern byte spr_show(struct spr_sprite_def *sp);
+extern void spr_set_pos(struct spr_sprite_def *sp, uint8_t x, uint8_t y);
+extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors);
+extern uint8_t spr_show(struct spr_sprite_def *sp);
 extern void spr_update(struct spr_sprite_def *sp);
 extern void spr_hide(struct spr_sprite_def *sp);
 extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy,

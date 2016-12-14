@@ -2,8 +2,8 @@
 #define _MSX_H_MAP
 
 
-void map_inflate(const byte * dict, const byte * in, byte * out, uint16_t data_size,
-		 byte w);
-void map_inflate_screen(const byte * dict, const byte * in, byte * out, byte w, byte vpx, byte vpy);
+void map_inflate(const uint8_t * dict, const uint8_t * in, uint8_t * out, uint16_t data_size,
+		 uint8_t w);
+void map_inflate_screen(const uint8_t * dict, const uint8_t * in, uint8_t * out, uint8_t w, uint8_t vpx, uint8_t vpy);
 
 #endif

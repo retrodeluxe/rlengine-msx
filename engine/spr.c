@@ -24,10 +24,10 @@
 #include "log.h"
 
 // sprite attribute allocation table
-byte spr_attr_valloc[vdp_hw_max_sprites];
+uint8_t spr_attr_valloc[vdp_hw_max_sprites];
 
 // sprite pattern allocation table
-byte spr_patt_valloc[vdp_hw_max_patterns];
+uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 
 /**
  * spr_init: initialize vdp sprites and allocation tables
@@ -45,10 +45,10 @@ void spr_init(char spritesize, char zoom)
  * spr_valloc_pattern_set:
  *		finds a gap to allocate a pattern set
  */
-byte spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps)
+uint8_t spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps)
 {
 	uint16_t npat;
-	byte i, idx, f = 0;
+	uint8_t i, idx, f = 0;
 
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
 
@@ -67,14 +67,14 @@ byte spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps)
 
 void spr_vfree_pattern_set(struct spr_sprite_pattern_set *ps)
 {
-	byte npat;
+	uint8_t npat;
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);	
 }
 
 static void spr_calc_patterns(struct spr_sprite_def *sp)
 {
-	byte i, base, base2, frame;
+	uint8_t i, base, base2, frame;
 	
 	struct spr_sprite_pattern_set *ps = sp->pattern_set;
 	switch (ps->size) {
@@ -98,12 +98,12 @@ static void spr_calc_patterns(struct spr_sprite_def *sp)
 
 void spr_update(struct spr_sprite_def *sp)
 {
-	byte i;
+	uint8_t i;
 	spr_calc_patterns(sp);
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
-		vdp_set_hw_sprite_di((byte *)(&sp->planes[i]), sp->aidx + i);
+		vdp_set_hw_sprite_di((uint8_t *)(&sp->planes[i]), sp->aidx + i);
 		if (sp->pattern_set->size == SPR_SIZE_16x32)
-			vdp_set_hw_sprite_di((byte *)(&sp->planes[i+3]), sp->aidx + i + sp->pattern_set->n_planes);
+			vdp_set_hw_sprite_di((uint8_t *)(&sp->planes[i+3]), sp->aidx + i + sp->pattern_set->n_planes);
 	}
 
 }
@@ -111,9 +111,9 @@ void spr_update(struct spr_sprite_def *sp)
 /**
  * spr_show: finds a gap to allocate the attribute set
  */
-byte spr_show(struct spr_sprite_def *sp)
+uint8_t spr_show(struct spr_sprite_def *sp)
 {
-	byte i, idx, n, f = 0;
+	uint8_t i, idx, n, f = 0;
 	n = sp->pattern_set->n_planes;
 	if (sp->pattern_set->size == SPR_SIZE_16x32)
 		n = n * 2;
@@ -137,9 +137,9 @@ void spr_hide(struct spr_sprite_def *sp)
 		   sizeof(struct vdp_hw_sprite) * sp->pattern_set->n_planes, 0);
 }
 
-void spr_set_pos(struct spr_sprite_def *sp, byte xp, byte yp)
+void spr_set_pos(struct spr_sprite_def *sp, uint8_t xp, uint8_t yp)
 {
-	byte i;
+	uint8_t i;
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
 		(sp->planes[i]).x = xp;
 		(sp->planes[i]).y = yp;
@@ -150,9 +150,9 @@ void spr_set_pos(struct spr_sprite_def *sp, byte xp, byte yp)
 	}
 }
 
-void spr_set_plane_colors(struct spr_sprite_def *sp, byte * colors)
+void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors)
 {
-	byte i;
+	uint8_t i;
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
 		(sp->planes[i]).color = colors[i];
 		if (sp->pattern_set->size == SPR_SIZE_16x32) {
@@ -167,7 +167,7 @@ void spr_set_plane_colors(struct spr_sprite_def *sp, byte * colors)
  */
 void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char collision)
 {
-	byte old_dir, x, y;
+	uint8_t old_dir, x, y;
 
 	old_dir = sp->cur_dir;
 

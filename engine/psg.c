@@ -130,7 +130,7 @@ psg_loop:
     __endasm;
 }
 
-void psg_set_tone(unsigned int period, byte chan)
+void psg_set_tone(unsigned int period, uint8_t chan)
 {
     period;
     chan;
@@ -155,7 +155,7 @@ void psg_set_tone(unsigned int period, byte chan)
 
 }
 
-void psg_set_noise(byte period)
+void psg_set_noise(uint8_t period)
 {
     period;
 
@@ -173,7 +173,7 @@ void psg_set_noise(byte period)
  *  as wrong values might break some
  *  hardware
  */
-void psg_set_mixer(byte mixval)
+void psg_set_mixer(uint8_t mixval)
 {
     mixval;
 
@@ -195,7 +195,7 @@ void psg_set_mixer(byte mixval)
 
 }
 
-void psg_set_vol(byte chan, byte vol)
+void psg_set_vol(uint8_t chan, uint8_t vol)
 {
     chan;
     vol;
@@ -267,7 +267,7 @@ void psg_set_vol(byte chan, byte vol)
  *                             T
  *
  */
-void psg_set_envelope(unsigned int period, byte shape)
+void psg_set_envelope(unsigned int period, uint8_t shape)
 {
     period;
     shape;

@@ -23,10 +23,10 @@
 
 static unsigned int sys_secs;
 static unsigned int sys_msec;
-static byte i;
+static uint8_t i;
 
 struct sys_pr {
-    byte np;
+    uint8_t np;
     struct sys_proc  proc[MAX_PROCS];
 } sys_procs;
 
@@ -37,7 +37,7 @@ void sys_reboot()
         __endasm;
 }
 
-byte sys_get_key(byte line)
+uint8_t sys_get_key(uint8_t line)
 {
         line;
 
@@ -49,7 +49,7 @@ byte sys_get_key(byte line)
         __endasm;
 }
 
-byte sys_get_stick(byte port)
+uint8_t sys_get_stick(uint8_t port)
 {
         port;
 
@@ -60,7 +60,7 @@ byte sys_get_stick(byte port)
         __endasm;
 }
 
-void sys_memcpy(byte *dst, byte *src, uint16_t size)
+void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size)
 {
         src;
         dst;
@@ -108,17 +108,17 @@ static void sys_irq_handler(void)
  */
 void sys_irq_init()
 {
-    byte lsb, msb;
+    uint8_t lsb, msb;
     void (*handler)();
-    byte *hook = BIOS_INT_HOOK;
+    uint8_t *hook = BIOS_INT_HOOK;
 
     sys_msec = 0;
     sys_secs = 0;
     sys_procs.np = 0;
 
     handler = sys_irq_handler;
-    lsb=(byte) handler & 255;
-    msb=(byte) (((int)handler >> 8) & 255);
+    lsb=(uint8_t) handler & 255;
+    msb=(uint8_t) (((int)handler >> 8) & 255);
 
     asm__di;
     *(hook)   = 0xc3; /* jp  */

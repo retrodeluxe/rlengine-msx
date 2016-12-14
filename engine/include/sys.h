@@ -11,9 +11,9 @@ struct sys_proc {
 };
 
 extern void sys_reboot();
-extern byte sys_get_key(byte line);
-extern byte sys_get_stick(byte port);
-extern void sys_memcpy(byte * dst, byte * src, uint16_t size);
+extern uint8_t sys_get_key(uint8_t line);
+extern uint8_t sys_get_stick(uint8_t port);
+extern void sys_memcpy(uint8_t * dst, uint8_t * src, uint16_t size);
 #define     sys_memset __builtin_memset
 
 extern void sys_proc_register(void (*func));

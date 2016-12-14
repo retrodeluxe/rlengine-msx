@@ -28,13 +28,13 @@
  *   width of the map is needed
  *   out buffer needs to be 4 times data_size
  */
-void map_inflate(const byte * dict, const byte * in, byte * out, uint16_t data_size,
-		 byte w)
+void map_inflate(const uint8_t * dict, const uint8_t * in, uint8_t * out, uint16_t data_size,
+		 uint8_t w)
 {
-	byte col = 0;
+	uint8_t col = 0;
 	unsigned int idx;
-	byte *src;
-	byte *dst = out;
+	uint8_t *src;
+	uint8_t *dst = out;
 	/* FIXME: optimize this */
 	for (src = in; src < in + data_size; src++) {
 		idx = (*src) * 4;
@@ -55,12 +55,12 @@ void map_inflate(const byte * dict, const byte * in, byte * out, uint16_t data_s
  * Inflate only a 32x24 window of the map to a buffer, useful if the map is too big
  * to be decompressed entirely.
  */
-void map_inflate_screen(const byte * dict, const byte * in, byte * out, byte w, byte vpx, byte vpy)
+void map_inflate_screen(const uint8_t * dict, const uint8_t * in, uint8_t * out, uint8_t w, uint8_t vpx, uint8_t vpy)
 {
 	unsigned int idx;
-	byte *base = in + vpx / 2 + (vpy / 2) * w;
-	byte *src = base;
-	byte *dst = out;
+	uint8_t *base = in + vpx / 2 + (vpy / 2) * w;
+	uint8_t *src = base;
+	uint8_t *dst = out;
 	int x,y;
 
 	for (y = 0; y < 24; y+=2) {

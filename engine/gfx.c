@@ -52,20 +52,20 @@
 #define TILE_TO_QUAD(_n) (((_n % 32) >> 1) + ((_n / 64) << 4))
 
 /* the list of actual quads need to go into a define actually */
-static const byte dyntile_quad[NUM_DYN_QUADS] = { 13, 14, 15,
+static const uint8_t dyntile_quad[NUM_DYN_QUADS] = { 13, 14, 15,
 	29, 30, 31,
 	45, 46, 47,
 	61, 62, 63
 };
 
-static const byte sprite_quad[NUM_SPR_QUADS] = { 9, 10, 11, 12,
+static const uint8_t sprite_quad[NUM_SPR_QUADS] = { 9, 10, 11, 12,
 	25, 26, 27, 28,
 	41, 42, 43, 44,
 	57, 58, 59, 60
 };
 
-byte dyn_quad_list[NUM_BANKS][NUM_DYN_QUADS];
-byte dyn_sprite_list[NUM_BANKS][NUM_SPR_QUADS];
+uint8_t dyn_quad_list[NUM_BANKS][NUM_DYN_QUADS];
+uint8_t dyn_sprite_list[NUM_BANKS][NUM_SPR_QUADS];
 
 void gfx_dyntile_init(void)
 {
@@ -77,7 +77,7 @@ void gfx_dyntile_init(void)
 	sys_memset(dyn_sprite_list, 1, sizeof(dyn_sprite_list));
 }
 
-static void upload_quad(byte quad, byte bank, byte source_tile,
+static void upload_quad(uint8_t quad, uint8_t bank, uint8_t source_tile,
 			struct gfx_tilebank *tb)
 {
 	uint16_t offset_ptn_vram, offset_ptn_tilebank;
@@ -96,11 +96,11 @@ static void upload_quad(byte quad, byte bank, byte source_tile,
 	vdp_fastcopy16(offset_clr_tilebank + 256, offset_clr_vram + 256);
 }
 
-static byte gfx_dyntile_set(struct gfx_tilemap_object *obj, byte bank,
+static uint8_t gfx_dyntile_set(struct gfx_tilemap_object *obj, uint8_t bank,
 			    struct gfx_tilebank *tilebank)
 {
-	byte last_free = 0xff;
-	byte i;
+	uint8_t last_free = 0xff;
+	uint8_t i;
 
 	for (i = 0; i < NUM_DYN_QUADS; i++) {
 		if (dyn_quad_list[bank][i] == 1) {
@@ -132,11 +132,11 @@ static byte gfx_dyntile_set(struct gfx_tilemap_object *obj, byte bank,
  *  - If there are no free tiles to upload returns 0
  *
  */
-static byte gfx_sprite_set(struct gfx_sprite_def *spr, byte bank,
+static uint8_t gfx_sprite_set(struct gfx_sprite_def *spr, uint8_t bank,
 			   struct gfx_tilebank *tilebank)
 {
-	byte last_free = 0xff;
-	byte i;
+	uint8_t last_free = 0xff;
+	uint8_t i;
 
 	for (i = 0; i < NUM_SPR_QUADS; i++) {
 		if (dyn_sprite_list[bank][i] == 1) {
@@ -161,7 +161,7 @@ static byte gfx_sprite_set(struct gfx_sprite_def *spr, byte bank,
 
 void gfx_dyntile_clear(struct gfx_tilemap_object *obj)
 {
-	byte i;
+	uint8_t i;
 	/* coordinates are outside the screen, need to clear in all banks */
 	for (i = 0; i < NUM_DYN_QUADS; i++) {
 		if (dyn_quad_list[0][i] == obj->tile)
@@ -175,14 +175,14 @@ void gfx_dyntile_clear(struct gfx_tilemap_object *obj)
 }
 
 void gfx_sprite_show(struct gfx_sprite_def *spr,
-		     struct gfx_tilebank *tilebank, byte x, byte y,
-		     byte * scrbuf)
+		     struct gfx_tilebank *tilebank, uint8_t x, uint8_t y,
+		     uint8_t * scrbuf)
 {
-	byte id, id2;
-	byte vdp_bank = y / 8;
-	byte vdp_bank_2 = 0;
+	uint8_t id, id2;
+	uint8_t vdp_bank = y / 8;
+	uint8_t vdp_bank_2 = 0;
 
-	byte *ptr = scrbuf + x + y * gfx_screen_tile_w;
+	uint8_t *ptr = scrbuf + x + y * gfx_screen_tile_w;
 
 	if (spr->tile == 255)
 		return;
@@ -208,7 +208,7 @@ void gfx_sprite_show(struct gfx_sprite_def *spr,
 	*(ptr + gfx_screen_tile_w + 1) = id2 + 33;
 }
 
-void gfx_sprite_move(struct gfx_sprite_def *spr, byte dir, byte steps,
+void gfx_sprite_move(struct gfx_sprite_def *spr, uint8_t dir, uint8_t steps,
 		     char collision)
 {
 	/* here, change the sprite tiles to produce anymation effect
@@ -231,7 +231,7 @@ void gfx_sprite_move(struct gfx_sprite_def *spr, byte dir, byte steps,
 
 void gfx_sprite_clear(struct gfx_sprite_def *spr)
 {
-	byte i;
+	uint8_t i;
 
 	for (i = 0; i < NUM_SPR_QUADS; i++) {
 		if (dyn_sprite_list[0][i] == spr->tile)
@@ -244,14 +244,14 @@ void gfx_sprite_clear(struct gfx_sprite_def *spr)
 }
 
 void gfx_dyntile_show(struct gfx_tilemap_object *obj,
-		      struct gfx_tilebank *tilebank, byte x, byte y,
-		      byte * scrbuf)
+		      struct gfx_tilebank *tilebank, uint8_t x, uint8_t y,
+		      uint8_t * scrbuf)
 {
-	byte id, id2;
-	byte vdp_bank = y / 8;
-	byte vdp_bank_2 = 0;
+	uint8_t id, id2;
+	uint8_t vdp_bank = y / 8;
+	uint8_t vdp_bank_2 = 0;
 
-	byte *ptr = scrbuf + x + y * gfx_screen_tile_w;
+	uint8_t *ptr = scrbuf + x + y * gfx_screen_tile_w;
 
 	if (obj->tile == 255)
 		return;

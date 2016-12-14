@@ -8,59 +8,51 @@
 #define false 0
 #define true  1
 
-#ifndef uint16_t
-typedef unsigned int uint16_t;
-#endif
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
-
 #define asm__di                 __asm di __endasm
 #define asm__ei                 __asm ei __endasm
 
 struct gfx_tilebank {
-	const byte *pattern;
-	const byte *color;
+	const uint8_t *pattern;
+	const uint8_t *color;
 };
 
 struct gfx_tileset {
-	byte start;
-	byte end;
+	uint8_t start;
+	uint8_t end;
 	struct gfx_tilebank *bank;
 };
 
 struct gfx_tilemap {
 	uint16_t cur_x;
 	uint16_t cur_y;
-	byte w;
-	byte h;
-	const byte *map;
+	uint8_t w;
+	uint8_t h;
+	const uint8_t *map;
 };
 
 /* used to read from map header data */
 struct gfx_tilemap_object {
-	byte x;			/* map coordinates */
-	byte y;
-	byte tile;		/* top left tile */
+	uint8_t x;			/* map coordinates */
+	uint8_t y;
+	uint8_t tile;		/* top left tile */
 };
 
 struct gfx_sprite_def {
-	byte x;			/* current position */
-	byte y;
-	byte tile;		/* current tile */
-	byte cur_dir;
-	byte cur_anim_step;
-	byte n_dirs;
-	byte n_anim_steps;
-	byte patterns[4];
+	uint8_t x;			/* current position */
+	uint8_t y;
+	uint8_t tile;		/* current tile */
+	uint8_t cur_dir;
+	uint8_t cur_anim_step;
+	uint8_t n_dirs;
+	uint8_t n_anim_steps;
+	uint8_t patterns[4];
 };
 
 struct gfx_viewport {
-	byte x;
-	byte y;
-	byte w;
-	byte h;
+	uint8_t x;
+	uint8_t y;
+	uint8_t w;
+	uint8_t h;
 };
 
 struct gfx_map_pos {
@@ -75,17 +67,17 @@ struct gfx_map_pos {
 extern const struct spr_delta_pos spr_stick2coords[];
 
 extern void gfx_dyntile_show(struct gfx_tilemap_object *obj,
-			     struct gfx_tilebank *tilebank, byte x, byte y,
-			     byte * scrbuf);
+			     struct gfx_tilebank *tilebank, uint8_t x, uint8_t y,
+			     uint8_t * scrbuf);
 extern void gfx_sprite_show(struct gfx_sprite_def *spr,
-			    struct gfx_tilebank *tilebank, byte x, byte y,
-			    byte * scrbuf);
-extern void gfx_sprite_move(struct gfx_sprite_def *spr, byte dir, byte steps,
+			    struct gfx_tilebank *tilebank, uint8_t x, uint8_t y,
+			    uint8_t * scrbuf);
+extern void gfx_sprite_move(struct gfx_sprite_def *spr, uint8_t dir, uint8_t steps,
 			    char collision);
 extern void gfx_sprite_clear(struct gfx_sprite_def *spr);
 extern void gfx_dyntile_clear(struct gfx_tilemap_object *obj);
 
-extern void blk_inflate(byte * dict, byte * in, byte * out, uint16_t data_size,
-			byte width);
+extern void blk_inflate(uint8_t * dict, uint8_t * in, uint8_t * out, uint16_t data_size,
+			uint8_t width);
 
 #endif				/* _MSX_H_ */

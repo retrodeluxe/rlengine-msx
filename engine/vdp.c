@@ -77,7 +77,7 @@ void vdp_set_color(char ink, char border)
 }
 
 
-void vdp_poke(uint16_t address, byte value)
+void vdp_poke(uint16_t address, uint8_t value)
 {
         address;
         value;
@@ -100,7 +100,7 @@ void vdp_poke(uint16_t address, byte value)
 }
 
 
-byte vdp_peek(uint16_t address)
+uint8_t vdp_peek(uint16_t address)
 {
         address;
 
@@ -120,7 +120,7 @@ byte vdp_peek(uint16_t address)
 }
 
 
-void vdp_memset(uint16_t vaddress, uint16_t size, byte value)
+void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value)
 {
         vaddress;
         size;
@@ -152,7 +152,7 @@ vdp_memset_loop:
 }
 
 
-void vdp_copy_to_vram(byte *buffer, uint16_t vaddress, uint16_t length)
+void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length)
 {
         buffer;
         vaddress;
@@ -184,10 +184,10 @@ vdp__copy_to_vram_loop:
 }
 
 /**
- * Copy 16 bytes from RAM to VRAM
+ * Copy 16 uint8_ts from RAM to VRAM
  *  - useful to set a pair of consecutive tiles
  */
-void vdp_fastcopy16(byte *src_ram, uint16_t dst_vram)
+void vdp_fastcopy16(uint8_t *src_ram, uint16_t dst_vram)
 {
         src_ram;
         dst_vram;
@@ -225,7 +225,7 @@ void vdp_fastcopy16(byte *src_ram, uint16_t dst_vram)
         __endasm;
 }
 
-void vdp_copy_from_vram(uint16_t vaddress, byte *buffer, uint16_t length)
+void vdp_copy_from_vram(uint16_t vaddress, uint8_t *buffer, uint16_t length)
 {
         vaddress;
         buffer;
@@ -260,10 +260,10 @@ vdp__copy_from_vram_loop:
 
 void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi)
 {
-        vdp_copy_to_vram((byte*)spr, vdp_base_spatr_grp1+(spi<<2),sizeof(struct vdp_hw_sprite));
+        vdp_copy_to_vram((uint8_t*)spr, vdp_base_spatr_grp1+(spi<<2),sizeof(struct vdp_hw_sprite));
 }
 
-void vdp_set_hw_sprite_di(byte *spr, uint16_t spi)
+void vdp_set_hw_sprite_di(uint8_t *spr, uint16_t spi)
 {
         spr;
         spi;
@@ -326,7 +326,7 @@ $2:
         __endasm;
 }
 
-void vdp_fastcopy_nametable(byte *buffer)
+void vdp_fastcopy_nametable(uint8_t *buffer)
 {
         buffer;
         __asm
@@ -357,7 +357,7 @@ vdp__fastcopy_nametable_loop:
         __endasm;
 }
 
-void vdp_fastcopy_nametable_di(byte *buffer)
+void vdp_fastcopy_nametable_di(uint8_t *buffer)
 {
         buffer;
 
@@ -391,7 +391,7 @@ vdp__fastcopy_nametable_di_loop:
  * Set all names to zero, then clear colors of char zero for
  *  all pattern banks
  */
-void vdp_clear_grp1(byte color)
+void vdp_clear_grp1(uint8_t color)
 {
         vdp_memset(vdp_base_names_grp1, 256 * 3, 0);
         vdp_memset(vdp_base_color_grp1, 8, color);

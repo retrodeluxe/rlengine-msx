@@ -16,8 +16,8 @@ struct work_struct {
 };
 
 struct work_queue {
-    byte head;
-    byte tail;
+    uint8_t head;
+    uint8_t tail;
     struct work_struct *cq[WQ_BUF_SIZE];
 };
 
