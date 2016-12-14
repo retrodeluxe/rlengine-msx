@@ -24,7 +24,7 @@
 
 void tile_set_to_vram_bank(struct tile_set *ts, byte bank, byte pos)
 {
-	uint size, offset;
+	uint16_t size, offset;
 	offset = 256 * 8 * bank + pos * 8;
 	size = ts->w * ts->h * 8;
 	vdp_copy_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);

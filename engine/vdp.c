@@ -77,7 +77,7 @@ void vdp_set_color(char ink, char border)
 }
 
 
-void vdp_poke(uint address, byte value)
+void vdp_poke(uint16_t address, byte value)
 {
         address;
         value;
@@ -100,7 +100,7 @@ void vdp_poke(uint address, byte value)
 }
 
 
-byte vdp_peek(uint address)
+byte vdp_peek(uint16_t address)
 {
         address;
 
@@ -120,7 +120,7 @@ byte vdp_peek(uint address)
 }
 
 
-void vdp_memset(uint vaddress, uint size, byte value)
+void vdp_memset(uint16_t vaddress, uint16_t size, byte value)
 {
         vaddress;
         size;
@@ -152,7 +152,7 @@ vdp_memset_loop:
 }
 
 
-void vdp_copy_to_vram(byte *buffer, uint vaddress, uint length)
+void vdp_copy_to_vram(byte *buffer, uint16_t vaddress, uint16_t length)
 {
         buffer;
         vaddress;
@@ -187,7 +187,7 @@ vdp__copy_to_vram_loop:
  * Copy 16 bytes from RAM to VRAM
  *  - useful to set a pair of consecutive tiles
  */
-void vdp_fastcopy16(byte *src_ram, uint dst_vram)
+void vdp_fastcopy16(byte *src_ram, uint16_t dst_vram)
 {
         src_ram;
         dst_vram;
@@ -225,7 +225,7 @@ void vdp_fastcopy16(byte *src_ram, uint dst_vram)
         __endasm;
 }
 
-void vdp_copy_from_vram(uint vaddress, byte *buffer, uint length)
+void vdp_copy_from_vram(uint16_t vaddress, byte *buffer, uint16_t length)
 {
         vaddress;
         buffer;
@@ -263,7 +263,7 @@ void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi)
         vdp_copy_to_vram((byte*)spr, vdp_base_spatr_grp1+(spi<<2),sizeof(struct vdp_hw_sprite));
 }
 
-void vdp_set_hw_sprite_di(byte *spr, uint spi)
+void vdp_set_hw_sprite_di(byte *spr, uint16_t spi)
 {
         spr;
         spi;
@@ -403,7 +403,7 @@ void vdp_clear_grp1(byte color)
 void vdp_print_grp1(char x, char y, char *msg)
 {
         register char c;
-        register uint addr = vdp_base_names_grp1 + y * 32 + x;
+        register uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
 
         while ((c = *msg++ ) != '\0') {
                 vdp_poke(addr++, c);

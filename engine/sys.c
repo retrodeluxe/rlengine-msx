@@ -60,7 +60,7 @@ byte sys_get_stick(byte port)
         __endasm;
 }
 
-void sys_memcpy(byte *dst, byte *src, uint size)
+void sys_memcpy(byte *dst, byte *src, uint16_t size)
 {
         src;
         dst;
@@ -142,12 +142,12 @@ void sys_sleep(unsigned int time_ms)
     };
 }
 
-uint sys_gettime_secs()
+uint16_t sys_gettime_secs()
 {
     return sys_secs;
 }
 
-uint sys_gettime_msec()
+uint16_t sys_gettime_msec()
 {
     return sys_msec;
 }

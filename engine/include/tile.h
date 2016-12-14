@@ -12,8 +12,8 @@ struct tile_set {
 };
 
 struct tile_map {
-	uint cur_x;
-	uint cur_y;
+	uint16_t cur_x;
+	uint16_t cur_y;
 	byte w;
 	byte h;
 	const byte *map;

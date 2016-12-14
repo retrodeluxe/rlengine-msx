@@ -80,15 +80,15 @@ void gfx_dyntile_init(void)
 static void upload_quad(byte quad, byte bank, byte source_tile,
 			struct gfx_tilebank *tb)
 {
-	uint offset_ptn_vram, offset_ptn_tilebank;
-	uint offset_clr_vram, offset_clr_tilebank;
-	uint offset_vram;
+	uint16_t offset_ptn_vram, offset_ptn_tilebank;
+	uint16_t offset_clr_vram, offset_clr_tilebank;
+	uint16_t offset_vram;
 
 	offset_vram = 2048 * bank + QUAD_TO_TILE(quad) * 8;
 	offset_ptn_vram = vdp_base_chars_grp1 + offset_vram;
-	offset_ptn_tilebank = (uint) tb->pattern + 8 * source_tile;;
+	offset_ptn_tilebank = (uint16_t) tb->pattern + 8 * source_tile;;
 	offset_clr_vram = vdp_base_color_grp1 + offset_vram;
-	offset_clr_tilebank = (uint) tb->color + 8 * source_tile;
+	offset_clr_tilebank = (uint16_t) tb->color + 8 * source_tile;
 
 	vdp_fastcopy16(offset_ptn_tilebank, offset_ptn_vram);
 	vdp_fastcopy16(offset_clr_tilebank, offset_clr_vram);

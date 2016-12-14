@@ -11,8 +11,8 @@ struct work_struct {
     void (*func)();
     unsigned char data;
     unsigned char pending;
-    uint alarm_secs;
-    uint alarm_msec;
+    uint16_t alarm_secs;
+    uint16_t alarm_msec;
 };
 
 struct work_queue {
@@ -23,5 +23,5 @@ struct work_queue {
 
 extern void wq_start();
 extern int queue_work(struct work_struct *work);
-extern int queue_delayed_work(struct work_struct *work, uint delay_secs, uint delay_msec);
+extern int queue_delayed_work(struct work_struct *work, uint16_t delay_secs, uint16_t delay_msec);
 #endif

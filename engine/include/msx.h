@@ -8,8 +8,8 @@
 #define false 0
 #define true  1
 
-#ifndef uint
-typedef unsigned int uint;
+#ifndef uint16_t
+typedef unsigned int uint16_t;
 #endif
 
 #ifndef byte
@@ -31,8 +31,8 @@ struct gfx_tileset {
 };
 
 struct gfx_tilemap {
-	uint cur_x;
-	uint cur_y;
+	uint16_t cur_x;
+	uint16_t cur_y;
 	byte w;
 	byte h;
 	const byte *map;
@@ -85,7 +85,7 @@ extern void gfx_sprite_move(struct gfx_sprite_def *spr, byte dir, byte steps,
 extern void gfx_sprite_clear(struct gfx_sprite_def *spr);
 extern void gfx_dyntile_clear(struct gfx_tilemap_object *obj);
 
-extern void blk_inflate(byte * dict, byte * in, byte * out, uint data_size,
+extern void blk_inflate(byte * dict, byte * in, byte * out, uint16_t data_size,
 			byte width);
 
 #endif				/* _MSX_H_ */

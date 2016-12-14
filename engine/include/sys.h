@@ -13,13 +13,13 @@ struct sys_proc {
 extern void sys_reboot();
 extern byte sys_get_key(byte line);
 extern byte sys_get_stick(byte port);
-extern void sys_memcpy(byte * dst, byte * src, uint size);
+extern void sys_memcpy(byte * dst, byte * src, uint16_t size);
 #define     sys_memset __builtin_memset
 
 extern void sys_proc_register(void (*func));
 extern void sys_irq_init();
 extern void sys_sleep(unsigned int time_ms);
-extern uint sys_gettime_secs();
-extern uint sys_gettime_msec();
+extern uint16_t sys_gettime_secs();
+extern uint16_t sys_gettime_msec();
 
 #endif

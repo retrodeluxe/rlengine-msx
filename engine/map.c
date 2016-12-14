@@ -28,7 +28,7 @@
  *   width of the map is needed
  *   out buffer needs to be 4 times data_size
  */
-void map_inflate(const byte * dict, const byte * in, byte * out, uint data_size,
+void map_inflate(const byte * dict, const byte * in, byte * out, uint16_t data_size,
 		 byte w)
 {
 	byte col = 0;

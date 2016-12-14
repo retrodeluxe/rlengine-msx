@@ -47,7 +47,7 @@ void spr_init(char spritesize, char zoom)
  */
 byte spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps)
 {
-	uint npat;
+	uint16_t npat;
 	byte i, idx, f = 0;
 
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;

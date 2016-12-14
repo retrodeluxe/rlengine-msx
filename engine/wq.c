@@ -47,8 +47,8 @@ static void wq_run()
 
 static void wq_delayed_run()
 {
-    uint secs = sys_gettime_secs();
-    uint msec = sys_gettime_msec();
+    uint16_t secs = sys_gettime_secs();
+    uint16_t msec = sys_gettime_msec();
     signed int delta_secs, delta_msec;
     if (delayed_wq.head != delayed_wq.tail) {
         delta_secs = delayed_wq.cq[delayed_wq.head]->alarm_secs - secs;
@@ -89,10 +89,10 @@ int queue_work(struct work_struct *work)
     return 1;
 }
 
-int queue_delayed_work(struct work_struct *work, uint delay_secs, uint delay_msec)
+int queue_delayed_work(struct work_struct *work, uint16_t delay_secs, uint16_t delay_msec)
 {
-    uint secs = sys_gettime_secs();
-    uint msec = sys_gettime_msec();
+    uint16_t secs = sys_gettime_secs();
+    uint16_t msec = sys_gettime_msec();
     if (delayed_wq.tail < (delayed_wq.head - 1) ||
             delayed_wq.tail >= delayed_wq.head) {
         if (delay_secs != 0 || delay_msec != 0) {
