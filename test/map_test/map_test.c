@@ -20,14 +20,14 @@
 struct tile_set logo;
 struct tile_set kv;
 
-byte fb[768];
-byte map_buf[8000];
+uint8_t fb[768];
+uint8_t map_buf[8000];
 
 void main()
 {
-	byte i,x,y, d;
-	byte *ptr;
-	byte *src;
+	uint8_t i,x,y, d;
+	uint8_t *ptr;
+	uint8_t *src;
 	unsigned int ct;
 
 	vdp_set_mode(vdp_grp2);
@@ -50,7 +50,7 @@ void main()
 
 	do {
 	} while (sys_get_key(8) & 1);
- 
+
 	/*
 	 * load a pre-processed tile map
 	 */
@@ -68,7 +68,7 @@ void main()
     	if (d == 1 && y > 0)
     		y--;
     	if (d == 5 && y < (map_h - 26))
-    		y++; 
+    		y++;
     	if (d == 3 && x < map_w - 32)
     		x++;
     	if (d == 7 && x > 0)
@@ -85,7 +85,7 @@ void main()
 		//map_inflate_screen(map_cmpr_dict, map, fb, map_w, x, y);
 		vdp_fastcopy_nametable(fb);
 
-	} while(1); 
+	} while(1);
 }
 
 

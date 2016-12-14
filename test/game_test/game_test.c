@@ -29,22 +29,22 @@ struct spr_sprite_def templar_spr;
 struct work_struct physics;
 struct work_struct animate;
 
-byte x,y,d;
+uint8_t x,y,d;
 
-byte fb[768];
+uint8_t fb[768];
 
 void monk_physics_work();
 void monk_animate_work();
-byte tile_on_screen_coords(byte x, byte y);
+uint8_t tile_on_screen_coords(uint8_t x, uint8_t y);
 
 struct monk_data {
-	byte jump;
-	byte jump_cnt;
-	byte left;
-	byte right;
-	byte xpos;
-	byte ypos;
-	byte collision;
+	uint8_t jump;
+	uint8_t jump_cnt;
+	uint8_t left;
+	uint8_t right;
+	uint8_t xpos;
+	uint8_t ypos;
+	uint8_t collision;
 } monk_state;
 
 #define COLLISION_UP_MASK 3
@@ -54,10 +54,10 @@ struct monk_data {
 
 void main()
 {
-	byte i,d;
-	byte *ptr;
-	byte *src;
-	byte tile;
+	uint8_t i,d;
+	uint8_t *ptr;
+	uint8_t *src;
+	uint8_t tile;
 	int map_xx, map_yy;
 
 	vdp_set_mode(vdp_grp2);
@@ -109,9 +109,9 @@ void main()
 		}
 		if (d == 3) {
 			monk_state.right = 1;
-		}	
+		}
 		if (d == 7) {
-			monk_state.left = 1; 
+			monk_state.left = 1;
 		}
 		if (!monk_state.jump && !physics.pending)
 				queue_delayed_work(&physics,0, 100);
@@ -143,15 +143,15 @@ void main()
 	} while (1);
 }
 
-byte tile_on_screen_coords(byte x, byte y)
+uint8_t tile_on_screen_coords(uint8_t x, uint8_t y)
 {
-	byte *buff;
+	uint8_t *buff;
 	buff = fb + x / 8 + (y / 8) * 32;
 	return *buff;
 }
 
 
-int is_colliding_tile(byte tile)
+int is_colliding_tile(uint8_t tile)
 {
 	if (tile == 0 || tile > 100)
 		return 0;
@@ -159,15 +159,15 @@ int is_colliding_tile(byte tile)
 }
 
 // check collisions properly
-// 
+//
 void monk_check_collision()
 {
-	byte tile[8];
-	byte i;
-	//     0  1 
+	uint8_t tile[8];
+	uint8_t i;
+	//     0  1
 	//    2    4
 	//    3    5
-	//     6  7    
+	//     6  7
 	tile[0] = tile_on_screen_coords(x + 5,  y + 7);
 	tile[1] = tile_on_screen_coords(x + 10, y + 7);
 	tile[2] = tile_on_screen_coords(x - 1,  y + 10);
@@ -221,7 +221,7 @@ void monk_animate_work()
 	if (dx != 0 || dy != 0) {
 		spr_animate(&monk,dx,dy,0);
 		x = x + dx;
-		y = y + dy; 
+		y = y + dy;
 	}
 }
 

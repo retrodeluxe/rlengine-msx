@@ -18,11 +18,11 @@
 struct tile_set logo;
 struct tile_set kv;
 
-byte fb[768];
+uint8_t fb[768];
 
 void main()
 {
-	byte i,x,y;
+	uint8_t i,x,y;
 
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
@@ -42,7 +42,7 @@ void main()
 
 	do {
 	} while (sys_get_key(8) & 1);
- 
+
 	/*
 	 * load a pre-processed tile map
 	 */

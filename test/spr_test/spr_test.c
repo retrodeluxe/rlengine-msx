@@ -30,14 +30,14 @@ struct spr_sprite_def rats[10];
 
 /**
  * NOTE : any initialized global data must be constant.
- */ 
-const byte control_patt[8] = {255,255,255,255,255,255,255,255};
-const byte control_colors [1] = {6};
+ */
+const uint8_t control_patt[8] = {255,255,255,255,255,255,255,255};
+const uint8_t control_colors [1] = {6};
 
 void main()
 {
 	unsigned int count = 0;
-	byte i;
+	uint8_t i;
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
