@@ -4,9 +4,8 @@
 
 #define DEBUG
 
-// try compile with C99 and use bool
-#define false 0
-#define true  1
+#include <stdint.h>
+#include <stdbool.h>
 
 #define asm__di                 __asm di __endasm
 #define asm__ei                 __asm ei __endasm
