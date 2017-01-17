@@ -18,4 +18,5 @@ $(LOCAL_BUILD_OUT_GEN):
 	@mkdir -p $@
 
 clean:
+	@rm -Rf $(LOCAL_BUILD_OUT_GEN)
 	@rm -Rf $(LOCAL_BUILD_OUT)

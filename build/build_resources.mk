@@ -27,6 +27,3 @@ $(built_spr_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SPR)/%.tga
 	mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(TGA2H) -t SPRITE -p $^ -o $@
 	@echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
-
-clean:
-	@rm -Rf $(LOCAL_BUILD_OUT_GEN)
