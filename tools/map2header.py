@@ -5,16 +5,16 @@
 #
 # RetroDeluxe 2012
 #
-#  it expects 
+#  it expects
 #    - N layers of background tiles that having a name containing the string
-#        "tileset" 
+#        "tileset"
 #    - N layers of objects
 #
 #  it generates
 #    - a header file containing const byte arrays named using the name of the
 #      file + the name of the layers.
 #    - background tiles are enconded as an array (compressed or not)
-#    - object layers are encoded as 4-uples 
+#    - object layers are encoded as 4-uples
 #             x,y coordinates {byte, byte}
 #             bank {0,1,2}
 #             source tile {0-255}
@@ -24,11 +24,11 @@
 #
 #         - max number of screens in either x or y axis is 8
 #         - max decompr buff size is considered to be 1 memory page (16Kb)
-#             
+#
 #             21 -  7 x 3 = 16128 bytes
-#             16 -  4 x 4 = 12288 bytes           
-#              9 -  3 x 3 = 6912 bytes 
-#              4 -  2 x 2 = 3072 bytes 
+#             16 -  4 x 4 = 12288 bytes
+#              9 -  3 x 3 = 6912 bytes
+#              4 -  2 x 2 = 3072 bytes
 #
 #  21 screens for a single map is quite big, if the compression is good
 #   we can probaby fit 8 of those maps (Atlas) in a 32Kb rom; giving us 160 screens
@@ -45,8 +45,8 @@ import os
 from optparse import OptionParser
 
 class TileObject:
-        """ Contains a 4x4 tile object 
-             described by the left-top position in the map and the 
+        """ Contains a 4x4 tile object
+             described by the left-top position in the map and the
              left top tile number.
         """
         def __init__(self,x,y,tile):
@@ -63,7 +63,7 @@ class TileObject:
                 self.ct+=1
                 return True
             return False
-   
+
         def is_full(self):
             """ if 4 items have already been added, we are full """
             if self.ct == 4:
@@ -84,8 +84,8 @@ class Tilemap:
             return self.__dict__[key]
 
 class TileMapWriter:
-        """ writes a tile map to set of C header files 
- 
+        """ writes a tile map to set of C header files
+
         """
         def __init__(self,tilemap,rle,block):
             self.tilemap = tilemap
@@ -101,7 +101,7 @@ class TileMapWriter:
                 new_idx = len(self.block_dict)+1
                 self.block_dict[key] = new_idx
                 return new_idx
-       
+
         def _replace_dict(self, buf):
             """ replace dict items """
             out_buf = []
@@ -110,9 +110,9 @@ class TileMapWriter:
             for i in range(0,h,2):
                 for j in range(0,w,2):
                     block = [buf[i*w+j],buf[i*w+j+1],buf[(i+1)*w+j],buf[(i+1)*w+j+1]]
-                    out_buf.append(self._lookup_dict(block) - 1) # need to adjust to zero 
+                    out_buf.append(self._lookup_dict(block) - 1) # need to adjust to zero
                     #print "BLOCK %s %s -- %s" % (i,j,self._lookup_dict(block))
-            return out_buf 
+            return out_buf
 
         def _compress_rle(self,buf):
             cnt = 0
@@ -132,7 +132,7 @@ class TileMapWriter:
                         idx-=1
                     buf_out.append(cnt - idx)
                     for i in range(cnt,idx):
-                        buf_out.append(buf[i])  
+                        buf_out.append(buf[i])
                 else:
                     buf_out.append(idx - cnt)
                     buf_out.append(val)
@@ -146,12 +146,12 @@ class TileMapWriter:
                 for key in self.block_dict.keys():
                     if self.block_dict[key] == idx:
                         vals = key.rsplit('_')
-                        a = int(vals[0]) 
-                        b = int(vals[1]) 
-                        c = int(vals[2]) 
+                        a = int(vals[0])
+                        b = int(vals[1])
+                        c = int(vals[2])
                         d = int(vals[3])
                         lo.extend([a,b,c,d])
-            return lo 
+            return lo
 
         def mod_256(self, x):
             # tile indexes from Tiled are expressed as int + 1
@@ -165,7 +165,7 @@ class TileMapWriter:
                 #print ("DEBUG: size after dict replace : %s" % len(cmpr1))
             else:
                 cmpr1 = layer
-            
+
             if self.rle:
                 cmpr2 = self._compress_rle(cmpr1)
                 #print ("DEBUG: size RLE compression : %s" % len(cmpr2))
@@ -216,14 +216,18 @@ class TileMapWriter:
             for key in special_properties:
                 print ("\nenum object_property_%s {" % key.encode('ascii', 'ignore'))
                 for _property in special_properties[key]:
-                    print ("    %s, " % _property.upper())
+                    print ("    %s_%s, " % (key.encode('ascii', 'ignore').upper(), _property.upper()))
                 print ("};\n")
 
             ## dump object structures
             for key in object_types.keys():
+                ## here keys and properties cannot be C keywords
                 print ("struct map_object_%s {" % key)
                 if len(object_types[key]) > 0:
                     for _property in object_types[key]:
+                        ## TODO filter C Keywords
+                        if _property == 'static':
+                            _property = 'static_'
                         if _property in special_properties:
                             print ("     enum object_property_%s %s;" % (_property, _property))
                         else:
@@ -235,7 +239,11 @@ class TileMapWriter:
             if len(object_types.keys()) > 0:
                 print ("union map_object {")
                 for key in object_types.keys():
-                    print ("    struct map_object_%s %s;" % (key, key))
+                    if key == "static":
+                        _key = "static_"
+                    else:
+                        _key = key
+                    print ("    struct map_object_%s %s;" % (key, _key))
                 print ("};")
 
             print "struct map_object_item {"
@@ -256,7 +264,7 @@ class TileMapWriter:
                     w = layer['width']
                     h = layer['height']
                     name = layer['name'].replace(' ','_')
-                    print ("const unsigned char %s_w = %s;" % (name,w)) 
+                    print ("const unsigned char %s_w = %s;" % (name,w))
                     print ("const unsigned char %s_h = %s;" % (name,h))
                     if self.rle or self.block:
                         # if compressed, need additional size data
@@ -293,10 +301,11 @@ class TileMapWriter:
                         print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'] % 256,  item['y'] % 256,  item['width'], item['height'], 1 if item['visible'] else 0))
                         #print ("        { ");
                         #print ("        { .%s = { " % _type);
+                        #print item['properties']
                         for _property in item['properties'].keys():
                             value = item['properties'][_property]
-                            if _property in special_properties:
-                                print ("    %s, " % value.upper())
+                            if _property in special_properties and not value.isdigit():
+                                print ("    %s_%s, " % (_property.upper(), value.upper()))
                             elif not value.isdigit() and value.replace('.','').isdigit:
                                 print ("    %s, " % (value.replace('.','')))
                             elif value.isdigit():
@@ -320,18 +329,18 @@ class TileMapWriter:
 class TiledJsonReader:
         """ reads a json file saved from tiled"""
         def __init__(self, filename):
-            self.filename = filename; 
+            self.filename = filename;
             self.data = open(filename)
             self.decoded = json.load(self.data)
             self.tilemap = Tilemap()
-          
+
         def read(self):
             self.tilemap['version'] = self.decoded['version']
             self.tilemap['orientation'] = self.decoded['orientation']
             self.tilemap['tilewidth'] = self.decoded['tilewidth']
             self.tilemap['tileheight'] = self.decoded['tileheight']
             self.tilemap['width'] = self.decoded['width']
-            self.tilemap['height'] = self.decoded['height'] 
+            self.tilemap['height'] = self.decoded['height']
             self.tilemap['tilesets'] = self.decoded['tilesets']
             self.tilemap['layers'] = self.decoded['layers']
             return self.tilemap
@@ -347,20 +356,18 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-s", "--source", dest="source", action="store", default=None,
                         help="Source json file containing the tilemap")
-    parser.add_option("-r", "--rle", dest="rle", action="store_true", 
+    parser.add_option("-r", "--rle", dest="rle", action="store_true",
                        default=False, help="Compress tilemap data using RLE")
-    parser.add_option("-b", "--block", dest="block", action="store_true", 
+    parser.add_option("-b", "--block", dest="block", action="store_true",
                        default=False, help="Compress tilemap data using 4x4 block replacement dictionary")
 
     (opts, args) = parser.parse_args()
     if not opts.source:
         print "required source"
-        sys.exit(1) 
+        sys.exit(1)
 
     dump_header(opts.source)
     reader = TiledJsonReader(opts.source)
     writer = TileMapWriter(reader.read(),opts.rle, opts.block)
     writer.dump()
     print "#endif"
-
-
