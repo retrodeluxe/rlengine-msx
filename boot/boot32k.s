@@ -4,7 +4,7 @@
 		.db "B"
 		.dw bootstrap
 		.dw 0,0,0,0,0,0
-		
+
 		; At this point the BIOS has detected the cartridge AB signature and
 		; jumped here; we have the rom bios in bank 0, ram in bank 3, and rom
 		; in bank 1 (this code).
@@ -13,8 +13,8 @@
 		; execution.
 bootstrap:
 		ld sp,#0xf379
-       	ld a,#0xC9
-      	ld (nopret),A
+    ld a,#0xC9
+    ld (nopret),A
 nopret:	nop
 		call #0x0138
 		rrca
@@ -41,6 +41,6 @@ getslot:
 		ld	a,(hl)
 		and	#0x0C
 exit:
-		or	c				
+		or	c
 		ret
 done:
