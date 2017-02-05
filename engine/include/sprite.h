@@ -36,8 +36,6 @@ struct spr_sprite_def {
 	struct spr_sprite_pattern_set *pattern_set;
 	uint8_t cur_dir;
 	uint8_t cur_anim_step;
-	char auto_inc_x;
-	char auto_inc_y;
 	uint8_t anim_ctr;
 	uint8_t anim_ctr_treshold;
 };
