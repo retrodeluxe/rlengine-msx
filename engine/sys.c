@@ -137,7 +137,7 @@ void sys_irq_init()
  */
 void sys_sleep(unsigned int time_ms)
 {
-    unsigned int start_ms = sys_msec;
+    uint16_t start_ms = sys_msec;
     while (sys_msec - start_ms < time_ms) {
     };
 }
@@ -151,4 +151,3 @@ uint16_t sys_gettime_msec()
 {
     return sys_msec;
 }
-
