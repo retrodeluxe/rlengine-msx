@@ -11,25 +11,21 @@
          "x":0,
          "y":0
         }],
+ "nextobjectid":1,
  "orientation":"orthogonal",
- "properties":
-    {
-
-    },
+ "renderorder":"right-down",
  "tileheight":8,
  "tilesets":[
         {
+         "columns":75,
          "firstgid":1,
-         "image":"..\/tile\/kingsvalley.png",
+         "image":"..\/tile\/kingsvalley.tga",
          "imageheight":8,
          "imagewidth":600,
          "margin":0,
          "name":"kingsvalley",
-         "properties":
-            {
-
-            },
          "spacing":0,
+         "tilecount":75,
          "tileheight":8,
          "tilewidth":8
         }],
