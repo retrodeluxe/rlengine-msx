@@ -16,11 +16,10 @@
 #include <stdlib.h>
 #include "map.h"
 
-struct tile_set logo;
-struct tile_set kv;
+struct tile_set tileset_logo;
+struct tile_set tileset_kv;
 
-uint8_t fb[768];
-uint8_t map_buf[1000];
+uint8_t map_buf[768];
 
 void main()
 {
@@ -34,8 +33,8 @@ void main()
 	/*
 	 * load a tile set and generate a tile map manually
 	 */
-	INIT_TILE_SET(logo, retro_logo);
-	tile_set_to_vram(&logo, 0);
+	INIT_TILE_SET(tileset_logo, retro_logo);
+	tile_set_to_vram(&tileset_logo, 0);
 
 	i = 0;
 	for (y = 0; y < retro_logo_tile_h; y++)
@@ -48,12 +47,10 @@ void main()
 	/*
 	 * load a pre-processed tile map
 	 */
-	INIT_TILE_SET(kv, kingsvalley);
-	tile_set_to_vram(&kv, 1 /* offset of 1 */);
+	INIT_TILE_SET(tileset_kv, kingsvalley);
+	tile_set_to_vram(&tileset_kv, 1 /* offset of 1 */);
 
   map_inflate(tilemap_cmpr_dict, tilemap, map_buf, 2000, tilemap_w);
-
-	sys_memcpy(fb, map_buf, 768);
 
 	for (i = 0; i < 768; i++)
 		vdp_poke(vdp_base_names_grp1 + i, *(map_buf + i));
