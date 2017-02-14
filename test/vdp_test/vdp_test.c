@@ -1,41 +1,41 @@
 /**
- *
- * Copyright (C) Retro DeLuxe 2013, All rights reserved.
- *
+ * Copyright (C) Retro DeLuxe 2017, All rights reserved.
  */
-
 #include "msx.h"
 #include "vdp.h"
+#include "tile.h"
+#include "sys.h"
 #include "gen/vdp_test.h"
+
+
+struct tile_set tileset_kv;
+
+uint8_t buffer[768];
 
 void main()
 {
-	
-	vdp_set_mode(vdp_grp1);
+  uint16_t i;
 
-	// I think I need some more highlevel stuff
+	vdp_set_mode(vdp_grp2);
+	vdp_set_color(vdp_white, vdp_black);
+	vdp_clear_grp1(0);
 
+	INIT_TILE_SET(tileset_kv, kingsvalley);
+	tile_set_to_vram(&tileset_kv, 1);
 
-//extern void vdp_screen_disable(void);
-//extern void vdp_screen_enable(void);
-//extern void vdp_set_mode(char mode);
-//extern void vdp_set_color(char ink, char border);
+  /* fill buffer with pattern */
+  for (i = 0; i < 768; i+=2) {
+		*(buffer + i) = 1;
+		*(buffer + i + 1) = 2;
+	}
 
+  /* this should show a stable pattern on screen in both msx1 and msx2 */
+	do {
+		  vdp_copy_to_vram(buffer, vdp_base_names_grp1, 768);
+	} while (sys_get_key(8) & 1);
 
-//extern void vdp_poke(uint address, byte value);
-//extern byte vdp_peek(uint address);
-//extern void vdp_memset(uint vaddress, uint size, byte value);
-//extern void vdp_copy_to_vram(byte * buffer, uint vaddress, uint length);
-//extern void vdp_copy_to_vram_di(byte * buffer, uint vaddress, uint length);
-//extern void vdp_copy_from_vram(uint vaddress, byte * buffer, uint length);
-
-// THESE ARE GRP1 SPECIFIC
-// unless I make them genericsc	
-//extern void vdp_set_hw_sprite(char spi, struct vdp_hw_sprite *spr);
-//extern void vdp_set_hw_sprite_di(byte * spr, byte spi);
-//extern void vdp_init_hw_sprites(char spritesize, char zoom);
-//extern void vdp_fastcopy_nametable(byte * buffer);
-//extern void vdp_fastcopy_nametable_di(byte * buffer);
-//extern void vdp_fastcopy16(byte * src_ram, uint dst_vram);
-//extern void vdp_clear_grp1(byte color);
+  do {
+		// FIXME: Current implementation is too fast for tms9918
+    vdp_fastcopy_nametable(buffer);
+	} while (sys_get_key(8) & 1);
 }
