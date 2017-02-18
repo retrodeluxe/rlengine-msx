@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (C) Retro DeLuxe 2013, All rights reserved.
+ * Copyright (C) Retro DeLuxe 2017, All rights reserved.
  *
  */
 
@@ -17,6 +17,7 @@
 #include "gen/phys_test.h"
 #include <stdlib.h>
 #include "displ.h"
+#include "phys.h"
 
 struct spr_sprite_pattern_set pattern_smiley;
 struct spr_sprite_pattern_set pattern_bullet;
@@ -43,19 +44,18 @@ void main()
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);
 
-  // this should be a macro... map_inflate(tilemap, dest_buffer);
-  map_inflate(tilemap_cmpr_dict, tilemap, map_buf, tilemap_cmpr_size, tilemap_w);
-  vdp_copy_to_vram(map_buf, vdp_base_names_grp1, 768);
+	// FIXME this should be a macro... map_inflate(tilemap, dest_buffer);
+	map_inflate(tilemap_cmpr_dict, tilemap, map_buf, tilemap_cmpr_size, tilemap_w);
+	vdp_copy_to_vram(map_buf, vdp_base_names_grp1, 768);
 
 	SPR_DEFINE_PATTERN_SET(pattern_smiley, SPR_SIZE_16x16, 1, 2, 2, smiley);
-  spr_valloc_pattern_set(&pattern_smiley);
+	spr_valloc_pattern_set(&pattern_smiley);
 	SPR_DEFINE_PATTERN_SET(pattern_bullet, SPR_SIZE_16x16, 1, 2, 2, bullet);
-  spr_valloc_pattern_set(&pattern_bullet);
+	spr_valloc_pattern_set(&pattern_bullet);
 
-  //simple_anim.state = 0;
-  simple_anim.next = simple_translation;
+	simple_anim.next = simple_translation;
 
-  map_object = (struct map_object_item *) objects;
+	map_object = (struct map_object_item *) objects;
 	for (i = 0; i < objects_nitems; i++) {
 		if (map_object->type == SPRITE) {
 			if (map_object->object.sprite.type == TYPE_SMILEY) {
@@ -65,52 +65,60 @@ void main()
 			}
 			spr_set_pos(&enemy_sprites[i], map_object->x, map_object->y);
 			display_list[i].type = DISPLAY_OBJECT_SPRITE;
-    	display_list[i].spr = &enemy_sprites[i];
+			display_list[i].spr = &enemy_sprites[i];
 			display_list[i].animator = &simple_anim;
+			display_list[i].xpos = map_object->x;
+			display_list[i].ypos = map_object->y;
+			display_list[i].state = 0;
 			map_object++;
 		}
 	}
 
 	for (i = 0; i < objects_nitems; i++ ) {
-    // show the items
 		if (display_list[i].type == DISPLAY_OBJECT_SPRITE) {
-					spr_show(display_list[i].spr);
-			}
+			spr_show(display_list[i].spr);
+		}
 	}
+
+	phys_init();
+	phys_set_colliding_tile(1);
 
 	do {
 		for (i = 0; i < objects_nitems; i++ ) {
-			// this will update flags about current collision state in the display list
-			// those flags can be used by the animators
-			//phys_detect_collisions(display_list);
+			phys_detect_tile_collisions(&display_list[i], map_buf);
 			display_list[i].animator->next(&display_list[i]);
-			// physics?
 		}
 	} while (sys_get_key(8) & 1);
 
 }
 
-// spr_animate actually -- becomes strange here because we need
-// to handle as well special states of every sprite
-// (e.g. dead, explosions, etc)
-// need to collect uses cases I guess to find what is needed
 
+/*
+ * Two state horizontal translation with direction switch on collision
+ */
 void simple_translation(struct display_object *obj)
 {
-	obj->state++;
-	if (obj->state < 40) {
+	if (obj->state == 0 && !is_colliding_right(obj)) {
+		obj->xpos++;
 		spr_animate(obj->spr, 1, 0, 0);
-	} else if (obj->state >= 40) {
+	} else if (obj->state == 1 && !is_colliding_left(obj)) {
+		obj->xpos--;
 		spr_animate(obj->spr, -1, 0, 0);
 	}
-	if (obj->state > 80) {
+	if (is_colliding_left(obj)) {
 		obj->state = 0;
+	} else if (is_colliding_right(obj)) {
+		obj->state = 1;
 	}
 }
 
+/*
+ * Vertical fall at constant speed until collision
+ */
 void gravity(struct display_object *obj)
 {
-	if (obj->collision_state != 5) {
+	if (!is_colliding_down(obj)) {
+		obj->ypos++;
 		spr_animate(obj->spr, 0, 1, 0);
 	}
 }
