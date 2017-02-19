@@ -16,10 +16,10 @@
 /**
  * Global data is placed in 0xC000 (RAM page 2) in 32K roms by default
  */
-struct spr_sprite_pattern_set bee_patt;
-struct spr_sprite_pattern_set rat_patt;
-struct spr_sprite_pattern_set egg_patt;
-struct spr_sprite_pattern_set monk_patt;
+struct spr_pattern_set bee_patt;
+struct spr_pattern_set rat_patt;
+struct spr_pattern_set egg_patt;
+struct spr_pattern_set monk_patt;
 struct spr_sprite_def eggspr;
 struct spr_sprite_def monk;
 
@@ -112,4 +112,3 @@ void main()
 		spr_animate(&monk,-1,0,0);
 	} while (sys_get_key(8) & 1);
 }
-

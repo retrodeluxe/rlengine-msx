@@ -17,9 +17,9 @@
 /**
  * Global data is placed in 0xC000 (RAM page 2) in 32K roms by default
  */
-struct spr_sprite_pattern_set bee_patt;
-struct spr_sprite_pattern_set rat_patt;
-struct spr_sprite_pattern_set egg_patt;
+struct spr_pattern_set bee_patt;
+struct spr_pattern_set rat_patt;
+struct spr_pattern_set egg_patt;
 struct spr_sprite_def eggspr;
 
 struct vdp_hw_sprite bee_hw;
@@ -118,5 +118,3 @@ void update_bees2() {
 		spr_animate(&bee[i],1,0,0);
 	}
 }
-
-

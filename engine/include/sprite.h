@@ -14,10 +14,10 @@
 
 
 /**
- * spr_sprite_pattern_set:
+ * spr_pattern_set:
  *		a set of sprite patterns plus data used for animation
  */
-struct spr_sprite_pattern_set {
+struct spr_pattern_set {
 	uint8_t pidx;
 	uint8_t size;
 	uint8_t n_planes;
@@ -33,7 +33,7 @@ struct spr_sprite_pattern_set {
 struct spr_sprite_def {
 	uint8_t aidx;
 	struct vdp_hw_sprite planes[6];
-	struct spr_sprite_pattern_set *pattern_set;
+	struct spr_pattern_set *pattern_set;
 	uint8_t cur_dir;
 	uint8_t cur_anim_step;
 	uint8_t anim_ctr;
@@ -63,8 +63,8 @@ struct spr_delta_pos {
  																			spr_set_plane_colors(&(X),(COLORS))
 
 extern void spr_init(char spritesize, char zoom);
-extern uint8_t spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps);
-extern void spr_vfree_pattern_set(struct spr_sprite_pattern_set *ps);
+extern uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps);
+extern void spr_vfree_pattern_set(struct spr_pattern_set *ps);
 extern void spr_set_pos(struct spr_sprite_def *sp, uint8_t x, uint8_t y);
 extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors);
 extern uint8_t spr_show(struct spr_sprite_def *sp);

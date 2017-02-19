@@ -45,7 +45,7 @@ void spr_init(char spritesize, char zoom)
  * spr_valloc_pattern_set:
  *		finds a gap to allocate a pattern set
  */
-uint8_t spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps)
+uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps)
 {
 	uint16_t npat;
 	uint8_t i, idx, f = 0;
@@ -65,18 +65,18 @@ uint8_t spr_valloc_pattern_set(struct spr_sprite_pattern_set *ps)
 	return false;
 }
 
-void spr_vfree_pattern_set(struct spr_sprite_pattern_set *ps)
+void spr_vfree_pattern_set(struct spr_pattern_set *ps)
 {
 	uint8_t npat;
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
-	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);	
+	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 
 static void spr_calc_patterns(struct spr_sprite_def *sp)
 {
 	uint8_t i, base, base2, frame;
-	
-	struct spr_sprite_pattern_set *ps = sp->pattern_set;
+
+	struct spr_pattern_set *ps = sp->pattern_set;
 	switch (ps->size) {
 		case SPR_SIZE_16x16:
 			base = sp->cur_dir * ps->n_anim_steps * (ps->size * ps->n_planes);

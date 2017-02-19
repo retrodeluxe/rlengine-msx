@@ -21,8 +21,8 @@ struct tile_set logo;
 struct tile_set kv;
 struct map_object_item *item;
 
-struct spr_sprite_pattern_set monk_patt;
-struct spr_sprite_pattern_set templar_patt;
+struct spr_pattern_set monk_patt;
+struct spr_pattern_set templar_patt;
 struct spr_sprite_def monk;
 struct spr_sprite_def templar_spr;
 
@@ -224,5 +224,3 @@ void monk_animate_work()
 		y = y + dy;
 	}
 }
-
-
