@@ -14,18 +14,23 @@
 #include "tile.h"
 #include "map.h"
 #include "log.h"
-#include "gen/phys_test.h"
 #include <stdlib.h>
 #include "displ.h"
 #include "phys.h"
+#include "list.h"
+
+#include "gen/phys_test.h"
 
 struct spr_sprite_pattern_set pattern_smiley;
 struct spr_sprite_pattern_set pattern_bullet;
 struct spr_sprite_def enemy_sprites[32];
 struct display_object display_list[32];
 struct animator simple_anim;
+struct animator gravity_anim;
 struct tile_set tileset_kv;
 struct map_object_item *map_object;
+struct list_head *ptr;
+struct animator *anim;
 
 uint8_t map_buf[768];
 
@@ -53,7 +58,8 @@ void main()
 	SPR_DEFINE_PATTERN_SET(pattern_bullet, SPR_SIZE_16x16, 1, 2, 2, bullet);
 	spr_valloc_pattern_set(&pattern_bullet);
 
-	simple_anim.next = simple_translation;
+	simple_anim.run = simple_translation;
+	gravity_anim.run = gravity;
 
 	map_object = (struct map_object_item *) objects;
 	for (i = 0; i < objects_nitems; i++) {
@@ -64,9 +70,11 @@ void main()
 				// we only consider smileys at the moment
 			}
 			spr_set_pos(&enemy_sprites[i], map_object->x, map_object->y);
-			display_list[i].type = DISPLAY_OBJECT_SPRITE;
+			display_list[i].type = DISP_OBJECT_SPRITE;
 			display_list[i].spr = &enemy_sprites[i];
-			display_list[i].animator = &simple_anim;
+			INIT_LIST_HEAD(&display_list[i].animator_list);
+			list_add(&simple_anim.list, &display_list[i].animator_list);
+			list_add(&gravity_anim.list, &simple_anim.list);
 			display_list[i].xpos = map_object->x;
 			display_list[i].ypos = map_object->y;
 			display_list[i].state = 0;
@@ -75,7 +83,7 @@ void main()
 	}
 
 	for (i = 0; i < objects_nitems; i++ ) {
-		if (display_list[i].type == DISPLAY_OBJECT_SPRITE) {
+		if (display_list[i].type == DISP_OBJECT_SPRITE) {
 			spr_show(display_list[i].spr);
 		}
 	}
@@ -86,10 +94,14 @@ void main()
 	do {
 		for (i = 0; i < objects_nitems; i++ ) {
 			phys_detect_tile_collisions(&display_list[i], map_buf);
-			display_list[i].animator->next(&display_list[i]);
+			//display_list[i].animator->run(&display_list[i]);
+			list_for_each(ptr, &(display_list[i].animator_list)) {
+				//log_e("actually iterating %d\n", ptr);
+				anim = list_entry(ptr, struct animator, list);
+				anim->run(&display_list[i]);
+			}
 		}
 	} while (sys_get_key(8) & 1);
-
 }
 
 
@@ -98,6 +110,7 @@ void main()
  */
 void simple_translation(struct display_object *obj)
 {
+	//log_e("trans\n");
 	if (obj->state == 0 && !is_colliding_right(obj)) {
 		obj->xpos++;
 		spr_animate(obj->spr, 1, 0, 0);
@@ -117,6 +130,7 @@ void simple_translation(struct display_object *obj)
  */
 void gravity(struct display_object *obj)
 {
+	//log_e("gravity\n");
 	if (!is_colliding_down(obj)) {
 		obj->ypos++;
 		spr_animate(obj->spr, 0, 1, 0);
