@@ -24,18 +24,21 @@
 struct spr_sprite_pattern_set pattern_smiley;
 struct spr_sprite_pattern_set pattern_bullet;
 struct spr_sprite_def enemy_sprites[32];
-struct display_object display_list[32];
+struct displ_object display_object[32];
+struct list_head display_list;
 struct animator simple_anim;
 struct animator gravity_anim;
 struct tile_set tileset_kv;
 struct map_object_item *map_object;
-struct list_head *ptr;
+struct list_head *elem, *elem2;
 struct animator *anim;
+struct displ_object *dpo;
 
 uint8_t map_buf[768];
 
-void simple_translation(struct display_object *obj);
-void gravity(struct display_object *obj);
+void simple_translation(struct displ_object *obj);
+void gravity(struct displ_object *obj);
+void stay_on_platfom_translation(struct displ_object *obj);
 
 void main()
 {
@@ -58,33 +61,37 @@ void main()
 	SPR_DEFINE_PATTERN_SET(pattern_bullet, SPR_SIZE_16x16, 1, 2, 2, bullet);
 	spr_valloc_pattern_set(&pattern_bullet);
 
-	simple_anim.run = simple_translation;
+	simple_anim.run = stay_on_platfom_translation;
 	gravity_anim.run = gravity;
 
+	INIT_LIST_HEAD(&display_list);
 	map_object = (struct map_object_item *) objects;
-	for (i = 0; i < objects_nitems; i++) {
+	for (dpo = display_object, i = 0; i < objects_nitems; i++, dpo++) {
 		if (map_object->type == SPRITE) {
 			if (map_object->object.sprite.type == TYPE_SMILEY) {
 				SPR_DEFINE_SPRITE(enemy_sprites[i], &pattern_smiley, 6, smiley_color);
 			} else {
 				// we only consider smileys at the moment
 			}
-			spr_set_pos(&enemy_sprites[i], map_object->x, map_object->y);
-			display_list[i].type = DISP_OBJECT_SPRITE;
-			display_list[i].spr = &enemy_sprites[i];
-			INIT_LIST_HEAD(&display_list[i].animator_list);
-			list_add(&simple_anim.list, &display_list[i].animator_list);
+			INIT_LIST_HEAD(&dpo->animator_list);
+			list_add(&simple_anim.list, &dpo->animator_list);
 			list_add(&gravity_anim.list, &simple_anim.list);
-			display_list[i].xpos = map_object->x;
-			display_list[i].ypos = map_object->y;
-			display_list[i].state = 0;
+			spr_set_pos(&enemy_sprites[i], map_object->x, map_object->y);
+
+			dpo->type = DISP_OBJECT_SPRITE;
+			dpo->spr = &enemy_sprites[i];
+			dpo->xpos = map_object->x;
+			dpo->ypos = map_object->y;
+			dpo->state = 0;
+			list_add(&dpo->list, &display_list);
 			map_object++;
 		}
 	}
 
-	for (i = 0; i < objects_nitems; i++ ) {
-		if (display_list[i].type == DISP_OBJECT_SPRITE) {
-			spr_show(display_list[i].spr);
+	list_for_each(elem, &display_list) {
+		dpo = list_entry(elem, struct displ_object, list);
+		if (dpo->type == DISP_OBJECT_SPRITE) {
+			spr_show(dpo->spr);
 		}
 	}
 
@@ -92,25 +99,54 @@ void main()
 	phys_set_colliding_tile(1);
 
 	do {
-		for (i = 0; i < objects_nitems; i++ ) {
-			phys_detect_tile_collisions(&display_list[i], map_buf);
-			//display_list[i].animator->run(&display_list[i]);
-			list_for_each(ptr, &(display_list[i].animator_list)) {
-				//log_e("actually iterating %d\n", ptr);
-				anim = list_entry(ptr, struct animator, list);
-				anim->run(&display_list[i]);
+		list_for_each(elem, &display_list) {
+			dpo = list_entry(elem, struct displ_object, list);
+			phys_detect_tile_collisions(dpo, map_buf);
+			list_for_each(elem2, &dpo->animator_list) {
+				anim = list_entry(elem2, struct animator, list);
+				anim->run(dpo);
 			}
 		}
 	} while (sys_get_key(8) & 1);
 }
 
+/**
+ *  Horizontal translation staying on solid ground without fall
+ */
+void stay_on_platfom_translation(struct displ_object *obj)
+{
+	// FIXME: a-posteriory correction should never be necessary
+	if (obj->state == 0 && !is_colliding_right(obj)) {
+		obj->xpos++;
+		spr_animate(obj->spr, 1, 0, 0);
+	} else if (obj->state == 1 && !is_colliding_left(obj)) {
+		obj->xpos--;
+		spr_animate(obj->spr, -1, 0, 0);
+	}
+	if (is_colliding_left(obj)) {
+		obj->state = 0;
+	} else if (is_colliding_right(obj)) {
+		obj->state = 1;
+	}
+	if (!is_colliding_down(obj)) {
+		if (obj->state == 0) {
+			obj->state = 1;
+			obj->xpos-=2;
+			spr_animate(obj->spr, -2, 0, 0);
+		} else {
+			obj->xpos+=2;
+			spr_animate(obj->spr, 2, 0, 0);
+			obj->state = 0;
+		}
+		phys_detect_tile_collisions(obj, map_buf);
+	}
+}
 
 /*
  * Two state horizontal translation with direction switch on collision
  */
-void simple_translation(struct display_object *obj)
+void simple_translation(struct displ_object *obj)
 {
-	//log_e("trans\n");
 	if (obj->state == 0 && !is_colliding_right(obj)) {
 		obj->xpos++;
 		spr_animate(obj->spr, 1, 0, 0);
@@ -128,7 +164,7 @@ void simple_translation(struct display_object *obj)
 /*
  * Vertical fall at constant speed until collision
  */
-void gravity(struct display_object *obj)
+void gravity(struct displ_object *obj)
 {
 	//log_e("gravity\n");
 	if (!is_colliding_down(obj)) {

@@ -16,6 +16,6 @@
 
 void phys_init();
 void phys_set_colliding_tile(uint8_t tile);
-void phys_detect_tile_collisions(struct display_object *, uint8_t *map);
+void phys_detect_tile_collisions(struct displ_object *, uint8_t *map);
 
 #endif

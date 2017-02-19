@@ -6,22 +6,21 @@
 #define DISP_OBJECT_SPRITE 1
 #define DISP_OBJECT_GFX 2
 
-struct display_object;
+struct displ_object;
 
 struct animator {
 	struct list_head list;
-	void (*run)(struct display_object *obj);
+	void (*run)(struct displ_object *obj);
 };
 
-struct display_object {
+struct displ_object {
 	uint8_t type;
 	uint8_t state;
 	uint8_t xpos;
 	uint8_t ypos;
 	uint8_t collision_state;
 	struct spr_sprite_def *spr;
-	//struct animator *animator;
-	// fix this mess
+	struct list_head list;
 	struct list_head animator_list;
 };
 

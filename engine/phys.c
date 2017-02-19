@@ -64,7 +64,7 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
  /*
   * Update collision state of a display object 16x16
   */
-void phys_detect_tile_collisions(struct display_object *obj, uint8_t *map)
+void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map)
 {
 	#define TILE_WIDTH 32
 	uint8_t x,y;
