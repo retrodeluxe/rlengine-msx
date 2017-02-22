@@ -13,6 +13,7 @@
 #define is_colliding_left(x)	(((x)->collision_state & COLLISION_LEFT) != 0)
 #define is_colliding_right(x)	(((x)->collision_state & COLLISION_RIGHT) != 0)
 #define is_colliding_down(x)	(((x)->collision_state & COLLISION_DOWN) != 0)
+#define is_colliding_up(x)	(((x)->collision_state & COLLISION_UP) != 0)
 
 void phys_init();
 void phys_set_colliding_tile(uint8_t tile);
