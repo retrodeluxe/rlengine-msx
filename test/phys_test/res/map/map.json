@@ -17,12 +17,12 @@
          "name":"objects",
          "objects":[
                 {
-                 "height":18.6666666666667,
+                 "height":32,
                  "id":1,
-                 "name":"smiley",
+                 "name":"archer",
                  "properties":
                     {
-                     "type":"smiley"
+                     "type":"archer_skeleton"
                     },
                  "propertytypes":
                     {
@@ -31,17 +31,17 @@
                  "rotation":0,
                  "type":"sprite",
                  "visible":true,
-                 "width":19,
-                 "x":18.3333333333333,
-                 "y":28.3333333333333
+                 "width":16,
+                 "x":15.6666666666666,
+                 "y":15.6666666666666
                 }, 
                 {
-                 "height":18.6667,
+                 "height":16,
                  "id":6,
-                 "name":"smiley",
+                 "name":"spider",
                  "properties":
                     {
-                     "type":"smiley"
+                     "type":"spider"
                     },
                  "propertytypes":
                     {
@@ -50,12 +50,12 @@
                  "rotation":0,
                  "type":"sprite",
                  "visible":true,
-                 "width":19,
-                 "x":216.5,
-                 "y":43.3333166666667
+                 "width":16,
+                 "x":174.833333333333,
+                 "y":30.6666500000001
                 }, 
                 {
-                 "height":18.6667,
+                 "height":16,
                  "id":7,
                  "name":"smiley",
                  "properties":
@@ -69,17 +69,17 @@
                  "rotation":0,
                  "type":"sprite",
                  "visible":true,
-                 "width":19,
-                 "x":18.8333333333333,
-                 "y":123.66665
+                 "width":16,
+                 "x":16.1666666666666,
+                 "y":127.333316666667
                 }, 
                 {
-                 "height":18.6667,
+                 "height":16,
                  "id":8,
-                 "name":"smiley",
+                 "name":"waterdrop",
                  "properties":
                     {
-                     "type":"smiley"
+                     "type":"waterdrop"
                     },
                  "propertytypes":
                     {
@@ -88,17 +88,17 @@
                  "rotation":0,
                  "type":"sprite",
                  "visible":true,
-                 "width":19,
-                 "x":216.166666666667,
-                 "y":106.999983333333
+                 "width":16,
+                 "x":175.166666666667,
+                 "y":78.6666499999997
                 }, 
                 {
-                 "height":18.6667,
+                 "height":16,
                  "id":9,
-                 "name":"smiley",
+                 "name":"plant",
                  "properties":
                     {
-                     "type":"smiley"
+                     "type":"plant"
                     },
                  "propertytypes":
                     {
@@ -107,12 +107,12 @@
                  "rotation":0,
                  "type":"sprite",
                  "visible":true,
-                 "width":19,
-                 "x":74.1666666666667,
-                 "y":83.9999833333333
+                 "width":16,
+                 "x":71.8333333333334,
+                 "y":87.66665
                 }, 
                 {
-                 "height":18.6667,
+                 "height":16,
                  "id":10,
                  "name":"smiley",
                  "properties":
@@ -126,9 +126,9 @@
                  "rotation":0,
                  "type":"sprite",
                  "visible":true,
-                 "width":19,
-                 "x":175.5,
-                 "y":155.66665
+                 "width":16,
+                 "x":167.833333333333,
+                 "y":158.999983333333
                 }],
          "opacity":1,
          "type":"objectgroup",
