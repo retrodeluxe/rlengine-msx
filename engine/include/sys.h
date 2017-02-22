@@ -10,6 +10,15 @@ struct sys_proc {
     void  (*func)();
 };
 
+#define STICK_UP 			1
+#define STICK_UP_RIGHT 		2
+#define STICK_RIGHT 		3
+#define STICK_DOWN_RIGHT  	4
+#define STICK_DOWN 			5
+#define STICK_DOWN_LEFT		6
+#define STICK_LEFT 			7
+#define STICK_UP_LEFT		8
+
 extern void sys_reboot();
 extern uint8_t sys_get_key(uint8_t line);
 extern uint8_t sys_get_stick(uint8_t port);
