@@ -16,6 +16,7 @@
 #define is_colliding_up(x)	(((x)->collision_state & COLLISION_UP) != 0)
 
 void phys_init();
+void phys_set_sprite_collision_handler(void (*handler));
 void phys_set_colliding_tile(uint8_t tile);
 void phys_detect_tile_collisions(struct displ_object *, uint8_t *map);
 
