@@ -2,6 +2,7 @@
 #define _MSX_DISP_LIST_H_
 
 #include "list.h"
+#include "sprite.h"
 
 #define DISP_OBJECT_SPRITE 1
 #define DISP_OBJECT_GFX 2
