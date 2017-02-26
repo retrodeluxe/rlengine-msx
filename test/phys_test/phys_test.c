@@ -68,7 +68,7 @@ void main()
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
-	spr_init(1,0);
+	spr_init();
 
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);

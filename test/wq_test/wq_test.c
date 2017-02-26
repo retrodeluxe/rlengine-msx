@@ -51,7 +51,7 @@ void main()
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
-	spr_init(1, 0);
+	spr_init();
 
 	/**
 	 * Low level sprites using direct access to VRAM
