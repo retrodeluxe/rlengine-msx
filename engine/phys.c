@@ -21,21 +21,21 @@ static void (*sprite_colision_cb)();
 void phys_check_collision_bit()
 {
 	uint8_t *status = STATFL;
-	if ((*status & SPR_COLISION_MASK) != 0)
+	if ((*status & SPR_COLISION_MASK) != 0) {
 		sprite_colision_cb();
+	}
 }
-
 
 void phys_init()
 {
 	sys_memset(colliding_tiles, 0, 32);
-	sys_proc_register(phys_check_collision_bit);
 }
 
 
 void phys_set_sprite_collision_handler(void (*handler))
 {
 	sprite_colision_cb = handler;
+	sys_proc_register(phys_check_collision_bit);
 }
 
 /*
