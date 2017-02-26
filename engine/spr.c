@@ -41,6 +41,17 @@ void spr_init(char spritesize, char zoom)
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
 }
 
+
+void spr_init_sprite(struct spr_sprite_def *sp, struct spr_pattern_set *ps)
+{
+	sp->pattern_set = ps;
+	sp->cur_anim_step = 0;
+	sp->cur_dir = 0;
+	sp->anim_ctr_treshold = 5;
+	sp->anim_ctr = 0;
+	spr_set_plane_colors(sp, ps->colors);
+}
+
 /**
  * spr_valloc_pattern_set:
  *		finds a gap to allocate a pattern set
@@ -152,7 +163,7 @@ void spr_set_pos(struct spr_sprite_def *sp, uint8_t xp, uint8_t yp)
 	}
 }
 
-void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors)
+void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors)
 {
 	uint8_t i;
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {

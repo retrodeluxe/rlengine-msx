@@ -26,6 +26,7 @@ struct spr_pattern_set {
 	uint8_t n_dirs;
 	uint8_t n_anim_steps;
 	const uint8_t *patterns;
+	const uint8_t *colors;
 };
 
 /**
@@ -56,7 +57,8 @@ struct spr_delta_pos {
 									(X).n_anim_steps = (STEPS);\
 									(X).n_dirs = (DIRS); \
 									(X).allocated = false; \
-									(X).patterns = (PATTERNS)
+									(X).patterns = (PATTERNS); \
+									(X).colors = PATTERNS ## _color
 
 #define SPR_DEFINE_SPRITE(X, PATTERN_SET, ANIM_TRH, COLORS)		(X).pattern_set = (PATTERN_SET);\
 									(X).cur_anim_step = 0; \
@@ -65,7 +67,9 @@ struct spr_delta_pos {
 									(X).anim_ctr = 0;\
 									spr_set_plane_colors(&(X),(COLORS))
 
+
 extern void spr_init(char spritesize, char zoom);
+extern void spr_init_sprite(struct spr_sprite_def *sp, struct spr_pattern_set *ps);
 extern uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps);
 extern void spr_vfree_pattern_set(struct spr_pattern_set *ps);
 extern void spr_set_pos(struct spr_sprite_def *sp, uint8_t x, uint8_t y);
