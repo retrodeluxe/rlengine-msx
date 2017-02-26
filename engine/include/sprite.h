@@ -1,6 +1,7 @@
 #ifndef _MSX_H_SPRITE
 #define _MSX_H_SPRITE
 
+#include "vdp.h"
 
 #define SPR_SIZE_8x8	1
 #define SPR_SIZE_16x16	4
