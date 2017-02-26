@@ -16,8 +16,8 @@ struct animator {
 struct displ_object {
 	uint8_t type;
 	uint8_t state;
-	uint8_t xpos;
-	uint8_t ypos;
+	int16_t xpos;
+	int16_t ypos;
 	uint8_t collision_state;
 	struct spr_sprite_def *spr;
 	struct list_head list;
