@@ -13,6 +13,10 @@
 #define spr_dir_lrudc 	3
 #define spr_dir_all 	4
 
+#define SPR_SHOW_8x8 0
+#define SPR_SHOW_16x16 1
+#define SPR_ZOOM_OFF 0
+#define SPR_ZOOM_ON 1
 
 /**
  * spr_pattern_set:
@@ -68,7 +72,7 @@ struct spr_delta_pos {
 									spr_set_plane_colors(&(X),(COLORS))
 
 
-extern void spr_init(char spritesize, char zoom);
+extern void spr_init();
 extern void spr_init_sprite(struct spr_sprite_def *sp, struct spr_pattern_set *ps);
 extern uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps);
 extern void spr_vfree_pattern_set(struct spr_pattern_set *ps);

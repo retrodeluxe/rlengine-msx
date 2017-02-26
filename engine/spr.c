@@ -32,15 +32,14 @@ uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 /**
  * spr_init: initialize vdp sprites and allocation tables
  */
-void spr_init(char spritesize, char zoom)
+void spr_init(void)
 {
-	vdp_init_hw_sprites(spritesize, zoom);
+	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 	// set all atributes out of screen
 	vdp_memset(vdp_base_spatr_grp1, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites, 212);
 	sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
 }
-
 
 void spr_init_sprite(struct spr_sprite_def *sp, struct spr_pattern_set *ps)
 {
