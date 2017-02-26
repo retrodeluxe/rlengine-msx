@@ -59,6 +59,7 @@ uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps)
 			sys_memset(&spr_patt_valloc[idx], 0, npat);
 			vdp_copy_to_vram(ps->patterns, vdp_base_sppat_grp1 + idx * 8, npat * 8);
 			ps->pidx = idx;
+			ps->allocated = true;
 			return true;
 		}
 	}
@@ -69,6 +70,7 @@ void spr_vfree_pattern_set(struct spr_pattern_set *ps)
 {
 	uint8_t npat;
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
+	ps->allocated = false;
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 

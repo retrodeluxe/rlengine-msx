@@ -20,6 +20,7 @@
  */
 struct spr_pattern_set {
 	uint8_t pidx;
+	bool allocated;
 	uint8_t size;
 	uint8_t n_planes;
 	uint8_t n_dirs;
@@ -50,18 +51,19 @@ struct spr_delta_pos {
 /**
  * helper macros for sprite definition from generated data
  */
-#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, DIRS, STEPS, PATTERNS) 		(X).size = (SIZE);\
- 																			(X).n_planes = (PLANES);\
- 																			(X).n_anim_steps = (STEPS);\
- 																			(X).n_dirs = (DIRS); \
- 																			(X).patterns = (PATTERNS)
+#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, DIRS, STEPS, PATTERNS) 	(X).size = (SIZE);\
+									(X).n_planes = (PLANES);\
+									(X).n_anim_steps = (STEPS);\
+									(X).n_dirs = (DIRS); \
+									(X).allocated = false; \
+									(X).patterns = (PATTERNS)
 
-#define SPR_DEFINE_SPRITE(X, PATTERN_SET, ANIM_TRH, COLORS)					(X).pattern_set = (PATTERN_SET);\
- 																			(X).cur_anim_step = 0; \
- 																			(X).cur_dir = 0;\
- 																			(X).anim_ctr_treshold = (ANIM_TRH);\
- 																			(X).anim_ctr = 0;\
- 																			spr_set_plane_colors(&(X),(COLORS))
+#define SPR_DEFINE_SPRITE(X, PATTERN_SET, ANIM_TRH, COLORS)		(X).pattern_set = (PATTERN_SET);\
+									(X).cur_anim_step = 0; \
+									(X).cur_dir = 0;\
+									(X).anim_ctr_treshold = (ANIM_TRH);\
+									(X).anim_ctr = 0;\
+									spr_set_plane_colors(&(X),(COLORS))
 
 extern void spr_init(char spritesize, char zoom);
 extern uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps);
