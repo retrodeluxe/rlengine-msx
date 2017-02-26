@@ -58,20 +58,20 @@ void map_inflate(const uint8_t * dict, const uint8_t * in, uint8_t * out, uint16
 void map_inflate_screen(const uint8_t * dict, const uint8_t * in, uint8_t * out, uint8_t w, uint8_t vpx, uint8_t vpy)
 {
 	unsigned int idx;
-	uint8_t *base = in + vpx / 2 + (vpy / 2) * w;
+	uint8_t *base = in + vpx / 2 + (vpy / 2) * w / 2;
 	uint8_t *src = base;
 	uint8_t *dst = out;
 	int x,y;
 
-	for (y = 0; y < 24; y+=2) {
-		for (x = 0; x < 32; x+=2) {
+	for (y = 0; y < 24; y += 2) {
+		for (x = 0; x < 32; x += 2) {
 			idx = (*src) * 4;
 			*(dst) = dict[idx];
 			*(dst + 1) = dict[idx + 1];
 			*(dst + 32) = dict[idx + 2];
 			*(dst + 32 + 1) = dict[idx + 3];
 			dst = out + x + y * 32;
-			src = base + x / 2 + y / 2 * w / 2;	
-		} 
+			src = base + x / 2 + y / 2 * w / 2;
+		}
 	}
 }
