@@ -101,9 +101,9 @@ void spr_update(struct spr_sprite_def *sp)
 	uint8_t i;
 	spr_calc_patterns(sp);
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
-		vdp_set_hw_sprite_di((uint8_t *)(&sp->planes[i]), sp->aidx + i);
+		vdp_set_hw_sprite(&sp->planes[i], sp->aidx + i);
 		if (sp->pattern_set->size == SPR_SIZE_16x32)
-			vdp_set_hw_sprite_di((uint8_t *)(&sp->planes[i+3]), sp->aidx + i + sp->pattern_set->n_planes);
+			vdp_set_hw_sprite(&sp->planes[i+3], sp->aidx + i + sp->pattern_set->n_planes);
 	}
 
 }
@@ -171,6 +171,8 @@ void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char
 
 	old_dir = sp->cur_dir;
 
+	// FIMXE : two directions  assumes x
+	//         one directon doesn't swictch which is fine
 	if (sp->pattern_set->n_dirs < 3) {
 		// handle 2 directions
 		if (dx > 0)
