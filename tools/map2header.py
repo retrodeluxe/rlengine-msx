@@ -298,7 +298,7 @@ class TileMapWriter:
                         _type = item['type']
                         if _type == '':
                             _type = item['name']
-                        print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'] % 256,  item['y'] % 256,  item['width'], item['height'], 1 if item['visible'] else 0))
+                        print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'] % 256,  item['y'] % 176,  item['width'], item['height'], 1 if item['visible'] else 0))
                         #print ("        { ");
                         #print ("        { .%s = { " % _type);
                         #print item['properties']
