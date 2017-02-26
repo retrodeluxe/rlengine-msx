@@ -1,6 +1,8 @@
 #ifndef _MSX_H_PHYS
 #define _MSX_H_PHYS
 
+#include "displ.h"
+
 #define COLLISION_LEFT 	1
 #define COLLISION_RIGHT	2
 #define COLLISION_UP		4
