@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (C) Retro DeLuxe 2013, All rights reserved.
+ * Copyright (C) Retro DeLuxe 2017, All rights reserved.
  *
  */
 
@@ -14,213 +14,407 @@
 #include "tile.h"
 #include "map.h"
 #include "log.h"
+#include "displ.h"
+#include "phys.h"
+#include "list.h"
+
 #include "gen/game_test.h"
 #include <stdlib.h>
 
 struct tile_set logo;
-struct tile_set kv;
-struct map_object_item *item;
+struct tile_set tileset_abbaye;
+struct tile_set tileset_scroll;
 
-struct spr_pattern_set monk_patt;
-struct spr_pattern_set templar_patt;
-struct spr_sprite_def monk;
-struct spr_sprite_def templar_spr;
+struct spr_pattern_set pattern_bat;
+struct spr_pattern_set pattern_smiley;
+struct spr_pattern_set pattern_bullet;
+struct spr_pattern_set pattern_skeleton;
+struct spr_pattern_set pattern_spider;
+struct spr_pattern_set pattern_arrow;
+struct spr_pattern_set pattern_plant;
+struct spr_pattern_set pattern_waterdrop;
+struct spr_pattern_set pattern_templar;
+struct spr_pattern_set pattern_monk;
+struct spr_pattern_set pattern_monk_death;
 
-struct work_struct physics;
-struct work_struct animate;
+struct spr_sprite_def enemy_sprites[31];
+struct spr_sprite_def monk_sprite;
+struct gfx_tilemap_object tile_objects[12];
+struct displ_object display_object[32];
 
-uint8_t x,y,d;
+struct displ_object dpo_arrow;
+struct displ_object dpo_bullet[2];
+struct displ_object dpo_monk;
 
-uint8_t fb[768];
+struct list_head display_list;
+struct list_head *elem, *elem2, *elem3;
 
-void monk_physics_work();
-void monk_animate_work();
-uint8_t tile_on_screen_coords(uint8_t x, uint8_t y);
+// FIXME: this is wrong
+struct animator animators[7];
+struct map_object_item *map_object;
 
-struct monk_data {
-	uint8_t jump;
-	uint8_t jump_cnt;
-	uint8_t left;
-	uint8_t right;
-	uint8_t xpos;
-	uint8_t ypos;
-	uint8_t collision;
-} monk_state;
+struct animator *anim;
+struct displ_object *dpo;
 
-#define COLLISION_UP_MASK 3
-#define COLLISION_LEFT_MASK 12
-#define COLLISION_RIGHT_MASK 48
-#define COLLISION_DOWN_MASK 192
+uint8_t stick;
+uint8_t scr_tile_buffer[768];
+
+struct game_state_t {
+	uint8_t map_x;	// position on the map in tile coordinates
+	uint8_t map_y;
+	uint8_t cross_cnt;
+	uint8_t live_cnt;
+} game_state;
+
+
+void init_resources();
+
+// void anim_up_down(struct displ_object *obj);
+// void anim_drop(struct displ_object *obj);
+void anim_static(struct displ_object *obj);
+void anim_gravity(struct displ_object *obj);
+void anim_left_right(struct displ_object *obj);
+// void anim_horizontal_projectile(struct displ_object *obj);
+void anim_joystick(struct displ_object *obj);
+void anim_jump(struct displ_object *obj);
+void animate_all();
+// void spr_colision_handler();
+void init_monk();
+void init_game_state();
+void init_animators();
+void load_room();
+void check_and_change_room();
+void show_score_panel();
+uint8_t find_room_data(struct map_object_item *map_obj);
 
 void main()
 {
-	uint8_t i,d;
-	uint8_t *ptr;
-	uint8_t *src;
-	uint8_t tile;
-	int map_xx, map_yy;
-
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
-	spr_init(1,0);
+
+	//show_logo();
+	//show_title_screen();
+
 	sys_irq_init();
-	wq_start();
+	phys_init();
+	init_resources();
+	init_game_state();
+	init_animators();
+	init_monk();
+	load_room();
+	show_score_panel();
 
-	INIT_TILE_SET(kv, tiles2);
-	// need an offset of one
-	tile_set_to_vram(&kv, 1);
+	/** game loop **/
+	for(;;) {
+		stick = sys_get_stick(0);
+		check_and_change_room();
+		animate_all();
+	}
+}
 
-	// show room 10
-	map_xx =0; map_yy = 11;
-	map_inflate_screen(map_cmpr_dict, map, fb, map_w, map_xx, map_yy);
-	vdp_fastcopy_nametable(fb);
+void init_game_state()
+{
+	game_state.map_x = 96;
+	game_state.map_y = 22;
+}
 
-	SPR_DEFINE_PATTERN_SET(monk_patt, SPR_SIZE_16x32, 1, 2, 3, monk1);
-	SPR_DEFINE_PATTERN_SET(templar_patt, SPR_SIZE_16x32, 1, 2, 2, templar);
+void show_score_panel()
+{
+	// TODO: For this need to figure out how to solve the problem with the font
+	//       the font will also be useful for other elements in the game.
+	// best option is to use an MSX font instead of the original 16pixel one, either that or just
+	// use the graphics and extend the size of the ROM
+}
 
-	SPR_DEFINE_SPRITE(monk, &monk_patt, 10, monk1_color);
-	SPR_DEFINE_SPRITE(templar_spr, &templar_patt, 10, templar_color);
 
-	spr_valloc_pattern_set(&monk_patt);
-	spr_valloc_pattern_set(&templar_patt);
+void check_and_change_room()
+{
+	bool change = false;
+	if (dpo_monk.xpos > 240) {
+		dpo_monk.xpos = 0;
+		game_state.map_x+=32;
+		change = true;
+	} else if (dpo_monk.xpos == 0) {
+		dpo_monk.xpos = 240;
+		game_state.map_x-=32;
+		change = true;
+	}
+	if (dpo_monk.ypos > 192 - 32) {
+		dpo_monk.ypos = 0;
+		game_state.map_y+=22;
+		change = true;
+	} else if (dpo_monk.ypos < -16) {
+		dpo_monk.ypos = 192 - 32;
+		game_state.map_y-=22;
+		change = true;
+	}
+	if (change) {
+		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
+		load_room();
+	}
+}
 
-	x = 100; y = 100;
-	spr_set_pos(&monk, x, y);
-	spr_show(&monk);
-	spr_set_pos(&templar_spr, 10, 100);
-	spr_show(&templar_spr);
+void load_room()
+{
+	uint8_t i, nitems;
+	vdp_screen_disable();
+	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 
-	INIT_WORK(physics, monk_physics_work);
-	INIT_WORK(animate, monk_animate_work);
+	spr_init();
+	spr_valloc_pattern_set(&pattern_monk);
+	spr_init_sprite(&monk_sprite, &pattern_monk);
 
-	monk_state.jump  = 0;
-	monk_state.jump_cnt = 0;
+	INIT_LIST_HEAD(&display_list);
+	nitems = find_room_data(map_object);
+	for (dpo = display_object, i = 0; i < nitems; i++, dpo++) {
+		if (0) {
+			if (map_object->object.actionitem.type == TYPE_SCROLL) {
 
-	do {
-		d = sys_get_stick(0);
-		if (d == 1 || d == 2 || d == 8 ) {
-			if (!monk_state.jump) {
-				tile = tile_on_screen_coords(x, y + 32);
-				if (monk_state.collision & COLLISION_DOWN_MASK) {
-					monk_state.jump = 1;
-				}
+			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
+
+			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
+
+			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
+
+			} else if (map_object->object.actionitem.type == TYPE_HEART) {
+
+			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
+
+			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
+
+			} else if (map_object->object.actionitem.type == TYPE_CUP) {
+
 			}
-		}
-		if (d == 3) {
-			monk_state.right = 1;
-		}
-		if (d == 7) {
-			monk_state.left = 1;
-		}
-		if (!monk_state.jump && !physics.pending)
-				queue_delayed_work(&physics,0, 100);
+		//} else if (map_object->type == STATIC) {
 
-		if (!animate.pending)
-			queue_work(&animate);
+		///} else if (map_object->type == DOOR) {
 
-		if (x > 240) {
-			x = 0;
-			spr_set_pos(&monk, x, y);
-			vdp_screen_disable();
-			map_xx += 32; map_yy = 11;
-			map_inflate_screen(map_cmpr_dict, map, fb, map_w, map_xx, map_yy);
-			vdp_fastcopy_nametable(fb);
-			vdp_screen_enable();
+
+		//} else if (map_object->type == SHOOTER) {
+
+		//} else if (map_object->type == BLOCK) {
+
+		//} else if (map_object->type == STEP) {
+
+		} else if (map_object->type == MOVABLE) {
+			if (map_object->object.movable.type == TYPE_TEMPLAR) {
+				if (!pattern_templar.allocated)
+					spr_valloc_pattern_set(&pattern_templar);
+				spr_init_sprite(&enemy_sprites[i], &pattern_templar);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				list_add(&animators[0].list, &dpo->animator_list);
+			} else if (map_object->object.movable.type == TYPE_BAT) {
+				if (!pattern_bat.allocated)
+					spr_valloc_pattern_set(&pattern_bat);
+				spr_init_sprite(&enemy_sprites[i], &pattern_bat);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				list_add(&animators[2].list, &dpo->animator_list);
+			} else {
+				map_object++;
+				continue;
+			}
+
+			// this is now wrong, move to a function.
+			spr_set_pos(&enemy_sprites[i], map_object->x, map_object->y);
+			dpo->type = DISP_OBJECT_SPRITE;
+			dpo->spr = &enemy_sprites[i];
+			dpo->xpos = map_object->x;
+			dpo->ypos = map_object->y;
+			dpo->state = 0;
+			INIT_LIST_HEAD(&dpo->list);
+			list_add(&dpo->list, &display_list);
+			map_object++;
 		}
-
-		// debug collisions
-		/*vdp_fastcopy_nametable(fb);
-		vdp_poke(vdp_base_names_grp1 + (x + 5)/ 8 + (y + 7)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x + 10)/ 8 + (y + 7)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x - 1)/ 8 + (y + 10)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x +18)/ 8 + (y + 10)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x - 1)/ 8 + (y + 28)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x +18)/ 8 + (y + 28)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x + 5)/ 8 + (y + 34)/ 8 * 32, 20);
-		vdp_poke(vdp_base_names_grp1 + (x + 10)/8 + (y + 34)/ 8 * 32, 20);*/
-
-	} while (1);
+	}
+	INIT_LIST_HEAD(&dpo_monk.animator_list);
+	list_add(&animators[5].list, &dpo_monk.animator_list); // joystick
+	list_add(&animators[1].list, &dpo_monk.animator_list); // gravity
+	INIT_LIST_HEAD(&dpo_monk.list);
+	list_add(&dpo_monk.list, &display_list);
+	// show all elements
+	list_for_each(elem, &display_list) {
+		dpo = list_entry(elem, struct displ_object, list);
+		if (dpo->type == DISP_OBJECT_SPRITE) {
+			spr_show(dpo->spr);
+		}
+	}
+	vdp_screen_enable();
 }
 
-uint8_t tile_on_screen_coords(uint8_t x, uint8_t y)
+uint8_t find_room_data(struct map_object_item *map_obj)
 {
-	uint8_t *buff;
-	buff = fb + x / 8 + (y / 8) * 32;
-	return *buff;
+	// FIXME: this requires arranging room data in a more accesible way
+	map_object = (struct map_object_item *) room13;
+	return room13_nitems;
 }
 
-
-int is_colliding_tile(uint8_t tile)
-{
-	if (tile == 0 || tile > 100)
-		return 0;
-	return 1;
+void animate_all() {
+	list_for_each(elem, &display_list) {
+		dpo = list_entry(elem, struct displ_object, list);
+		phys_detect_tile_collisions(dpo, scr_tile_buffer);
+		list_for_each(elem2, &dpo->animator_list) {
+			anim = list_entry(elem2, struct animator, list);
+			anim->run(dpo);
+		}
+	}
 }
 
-// check collisions properly
-//
-void monk_check_collision()
+void init_monk()
 {
-	uint8_t tile[8];
+	spr_init_sprite(&monk_sprite, &pattern_monk);
+	dpo_monk.xpos = 100;
+	dpo_monk.ypos = 192 - 64;
+	dpo_monk.type = DISP_OBJECT_SPRITE;
+	dpo_monk.state = 0;
+	dpo_monk.spr = &monk_sprite;
+	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
+}
+
+void anim_static(struct displ_object *obj)
+{
+	// do nothing, just make sure we can display the sprite
+}
+
+void anim_jump(struct displ_object *obj)
+{
+	static uint8_t jmp_ct;
+
+	if (obj->state == 1) {
+		jmp_ct = 5;
+		obj->state = 2;
+	} else if (obj->state == 2){
+		if (!is_colliding_up(obj)) {
+			obj->ypos-=3;
+			spr_animate(obj->spr, 0, -3 ,0);
+		}
+		if (--jmp_ct == 0 || is_colliding_up(obj)) {
+			jmp_ct = 16;
+			obj->state = 3;
+		}
+	} else if (obj->state == 3) {
+		if (!is_colliding_up(obj)) {
+			obj->ypos-=2;
+			spr_animate(obj->spr, 0, -2 ,0);
+		}
+		if (--jmp_ct == 0 || is_colliding_up(obj)) {
+			obj->state = 4;
+		}
+	} else if (obj->state == 4) {
+		// wait for gravity to put us in the ground
+		if (is_colliding_down(obj)) {
+			list_del(&animators[6].list);
+			obj->state = 0;
+		}
+	}
+}
+
+void anim_joystick(struct displ_object *obj)
+{
+	if (stick == STICK_LEFT || stick == STICK_UP_LEFT ||
+		stick == STICK_DOWN_LEFT) {
+		if (!is_colliding_left(obj)) {
+			obj->xpos--;
+			spr_animate(obj->spr, -1, 0 ,0);
+		}
+	}
+	if (stick == STICK_RIGHT || stick == STICK_UP_RIGHT ||
+		stick == STICK_DOWN_RIGHT) {
+		if (!is_colliding_right(obj)) {
+			obj->xpos++;
+			spr_animate(obj->spr, 1, 0 ,0);
+		}
+	}
+	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
+		stick == STICK_UP_LEFT) {
+		if (obj->state == 0 && is_colliding_down(obj)) {
+			list_add(&animators[6].list, &dpo_monk.animator_list);
+			obj->state = 1;
+		}
+	}
+	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
+		stick == STICK_DOWN_RIGHT) {
+			// TODO: Duck
+			// need change the monk sprite
+			// and the dimensions to check collisions
+	}
+}
+
+/*
+ * Vertical fall at constant speed until collision
+ */
+void anim_gravity(struct displ_object *obj)
+{
+	if (!is_colliding_down(obj)) {
+		obj->ypos++;
+		spr_animate(obj->spr, 0, 1, 0);
+	}
+}
+
+void anim_left_right(struct displ_object *obj)
+{
+	// FIXME: a-posteriory correction should never be necessary
+	if (obj->state == 0 && !is_colliding_right(obj)) {
+		obj->xpos++;
+		spr_animate(obj->spr, 1, 0, 0);
+	} else if (obj->state == 1 && !is_colliding_left(obj)) {
+		obj->xpos--;
+		spr_animate(obj->spr, -1, 0, 0);
+	}
+	if (is_colliding_left(obj)) {
+		obj->state = 0;
+	} else if (is_colliding_right(obj)) {
+		obj->state = 1;
+	}
+	if (!is_colliding_down(obj)) {
+		if (obj->state == 0) {
+			obj->state = 1;
+			obj->xpos-=2;
+			spr_animate(obj->spr, -2, 0, 0);
+		} else {
+			obj->xpos+=2;
+			spr_animate(obj->spr, 2, 0, 0);
+			obj->state = 0;
+		}
+		//phys_detect_tile_collisions(obj, map_buf);
+	}
+}
+
+void init_animators()
+{
+	// FIXME: isn' there a way to improve this? FGS
+	animators[0].run = anim_left_right;
+	animators[1].run = anim_gravity;
+	animators[2].run = anim_static;
+	// animators[3].run = anim_up_down;
+	// animators[4].run = anim_drop;
+	animators[5].run = anim_joystick;
+	animators[6].run = anim_jump;
+}
+
+void init_resources()
+{
 	uint8_t i;
-	//     0  1
-	//    2    4
-	//    3    5
-	//     6  7
-	tile[0] = tile_on_screen_coords(x + 5,  y + 7);
-	tile[1] = tile_on_screen_coords(x + 10, y + 7);
-	tile[2] = tile_on_screen_coords(x - 1,  y + 10);
-	tile[3] = tile_on_screen_coords(x - 1,  y + 28);
-	tile[4] = tile_on_screen_coords(x + 15, y + 10);
-	tile[5] = tile_on_screen_coords(x + 15, y + 28);
-	tile[6] = tile_on_screen_coords(x + 5,  y + 34);
-	tile[7] = tile_on_screen_coords(x + 10, y + 34);
+	INIT_TILE_SET(tileset_abbaye, tiles2);
+	INIT_TILE_SET(tileset_scroll, scroll);
 
-	// add two additional tiles between 23 and 45 to increase
+	// these are the map tiles 128 tiles (4 top rows in all banks)
+	tile_set_to_vram(&tileset_abbaye, 1);
 
-	monk_state.collision = 0;
-	for (i=0; i<8; i++) {
-		if (is_colliding_tile(tile[i]))
-			monk_state.collision |= 1 << i;
-	}
-}
+	SPR_DEFINE_PATTERN_SET(pattern_bat, SPR_SIZE_16x16, 1, 1, 2, bat);
+	// SPR_DEFINE_PATTERN_SET(pattern_bullet, SPR_SIZE_16x16, 1, 2, 2, bullet);
+	// SPR_DEFINE_PATTERN_SET(pattern_skeleton, SPR_SIZE_16x32, 1, 2, 2, archer_skeleton);
+	// SPR_DEFINE_PATTERN_SET(pattern_arrow, SPR_SIZE_16x16, 1, 2, 1, arrow);
+	// SPR_DEFINE_PATTERN_SET(pattern_plant, SPR_SIZE_16x16, 1, 1, 2, plant);
+	// SPR_DEFINE_PATTERN_SET(pattern_waterdrop, SPR_SIZE_16x16, 1, 1, 3, waterdrop);
+	// SPR_DEFINE_PATTERN_SET(pattern_spider, SPR_SIZE_16x16, 1, 1, 2, spider);
+	SPR_DEFINE_PATTERN_SET(pattern_monk, SPR_SIZE_16x32, 1, 2, 3, monk1);
+	// SPR_DEFINE_PATTERN_SET(pattern_monk_death, SPR_SIZE_16x32, 1, 1, 2, monk_death);
+	SPR_DEFINE_PATTERN_SET(pattern_templar, SPR_SIZE_16x32, 1, 2, 2, templar);
 
-void monk_physics_work()
-{
-	monk_check_collision();
-	if(!(monk_state.collision & COLLISION_DOWN_MASK)) {
-		spr_animate(&monk,0,2,0);
-		y+=2;
-	}
-}
+	// FIXME: this needs to be done per room
+	for (i = 1; i < 76; i++)
+		phys_set_colliding_tile(i);
 
-void monk_animate_work()
-{
-	signed char dx,dy;
-
-	monk_check_collision();
-	dx =0; dy =0;
-	if (monk_state.jump) {
-	 	if (!(monk_state.collision & COLLISION_UP_MASK))
-			dy = - 2;
-		if(++monk_state.jump_cnt > 25) {
-			monk_state.jump = 0;
-			monk_state.jump_cnt = 0;
-		}
-	}
-	if (monk_state.left && !(monk_state.collision & COLLISION_LEFT_MASK)) {
-		dx = - 1;
-		monk_state.left = 0;
-	}
-	else if (monk_state.right && !(monk_state.collision & COLLISION_RIGHT_MASK)) {
-		dx = 1;
-		monk_state.right = 0;
-	}
-
-	if (dx != 0 || dy != 0) {
-		spr_animate(&monk,dx,dy,0);
-		x = x + dx;
-		y = y + dy;
-	}
 }
