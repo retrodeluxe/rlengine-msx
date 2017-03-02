@@ -49,8 +49,16 @@ struct displ_object dpo_monk;
 struct list_head display_list;
 struct list_head *elem, *elem2, *elem3;
 
-// FIXME: this is wrong
 struct animator animators[7];
+
+typedef enum anim_t {
+	ANIM_LEFT_RIGHT,
+	ANIM_GRAVITY,
+	ANIM_STATIC,
+	ANIM_JOYSTICK,
+	ANIM_JUMP,
+};
+
 struct map_object_item *map_object;
 
 struct animator *anim;
@@ -171,6 +179,8 @@ void load_room()
 	for (dpo = display_object, i = 0; i < nitems; i++, dpo++) {
 		if (0) {
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
+				//tile_valloc_tob();
+				//tile_init_tob();
 
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 
@@ -204,13 +214,13 @@ void load_room()
 					spr_valloc_pattern_set(&pattern_templar);
 				spr_init_sprite(&enemy_sprites[i], &pattern_templar);
 				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[0].list, &dpo->animator_list);
+				list_add(&animators[ANIM_LEFT_RIGHT].list, &dpo->animator_list);
 			} else if (map_object->object.movable.type == TYPE_BAT) {
 				if (!pattern_bat.allocated)
 					spr_valloc_pattern_set(&pattern_bat);
 				spr_init_sprite(&enemy_sprites[i], &pattern_bat);
 				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[2].list, &dpo->animator_list);
+				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
 			} else {
 				map_object++;
 				continue;
@@ -229,8 +239,8 @@ void load_room()
 		}
 	}
 	INIT_LIST_HEAD(&dpo_monk.animator_list);
-	list_add(&animators[5].list, &dpo_monk.animator_list); // joystick
-	list_add(&animators[1].list, &dpo_monk.animator_list); // gravity
+	list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list);
+	list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
 	INIT_LIST_HEAD(&dpo_monk.list);
 	list_add(&dpo_monk.list, &display_list);
 	// show all elements
@@ -239,6 +249,9 @@ void load_room()
 		if (dpo->type == DISP_OBJECT_SPRITE) {
 			spr_show(dpo->spr);
 		}
+		//} else if (dpo->type == DISP_OBJECT_TILE) {
+			//tile_show(dpo->tob);
+		//}
 	}
 	vdp_screen_enable();
 }
@@ -304,7 +317,7 @@ void anim_jump(struct displ_object *obj)
 	} else if (obj->state == 4) {
 		// wait for gravity to put us in the ground
 		if (is_colliding_down(obj)) {
-			list_del(&animators[6].list);
+			list_del(&animators[ANIM_JUMP].list);
 			obj->state = 0;
 		}
 	}
@@ -329,7 +342,7 @@ void anim_joystick(struct displ_object *obj)
 	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
 		stick == STICK_UP_LEFT) {
 		if (obj->state == 0 && is_colliding_down(obj)) {
-			list_add(&animators[6].list, &dpo_monk.animator_list);
+			list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
 			obj->state = 1;
 		}
 	}
@@ -384,13 +397,13 @@ void anim_left_right(struct displ_object *obj)
 void init_animators()
 {
 	// FIXME: isn' there a way to improve this? FGS
-	animators[0].run = anim_left_right;
-	animators[1].run = anim_gravity;
-	animators[2].run = anim_static;
+	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
+	animators[ANIM_GRAVITY].run = anim_gravity;
+	animators[ANIM_STATIC].run = anim_static;
 	// animators[3].run = anim_up_down;
 	// animators[4].run = anim_drop;
-	animators[5].run = anim_joystick;
-	animators[6].run = anim_jump;
+	animators[ANIM_JOYSTICK].run = anim_joystick;
+	animators[ANIM_JUMP].run = anim_jump;
 }
 
 void init_resources()
