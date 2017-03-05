@@ -318,9 +318,9 @@ class TileMapWriter:
                         if len(item['properties'].keys()) == 0:
                             print ("        0,")
                         ## add padding if needed
-                        #padding = max_object_size - len(item['properties'].keys())
-                        #for i in xrange(padding):
-                        #    print ("            0,")
+                        padding = max_object_size - len(item['properties'].keys()) - 2
+                        for i in xrange(padding):
+                            print ("            0,   /* padding */")
                         #print ("        },");
                         #print ("    },")
                         count = count + 1
