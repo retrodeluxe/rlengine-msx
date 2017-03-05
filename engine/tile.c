@@ -21,16 +21,69 @@
 #include "sys.h"
 #include "tile.h"
 #include "log.h"
+#include "bitmap.h"
 
+uint8_t bitmap_tile_bank[32];
+
+void tile_init()
+{
+	/* initialize bitmap to all ones : free */
+	sys_memset(bitmap_tile_bank, 255, 32);
+
+	// first tile is reserved
+	bitmap_reset(bitmap_tile_bank, 0);
+}
+
+/**
+ * set a tileset in a fixed position.
+ */
 void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 {
-	uint16_t size, offset;
+	uint16_t size, offset, i;
 	offset = 256 * 8 * bank + pos * 8;
 	size = ts->w * ts->h * 8;
 	vdp_copy_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);
 	vdp_copy_to_vram(ts->color, vdp_base_color_grp1 + offset, size);
+	for (i = pos; i < pos + (size / 8); i++)
+		bitmap_reset(bitmap_tile_bank, i);
+	ts->allocated = true;
+	ts->pidx = pos;
 }
 
+/**
+ * alloc a tileset in all banks
+ */
+void tile_set_valloc(struct tile_set *ts)
+{
+	uint16_t offset;
+	uint8_t i, pos, size;
+
+	if (ts->allocated)
+		return;
+
+	size = ts->w * ts->h;
+	pos = bitmap_find_gap(bitmap_tile_bank, size, 31);
+
+	// TODO: check for fail
+	for (i = pos; i < pos + size; i++)
+		bitmap_reset(bitmap_tile_bank, i);
+
+	for (i = 0; i < 3; i++) {
+		offset = 256 * 8 * i + pos * 8;
+		vdp_copy_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size * 8);
+		vdp_copy_to_vram(ts->color, vdp_base_color_grp1 + offset, size * 8);
+	}
+
+	ts->allocated = true;
+	ts->pidx = pos;
+	//log_e("allocated tile set at pos %d\n", pos);
+}
+
+/**
+ * Force a tileset into a certain position
+ *   this is useful when we have a map whose tiles are static and depend
+ *   on the tiles to be in a specific location.
+ */
 void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 {
 	tile_set_to_vram_bank(ts, 0, pos);
@@ -51,4 +104,23 @@ void tile_map_clip(struct tile_map *tm,
 		ptr += gfx_screen_tile_w;
 		src += tm->w;
 	}
+}
+
+void tile_free_tile_object()
+{
+}
+
+/**
+ * puts on screen a set of tiles using an already allocated tileset
+ */
+void tile_object_show(struct tile_object *to, uint8_t * scrbuf)
+{
+	uint8_t *ptr = scrbuf + to->x/8 + to->y/8 * 32;
+	uint8_t tile = to->ts->pidx + to->idx;
+
+	*(ptr) = tile++;
+	*(ptr + 1) = tile++;
+	*(ptr + 32) = tile++;
+	*(ptr + 32 + 1) = tile++;
+	log_e("showing : %d at pos %d\n", tile, ptr);
 }

@@ -5,7 +5,7 @@
 #include "sprite.h"
 
 #define DISP_OBJECT_SPRITE 1
-#define DISP_OBJECT_GFX 2
+#define DISP_OBJECT_TILE 2
 
 struct displ_object;
 
@@ -21,6 +21,7 @@ struct displ_object {
 	int16_t ypos;
 	uint8_t collision_state;
 	struct spr_sprite_def *spr;
+	struct tile_object *tob;
 	struct list_head list;
 	struct list_head animator_list;
 };
