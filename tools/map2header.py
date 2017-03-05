@@ -194,7 +194,14 @@ class TileMapWriter:
                         if _type == '':
                             _type = item['name']
                         if 'properties' in item:
-                            object_types[_type] = item['properties'].keys()
+                            ## add avoiding repetitions.
+                            if _type in object_types:
+                                already_added = set(object_types[_type])
+                                new_items = set(item['properties'].keys())
+                                to_be_added = new_items - already_added
+                                object_types[_type] = object_types[_type] + list(to_be_added)
+                            else:
+                                object_types[_type] = item['properties'].keys()
                             length = len(item['properties'].keys())
                             if length > max_object_size:
                                 max_object_size = length
@@ -296,37 +303,30 @@ class TileMapWriter:
                     print ("const unsigned char %s[] = {" % name)
                     for item in layer['objects']:
                         print ("    /* object %s */" % count)
-                        #print ("    {")
                         _type = item['type']
                         if _type == '':
                             _type = item['name']
                         print ("    %s, %s, %s, %s, %s, %s," % (_type.upper(),  item['x'] % 256,  item['y'] % 176,  item['width'], item['height'], 1 if item['visible'] else 0))
-                        #print ("        { ");
-                        #print ("        { .%s = { " % _type);
-                        #print item['properties']
-                        if 'properties' in item:
-                           for _property in item['properties'].keys():
+                        for _property in object_types[_type]:
+                            if 'properties' in item and _property in item['properties']:
                                 value = item['properties'][_property]
-                                if _property in special_properties and not value.isdigit():
-                                    print ("    %s_%s, " % (_property.upper(), value.upper()))
-                                elif not value.isdigit() and value.replace('.','').isdigit:
-                                    print ("    %s, " % (value.replace('.','')))
-                                elif value.isdigit():
-                                    wrap = int(value) % 256
-                                    ## regular numeric value, wrapped to byte
-                                    print ("    %s, " % wrap)
-                                else:
-                                    print ("    %s, " % value)
-                           ## add at least one empty prop
-                           if len(item['properties'].keys()) == 0:
-                               print ("        0,")
-                           ## add padding if needed
-                           padding = max_object_size - len(item['properties'].keys()) - 2
-                           for i in xrange(padding):
-                               print ("            0,   /* padding */")
-                            #print ("        },");
-                            #print ("    },")
-                           count = count + 1
+                            else:
+                                value = "0"
+                            if _property in special_properties and not value.isdigit():
+                                print ("    %s_%s, " % (_property.upper(), value.upper()))
+                            elif not value.isdigit() and value.replace('.','').isdigit:
+                                print ("    %s, " % (value.replace('.','')))
+                            elif value.isdigit():
+                                wrap = int(value) % 256
+                                ## regular numeric value, wrapped to byte
+                                print ("    %s, " % wrap)
+                            else:
+                                print ("    %s, " % value)
+                        ## add padding if needed (should never be neeeded anymore)
+                        padding = max_object_size - len(object_types[_type]) + 1
+                        for i in xrange(padding):
+                            print ("            0,   /* padding */")
+                        count = count + 1
                     print " 255};"
 
             count = 0
