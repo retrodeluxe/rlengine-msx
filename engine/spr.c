@@ -60,6 +60,9 @@ uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps)
 	uint16_t npat;
 	uint8_t i, idx, f = 0;
 
+	if (ps->allocated)
+		return true;
+
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
 
 	for (i = 0; i < vdp_hw_max_patterns - 1; i++) {
@@ -70,6 +73,7 @@ uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps)
 			vdp_copy_to_vram(ps->patterns, vdp_base_sppat_grp1 + idx * 8, npat * 8);
 			ps->pidx = idx;
 			ps->allocated = true;
+			log_e("spr allocated to %d\n", idx);
 			return true;
 		}
 	}
