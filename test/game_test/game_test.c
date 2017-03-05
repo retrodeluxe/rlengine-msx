@@ -22,12 +22,20 @@
 #include <stdlib.h>
 
 struct tile_set logo;
-struct tile_set tileset_abbaye;
-struct tile_set tileset_scroll;
+struct tile_set tileset_map1;
+struct tile_set tileset_map2;
+struct tile_set tileset_map3;
+struct tile_set tileset_map4;
+struct tile_set tileset_map5;
 
+struct tile_set tileset_scroll;
+struct tile_set tileset_checkpoint;
+
+// use map data to enumerate,
+// problem is that we have mixed sets of tile and sprites.
 struct spr_pattern_set pattern_bat;
 struct spr_pattern_set pattern_smiley;
-struct spr_pattern_set pattern_bullet;
+struct spr_pattern_set pattern_rat;
 struct spr_pattern_set pattern_skeleton;
 struct spr_pattern_set pattern_spider;
 struct spr_pattern_set pattern_arrow;
@@ -42,6 +50,8 @@ struct spr_sprite_def monk_sprite;
 struct gfx_tilemap_object tile_objects[12];
 struct displ_object display_object[32];
 
+struct tile_object tileobject[31];
+
 struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];
 struct displ_object dpo_monk;
@@ -51,7 +61,7 @@ struct list_head *elem, *elem2, *elem3;
 
 struct animator animators[7];
 
-typedef enum anim_t {
+enum anim_t {
 	ANIM_LEFT_RIGHT,
 	ANIM_GRAVITY,
 	ANIM_STATIC,
@@ -93,7 +103,7 @@ void init_animators();
 void load_room();
 void check_and_change_room();
 void show_score_panel();
-uint8_t find_room_data(struct map_object_item *map_obj);
+void find_room_data(struct map_object_item *map_obj);
 
 void main()
 {
@@ -123,8 +133,9 @@ void main()
 
 void init_game_state()
 {
+	// room 3
 	game_state.map_x = 96;
-	game_state.map_y = 22;
+	game_state.map_y = 0;
 }
 
 void show_score_panel()
@@ -165,38 +176,72 @@ void check_and_change_room()
 
 void load_room()
 {
-	uint8_t i, nitems;
+	uint8_t i, spr_ct = 0, tob_ct = 0;
 	vdp_screen_disable();
 	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
-	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 
 	spr_init();
+	// FIXME: need some sort of teardown of the allocations.
+	pattern_monk.allocated = false;
 	spr_valloc_pattern_set(&pattern_monk);
 	spr_init_sprite(&monk_sprite, &pattern_monk);
 
 	INIT_LIST_HEAD(&display_list);
-	nitems = find_room_data(map_object);
-	for (dpo = display_object, i = 0; i < nitems; i++, dpo++) {
-		if (0) {
+	find_room_data(map_object);
+	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
+		log_e("dpo %d type : %d\n", i ,map_object->type);
+		if (map_object->type == ACTIONITEM) {
+			//log_e("actionitem type : %d\n",map_object->object.actionitem.type);
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
-				//tile_valloc_tob();
-				//tile_init_tob();
-
+				tile_set_valloc(&tileset_scroll);
+				tileobject[tob_ct].x = map_object->x;
+				tileobject[tob_ct].y = map_object->y;
+				tileobject[tob_ct].size = 1;
+				tileobject[tob_ct].ts = &tileset_scroll;
+				tileobject[tob_ct].idx = 0;
+				dpo->type = DISP_OBJECT_TILE;
+				dpo->tob = &tileobject[tob_ct];
+				dpo->xpos = map_object->x;
+				dpo->ypos = map_object->y;
+				dpo->state = 0;
+				INIT_LIST_HEAD(&dpo->list);
+				list_add(&dpo->list, &display_list);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
-
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
-
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
-
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
-
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
-
+				tile_set_valloc(&tileset_checkpoint);
+				tileobject[tob_ct].x = map_object->x;
+				tileobject[tob_ct].y = map_object->y;
+				tileobject[tob_ct].size = 1;
+				tileobject[tob_ct].ts = &tileset_checkpoint;
+				tileobject[tob_ct].idx = 0;
+				dpo->type = DISP_OBJECT_TILE;
+				dpo->tob = &tileobject[i];
+				dpo->xpos = map_object->x;
+				dpo->ypos = map_object->y;
+				dpo->state = 0;
+				INIT_LIST_HEAD(&dpo->list);
+				list_add(&dpo->list, &display_list);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
-
+				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
-
+				map_object++;
+			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
+				map_object++;
+			} else {
+				map_object++;
 			}
+			tob_ct++;
 		//} else if (map_object->type == STATIC) {
 
 		///} else if (map_object->type == DOOR) {
@@ -210,15 +255,23 @@ void load_room()
 
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
-				if (!pattern_templar.allocated)
-					spr_valloc_pattern_set(&pattern_templar);
-				spr_init_sprite(&enemy_sprites[i], &pattern_templar);
+				spr_valloc_pattern_set(&pattern_templar);
+				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_templar);
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[ANIM_LEFT_RIGHT].list, &dpo->animator_list);
 			} else if (map_object->object.movable.type == TYPE_BAT) {
-				if (!pattern_bat.allocated)
-					spr_valloc_pattern_set(&pattern_bat);
-				spr_init_sprite(&enemy_sprites[i], &pattern_bat);
+				spr_valloc_pattern_set(&pattern_bat);
+				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_bat);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
+			} else if (map_object->object.movable.type == TYPE_SPIDER) {
+				spr_valloc_pattern_set(&pattern_spider);
+				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_spider);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
+			} else if (map_object->object.movable.type == TYPE_RAT) {
+				spr_valloc_pattern_set(&pattern_rat);
+				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_rat);
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
 			} else {
@@ -227,14 +280,17 @@ void load_room()
 			}
 
 			// this is now wrong, move to a function.
-			spr_set_pos(&enemy_sprites[i], map_object->x, map_object->y);
+			spr_set_pos(&enemy_sprites[spr_ct], map_object->x, map_object->y);
 			dpo->type = DISP_OBJECT_SPRITE;
-			dpo->spr = &enemy_sprites[i];
+			dpo->spr = &enemy_sprites[spr_ct];
 			dpo->xpos = map_object->x;
 			dpo->ypos = map_object->y;
 			dpo->state = 0;
 			INIT_LIST_HEAD(&dpo->list);
 			list_add(&dpo->list, &display_list);
+			map_object++;
+			spr_ct++;
+		} else {
 			map_object++;
 		}
 	}
@@ -248,19 +304,22 @@ void load_room()
 		dpo = list_entry(elem, struct displ_object, list);
 		if (dpo->type == DISP_OBJECT_SPRITE) {
 			spr_show(dpo->spr);
+		} else if (dpo->type == DISP_OBJECT_TILE) {
+			log_e("showing dpo\n");
+			tile_object_show(dpo->tob, scr_tile_buffer);
 		}
-		//} else if (dpo->type == DISP_OBJECT_TILE) {
-			//tile_show(dpo->tob);
-		//}
 	}
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
+
 	vdp_screen_enable();
 }
 
-uint8_t find_room_data(struct map_object_item *map_obj)
+void find_room_data(struct map_object_item *map_obj)
 {
-	// FIXME: this requires arranging room data in a more accesible way
-	map_object = (struct map_object_item *) room13;
-	return room13_nitems;
+	uint8_t pos = game_state.map_x / 32 + (game_state.map_y / 22 * 5);
+	map_object = (struct map_object_item *) object_index[pos];
+	log_e("found room %d %d\n", pos, map_obj);
+	log_e("should be room %d\n", room13);
 }
 
 void animate_all() {
@@ -396,7 +455,6 @@ void anim_left_right(struct displ_object *obj)
 
 void init_animators()
 {
-	// FIXME: isn' there a way to improve this? FGS
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
 	animators[ANIM_GRAVITY].run = anim_gravity;
 	animators[ANIM_STATIC].run = anim_static;
@@ -409,19 +467,31 @@ void init_animators()
 void init_resources()
 {
 	uint8_t i;
-	INIT_TILE_SET(tileset_abbaye, tiles2);
-	INIT_TILE_SET(tileset_scroll, scroll);
+	tile_init();
 
-	// these are the map tiles 128 tiles (4 top rows in all banks)
-	tile_set_to_vram(&tileset_abbaye, 1);
+	INIT_TILE_SET(tileset_map1, maptiles1);
+	INIT_TILE_SET(tileset_map2, maptiles2);
+	INIT_TILE_SET(tileset_map3, maptiles3);
+	INIT_TILE_SET(tileset_map4, maptiles4);
+	INIT_TILE_SET(tileset_map5, maptiles5);
+	INIT_TILE_SET(tileset_scroll, scroll);
+	INIT_TILE_SET(tileset_checkpoint, checkpoint);
+
+	tile_set_valloc(&tileset_map1);
+	tile_set_valloc(&tileset_map2);
+	tile_set_valloc(&tileset_map3);
+	// next two need to be in a fixed position
+	tile_set_to_vram(&tileset_map4, 126);
+	tile_set_to_vram(&tileset_map5, 126 + 32);
+
 
 	SPR_DEFINE_PATTERN_SET(pattern_bat, SPR_SIZE_16x16, 1, 1, 2, bat);
-	// SPR_DEFINE_PATTERN_SET(pattern_bullet, SPR_SIZE_16x16, 1, 2, 2, bullet);
+	SPR_DEFINE_PATTERN_SET(pattern_rat, SPR_SIZE_16x16, 1, 2, 2, rat);
 	// SPR_DEFINE_PATTERN_SET(pattern_skeleton, SPR_SIZE_16x32, 1, 2, 2, archer_skeleton);
 	// SPR_DEFINE_PATTERN_SET(pattern_arrow, SPR_SIZE_16x16, 1, 2, 1, arrow);
 	// SPR_DEFINE_PATTERN_SET(pattern_plant, SPR_SIZE_16x16, 1, 1, 2, plant);
 	// SPR_DEFINE_PATTERN_SET(pattern_waterdrop, SPR_SIZE_16x16, 1, 1, 3, waterdrop);
-	// SPR_DEFINE_PATTERN_SET(pattern_spider, SPR_SIZE_16x16, 1, 1, 2, spider);
+	SPR_DEFINE_PATTERN_SET(pattern_spider, SPR_SIZE_16x16, 1, 1, 2, spider);
 	SPR_DEFINE_PATTERN_SET(pattern_monk, SPR_SIZE_16x32, 1, 2, 3, monk1);
 	// SPR_DEFINE_PATTERN_SET(pattern_monk_death, SPR_SIZE_16x32, 1, 1, 2, monk_death);
 	SPR_DEFINE_PATTERN_SET(pattern_templar, SPR_SIZE_16x32, 1, 2, 2, templar);
