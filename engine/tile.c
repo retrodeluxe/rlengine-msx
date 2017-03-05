@@ -118,9 +118,14 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf)
 	uint8_t *ptr = scrbuf + to->x/8 + to->y/8 * 32;
 	uint8_t tile = to->ts->pidx + to->idx;
 
-	*(ptr) = tile++;
-	*(ptr + 1) = tile++;
-	*(ptr + 32) = tile++;
-	*(ptr + 32 + 1) = tile++;
+	// assumption is that the dimensions of the tile object match the
+	// tileset, that seems rather practical
+	uint8_t x,y;
+	for (y = 0; y < to->ts->h; y++) {
+		for (x = 0; x < to->ts->w; x++) {
+			*(ptr + x) = tile++;
+		}
+		ptr += 32;
+	}
 	log_e("showing : %d at pos %d\n", tile, ptr);
 }
