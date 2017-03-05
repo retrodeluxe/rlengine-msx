@@ -193,17 +193,18 @@ class TileMapWriter:
                         _type = item['type']
                         if _type == '':
                             _type = item['name']
-                        object_types[_type] = item['properties'].keys()
-                        length = len(item['properties'].keys())
-                        if length > max_object_size:
-                            max_object_size = length
-                        ## find special properties that require enums
-                        for _property in item['properties'].keys():
-                            value = item['properties'][_property]
-                            if (not value.isdigit() and not value.replace('.','').isdigit()):
-                                if not _property in special_properties:
-                                    special_properties[_property] = {}
-                                special_properties[_property][value.encode('ascii','ignore')] = '1'
+                        if 'properties' in item:
+                            object_types[_type] = item['properties'].keys()
+                            length = len(item['properties'].keys())
+                            if length > max_object_size:
+                                max_object_size = length
+                            ## find special properties that require enums
+                            for _property in item['properties'].keys():
+                                value = item['properties'][_property]
+                                if (not value.isdigit() and not value.replace('.','').isdigit()):
+                                    if not _property in special_properties:
+                                        special_properties[_property] = {}
+                                    special_properties[_property][value.encode('ascii','ignore')] = '1'
 
             ## dump defines to identify each object type
             if len(object_types.keys()) > 0:
@@ -257,6 +258,7 @@ class TileMapWriter:
                 print ("    union map_object object;")
             print "};\n"
 
+
             # different type of dump depending of type
             for layer in self.tilemap['layers']:
                 ## first dump tile layers
@@ -302,29 +304,48 @@ class TileMapWriter:
                         #print ("        { ");
                         #print ("        { .%s = { " % _type);
                         #print item['properties']
-                        for _property in item['properties'].keys():
-                            value = item['properties'][_property]
-                            if _property in special_properties and not value.isdigit():
-                                print ("    %s_%s, " % (_property.upper(), value.upper()))
-                            elif not value.isdigit() and value.replace('.','').isdigit:
-                                print ("    %s, " % (value.replace('.','')))
-                            elif value.isdigit():
-                                wrap = int(value) % 256
-                                ## regular numeric value, wrapped to byte
-                                print ("    %s, " % wrap)
-                            else:
-                                print ("    %s, " % value)
-                        ## add at least one empty prop
-                        if len(item['properties'].keys()) == 0:
-                            print ("        0,")
-                        ## add padding if needed
-                        padding = max_object_size - len(item['properties'].keys()) - 2
-                        for i in xrange(padding):
-                            print ("            0,   /* padding */")
-                        #print ("        },");
-                        #print ("    },")
+                        if 'properties' in item:
+                           for _property in item['properties'].keys():
+                                value = item['properties'][_property]
+                                if _property in special_properties and not value.isdigit():
+                                    print ("    %s_%s, " % (_property.upper(), value.upper()))
+                                elif not value.isdigit() and value.replace('.','').isdigit:
+                                    print ("    %s, " % (value.replace('.','')))
+                                elif value.isdigit():
+                                    wrap = int(value) % 256
+                                    ## regular numeric value, wrapped to byte
+                                    print ("    %s, " % wrap)
+                                else:
+                                    print ("    %s, " % value)
+                           ## add at least one empty prop
+                           if len(item['properties'].keys()) == 0:
+                               print ("        0,")
+                           ## add padding if needed
+                           padding = max_object_size - len(item['properties'].keys()) - 2
+                           for i in xrange(padding):
+                               print ("            0,   /* padding */")
+                            #print ("        },");
+                            #print ("    },")
+                           count = count + 1
+                    print " 255};"
+
+            count = 0
+            for layer in self.tilemap['layers']:
+                if 'objectgroup' in layer['type']:
+                    count = count + 1
+            if (count > 0):
+                print ("/* object group index */")
+                print ("unsigned char *object_index[%s];" % count)
+                print ("void init_map_index() {")
+                count = 0;
+                for layer in self.tilemap['layers']:
+                    if 'objectgroup' in layer['type']:
+                        name = layer['name'].replace(' ','_')
+                        print ( "\tobject_index[%s] = %s; " % (count, name))
                         count = count + 1
-                    print "};"
+                print ("main();")
+                print ("}")
+
 
 class TiledJsonReader:
         """ reads a json file saved from tiled"""
