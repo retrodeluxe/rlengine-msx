@@ -9,7 +9,7 @@ struct tile_set {
 	uint8_t h;
 	const uint8_t *pattern;
 	const uint8_t *color;
-	uint8_t pidx;
+	uint8_t pidx; /*< index of this tileset in vram pattern bank */
 	bool allocated;
 };
 
@@ -24,7 +24,10 @@ struct tile_map {
 struct tile_object {
 	uint8_t x;
 	uint8_t y;
-	uint8_t size;  /*< 0:1x1, 1:2x2, 2:4x4 */
+	uint8_t w;
+	uint8_t h;
+	uint8_t n_anim_steps;
+	uint8_t n_dirs;
 	struct tile_set *ts;
 	uint8_t idx; /*< index of first tile in the tile set */
 };

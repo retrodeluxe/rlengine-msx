@@ -31,19 +31,16 @@ struct tile_set tileset_map5;
 struct tile_set tileset_scroll;
 struct tile_set tileset_checkpoint;
 
-// use map data to enumerate,
-// problem is that we have mixed sets of tile and sprites.
-struct spr_pattern_set pattern_bat;
-struct spr_pattern_set pattern_smiley;
-struct spr_pattern_set pattern_rat;
-struct spr_pattern_set pattern_skeleton;
-struct spr_pattern_set pattern_spider;
-struct spr_pattern_set pattern_arrow;
-struct spr_pattern_set pattern_plant;
-struct spr_pattern_set pattern_waterdrop;
-struct spr_pattern_set pattern_templar;
-struct spr_pattern_set pattern_monk;
-struct spr_pattern_set pattern_monk_death;
+enum spr_patterns_t {
+	PATRN_BAT,
+	PATRN_RAT,
+	PATRN_SPIDER,
+	PATRN_TEMPLAR,
+	PATRN_MONK,
+	PATRN_MAX,
+};
+
+struct spr_pattern_set spr_pattern[PATRN_MAX];
 
 struct spr_sprite_def enemy_sprites[31];
 struct spr_sprite_def monk_sprite;
@@ -181,10 +178,13 @@ void load_room()
 	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
 
 	spr_init();
-	// FIXME: need some sort of teardown of the allocations.
-	pattern_monk.allocated = false;
-	spr_valloc_pattern_set(&pattern_monk);
-	spr_init_sprite(&monk_sprite, &pattern_monk);
+
+	// free all patterns
+	for (i = 0; i < PATRN_MAX; i++)
+		spr_pattern[i].allocated = false;
+
+	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
+	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 
 	INIT_LIST_HEAD(&display_list);
 	find_room_data(map_object);
@@ -196,7 +196,6 @@ void load_room()
 				tile_set_valloc(&tileset_scroll);
 				tileobject[tob_ct].x = map_object->x;
 				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].size = 1;
 				tileobject[tob_ct].ts = &tileset_scroll;
 				tileobject[tob_ct].idx = 0;
 				dpo->type = DISP_OBJECT_TILE;
@@ -211,6 +210,7 @@ void load_room()
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
+				// this is an animated tile with 4 frames, but static. 
 				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				map_object++;
@@ -220,7 +220,6 @@ void load_room()
 				tile_set_valloc(&tileset_checkpoint);
 				tileobject[tob_ct].x = map_object->x;
 				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].size = 1;
 				tileobject[tob_ct].ts = &tileset_checkpoint;
 				tileobject[tob_ct].idx = 0;
 				dpo->type = DISP_OBJECT_TILE;
@@ -255,23 +254,23 @@ void load_room()
 
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
-				spr_valloc_pattern_set(&pattern_templar);
-				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_templar);
+				spr_valloc_pattern_set(&spr_pattern[PATRN_TEMPLAR]);
+				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_TEMPLAR]);
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[ANIM_LEFT_RIGHT].list, &dpo->animator_list);
 			} else if (map_object->object.movable.type == TYPE_BAT) {
-				spr_valloc_pattern_set(&pattern_bat);
-				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_bat);
+				spr_valloc_pattern_set(&spr_pattern[PATRN_BAT]);
+				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_BAT]);
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
-				spr_valloc_pattern_set(&pattern_spider);
-				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_spider);
+				spr_valloc_pattern_set(&spr_pattern[PATRN_SPIDER]);
+				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_SPIDER]);
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
 			} else if (map_object->object.movable.type == TYPE_RAT) {
-				spr_valloc_pattern_set(&pattern_rat);
-				spr_init_sprite(&enemy_sprites[spr_ct], &pattern_rat);
+				spr_valloc_pattern_set(&spr_pattern[PATRN_RAT]);
+				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_RAT]);
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
 			} else {
@@ -335,7 +334,7 @@ void animate_all() {
 
 void init_monk()
 {
-	spr_init_sprite(&monk_sprite, &pattern_monk);
+	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 	dpo_monk.xpos = 100;
 	dpo_monk.ypos = 192 - 64;
 	dpo_monk.type = DISP_OBJECT_SPRITE;
@@ -485,16 +484,11 @@ void init_resources()
 	tile_set_to_vram(&tileset_map5, 126 + 32);
 
 
-	SPR_DEFINE_PATTERN_SET(pattern_bat, SPR_SIZE_16x16, 1, 1, 2, bat);
-	SPR_DEFINE_PATTERN_SET(pattern_rat, SPR_SIZE_16x16, 1, 2, 2, rat);
-	// SPR_DEFINE_PATTERN_SET(pattern_skeleton, SPR_SIZE_16x32, 1, 2, 2, archer_skeleton);
-	// SPR_DEFINE_PATTERN_SET(pattern_arrow, SPR_SIZE_16x16, 1, 2, 1, arrow);
-	// SPR_DEFINE_PATTERN_SET(pattern_plant, SPR_SIZE_16x16, 1, 1, 2, plant);
-	// SPR_DEFINE_PATTERN_SET(pattern_waterdrop, SPR_SIZE_16x16, 1, 1, 3, waterdrop);
-	SPR_DEFINE_PATTERN_SET(pattern_spider, SPR_SIZE_16x16, 1, 1, 2, spider);
-	SPR_DEFINE_PATTERN_SET(pattern_monk, SPR_SIZE_16x32, 1, 2, 3, monk1);
-	// SPR_DEFINE_PATTERN_SET(pattern_monk_death, SPR_SIZE_16x32, 1, 1, 2, monk_death);
-	SPR_DEFINE_PATTERN_SET(pattern_templar, SPR_SIZE_16x32, 1, 2, 2, templar);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_RAT], SPR_SIZE_16x16, 1, 2, 2, rat);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SPIDER], SPR_SIZE_16x16, 1, 1, 2, spider);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_MONK], SPR_SIZE_16x32, 1, 2, 3, monk1);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_TEMPLAR], SPR_SIZE_16x32, 1, 2, 2, templar);
 
 	// FIXME: this needs to be done per room
 	for (i = 1; i < 76; i++)
