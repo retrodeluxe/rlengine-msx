@@ -1,4 +1,11 @@
+		.globl _sys_set_bios
+		.globl _sys_set_rom
+
 		.area _BOOT
+
+ENASLT		.equ 0x0024
+RSLREG		.equ 0x0138
+EXPTBL		.equ 0xfcc1
 
 		.db "A"
 		.db "B"
@@ -9,30 +16,46 @@
 		; jumped here; we have the rom bios in bank 0, ram in bank 3, and rom
 		; in bank 1 (this code).
 
+		; Utility functions to switch slot in page 0
+
+_sys_set_rom:
+		di
+		ld	a,(romslot)
+		ld	h,#0x00
+		call	#ENASLT
+		ret
+_sys_set_bios:
+		ld	a,(biosslot)
+		ld	h, #0x00
+		call	#ENASLT
+		ei
+		ret
+
 		; The following code sets bank 2 to the same slot as bank 1 and continues
 		; execution.
-
-		; TODO: add slow switching helpers here
-
 bootstrap:
-		ld sp,#0xf379
-		ld a,#0xC9
-		ld (nopret),A
-nopret:	nop
-		call #0x0138
+		ld 	sp,#0xf379
+		ld	a,#0xc9
+		ld 	(nopret),a
+nopret:		nop
+		call 	#RSLREG
+		call 	getslot
+		ld	(biosslot),a
+		call 	#RSLREG
 		rrca
 		rrca
-		call getslot
+		call 	getslot
+		ld	(romslot),a
 		ld	h,#0x80
-		call 0x0024
-		jp done
+		call 	#ENASLT
+		jp 	done
 getslot:
 		and	#0x03
 		ld	c,a
 		ld	b,#0
-		ld	hl,#0xfcc1
+		ld	hl,#EXPTBL
 		add	hl,bc
-		ld	a,(HL)
+		ld	a,(hl)
 		and	#0x80
 		jr	z,exit
 		or	c
@@ -47,3 +70,7 @@ exit:
 		or	c
 		ret
 done:
+
+		.area _DATA
+romslot:	.ds 1
+biosslot:	.ds 1

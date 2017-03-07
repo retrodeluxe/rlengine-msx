@@ -1,5 +1,9 @@
 		.area _BOOT
 
+ENASLT		.equ 0x0024
+RSLREG		.equ 0x0138
+EXPTBL		.equ 0xfcc1
+
 		.db "A"
 		.db "B"
 		.dw bootstrap
@@ -12,24 +16,24 @@
 		; The following code sets bank 2 to the same slot as bank 1 and continues
 		; execution.
 bootstrap:
-		ld sp,#0xf379
-    ld a,#0xC9
-    ld (nopret),A
-nopret:	nop
-		call #0x0138
+		ld 	sp,#0xf379
+		ld	a,#0xc9
+		ld 	(nopret),a
+nopret:		nop
+		call 	#RSLREG
 		rrca
 		rrca
-		call getslot
+		call 	getslot
 		ld	h,#0x80
-		call 0x0024
-		jp done
+		call 	#ENASLT
+		jp 	done
 getslot:
 		and	#0x03
 		ld	c,a
 		ld	b,#0
-		ld	hl,#0xFCC1
+		ld	hl,#EXPTBL
 		add	hl,bc
-		ld	a,(HL)
+		ld	a,(hl)
 		and	#0x80
 		jr	z,exit
 		or	c
