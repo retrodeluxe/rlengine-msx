@@ -34,7 +34,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BU
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _CODE_1=0x10000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	@echo "-b _CODE=0x4042" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-b _CODE=0x40D8" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
