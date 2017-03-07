@@ -111,21 +111,29 @@ void tile_free_tile_object()
 }
 
 /**
- * puts on screen a set of tiles using an already allocated tileset
+ * puts on a screen buffer a set of tiles using an already allocated tileset
  */
-void tile_object_show(struct tile_object *to, uint8_t * scrbuf)
+void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram)
 {
-	uint8_t *ptr = scrbuf + to->x/8 + to->y/8 * 32;
+	uint16_t offset = to->x/8 + to->y/8 * 32;
+	uint8_t *ptr = scrbuf + offset;
 	uint8_t tile = to->ts->pidx + to->idx;
-
-	// assumption is that the dimensions of the tile object match the
-	// tileset, that seems rather practical
 	uint8_t x,y;
-	for (y = 0; y < to->ts->h; y++) {
-		for (x = 0; x < to->ts->w; x++) {
-			*(ptr + x) = tile++;
+
+	if (to->ts->n_frames > 1)
+		tile += to->ts->frame_w * to->cur_anim_step * to->cur_dir;
+
+	for (y = 0; y < to->ts->frame_h; y++) {
+		for (x = 0; x < to->ts->frame_w; x++) {
+			*(ptr + x) = tile;
+			if (refresh_vram) {
+				vdp_poke(vdp_base_names_grp1 + offset + x, tile);
+			}
+			tile++;
 		}
 		ptr += 32;
+		offset += 32;
+		tile+= to->ts->w - to->ts->frame_w;
 	}
-	log_e("showing : %d at pos %d\n", tile, ptr);
+	//log_e("showing : %d at pos %d dir %d step %d nf %d\n", tile, ptr, to->cur_dir, to->cur_anim_step, to->ts->n_frames);
 }

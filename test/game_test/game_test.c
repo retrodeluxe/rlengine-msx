@@ -28,8 +28,15 @@ struct tile_set tileset_map3;
 struct tile_set tileset_map4;
 struct tile_set tileset_map5;
 
-struct tile_set tileset_scroll;
-struct tile_set tileset_checkpoint;
+enum tile_sets_t {
+	TILE_SCROLL,
+	TILE_CHECKPOINT,
+	TILE_CROSS,
+	TILE_MAX,
+};
+
+struct tile_set tileset[TILE_MAX];
+struct tile_object tileobject[31];
 
 enum spr_patterns_t {
 	PATRN_BAT,
@@ -41,14 +48,10 @@ enum spr_patterns_t {
 };
 
 struct spr_pattern_set spr_pattern[PATRN_MAX];
-
 struct spr_sprite_def enemy_sprites[31];
 struct spr_sprite_def monk_sprite;
-struct gfx_tilemap_object tile_objects[12];
+
 struct displ_object display_object[32];
-
-struct tile_object tileobject[31];
-
 struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];
 struct displ_object dpo_monk;
@@ -64,6 +67,7 @@ enum anim_t {
 	ANIM_STATIC,
 	ANIM_JOYSTICK,
 	ANIM_JUMP,
+	ANIM_CYCLE_TILE,
 };
 
 struct map_object_item *map_object;
@@ -92,6 +96,8 @@ void anim_left_right(struct displ_object *obj);
 // void anim_horizontal_projectile(struct displ_object *obj);
 void anim_joystick(struct displ_object *obj);
 void anim_jump(struct displ_object *obj);
+void anim_cycle_tile(struct displ_object *obj);
+
 void animate_all();
 // void spr_colision_handler();
 void init_monk();
@@ -193,10 +199,10 @@ void load_room()
 		if (map_object->type == ACTIONITEM) {
 			//log_e("actionitem type : %d\n",map_object->object.actionitem.type);
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
-				tile_set_valloc(&tileset_scroll);
+				tile_set_valloc(&tileset[TILE_SCROLL]);
 				tileobject[tob_ct].x = map_object->x;
 				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].ts = &tileset_scroll;
+				tileobject[tob_ct].ts = &tileset[TILE_SCROLL];
 				tileobject[tob_ct].idx = 0;
 				dpo->type = DISP_OBJECT_TILE;
 				dpo->tob = &tileobject[tob_ct];
@@ -210,20 +216,35 @@ void load_room()
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
-				// this is an animated tile with 4 frames, but static. 
+				tile_set_valloc(&tileset[TILE_CROSS]);
+				tileobject[tob_ct].x = map_object->x;
+				tileobject[tob_ct].y = map_object->y;
+				tileobject[tob_ct].cur_dir = 1;
+				tileobject[tob_ct].cur_anim_step = 0;
+				tileobject[tob_ct].ts = &tileset[TILE_CROSS];
+				tileobject[tob_ct].idx = 0;
+				dpo->type = DISP_OBJECT_TILE;
+				dpo->tob = &tileobject[tob_ct];
+				dpo->xpos = map_object->x;
+				dpo->ypos = map_object->y;
+				dpo->state = 0;
+				INIT_LIST_HEAD(&dpo->list);
+				list_add(&dpo->list, &display_list);
+				INIT_LIST_HEAD(&dpo->animator_list);
+				list_add(&animators[ANIM_CYCLE_TILE].list, &dpo->animator_list);
 				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
 				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
-				tile_set_valloc(&tileset_checkpoint);
+				tile_set_valloc(&tileset[TILE_CHECKPOINT]);
 				tileobject[tob_ct].x = map_object->x;
 				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].ts = &tileset_checkpoint;
+				tileobject[tob_ct].ts = &tileset[TILE_CHECKPOINT];
 				tileobject[tob_ct].idx = 0;
 				dpo->type = DISP_OBJECT_TILE;
-				dpo->tob = &tileobject[i];
+				dpo->tob = &tileobject[tob_ct];
 				dpo->xpos = map_object->x;
 				dpo->ypos = map_object->y;
 				dpo->state = 0;
@@ -305,7 +326,7 @@ void load_room()
 			spr_show(dpo->spr);
 		} else if (dpo->type == DISP_OBJECT_TILE) {
 			log_e("showing dpo\n");
-			tile_object_show(dpo->tob, scr_tile_buffer);
+			tile_object_show(dpo->tob, scr_tile_buffer, false);
 		}
 	}
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
@@ -346,6 +367,21 @@ void init_monk()
 void anim_static(struct displ_object *obj)
 {
 	// do nothing, just make sure we can display the sprite
+}
+
+void anim_cycle_tile(struct displ_object *obj)
+{
+	//dpo->type = DISP_OBJECT_TILE;
+	if (dpo->state++ == 10) {
+		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
+			dpo->tob->cur_anim_step++;
+		} else {
+			dpo->tob->cur_anim_step = 0;
+		}
+		dpo->state = 0;
+	}
+	// need to actually update VRAM for this tile... awesome.
 }
 
 void anim_jump(struct displ_object *obj)
@@ -461,6 +497,7 @@ void init_animators()
 	// animators[4].run = anim_drop;
 	animators[ANIM_JOYSTICK].run = anim_joystick;
 	animators[ANIM_JUMP].run = anim_jump;
+	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 }
 
 void init_resources()
@@ -468,22 +505,28 @@ void init_resources()
 	uint8_t i;
 	tile_init();
 
+	/** initialize static tile sets for map data */
 	INIT_TILE_SET(tileset_map1, maptiles1);
 	INIT_TILE_SET(tileset_map2, maptiles2);
 	INIT_TILE_SET(tileset_map3, maptiles3);
 	INIT_TILE_SET(tileset_map4, maptiles4);
 	INIT_TILE_SET(tileset_map5, maptiles5);
-	INIT_TILE_SET(tileset_scroll, scroll);
-	INIT_TILE_SET(tileset_checkpoint, checkpoint);
 
+	/** allocate static tiles for map */
 	tile_set_valloc(&tileset_map1);
 	tile_set_valloc(&tileset_map2);
 	tile_set_valloc(&tileset_map3);
-	// next two need to be in a fixed position
+
+	/** fixed index allocations for map consistency **/
 	tile_set_to_vram(&tileset_map4, 126);
 	tile_set_to_vram(&tileset_map5, 126 + 32);
 
+	/** initialize dynamic tile sets */
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
 
+	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_RAT], SPR_SIZE_16x16, 1, 2, 2, rat);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SPIDER], SPR_SIZE_16x16, 1, 1, 2, spider);
