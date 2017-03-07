@@ -104,9 +104,13 @@ void init_monk();
 void init_game_state();
 void init_animators();
 void load_room();
+void free_patterns();
 void check_and_change_room();
 void show_score_panel();
 void find_room_data(struct map_object_item *map_obj);
+void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx);
+void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx);
+void add_animator(struct displ_object *dpo, enum anim_t animidx);
 
 void main()
 {
@@ -184,11 +188,7 @@ void load_room()
 	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
 
 	spr_init();
-
-	// free all patterns
-	for (i = 0; i < PATRN_MAX; i++)
-		spr_pattern[i].allocated = false;
-
+	free_patterns();
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 
@@ -197,117 +197,89 @@ void load_room()
 	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
 		log_e("dpo %d type : %d\n", i ,map_object->type);
 		if (map_object->type == ACTIONITEM) {
-			//log_e("actionitem type : %d\n",map_object->object.actionitem.type);
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
-				tile_set_valloc(&tileset[TILE_SCROLL]);
-				tileobject[tob_ct].x = map_object->x;
-				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].ts = &tileset[TILE_SCROLL];
-				tileobject[tob_ct].idx = 0;
-				dpo->type = DISP_OBJECT_TILE;
-				dpo->tob = &tileobject[tob_ct];
-				dpo->xpos = map_object->x;
-				dpo->ypos = map_object->y;
-				dpo->state = 0;
-				INIT_LIST_HEAD(&dpo->list);
-				list_add(&dpo->list, &display_list);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				map_object++;
+				add_tileobject(dpo, tob_ct, TILE_SCROLL);
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
-				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
-				tile_set_valloc(&tileset[TILE_CROSS]);
-				tileobject[tob_ct].x = map_object->x;
-				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].cur_dir = 1;
-				tileobject[tob_ct].cur_anim_step = 0;
-				tileobject[tob_ct].ts = &tileset[TILE_CROSS];
-				tileobject[tob_ct].idx = 0;
-				dpo->type = DISP_OBJECT_TILE;
-				dpo->tob = &tileobject[tob_ct];
-				dpo->xpos = map_object->x;
-				dpo->ypos = map_object->y;
-				dpo->state = 0;
-				INIT_LIST_HEAD(&dpo->list);
-				list_add(&dpo->list, &display_list);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[ANIM_CYCLE_TILE].list, &dpo->animator_list);
-				map_object++;
+				add_tileobject(dpo, tob_ct, TILE_CROSS);
+				add_animator(dpo, ANIM_CYCLE_TILE);
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
-				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
-				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
-				tile_set_valloc(&tileset[TILE_CHECKPOINT]);
-				tileobject[tob_ct].x = map_object->x;
-				tileobject[tob_ct].y = map_object->y;
-				tileobject[tob_ct].ts = &tileset[TILE_CHECKPOINT];
-				tileobject[tob_ct].idx = 0;
-				dpo->type = DISP_OBJECT_TILE;
-				dpo->tob = &tileobject[tob_ct];
-				dpo->xpos = map_object->x;
-				dpo->ypos = map_object->y;
-				dpo->state = 0;
-				INIT_LIST_HEAD(&dpo->list);
-				list_add(&dpo->list, &display_list);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				map_object++;
+				add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
-				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
-				map_object++;
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
-				map_object++;
-			} else {
-				map_object++;
-			}
-			tob_ct++;
-		//} else if (map_object->type == STATIC) {
-
-		///} else if (map_object->type == DOOR) {
-
-
-		//} else if (map_object->type == SHOOTER) {
-
-		//} else if (map_object->type == BLOCK) {
-
-		//} else if (map_object->type == STEP) {
-
-		} else if (map_object->type == MOVABLE) {
-			if (map_object->object.movable.type == TYPE_TEMPLAR) {
-				spr_valloc_pattern_set(&spr_pattern[PATRN_TEMPLAR]);
-				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_TEMPLAR]);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[ANIM_LEFT_RIGHT].list, &dpo->animator_list);
-			} else if (map_object->object.movable.type == TYPE_BAT) {
-				spr_valloc_pattern_set(&spr_pattern[PATRN_BAT]);
-				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_BAT]);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
-			} else if (map_object->object.movable.type == TYPE_SPIDER) {
-				spr_valloc_pattern_set(&spr_pattern[PATRN_SPIDER]);
-				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_SPIDER]);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
-			} else if (map_object->object.movable.type == TYPE_RAT) {
-				spr_valloc_pattern_set(&spr_pattern[PATRN_RAT]);
-				spr_init_sprite(&enemy_sprites[spr_ct], &spr_pattern[PATRN_RAT]);
-				INIT_LIST_HEAD(&dpo->animator_list);
-				list_add(&animators[ANIM_STATIC].list, &dpo->animator_list);
 			} else {
 				map_object++;
 				continue;
 			}
-
-			// this is now wrong, move to a function.
-			spr_set_pos(&enemy_sprites[spr_ct], map_object->x, map_object->y);
-			dpo->type = DISP_OBJECT_SPRITE;
-			dpo->spr = &enemy_sprites[spr_ct];
-			dpo->xpos = map_object->x;
-			dpo->ypos = map_object->y;
-			dpo->state = 0;
-			INIT_LIST_HEAD(&dpo->list);
-			list_add(&dpo->list, &display_list);
+			map_object++;
+			tob_ct++;
+		} else if (map_object->type == STATIC) {
+			map_object++;
+		} else if (map_object->type == GHOST) {
+			map_object++;
+		} else if (map_object->type == ROPE) {
+			map_object++;
+		} else if (map_object->type == DOOR) {
+			map_object++;
+		} else if (map_object->type == SHOOTER) {
+			map_object++;
+		} else if (map_object->type == BLOCK) {
+			map_object++;
+		} else if (map_object->type == STEP) {
+			map_object++;
+		} else if (map_object->type == MOVABLE) {
+			if (map_object->object.movable.type == TYPE_TEMPLAR) {
+				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
+			} else if (map_object->object.movable.type == TYPE_BAT) {
+				add_sprite(dpo, spr_ct, PATRN_BAT);
+				add_animator(dpo, ANIM_STATIC);
+			} else if (map_object->object.movable.type == TYPE_SPIDER) {
+				add_sprite(dpo, spr_ct, PATRN_SPIDER);
+				add_animator(dpo, ANIM_STATIC);
+			} else if (map_object->object.movable.type == TYPE_RAT) {
+				add_sprite(dpo, spr_ct, PATRN_RAT);
+				add_animator(dpo, ANIM_STATIC);
+			} else if (map_object->object.movable.type == TYPE_WORM) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_PRIEST) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_FLY) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_SKELETON) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_PALADIN) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_DEATH) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_DEMON) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_LAVA) {
+				map_object++;
+				continue;
+			} else if (map_object->object.movable.type == TYPE_SATAN) {
+				map_object++;
+				continue;
+			} else {
+				map_object++;
+				continue;
+			}
 			map_object++;
 			spr_ct++;
 		} else {
@@ -332,6 +304,54 @@ void load_room()
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 
 	vdp_screen_enable();
+}
+
+void free_patterns()
+{
+	uint8_t i;
+
+	for (i = 0; i < PATRN_MAX; i++)
+		spr_pattern[i].allocated = false;
+}
+
+
+void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
+{
+	tile_set_valloc(&tileset[tileidx]);
+	tileobject[objidx].x = map_object->x;
+	tileobject[objidx].y = map_object->y;
+	tileobject[objidx].cur_dir = 1;
+	tileobject[objidx].cur_anim_step = 0;
+	tileobject[objidx].ts = &tileset[tileidx];
+	tileobject[objidx].idx = 0;
+	dpo->type = DISP_OBJECT_TILE;
+	dpo->tob = &tileobject[objidx];
+	dpo->xpos = map_object->x;
+	dpo->ypos = map_object->y;
+	dpo->state = 0;
+	INIT_LIST_HEAD(&dpo->list);
+	list_add(&dpo->list, &display_list);
+	INIT_LIST_HEAD(&dpo->animator_list);
+}
+
+void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
+{
+	spr_valloc_pattern_set(&spr_pattern[pattidx]);
+	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
+	INIT_LIST_HEAD(&dpo->animator_list);
+	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
+	dpo->type = DISP_OBJECT_SPRITE;
+	dpo->spr = &enemy_sprites[objidx];
+	dpo->xpos = map_object->x;
+	dpo->ypos = map_object->y;
+	dpo->state = 0;
+	INIT_LIST_HEAD(&dpo->list);
+	list_add(&dpo->list, &display_list);
+}
+
+void add_animator(struct displ_object *dpo, enum anim_t animidx)
+{
+	list_add(&animators[animidx].list, &dpo->animator_list);
 }
 
 void find_room_data(struct map_object_item *map_obj)
