@@ -110,6 +110,19 @@
 #define PSG_MIX_TONE_B      0x02
 #define PSG_MIX_TONE_C      0x01
 
+
+void psg_write(uint8_t reg, uint8_t val)
+{
+        reg;
+        val;
+
+        __asm
+        ld a,4(ix)
+        ld e,5(ix)
+        call 0x0093     ; WRTPSG
+        __endasm;
+}
+
 void psg_set_all(struct ay_reg_map *regs)
 {
     regs;
@@ -293,5 +306,3 @@ void psg_set_envelope(unsigned int period, uint8_t shape)
     out (c),b
     __endasm;
 }
-
-

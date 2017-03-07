@@ -18,6 +18,7 @@ struct ay_reg_map {
 	uint8_t Env_shape;
 };
 
+extern void psg_write(uint8_t reg, uint8_t val);
 extern void psg_set_all(struct ay_reg_map *regs);
 extern void psg_set_tone(unsigned int period, uint8_t chan);
 extern void psg_set_noise(uint8_t period);
