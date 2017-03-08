@@ -120,13 +120,13 @@ void sys_irq_init()
     lsb=(uint8_t) handler & 255;
     msb=(uint8_t) (((int)handler >> 8) & 255);
 
-    asm__di;
+    __asm di __endasm;
     *(hook)   = 0xc3; /* jp  */
     *(hook+1) = lsb;
     *(hook+2) = msb;
     *(hook+3) = 0xc9; /* ret */
     *(hook+4) = 0xc9; /* ret */
-    asm__ei;
+    __asm ei __endasm;
 }
 
 
