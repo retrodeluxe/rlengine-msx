@@ -196,8 +196,8 @@ void load_room()
 	free_patterns();
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
-	sys_set_bios();
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
+	sys_set_bios();
 
 	INIT_LIST_HEAD(&display_list);
 	find_room_data(map_object);
@@ -360,8 +360,8 @@ void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pa
 {
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[pattidx]);
-	sys_set_bios();
 	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
+	sys_set_bios();
 	INIT_LIST_HEAD(&dpo->animator_list);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
@@ -547,14 +547,6 @@ void init_animators()
 void init_resources()
 {
 	uint8_t i;
-	uint8_t *w;
-	uint8_t *h;
-	uint8_t *ptr, *ptr2;
-	uint8_t w_data;
-	uint8_t h_data;
-	uint8_t a,b,c,d;
-	uint8_t buffer[32*8];
-	uint8_t buffer2[32*8];
 	tile_init();
 
 	sys_set_rom();
@@ -566,14 +558,13 @@ void init_resources()
 	INIT_TILE_SET(tileset_map5, maptiles5);
 
 	/** allocate static tiles for map */
-	tile_set_to_vram(&tileset_map1,1);
-	tile_set_to_vram(&tileset_map2,33);
+	tile_set_valloc(&tileset_map1);
+	tile_set_valloc(&tileset_map2);
 	tile_set_valloc(&tileset_map3);
 
 	/** fixed index allocations for map consistency **/
 	tile_set_to_vram(&tileset_map4, 126);
 	tile_set_to_vram(&tileset_map5, 126 + 32);
-
 
 	/** initialize dynamic tile sets */
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
@@ -581,7 +572,6 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART], hearth, 2, 2, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_BELL], bell, 2, 2, 1, 2);
-	sys_set_bios();
 
 	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);
@@ -589,6 +579,7 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SPIDER], SPR_SIZE_16x16, 1, 1, 2, spider);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_MONK], SPR_SIZE_16x32, 1, 2, 3, monk1);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_TEMPLAR], SPR_SIZE_16x32, 1, 2, 2, templar);
+	sys_set_bios();
 
 	// FIXME: this needs to be done per room
 	for (i = 1; i < 76; i++)
