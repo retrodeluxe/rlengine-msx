@@ -167,7 +167,7 @@ void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length)
         out (0x99),a
         ld a,h
         add a,#0x40
-        ei
+        //ei
         out (0x99),a
         ld l,4(ix) ;address
         ld h,5(ix)
@@ -274,7 +274,7 @@ void vdp_set_hw_sprite_di(uint8_t *spr, uint16_t spi)
         sla c
         sla c
         ld  hl,#vdp_base_spatr_grp1
-        add hl,bc    
+        add hl,bc
         ld a,l
         out (0x99),a
         ld a,h
@@ -409,5 +409,3 @@ void vdp_print_grp1(char x, char y, char *msg)
                 vdp_poke(addr++, c);
         }
 }
-
-

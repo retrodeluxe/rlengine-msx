@@ -265,8 +265,10 @@ void usage(void)
            " -f, --full (DEFAULT) full tga to scr2 format conversion,\n"
            " -p, --palette        convert to msx1 palette only,\n"
            " -t, --type=TYPE      output format,\n"
-           "                          TILE   : scr2 pattern & color header,\n"
-           "                          SPRITE : msx1 16x16 sprite planes,\n"
+           "                          TILE    : scr2 pattern & color C source,\n"
+           "                          TILEH   : scr2 pattern & color H source (no data),\n"
+           "                          SPRITE  : msx1 16x16 sprite planes C source,\n"
+           "                          SPRITEH : msx1 16x16 sprite planes H source (no data),\n"
            " -o, --output=FILE    output file,\n"
            "\n");
 }
@@ -369,7 +371,7 @@ int pattern_has_color(struct fbit *idx, uint8_t color)
            block_8x8_has_color(idx + 8 + tga.width * 8 ,color);
 }
 
-void dump_sprite_file(FILE *fd)
+void dump_sprite_file(FILE *fd, int only_header)
 {
     struct fbit *idx = image_out_4bit;
     uint8_t color, colcnt = 0, np = 0;
@@ -384,6 +386,12 @@ void dump_sprite_file(FILE *fd)
     fprintf(fd, "#ifndef _GENERATED_SPRITES_H_%s\n", dataname);
     fprintf(fd, "#define _GENERATED_SPRITES_H_%s\n", dataname);
 
+    if (only_header) {
+            fprintf(fd, "extern const unsigned char %s_color[];", dataname);
+            fprintf(fd, "extern const unsigned char %s[];\n", dataname);
+            fprintf(fd, "#endif\n");
+            return;
+    }
 
     fprintf(fd, "const unsigned char %s_color[] = { ", dataname);
 
@@ -412,7 +420,7 @@ void dump_sprite_file(FILE *fd)
         for (color = 1; color < 16; color++) {
             if (pattern_has_color(idx, color)) {
 
-                fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);    
+                fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);
 
                 dump_sprite_8x8_block(fd, idx, color);
                 dump_sprite_8x8_block(fd, idx + tga.width * 8, color);
@@ -436,7 +444,7 @@ void dump_sprite_file(FILE *fd)
 }
 
 
-void dump_tiles(struct scr2 *buffer, FILE *file)
+void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
 {
     struct scr2 *p;
     int bytectr=0, cnt;
@@ -450,8 +458,16 @@ void dump_tiles(struct scr2 *buffer, FILE *file)
     fprintf(file,"#ifndef _GENERATED_TILESET_H_%s\n", dataname);
     fprintf(file,"#define _GENERATED_TILESET_H_%s\n", dataname);
 
+    if (only_header) {
+            fprintf(file,"extern const unsigned char %s_tile_w;\n", dataname);
+            fprintf(file,"extern const unsigned char %s_tile_h;\n", dataname);
+            fprintf(file,"extern const unsigned char %s_tile[];\n", dataname);
+            fprintf(file,"extern const unsigned char %s_tile_color[];\n",dataname);
+            return;
+    }
+
     fprintf(file,"const unsigned char %s_tile_w = %d;\n", dataname, tga.width / 8);
-    fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8); 
+    fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8);
     fprintf(file,"const unsigned char %s_tile[]={\n",dataname);
 
     p = buffer;
@@ -481,11 +497,10 @@ void dump_tiles(struct scr2 *buffer, FILE *file)
 }
 
 
-void dump_tile_file(FILE *fd)
+void dump_tile_file(FILE *fd, int only_header)
 {
 
-   
-    dump_tiles(image_out_scr2, fd);
+    dump_tiles(image_out_scr2, fd, only_header);
 
     fprintf(fd,"#endif\n");
 }
@@ -495,13 +510,19 @@ int generate_header(char *outfile, char *type)
 
     int do_tile = 0;
     int do_sprite = 0;
+    int do_only_header = 0;
     FILE *file;
-
 
     if (!strcmp(type, "TILE")) {
         do_tile = 1;
     } else if (!strcmp(type, "SPRITE")) {
         do_sprite = 1;
+    } else if (!strcmp(type, "TILEH")) {
+        do_tile = 1;
+        do_only_header = 1;
+    } else if (!strcmp(type, "SPRITEH")) {
+        do_sprite = 1;
+        do_only_header = 1;
     } else {
         printf("Unsupported output type.\n");
         usage();
@@ -515,9 +536,9 @@ int generate_header(char *outfile, char *type)
     }
 
     if (do_sprite)
-        dump_sprite_file(file);
+        dump_sprite_file(file, do_only_header);
     else if (do_tile)
-        dump_tile_file(file);
+        dump_tile_file(file, do_only_header);
 
     fclose(file);
     return 0;
@@ -609,7 +630,7 @@ int main(int argc, char **argv)
 
     if (!strcmp(type,"TILE") && ((tga.width / 8 * tga.height > 2048) ||
                 (tga.width % 8 != 0 || tga.height % 8 != 0))) {
-         fprintf(stderr, "When generating TILE output, \ 
+         fprintf(stderr, "When generating TILE output, \
                         input file size must have width and heigth multiple of 8 and be smaller than 256x64 pixels (16Kb).\n");
         return -1;
     }
@@ -634,6 +655,3 @@ int main(int argc, char **argv)
     fflush(stderr);
     return result;
 }
-
-
-

@@ -18,7 +18,10 @@
 #include "phys.h"
 #include "list.h"
 
-#include "gen/game_test.h"
+#include "gen/game_test_tiles_ext.h"
+#include "gen/game_test_sprites_ext.h"
+#include "gen/game_test_maps.h"
+
 #include <stdlib.h>
 
 struct tile_set logo;
@@ -32,6 +35,8 @@ enum tile_sets_t {
 	TILE_SCROLL,
 	TILE_CHECKPOINT,
 	TILE_CROSS,
+	TILE_HEART,
+	TILE_BELL,
 	TILE_MAX,
 };
 
@@ -189,7 +194,9 @@ void load_room()
 
 	spr_init();
 	free_patterns();
+	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
+	sys_set_bios();
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 
 	INIT_LIST_HEAD(&display_list);
@@ -205,11 +212,15 @@ void load_room()
 				add_animator(dpo, ANIM_CYCLE_TILE);
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
+				add_tileobject(dpo, tob_ct, TILE_HEART);
+				add_animator(dpo, ANIM_CYCLE_TILE);
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
 				add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
+			} else if (map_object->object.actionitem.type == TYPE_BELL) {
+				add_tileobject(dpo, tob_ct, TILE_BELL);
 			} else {
 				map_object++;
 				continue;
@@ -217,6 +228,10 @@ void load_room()
 			map_object++;
 			tob_ct++;
 		} else if (map_object->type == STATIC) {
+			// TYPE_LAVA
+			// TYPE_SPEAR
+			// TYPE_DRAGON
+			// TYPE_WATER
 			map_object++;
 		} else if (map_object->type == GHOST) {
 			map_object++;
@@ -225,8 +240,13 @@ void load_room()
 		} else if (map_object->type == DOOR) {
 			map_object++;
 		} else if (map_object->type == SHOOTER) {
+			// TYPE_FLUSH
+			// TYPE_LEAK
+			// TYPE_GARGOYLE
+			// TYPE_ARCHER
 			map_object++;
 		} else if (map_object->type == BLOCK) {
+			// TYPE_CROSS
 			map_object++;
 		} else if (map_object->type == STEP) {
 			map_object++;
@@ -317,7 +337,9 @@ void free_patterns()
 
 void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
+	sys_set_rom();
 	tile_set_valloc(&tileset[tileidx]);
+	sys_set_bios();
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
 	tileobject[objidx].cur_dir = 1;
@@ -336,7 +358,9 @@ void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t t
 
 void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
+	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[pattidx]);
+	sys_set_bios();
 	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
 	INIT_LIST_HEAD(&dpo->animator_list);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
@@ -523,8 +547,17 @@ void init_animators()
 void init_resources()
 {
 	uint8_t i;
+	uint8_t *w;
+	uint8_t *h;
+	uint8_t *ptr, *ptr2;
+	uint8_t w_data;
+	uint8_t h_data;
+	uint8_t a,b,c,d;
+	uint8_t buffer[32*8];
+	uint8_t buffer2[32*8];
 	tile_init();
 
+	sys_set_rom();
 	/** initialize static tile sets for map data */
 	INIT_TILE_SET(tileset_map1, maptiles1);
 	INIT_TILE_SET(tileset_map2, maptiles2);
@@ -533,18 +566,22 @@ void init_resources()
 	INIT_TILE_SET(tileset_map5, maptiles5);
 
 	/** allocate static tiles for map */
-	tile_set_valloc(&tileset_map1);
-	tile_set_valloc(&tileset_map2);
+	tile_set_to_vram(&tileset_map1,1);
+	tile_set_to_vram(&tileset_map2,33);
 	tile_set_valloc(&tileset_map3);
 
 	/** fixed index allocations for map consistency **/
 	tile_set_to_vram(&tileset_map4, 126);
 	tile_set_to_vram(&tileset_map5, 126 + 32);
 
+
 	/** initialize dynamic tile sets */
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART], hearth, 2, 2, 2, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_BELL], bell, 2, 2, 1, 2);
+	sys_set_bios();
 
 	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);
