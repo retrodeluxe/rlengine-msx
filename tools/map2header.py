@@ -285,7 +285,7 @@ class TileMapWriter:
                         for tile in _dict:
                             print ("%s," % tile ),
                         print "0 };"
-                        print ("const unsigned char %s[] = {" % name)
+                        print ("const unsigned int %s[] = {" % name)
                         for tile in compr_layer:
                             print ("%s," % tile ),
                         print "0 };"
