@@ -37,6 +37,19 @@ enum tile_sets_t {
 	TILE_CROSS,
 	TILE_HEART,
 	TILE_BELL,
+	TILE_SWITCH,
+	TILE_TOGGLE,
+	TILE_TELETRANSPORT,
+	TILE_CUP,
+	TILE_DRAGON,
+	TILE_LAVA,
+	TILE_SPEAR,
+	TILE_WATER,
+	TILE_SATAN,
+	TILE_ARCHER_SKELETON,
+	TILE_GARGOLYNE,
+	TILE_PLANT,
+	TILE_PRIEST,
 	TILE_MAX,
 };
 
@@ -49,6 +62,19 @@ enum spr_patterns_t {
 	PATRN_SPIDER,
 	PATRN_TEMPLAR,
 	PATRN_MONK,
+	PATRN_WORM,
+	PATRN_SKELETON,
+	PATRN_PALADIN,
+	PATRN_GUADANYA,
+	PATRN_GHOST,
+	PATRN_DEMON,
+	PATRN_DEATH,
+	PATRN_DARKBAT,
+	PATRN_FLY,
+	PATRN_SKELETON_CEILING,
+	PATRN_FISH,
+	PATRN_FIREBALL,
+	PATRN_WATERDROP,
 	PATRN_MAX,
 };
 
@@ -82,6 +108,7 @@ struct displ_object *dpo;
 
 uint8_t stick;
 uint8_t scr_tile_buffer[768];
+uint8_t spr_ct, tob_ct;
 
 struct game_state_t {
 	uint8_t map_x;	// position on the map in tile coordinates
@@ -147,7 +174,7 @@ void init_game_state()
 {
 	// room 3
 	game_state.map_x = 96;
-	game_state.map_y = 0;
+	game_state.map_y = 44;
 }
 
 void show_score_panel()
@@ -188,7 +215,8 @@ void check_and_change_room()
 
 void load_room()
 {
-	uint8_t i, spr_ct = 0, tob_ct = 0;
+	uint8_t i;
+	spr_ct = 0, tob_ct = 0;
 	vdp_screen_disable();
 	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
 
@@ -198,7 +226,6 @@ void load_room()
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 	sys_set_bios();
-
 	INIT_LIST_HEAD(&display_list);
 	find_room_data(map_object);
 	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
@@ -207,18 +234,23 @@ void load_room()
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
 				add_tileobject(dpo, tob_ct, TILE_SCROLL);
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
+				add_tileobject(dpo, tob_ct, TILE_TOGGLE);
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
 				add_tileobject(dpo, tob_ct, TILE_CROSS);
 				add_animator(dpo, ANIM_CYCLE_TILE);
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
+				add_tileobject(dpo, tob_ct, TILE_TELETRANSPORT);
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
 				add_tileobject(dpo, tob_ct, TILE_HEART);
 				add_animator(dpo, ANIM_CYCLE_TILE);
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
 				add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
+				add_tileobject(dpo, tob_ct, TILE_SWITCH);
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
+				add_tileobject(dpo, tob_ct, TILE_CUP);
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
+				// invisible, but needs collision detection.
 			} else if (map_object->object.actionitem.type == TYPE_BELL) {
 				add_tileobject(dpo, tob_ct, TILE_BELL);
 			} else {
@@ -226,29 +258,49 @@ void load_room()
 				continue;
 			}
 			map_object++;
-			tob_ct++;
 		} else if (map_object->type == STATIC) {
-			// TYPE_LAVA
-			// TYPE_SPEAR
-			// TYPE_DRAGON
-			// TYPE_WATER
+			if (map_object->object.static_.type == TYPE_DRAGON) {
+				add_tileobject(dpo, tob_ct, TILE_DRAGON);
+				// here there is some nice animation to do
+			} else if (map_object->object.static_.type == TYPE_LAVA) {
+				add_tileobject(dpo, tob_ct, TILE_LAVA);
+				// also nice animation to do here
+			} else if (map_object->object.static_.type == TYPE_SPEAR) {
+				add_tileobject(dpo, tob_ct, TILE_SPEAR);
+			} else if (map_object->object.static_.type == TYPE_WATER) {
+				add_tileobject(dpo, tob_ct, TILE_WATER);
+				add_animator(dpo, ANIM_CYCLE_TILE);
+			}
 			map_object++;
 		} else if (map_object->type == GHOST) {
+			add_sprite(dpo, spr_ct, PATRN_GHOST);
+			add_animator(dpo, ANIM_STATIC);
 			map_object++;
 		} else if (map_object->type == ROPE) {
 			map_object++;
 		} else if (map_object->type == DOOR) {
 			map_object++;
 		} else if (map_object->type == SHOOTER) {
-			// TYPE_FLUSH
-			// TYPE_LEAK
-			// TYPE_GARGOYLE
-			// TYPE_ARCHER
+			if (map_object->object.shooter.type == TYPE_FLUSH) {
+				add_sprite(dpo, spr_ct, PATRN_FISH);
+				add_animator(dpo, ANIM_STATIC);
+			} else if (map_object->object.shooter.type == TYPE_LEAK) {
+				add_sprite(dpo, spr_ct, PATRN_WATERDROP);
+				add_animator(dpo, ANIM_STATIC);
+			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
+				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
+			} else if (map_object->object.shooter.type == TYPE_ARCHER) {
+				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
+			} else if (map_object->object.shooter.type == TYPE_PLANT) {
+				add_tileobject(dpo, tob_ct, TILE_PLANT);
+			}
 			map_object++;
 		} else if (map_object->type == BLOCK) {
-			// TYPE_CROSS
+			add_tileobject(dpo, tob_ct, TILE_CROSS);
+			add_animator(dpo, ANIM_CYCLE_TILE);
 			map_object++;
 		} else if (map_object->type == STEP) {
+			// need to see what to do with these ones
 			map_object++;
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
@@ -264,51 +316,50 @@ void load_room()
 				add_sprite(dpo, spr_ct, PATRN_RAT);
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_WORM) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_WORM);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
-				map_object++;
-				continue;
+				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_FLY);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_SKELETON);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_PALADIN);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_DEATH) {
+				// this is a big sprite 32x32 not supported yet
 				map_object++;
 				continue;
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_DEMON);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_LAVA) {
-				map_object++;
-				continue;
+				add_sprite(dpo, spr_ct, PATRN_FIREBALL);
+				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
-				map_object++;
-				continue;
+				add_tileobject(dpo, tob_ct, TILE_SATAN);
 			} else {
 				map_object++;
 				continue;
 			}
 			map_object++;
-			spr_ct++;
+
 		} else {
 			map_object++;
 		}
 	}
 	INIT_LIST_HEAD(&dpo_monk.animator_list);
 	list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list);
-	list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
+	//list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
 	INIT_LIST_HEAD(&dpo_monk.list);
 	list_add(&dpo_monk.list, &display_list);
 	// show all elements
@@ -332,8 +383,11 @@ void free_patterns()
 
 	for (i = 0; i < PATRN_MAX; i++)
 		spr_pattern[i].allocated = false;
-}
 
+	for (i = 0; i < TILE_MAX; i++) {
+		tile_set_vfree(&tileset[i]);
+	}
+}
 
 void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
@@ -354,16 +408,20 @@ void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t t
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
 	INIT_LIST_HEAD(&dpo->animator_list);
+	tob_ct++;
 }
 
 void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
+	uint8_t offset = 0;
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[pattidx]);
 	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
 	sys_set_bios();
 	INIT_LIST_HEAD(&dpo->animator_list);
-	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
+	if (spr_pattern[pattidx].size == SPR_SIZE_16x32)
+		offset = 8;
+	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y - offset);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
 	dpo->xpos = map_object->x;
@@ -371,6 +429,8 @@ void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pa
 	dpo->state = 0;
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
+	INIT_LIST_HEAD(&dpo->animator_list);
+	spr_ct++;
 }
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
@@ -389,7 +449,8 @@ void find_room_data(struct map_object_item *map_obj)
 void animate_all() {
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
-		phys_detect_tile_collisions(dpo, scr_tile_buffer);
+		if (dpo->type == DISP_OBJECT_SPRITE)
+			phys_detect_tile_collisions(dpo, scr_tile_buffer);
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
 			anim->run(dpo);
@@ -465,27 +526,31 @@ void anim_joystick(struct displ_object *obj)
 {
 	if (stick == STICK_LEFT || stick == STICK_UP_LEFT ||
 		stick == STICK_DOWN_LEFT) {
-		if (!is_colliding_left(obj)) {
+		//if (!is_colliding_left(obj)) {
 			obj->xpos--;
 			spr_animate(obj->spr, -1, 0 ,0);
-		}
+		//}
 	}
 	if (stick == STICK_RIGHT || stick == STICK_UP_RIGHT ||
 		stick == STICK_DOWN_RIGHT) {
-		if (!is_colliding_right(obj)) {
+		//if (!is_colliding_right(obj)) {
 			obj->xpos++;
 			spr_animate(obj->spr, 1, 0 ,0);
-		}
+		//}
 	}
 	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
 		stick == STICK_UP_LEFT) {
-		if (obj->state == 0 && is_colliding_down(obj)) {
-			list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
-			obj->state = 1;
+		if (obj->state == 0 /*&& is_colliding_down(obj)*/) {
+			//list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
+			obj->ypos--;
+			spr_animate(obj->spr, 0, -1 ,0);
+			//obj->state = 1;
 		}
 	}
 	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
 		stick == STICK_DOWN_RIGHT) {
+			obj->ypos++;
+			spr_animate(obj->spr, 0, 1 ,0);
 			// TODO: Duck
 			// need change the monk sprite
 			// and the dimensions to check collisions
@@ -572,6 +637,19 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART], hearth, 2, 2, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_BELL], bell, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SWITCH], crosswitch, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_TOGGLE], toggle, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_TELETRANSPORT], portal, 2, 3, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_CUP], cup, 2, 2, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_LAVA], lava, 1, 1, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 2, 1, 1, 16);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 6, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 3, 1, 2);
 
 	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);
@@ -579,6 +657,19 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SPIDER], SPR_SIZE_16x16, 1, 1, 2, spider);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_MONK], SPR_SIZE_16x32, 1, 2, 3, monk1);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_TEMPLAR], SPR_SIZE_16x32, 1, 2, 2, templar);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WORM], SPR_SIZE_16x16, 1, 2, 2, worm);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SKELETON], SPR_SIZE_16x32, 1, 2, 2, skeleton);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_PALADIN], SPR_SIZE_16x32, 1, 2, 2, paladin);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_GUADANYA], SPR_SIZE_16x16, 1, 1, 4, guadanya);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_GHOST], SPR_SIZE_16x16, 1, 2, 2, ghost);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_DEMON], SPR_SIZE_16x32, 1, 2, 2, demon);
+//	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_DEATH], SPR_SIZE_32x32, 1, 2, 2, death);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_DARKBAT], SPR_SIZE_16x16, 1, 2, 2, darkbat);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FLY], SPR_SIZE_16x16, 1, 2, 2, fly);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SKELETON_CEILING], SPR_SIZE_16x32, 1, 2, 2, skeleton_ceiling);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FISH], SPR_SIZE_16x16, 1, 1, 2, fish);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FIREBALL], SPR_SIZE_16x16, 1, 1, 2, fireball);
+	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WATERDROP], SPR_SIZE_16x16, 1, 1, 3, waterdrop);
 	sys_set_bios();
 
 	// FIXME: this needs to be done per room
