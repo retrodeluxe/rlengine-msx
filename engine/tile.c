@@ -76,7 +76,7 @@ void tile_set_valloc(struct tile_set *ts)
 
 	ts->allocated = true;
 	ts->pidx = pos;
-	//log_e("allocated tile set at pos %d\n", pos);
+	log_e("allocated tile set at pos %d\n", pos);
 }
 
 /**
@@ -107,8 +107,17 @@ void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 // 	}
 // }
 
-void tile_free_tile_object()
+void tile_set_vfree(struct tile_set *ts)
 {
+	uint8_t i, size;
+
+	if (!ts->allocated)
+		return;
+	size = ts->w * ts->h;
+	for (i = ts->pidx; i < ts->pidx + size; i++)
+		bitmap_set(bitmap_tile_bank, i);
+	ts->allocated = false;
+	ts->pidx = 0;
 }
 
 /**
