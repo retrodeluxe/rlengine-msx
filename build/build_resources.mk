@@ -2,7 +2,6 @@
 # Build resources
 #
 include $(BUILD_SYSTEM)/tools.mk
-include $(BUILD_SYSTEM)/config_rom.mk
 
 SPR_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_SPR)/*.tga)
 MAP_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_MAP)/*.json)

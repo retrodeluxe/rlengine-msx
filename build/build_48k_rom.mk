@@ -1,7 +1,6 @@
 #
 # Build a 48K ROM
 #
-include $(BUILD_SYSTEM)/tools.mk
 include $(BUILD_SYSTEM)/boot.mk
 include $(BUILD_SYSTEM)/engine.mk
 
