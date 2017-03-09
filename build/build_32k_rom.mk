@@ -1,6 +1,6 @@
 #
 # Build a 32K ROM
-# 
+#
 include $(BUILD_SYSTEM)/tools.mk
 include $(BUILD_SYSTEM)/boot.mk
 include $(BUILD_SYSTEM)/engine.mk
@@ -16,8 +16,8 @@ all: $(built_rom_32k)
 BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_SRC_FILES))
 
 $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
-	@mkdir -p $(LOCAL_BUILD_OUT_BIN)
-	$(CROSS_CC) $(ENGINE_CFLAGS) -c -o $@ $^
+	$(hide) mkdir -p $(LOCAL_BUILD_OUT_BIN)
+	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -c -o $@ $^
 
 # Link with Engine and 32k bootstrap
 #
@@ -31,16 +31,14 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_32
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
-	$(CROSS_LD) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
+	$(hide) $(CROSS_LD) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
-	cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
-	
+	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
+
 # Generate the actual ROM
 #
 $(built_rom_32k) : $(built_rom_bin)
-	@mkdir -p $(LOCAL_BUILD_OUT_ROM)
-	tr "\000" "\377" < /dev/zero | dd ibs=1k count=32 of=$@
-	dd if=$^ of=$@ conv=notrunc
-
-
+	$(hide) mkdir -p $(LOCAL_BUILD_OUT_ROM)
+	$(hide) tr "\000" "\377" < /dev/zero | dd ibs=1k count=32 of=$@
+	$(hide) dd if=$^ of=$@ conv=notrunc

@@ -10,7 +10,7 @@ export BUILT_TOOLS := $(HEX2BIN) $(TGA2H)
 all: $(TGA2H) $(HEX2BIN)
 
 $(TGA2H): $(TOOLS_ROOT)/tga2header.c
-	$(HOSTCC) $^ -o $@
+	$(hide) $(HOSTCC) $^ -o $@
 
 $(HEX2BIN): $(TOOLS_ROOT)/hex2bin.c
-	$(HOSTCC) $^ -o $@
+	$(hide) $(HOSTCC) $^ -o $@

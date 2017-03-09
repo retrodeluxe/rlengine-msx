@@ -4,6 +4,8 @@ export BUILD_SYSTEM := $(TOP)/build
 export RLE_TEST  = $(TOP)test
 export RLE_TOOLS = $(TOP)tools
 
+export hide:= @
+
 # Output tree
 export BUILD_OUT = $(TOP)out
 export BUILD_OUT_BIN = $(BUILD_OUT)/bin

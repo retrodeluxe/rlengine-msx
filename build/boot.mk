@@ -9,5 +9,5 @@ export BUILT_BOOTSTRAP_32K := $(BUILD_OUT_BIN)/boot32k.rel
 export BUILT_BOOTSTRAP_48K := $(BUILD_OUT_BIN)/boot48k.rel
 
 $(BUILT_BOOTSTRAP): $(BUILD_OUT_BIN)/%.rel: $(BOOT_ROOT)/%.s
-	@mkdir -p $(BUILD_OUT_BIN)
-	$(CROSS_AS) $(ENGINE_ASFLAGS) $@ $^
+	$(hide) mkdir -p $(BUILD_OUT_BIN)
+	$(hide) $(CROSS_AS) $(ENGINE_ASFLAGS) $@ $^
