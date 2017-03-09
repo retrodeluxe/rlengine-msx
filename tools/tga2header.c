@@ -8,10 +8,12 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
 #include <limits.h>
 #include <stdint.h>
 #include <getopt.h>
 #include <libgen.h>
+#include <string.h>
 #define PALSIZE 16
 #define MAX_SCR2_SIZE   6144
 
@@ -95,7 +97,7 @@ struct scr2 match_line(uint16_t x,  uint16_t y)
     uint8_t c1, c2;
     uint16_t xx;
     uint8_t bp = 0, bc = 0;
-    uint16_t cp, cs, bs = INT_MAX;
+    uint16_t cp, cs, bs = SHRT_MAX;
     uint16_t mc1, mc2;
 
     struct scr2 match;
