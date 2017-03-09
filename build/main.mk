@@ -20,8 +20,10 @@ export MAKEFLAGS :=
 
 # warning 59: function must return value, in low level asm functions,
 #             we directly set hl with return value without using local vars
+# warning 196: pointer target lost const qualifier
+#             we need to store ROM data as const, but is is assigned as non const
 #
-export ENGINE_CFLAGS  := -mz80 --std-c99 --fno-omit-frame-pointer --disable-warning 59 -I $(TOP)/engine/include
+export ENGINE_CFLAGS  := -mz80 --std-c99 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include
 export ENGINE_LDFLAGS := --no-std-crt0 --use-stdout
 export ENGINE_ASFLAGS := -plosff
 
