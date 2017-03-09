@@ -29,8 +29,8 @@ struct spr_pattern_set {
 	uint8_t n_planes;
 	uint8_t n_dirs;
 	uint8_t n_anim_steps;
-	const uint8_t *patterns;
-	const uint8_t *colors;
+	uint8_t *patterns;
+	uint8_t *colors;
 };
 
 /**

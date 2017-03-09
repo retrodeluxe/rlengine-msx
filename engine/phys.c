@@ -20,7 +20,7 @@ static void (*sprite_colision_cb)();
 
 void phys_check_collision_bit()
 {
-	uint8_t *status = STATFL;
+	uint8_t *status = (uint8_t *)STATFL;
 	if ((*status & SPR_COLISION_MASK) != 0) {
 		sprite_colision_cb();
 	}

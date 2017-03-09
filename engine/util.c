@@ -29,6 +29,8 @@
  */
 static void putchar(char c)
 {
+	c;
+
 	__asm
 	ld a,#0x63
 	out (0x2e),a
@@ -95,15 +97,15 @@ void log(int level, char *fmt, ...)
 	if (level <= LOGLEVEL) {
 		putchar('[');
 		switch (level) {
-			case LOG_ERROR: 
+			case LOG_ERROR:
 				putchar('E');
 				break;
-			case LOG_DEBUG: 
+			case LOG_DEBUG:
 				putchar('D');
 				break;
 			case LOG_WARNING:
 				putchar('W');
-				break; 
+				break;
 			case LOG_INFO:
 				putchar('I');
 				break;

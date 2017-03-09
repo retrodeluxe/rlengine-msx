@@ -7,8 +7,8 @@
 struct tile_set {
 	uint8_t w;
 	uint8_t h;
-	const uint8_t *pattern;
-	const uint8_t *color;
+	uint8_t *pattern;
+	uint8_t *color;
 	uint8_t pidx; /*< index of this tileset in vram pattern bank */
 	bool allocated;
 	/* dynamic tile data */
@@ -23,7 +23,7 @@ struct tile_map {
 	uint16_t cur_y;
 	uint8_t w;
 	uint8_t h;
-	const uint8_t *map;
+	uint8_t *map;
 };
 
 struct tile_object {

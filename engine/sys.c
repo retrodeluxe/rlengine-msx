@@ -110,7 +110,7 @@ void sys_irq_init()
 {
     uint8_t lsb, msb;
     void (*handler)();
-    uint8_t *hook = BIOS_INT_HOOK;
+    uint8_t *hook =(uint8_t *) BIOS_INT_HOOK;
 
     sys_msec = 0;
     sys_secs = 0;
