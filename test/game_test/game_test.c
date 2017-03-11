@@ -269,7 +269,7 @@ void load_room()
 				add_tileobject(dpo, tob_ct, TILE_SPEAR);
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				add_tileobject(dpo, tob_ct, TILE_WATER);
-				add_animator(dpo, ANIM_CYCLE_TILE);
+				//add_animator(dpo, ANIM_CYCLE_TILE);
 			}
 			map_object++;
 		} else if (map_object->type == GHOST) {
@@ -314,10 +314,10 @@ void load_room()
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_RAT) {
 				add_sprite(dpo, spr_ct, PATRN_RAT);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_WORM) {
 				add_sprite(dpo, spr_ct, PATRN_WORM);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
@@ -325,20 +325,20 @@ void load_room()
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_DEATH) {
 				// this is a big sprite 32x32 not supported yet
 				map_object++;
 				continue;
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
 				add_sprite(dpo, spr_ct, PATRN_DEMON);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT );
 			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
 				add_animator(dpo, ANIM_STATIC);
@@ -413,15 +413,12 @@ void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t t
 
 void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
-	uint8_t offset = 0;
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[pattidx]);
 	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
 	sys_set_bios();
 	INIT_LIST_HEAD(&dpo->animator_list);
-	if (spr_pattern[pattidx].size == SPR_SIZE_16x32)
-		offset = 8;
-	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y - offset);
+	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
 	dpo->xpos = map_object->x;
