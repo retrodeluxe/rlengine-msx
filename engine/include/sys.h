@@ -30,5 +30,5 @@ extern void sys_irq_init();
 extern void sys_sleep(unsigned int time_ms);
 extern uint16_t sys_gettime_secs();
 extern uint16_t sys_gettime_msec();
-
+extern uint16_t sys_get_ticks();
 #endif
