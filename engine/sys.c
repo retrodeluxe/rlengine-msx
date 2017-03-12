@@ -23,6 +23,7 @@
 
 static unsigned int sys_secs;
 static unsigned int sys_msec;
+static unsigned int sys_ticks;
 static uint8_t i;
 
 struct sys_pr {
@@ -93,6 +94,7 @@ void sys_proc_register(void (*func))
  */
 static void sys_irq_handler(void)
 {
+    sys_ticks++;
     sys_msec = sys_msec + MSEC_PER_TICK;
     if (sys_msec > 1000) {
         sys_msec = 0;
@@ -114,6 +116,7 @@ void sys_irq_init()
 
     sys_msec = 0;
     sys_secs = 0;
+    sys_ticks = 0;
     sys_procs.np = 0;
 
     handler = sys_irq_handler;
@@ -150,4 +153,9 @@ uint16_t sys_gettime_secs()
 uint16_t sys_gettime_msec()
 {
     return sys_msec;
+}
+
+uint16_t sys_get_ticks()
+{
+    return sys_ticks;
 }
