@@ -84,21 +84,26 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
 
 #define TILE_WIDTH 32
 
+
+/**
+ * tile collisions depend on the direction you are moving to.
+ */
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj, uint8_t *map)
 {
 	uint8_t x,y;
 	uint8_t *base;
+        uint16_t base_vdp;
+        uint8_t i;
 
-	// not correct, the other approach is more conservative
-	// but better.
-
-	x = obj->xpos + 1;
-	y = obj->ypos + 9;
+	x = obj->xpos + 4;
+	y = obj->ypos + 6;
 
 	base = map + x / 8 + y / 8 * TILE_WIDTH;
+        base_vdp = vdp_base_names_grp1 + x / 8 + y / 8 * TILE_WIDTH;
 
 	tile[0] = *(base);
 	tile[1] = *(base + 1);
+        // ignore the above ones
 	tile[2] = *(base + TILE_WIDTH);
 	tile[3] = *(base + TILE_WIDTH * 2);
 	tile[4] = *(base + TILE_WIDTH * 3);
@@ -106,14 +111,23 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj, uint8_t 
 	tile[6] = *(base + TILE_WIDTH * 2 + 1);
 	tile[7] = *(base + TILE_WIDTH * 3 + 1);
 
+        // vdp_poke(base_vdp + TILE_WIDTH, 3);
+        // vdp_poke(base_vdp + TILE_WIDTH * 2, 3);
+        // vdp_poke(base_vdp + TILE_WIDTH * 3, 3);
+        // vdp_poke(base_vdp + TILE_WIDTH + 1, 3);
+        // vdp_poke(base_vdp + TILE_WIDTH * 2 + 1, 3);
+        // vdp_poke(base_vdp + TILE_WIDTH * 3 + 1, 3);
+
 	obj->collision_state = 0;
-	if (is_coliding_tile_pair(tile[2], tile[3])) {
+	if (is_coliding_tile_triplet(tile[2], tile[3], tile[4])) {
 		obj->collision_state |= COLLISION_LEFT;
 	}
-	if (is_coliding_tile_pair(tile[5], tile[6])) {
+	if (is_coliding_tile_triplet(tile[5], tile[6], tile[7])) {
 		obj->collision_state |= COLLISION_RIGHT;
 	}
-	if (is_coliding_tile_pair(tile[0], tile[1])) {
+
+        // collision down is complicated, I need to handle it better
+	if (is_coliding_tile_pair(tile[2], tile[5])) {
 		obj->collision_state |= COLLISION_UP;
 	}
 	if (is_coliding_tile_pair(tile[4], tile[7])) {
