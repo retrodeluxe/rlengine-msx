@@ -19,6 +19,7 @@ struct displ_object {
 	uint8_t state;
 	int16_t xpos;
 	int16_t ypos;
+	int8_t vy;
 	uint8_t collision_state;
 	struct spr_sprite_def *spr;
 	struct tile_object *tob;
