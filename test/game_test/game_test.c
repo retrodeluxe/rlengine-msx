@@ -87,6 +87,16 @@ struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];
 struct displ_object dpo_monk;
 
+enum dpo_state_t {
+	STATE_IDLE,
+	STATE_JUMPING,
+	STATE_ONAIR,
+	STATE_ONCEILING,
+	STATE_FALLING,
+	STATE_LANDING,
+	STATE_ONGROUND,
+};
+
 struct list_head display_list;
 struct list_head *elem, *elem2, *elem3;
 
@@ -119,7 +129,7 @@ struct game_state_t {
 
 
 void init_resources();
-
+void show_title_screen();
 // void anim_up_down(struct displ_object *obj);
 // void anim_drop(struct displ_object *obj);
 void anim_static(struct displ_object *obj);
@@ -143,6 +153,8 @@ void find_room_data(struct map_object_item *map_obj);
 void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx);
 void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx);
 void add_animator(struct displ_object *dpo, enum anim_t animidx);
+
+void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy);
 
 void main()
 {
@@ -173,7 +185,7 @@ void main()
 void init_game_state()
 {
 	// room 3
-	game_state.map_x = 96;
+	game_state.map_x = 64;
 	game_state.map_y = 44;
 }
 
@@ -308,7 +320,7 @@ void load_room()
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_BAT);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
 				add_animator(dpo, ANIM_STATIC);
@@ -359,7 +371,7 @@ void load_room()
 	}
 	INIT_LIST_HEAD(&dpo_monk.animator_list);
 	list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list);
-	//list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
+	list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
 	INIT_LIST_HEAD(&dpo_monk.list);
 	list_add(&dpo_monk.list, &display_list);
 	// show all elements
@@ -455,11 +467,50 @@ void animate_all() {
 	}
 }
 
+
+void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
+{
+	int8_t cdx, cdy;
+	int16_t xpos, ypos;
+	cdx = dx;
+	cdy = dy;
+
+	if (dx != 0 || dy != 0) {
+		dpo->xpos += dx;
+		dpo->ypos += dy;
+		phys_detect_tile_collisions(dpo, scr_tile_buffer);
+		if (dy > 0 && is_colliding_down(dpo)) {
+			ypos = (dpo->ypos / 8) * 8;
+			cdy = ypos - dpo->ypos + dy;
+			dpo->ypos = ypos;
+			if (dpo->state == STATE_FALLING)
+				dpo->state = STATE_LANDING;
+			else
+				dpo->state = STATE_ONGROUND;
+		}
+		if (dpo->state == STATE_ONAIR &&
+			is_colliding_up(dpo)) {
+			ypos = (dpo->ypos / 8) * 8 + 6;
+		 	cdy = ypos - dpo->ypos + dy;
+		 	dpo->ypos = ypos;
+			dpo->state = STATE_ONCEILING;
+			log_e("ceiling\n");
+		}
+		if (is_colliding_left(dpo) || is_colliding_right(dpo)) {
+			dpo->xpos -= dx;
+			cdx = 0;
+		}
+		if (cdx != 0 || cdy != 0)
+			spr_animate(dpo->spr, cdx, cdy, 0);
+	}
+}
+
 void init_monk()
 {
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 	dpo_monk.xpos = 100;
 	dpo_monk.ypos = 192 - 64;
+	dpo_monk.vy = 0;
 	dpo_monk.type = DISP_OBJECT_SPRITE;
 	dpo_monk.state = 0;
 	dpo_monk.spr = &monk_sprite;
@@ -473,7 +524,6 @@ void anim_static(struct displ_object *obj)
 
 void anim_cycle_tile(struct displ_object *obj)
 {
-	//dpo->type = DISP_OBJECT_TILE;
 	if (dpo->state++ == 10) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
@@ -483,87 +533,77 @@ void anim_cycle_tile(struct displ_object *obj)
 		}
 		dpo->state = 0;
 	}
-	// need to actually update VRAM for this tile... awesome.
 }
+
 
 void anim_jump(struct displ_object *obj)
 {
 	static uint8_t jmp_ct;
 
-	if (obj->state == 1) {
+	if (obj->state == STATE_JUMPING) {
+		obj->state = STATE_ONAIR;
+		obj->vy = - 7;
 		jmp_ct = 5;
-		obj->state = 2;
-	} else if (obj->state == 2){
-		if (!is_colliding_up(obj)) {
-			obj->ypos-=3;
-			spr_animate(obj->spr, 0, -3 ,0);
+	} else if (obj->state == STATE_ONAIR) {
+		dpo_animate(obj, 0, obj->vy);
+		// need to increase jump length without increasing vy
+		if (obj->state == STATE_ONAIR) {
+			obj->vy += 1;
+			if (obj->vy > 0)
+				obj->state = STATE_ONCEILING;
 		}
-		if (--jmp_ct == 0 || is_colliding_up(obj)) {
-			jmp_ct = 16;
-			obj->state = 3;
+	} else if (obj->state == STATE_ONCEILING) {
+		obj->vy = 0;
+		dpo_animate(obj, 0, obj->vy);
+		if (--jmp_ct == 0) {
+			obj->state = STATE_FALLING;
 		}
-	} else if (obj->state == 3) {
-		if (!is_colliding_up(obj)) {
-			obj->ypos-=2;
-			spr_animate(obj->spr, 0, -2 ,0);
-		}
-		if (--jmp_ct == 0 || is_colliding_up(obj)) {
-			obj->state = 4;
-		}
-	} else if (obj->state == 4) {
-		// wait for gravity to put us in the ground
-		if (is_colliding_down(obj)) {
-			list_del(&animators[ANIM_JUMP].list);
-			obj->state = 0;
-		}
+	} else if (obj->state == STATE_FALLING) {
+		// animate by gravity
+	} else if (obj->state == STATE_LANDING) {
+		list_del(&animators[ANIM_JUMP].list);
+		obj->state = STATE_ONGROUND;
 	}
 }
+
+
+void anim_gravity(struct displ_object *obj)
+{
+	if (obj->state != STATE_JUMPING &&
+	  	obj->state != STATE_ONAIR &&
+		obj->state != STATE_ONCEILING) {
+		dpo_animate(obj, 0, obj->vy);
+		if(obj->vy++ > 2)
+			obj->vy = 2;
+	}
+	//log_e("gravity here vy = %d\n", obj->vy);
+}
+
 
 void anim_joystick(struct displ_object *obj)
 {
 	if (stick == STICK_LEFT || stick == STICK_UP_LEFT ||
 		stick == STICK_DOWN_LEFT) {
-		//if (!is_colliding_left(obj)) {
-			obj->xpos--;
-			spr_animate(obj->spr, -1, 0 ,0);
-		//}
+			dpo_animate(obj, -1, 0);
 	}
 	if (stick == STICK_RIGHT || stick == STICK_UP_RIGHT ||
 		stick == STICK_DOWN_RIGHT) {
-		//if (!is_colliding_right(obj)) {
-			obj->xpos++;
-			spr_animate(obj->spr, 1, 0 ,0);
-		//}
+			dpo_animate(obj, 1, 0);
 	}
 	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
 		stick == STICK_UP_LEFT) {
-		if (obj->state == 0 /*&& is_colliding_down(obj)*/) {
-			//list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
-			obj->ypos--;
-			spr_animate(obj->spr, 0, -1 ,0);
-			//obj->state = 1;
+		if (obj->state == STATE_ONGROUND) {
+			dpo_animate(obj, 0, -1);
+			list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
+			obj->state = STATE_JUMPING;
 		}
 	}
 	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
 		stick == STICK_DOWN_RIGHT) {
-			obj->ypos++;
-			spr_animate(obj->spr, 0, 1 ,0);
-			// TODO: Duck
-			// need change the monk sprite
-			// and the dimensions to check collisions
 	}
+	//log_e("state : %d\n", dpo->state);
 }
 
-/*
- * Vertical fall at constant speed until collision
- */
-void anim_gravity(struct displ_object *obj)
-{
-	if (!is_colliding_down(obj)) {
-		obj->ypos++;
-		spr_animate(obj->spr, 0, 1, 0);
-	}
-}
 
 void anim_left_right(struct displ_object *obj)
 {
@@ -673,4 +713,12 @@ void init_resources()
 	for (i = 1; i < 76; i++)
 		phys_set_colliding_tile(i);
 
+}
+
+void show_title_screen()
+{
+	// requires processing the image in a way that fits in the ROM.
+
+	do {
+	} while (sys_get_key(8) & 1);
 }
