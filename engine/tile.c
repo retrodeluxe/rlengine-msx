@@ -42,8 +42,8 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 	uint16_t size, offset, i;
 	offset = 256 * 8 * bank + pos * 8;
 	size = ts->w * ts->h * 8;
-	vdp_copy_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);
-	vdp_copy_to_vram(ts->color, vdp_base_color_grp1 + offset, size);
+	vdp_copy_to_vram_di(ts->pattern, vdp_base_chars_grp1 + offset, size);
+	vdp_copy_to_vram_di(ts->color, vdp_base_color_grp1 + offset, size);
 	for (i = pos; i < pos + (size / 8); i++)
 		bitmap_reset(bitmap_tile_bank, i);
 	ts->allocated = true;
@@ -70,8 +70,8 @@ void tile_set_valloc(struct tile_set *ts)
 
 	for (i = 0; i < 3; i++) {
 		offset = 256 * 8 * i + pos * 8;
-		vdp_copy_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size * 8);
-		vdp_copy_to_vram(ts->color, vdp_base_color_grp1 + offset, size * 8);
+		vdp_copy_to_vram_di(ts->pattern, vdp_base_chars_grp1 + offset, size * 8);
+		vdp_copy_to_vram_di(ts->color, vdp_base_color_grp1 + offset, size * 8);
 	}
 
 	ts->allocated = true;
