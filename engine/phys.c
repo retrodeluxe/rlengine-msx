@@ -3,12 +3,14 @@
  * Copyright (C) Retro DeLuxe 2017, All rights reserved.
  *
  */
- #include "msx.h"
- #include "log.h"
- #include "displ.h"
- #include "phys.h"
- #include "sys.h"
- #include "sprite.h"
+
+#include "msx.h"
+#include "log.h"
+#include "displ.h"
+#include "phys.h"
+#include "sys.h"
+#include "sprite.h"
+#include "bitmap.h"
 
 static uint8_t colliding_tiles[32];
 static uint8_t tile[12];
@@ -28,7 +30,7 @@ void phys_check_collision_bit()
 
 void phys_init()
 {
-	sys_memset(colliding_tiles, 0, 32);
+	sys_memset(colliding_tiles, 255, 32);
 }
 
 
@@ -43,42 +45,20 @@ void phys_set_sprite_collision_handler(void (*handler))
  */
 void phys_set_colliding_tile(uint8_t tile)
 {
-	uint8_t bit, byte;
-
-	byte = tile >> 3;
-	bit = tile & 7;
-	colliding_tiles[byte] |= 1 << bit;
+        bitmap_reset(colliding_tiles, tile);
 }
 
 static bool is_coliding_tile_pair(uint8_t tile1, uint8_t tile2)
 {
-	uint8_t bit1, bit2, byte1, byte2;
-	bool result;
-
-	byte1 = tile1 >> 3;
-	byte2 = tile2 >> 3;
-	bit1 = tile1 & 7;
-	bit2 = tile2 & 7;
-	result = colliding_tiles[byte1] & (1 << bit1);
-	result |= colliding_tiles[byte2] & (1 << bit2);
-	return result;
+	return ((bitmap_get(colliding_tiles, tile1) == 0) ||
+                 (bitmap_get(colliding_tiles, tile2) == 0));
 }
 
 static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3)
 {
-	uint8_t bit1, bit2, bit3, byte1, byte2, byte3;
-	bool result;
-
-	byte1 = tile1 >> 3;
-	byte2 = tile2 >> 3;
-	byte3 = tile3 >> 3;
-	bit1 = tile1 & 7;
-	bit2 = tile2 & 7;
-	bit3 = tile3 & 7;
-	result = colliding_tiles[byte1] & (1 << bit1);
-	result |= colliding_tiles[byte2] & (1 << bit2);
-	result |= colliding_tiles[byte3] & (1 << bit3);
-	return result;
+	return ((bitmap_get(colliding_tiles, tile1) == 0) ||
+                 (bitmap_get(colliding_tiles, tile2) == 0) ||
+                 (bitmap_get(colliding_tiles, tile3) == 0));
 }
 
 
