@@ -13,6 +13,7 @@
 #include "bitmap.h"
 
 static uint8_t colliding_tiles[32];
+static uint8_t colliding_tiles_down[32];
 static uint8_t tile[12];
 static void (*sprite_colision_cb)();
 
@@ -31,6 +32,7 @@ void phys_check_collision_bit()
 void phys_init()
 {
 	sys_memset(colliding_tiles, 255, 32);
+	sys_memset(colliding_tiles_down, 255, 32);
 }
 
 
@@ -40,18 +42,49 @@ void phys_set_sprite_collision_handler(void (*handler))
 	sys_proc_register(phys_check_collision_bit);
 }
 
+
+/**
+ * set callbacks for specific tiles
+ */
+void phys_set_tile_collision_handler (void (*handler), uint8_t tile)
+{
+
+}
+
+
 /*
- * Set collision flag for a specific tile
+ * Set collision flag for a specific tile (all directions)
  */
 void phys_set_colliding_tile(uint8_t tile)
 {
         bitmap_reset(colliding_tiles, tile);
+        bitmap_reset(colliding_tiles_down, tile);
+}
+
+/**
+ * Set a tile that collides only when falling
+ */
+void phys_set_down_colliding_tile(uint8_t tile)
+{
+        bitmap_reset(colliding_tiles_down, tile);
+}
+
+void phys_clear_colliding_tile(uint8_t tile)
+{
+        bitmap_set(colliding_tiles, tile);
+        bitmap_set(colliding_tiles_down, tile);
 }
 
 static bool is_coliding_tile_pair(uint8_t tile1, uint8_t tile2)
 {
 	return ((bitmap_get(colliding_tiles, tile1) == 0) ||
                  (bitmap_get(colliding_tiles, tile2) == 0));
+}
+
+static bool is_coliding_down_tile_pair(uint8_t tile1, uint8_t tile2)
+{
+	return ((bitmap_get(colliding_tiles_down, tile1) == 0) ||
+                 (bitmap_get(colliding_tiles_down, tile2) == 0));
 }
 
 static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3)
@@ -110,9 +143,11 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj, uint8_t 
 	if (is_coliding_tile_pair(tile[2], tile[5])) {
 		obj->collision_state |= COLLISION_UP;
 	}
-	if (is_coliding_tile_pair(tile[4], tile[7])) {
+
+	if (is_coliding_down_tile_pair(tile[4], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN;
 	}
+
 }
 
 static void phys_detect_tile_collisions_16x16(struct displ_object *obj, uint8_t *map)

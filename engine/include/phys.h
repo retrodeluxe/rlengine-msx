@@ -19,7 +19,10 @@
 
 void phys_init();
 void phys_set_sprite_collision_handler(void (*handler));
+void phys_set_tile_collision_handler (void (*handler), uint8_t tile);
 void phys_set_colliding_tile(uint8_t tile);
+void phys_set_down_colliding_tile(uint8_t tile);
+void phys_clear_colliding_tile(uint8_t tile);
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map);
 
 #endif
