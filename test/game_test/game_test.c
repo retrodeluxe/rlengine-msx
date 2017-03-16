@@ -97,6 +97,9 @@ enum dpo_state_t {
 	STATE_ONGROUND,
 };
 
+#define dpo_set_state(x) dpo->state = (x)
+#define dpo_in_state(x) dpo->state == (x)
+
 struct list_head display_list;
 struct list_head *elem, *elem2, *elem3;
 
@@ -185,7 +188,7 @@ void main()
 void init_game_state()
 {
 	// room 3
-	game_state.map_x = 64;
+	game_state.map_x = 96;
 	game_state.map_y = 44;
 }
 
@@ -214,12 +217,13 @@ void check_and_change_room()
 		dpo_monk.ypos = 0;
 		game_state.map_y+=22;
 		change = true;
-	} else if (dpo_monk.ypos < -16) {
-		dpo_monk.ypos = 192 - 32;
+	} else if (dpo_monk.ypos < - 32) {
+		dpo_monk.ypos = 192 - 32 - 32;
 		game_state.map_y-=22;
 		change = true;
 	}
 	if (change) {
+		dpo_monk.state = STATE_ONGROUND;
 		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
 		load_room();
 	}
@@ -312,6 +316,8 @@ void load_room()
 			add_animator(dpo, ANIM_CYCLE_TILE);
 			map_object++;
 		} else if (map_object->type == STEP) {
+			// add special collisions
+
 			// need to see what to do with these ones
 			map_object++;
 		} else if (map_object->type == MOVABLE) {
@@ -320,37 +326,37 @@ void load_room()
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_BAT);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				//add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_RAT) {
 				add_sprite(dpo, spr_ct, PATRN_RAT);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				//add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_WORM) {
 				add_sprite(dpo, spr_ct, PATRN_WORM);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				//add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				add_sprite(dpo, spr_ct, PATRN_FLY);
-				add_animator(dpo, ANIM_STATIC);
+				//add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				//add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				//add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_DEATH) {
 				// this is a big sprite 32x32 not supported yet
 				map_object++;
 				continue;
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				//add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
 				add_sprite(dpo, spr_ct, PATRN_DEMON);
-				add_animator(dpo, ANIM_LEFT_RIGHT );
+				///add_animator(dpo, ANIM_LEFT_RIGHT );
 			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
 				add_animator(dpo, ANIM_STATIC);
@@ -458,8 +464,6 @@ void find_room_data(struct map_object_item *map_obj)
 void animate_all() {
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
-		if (dpo->type == DISP_OBJECT_SPRITE)
-			phys_detect_tile_collisions(dpo, scr_tile_buffer);
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
 			anim->run(dpo);
@@ -467,7 +471,10 @@ void animate_all() {
 	}
 }
 
-
+/**
+ * dpo animate handles collisions prior to animation.
+ *   state transitions must be handled by animators.
+ */
 void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
 {
 	int8_t cdx, cdy;
@@ -478,30 +485,30 @@ void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
 	if (dx != 0 || dy != 0) {
 		dpo->xpos += dx;
 		dpo->ypos += dy;
-		phys_detect_tile_collisions(dpo, scr_tile_buffer);
-		if (dy > 0 && is_colliding_down(dpo)) {
+		phys_detect_tile_collisions(dpo, scr_tile_buffer, dx, dy);
+		// corrections on deltas to account for
+		// fixed point physics and 8x8 tile collisions
+		if (is_colliding_down(dpo)) {
 			ypos = (dpo->ypos / 8) * 8;
-			cdy = ypos - dpo->ypos + dy;
+			cdy = ypos - dpo->ypos + dy; /* ensure there is collision with ground always */
 			dpo->ypos = ypos;
-			if (dpo->state == STATE_FALLING)
-				dpo->state = STATE_LANDING;
-			else
-				dpo->state = STATE_ONGROUND;
 		}
-		if (dpo->state == STATE_ONAIR &&
+		if (dy < 0 && dpo->ypos > 0  &&
 			is_colliding_up(dpo)) {
 			ypos = (dpo->ypos / 8) * 8 + 6;
 		 	cdy = ypos - dpo->ypos + dy;
 		 	dpo->ypos = ypos;
-			dpo->state = STATE_ONCEILING;
-			log_e("ceiling\n");
 		}
-		if (is_colliding_left(dpo) || is_colliding_right(dpo)) {
+
+		if (!is_colliding_up(dpo) &&
+			(is_colliding_left(dpo) || is_colliding_right(dpo))) {
 			dpo->xpos -= dx;
 			cdx = 0;
 		}
-		if (cdx != 0 || cdy != 0)
+		if (cdx != 0 || cdy != 0) {
 			spr_animate(dpo->spr, cdx, cdy, 0);
+		}
+		//log_e("B ypos %d state %d colision %d\n", dpo->ypos, dpo->state, dpo->collision_state);
 	}
 }
 
@@ -512,8 +519,9 @@ void init_monk()
 	dpo_monk.ypos = 192 - 64;
 	dpo_monk.vy = 0;
 	dpo_monk.type = DISP_OBJECT_SPRITE;
-	dpo_monk.state = 0;
+	dpo_monk.state = STATE_ONGROUND;
 	dpo_monk.spr = &monk_sprite;
+	dpo_monk.collision_state = 0;
 	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
 }
 
@@ -522,7 +530,7 @@ void anim_static(struct displ_object *obj)
 	// do nothing, just make sure we can display the sprite
 }
 
-void anim_cycle_tile(struct displ_object *obj)
+void anim_cycle_tile(struct displ_object *dpo)
 {
 	if (dpo->state++ == 10) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
@@ -535,48 +543,51 @@ void anim_cycle_tile(struct displ_object *obj)
 	}
 }
 
-
-void anim_jump(struct displ_object *obj)
+/**
+ * jump animation is enabled from joystick and disables itself
+ */
+void anim_jump(struct displ_object *dpo)
 {
 	static uint8_t jmp_ct;
 
-	if (obj->state == STATE_JUMPING) {
-		obj->state = STATE_ONAIR;
-		obj->vy = - 7;
+	if (dpo->state == STATE_JUMPING) {
+		dpo->state = STATE_ONAIR;
+		dpo->vy = - 7;
 		jmp_ct = 5;
-	} else if (obj->state == STATE_ONAIR) {
-		dpo_animate(obj, 0, obj->vy);
-		// need to increase jump length without increasing vy
-		if (obj->state == STATE_ONAIR) {
-			obj->vy += 1;
-			if (obj->vy > 0)
-				obj->state = STATE_ONCEILING;
+	} else if (dpo->state == STATE_ONAIR) {
+		dpo_animate(dpo, 0, dpo->vy);
+		if (is_colliding_up(dpo) || dpo->vy >= 0) {
+			dpo->state = STATE_ONCEILING;
+			dpo->vy = 0;
+		} else {
+			dpo->vy++;
 		}
-	} else if (obj->state == STATE_ONCEILING) {
-		obj->vy = 0;
-		dpo_animate(obj, 0, obj->vy);
+	} else if (dpo->state == STATE_ONCEILING) {
+		dpo->vy = 0;
+		dpo_animate(dpo, 0, dpo->vy);
 		if (--jmp_ct == 0) {
-			obj->state = STATE_FALLING;
+			dpo->state = STATE_FALLING;
 		}
-	} else if (obj->state == STATE_FALLING) {
-		// animate by gravity
-	} else if (obj->state == STATE_LANDING) {
+	} else if (dpo->state == STATE_FALLING) {
+		dpo_animate(dpo, 0, dpo->vy);
+		if (is_colliding_down(dpo)) {
+			dpo->state = STATE_LANDING;
+		}
+	} else if (dpo->state == STATE_LANDING) {
 		list_del(&animators[ANIM_JUMP].list);
-		obj->state = STATE_ONGROUND;
+		dpo->state = STATE_ONGROUND;
 	}
+	//log_e("jump collision %d state %d\n", dpo->collision_state, dpo->state);
 }
 
 
-void anim_gravity(struct displ_object *obj)
+void anim_gravity(struct displ_object *dpo)
 {
-	if (obj->state != STATE_JUMPING &&
-	  	obj->state != STATE_ONAIR &&
-		obj->state != STATE_ONCEILING) {
-		dpo_animate(obj, 0, obj->vy);
-		if(obj->vy++ > 2)
-			obj->vy = 2;
+	if (!is_colliding_down(dpo)) {
+		dpo_animate(dpo, 0, dpo->vy);
+		if(dpo->vy++ > 2)
+			dpo->vy = 2;
 	}
-	//log_e("gravity here vy = %d\n", obj->vy);
 }
 
 
@@ -584,15 +595,15 @@ void anim_joystick(struct displ_object *obj)
 {
 	if (stick == STICK_LEFT || stick == STICK_UP_LEFT ||
 		stick == STICK_DOWN_LEFT) {
-			dpo_animate(obj, -1, 0);
+			dpo_animate(obj, -2, 0);
 	}
 	if (stick == STICK_RIGHT || stick == STICK_UP_RIGHT ||
 		stick == STICK_DOWN_RIGHT) {
-			dpo_animate(obj, 1, 0);
+			dpo_animate(obj, 2, 0);
 	}
 	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
 		stick == STICK_UP_LEFT) {
-		if (obj->state == STATE_ONGROUND) {
+		if (dpo->state == STATE_ONGROUND) {
 			dpo_animate(obj, 0, -1);
 			list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
 			obj->state = STATE_JUMPING;
@@ -601,7 +612,8 @@ void anim_joystick(struct displ_object *obj)
 	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
 		stick == STICK_DOWN_RIGHT) {
 	}
-	//log_e("state : %d\n", dpo->state);
+	if (stick)
+	 	log_e("state : %d colisi %d\n", dpo->state, dpo->collision_state);
 }
 
 
@@ -709,10 +721,13 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WATERDROP], SPR_SIZE_16x16, 1, 1, 3, waterdrop);
 	sys_set_bios();
 
-	// FIXME: this needs to be done per room
 	for (i = 1; i < 76; i++)
 		phys_set_colliding_tile(i);
 
+	phys_clear_colliding_tile(16); // step brown
+	phys_clear_colliding_tile(38); // step white
+	phys_set_down_colliding_tile(16);
+	phys_set_down_colliding_tile(38);
 }
 
 void show_title_screen()
