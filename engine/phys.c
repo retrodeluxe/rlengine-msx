@@ -99,11 +99,12 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
 
 
 /**
- * tile collisions depend on the direction you are moving to.
+ * Update dpo collision_state
  */
-static void phys_detect_tile_collisions_16x32(struct displ_object *obj, uint8_t *map)
+static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
+        uint8_t *map, int8_t dx, int8_t dy)
 {
-	uint8_t x,y;
+	int16_t x,y;
 	uint8_t *base;
         uint16_t base_vdp;
         uint8_t i;
@@ -124,40 +125,46 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj, uint8_t 
 	tile[6] = *(base + TILE_WIDTH * 2 + 1);
 	tile[7] = *(base + TILE_WIDTH * 3 + 1);
 
-        // vdp_poke(base_vdp + TILE_WIDTH, 3);
-        // vdp_poke(base_vdp + TILE_WIDTH * 2, 3);
-        // vdp_poke(base_vdp + TILE_WIDTH * 3, 3);
-        // vdp_poke(base_vdp + TILE_WIDTH + 1, 3);
-        // vdp_poke(base_vdp + TILE_WIDTH * 2 + 1, 3);
-        // vdp_poke(base_vdp + TILE_WIDTH * 3 + 1, 3);
-
-	obj->collision_state = 0;
-	if (is_coliding_tile_triplet(tile[2], tile[3], tile[4])) {
-		obj->collision_state |= COLLISION_LEFT;
+        if (dx < 0) {
+		if (is_coliding_tile_pair(tile[2], tile[3])) {
+			obj->collision_state |= COLLISION_LEFT;
+			obj->collision_state &= ~COLLISION_RIGHT;
+		} else {
+			obj->collision_state &= ~COLLISION_LEFT;
+			obj->collision_state &= ~COLLISION_RIGHT;
+		}
 	}
-	if (is_coliding_tile_triplet(tile[5], tile[6], tile[7])) {
-		obj->collision_state |= COLLISION_RIGHT;
+        if (dx > 0) {
+		if (is_coliding_tile_pair(tile[5], tile[6])) {
+			obj->collision_state |= COLLISION_RIGHT;
+			obj->collision_state &= ~COLLISION_LEFT;
+		} else {
+			obj->collision_state &= ~COLLISION_RIGHT;
+			obj->collision_state &= ~COLLISION_LEFT;
+		}
 	}
-
-        // collision down is complicated, I need to handle it better
-	if (is_coliding_tile_pair(tile[2], tile[5])) {
-		obj->collision_state |= COLLISION_UP;
+	if (dy < 0) {
+		if (is_coliding_tile_pair(tile[2], tile[5])) {
+			obj->collision_state |= COLLISION_UP;
+		} else {
+			obj->collision_state &= ~COLLISION_UP;
+		}
 	}
-
 	if (is_coliding_down_tile_pair(tile[4], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN;
+		obj->collision_state &= ~COLLISION_UP;
+	}  else {
+		obj->collision_state &= ~COLLISION_DOWN;
 	}
 
 }
 
-static void phys_detect_tile_collisions_16x16(struct displ_object *obj, uint8_t *map)
+static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
+        uint8_t *map, int8_t dx, int8_t dy)
 {
 
 	uint8_t x,y;
 	uint8_t *base;
-
-	// the way to calculate changes despending on the sprite size!!
-	// eg. 16x32
 
 	x = obj->xpos;
 	y = obj->ypos;
@@ -182,43 +189,31 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj, uint8_t 
 	tile[11] = *(base + 3 + TILE_WIDTH * 2);
 
 	obj->collision_state = 0;
-	if (is_coliding_tile_pair(tile[4], tile[5])) {
+	if (dx < 0 && is_coliding_tile_pair(tile[4], tile[5])) {
 		obj->collision_state |= COLLISION_LEFT;
 	}
-	if (is_coliding_tile_pair(tile[10], tile[11])) {
+	if (dx > 0 && is_coliding_tile_pair(tile[10], tile[11])) {
 		obj->collision_state |= COLLISION_RIGHT;
 	}
-	if (is_coliding_tile_pair(tile[1], tile[2])) {
+	if (dy < 0 && is_coliding_tile_pair(tile[1], tile[2])) {
 		obj->collision_state |= COLLISION_UP;
 	}
-	if (is_coliding_tile_pair(tile[7], tile[8])) {
+	if (dy > 0 && is_coliding_tile_pair(tile[7], tile[8])) {
 		obj->collision_state |= COLLISION_DOWN;
 	}
-	// if (is_coliding_tile_triplet(tile[4], tile[0], tile[1])) {
-	// 	obj->collision_state |= COLLISION_UP_LEFT;
-	// }
-	// if (is_coliding_tile_triplet(tile[2], tile[3], tile[10])) {
-	// 	obj->collision_state |= COLLISION_UP_RIGHT;
-	// }
-	// if (is_coliding_tile_triplet(tile[5], tile[6], tile[7])) {
-	// 	obj->collision_state |= COLLISION_DOWN_LEFT;
-	// }
-	// if (is_coliding_tile_triplet(tile[8], tile[9], tile[11])) {
-	// 	obj->collision_state |= COLLISION_DOWN_RIGHT;
-	// }
-	//log_e("collision state %d\n", obj->collision_state);
 }
 
 /*
  * Update collision state of a display object 16x16
  */
-void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map)
+void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
+	int8_t dx, int8_t dy)
 {
        uint8_t size = obj->spr->pattern_set->size;
 
        if (size == SPR_SIZE_16x16) {
-	       phys_detect_tile_collisions_16x16(obj,map);
+	       phys_detect_tile_collisions_16x16(obj,map, dx, dy);
        } else if (size = SPR_SIZE_16x32) {
-	       phys_detect_tile_collisions_16x32(obj,map);
+	       phys_detect_tile_collisions_16x32(obj, map, dx, dy);
        }
 }
