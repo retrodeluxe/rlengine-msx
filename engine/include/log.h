@@ -1,3 +1,22 @@
+/*
+ * RetroDeLuxe Engine for MSX
+ *
+ * Copyright (C) 2017 Enric Martin Geijo (retrodeluxemsx@gmail.com)
+ *
+ * RDLEngine is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, version 2.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+ 
 #ifndef _MSX_H_LOG
 #define _MSX_H_LOG
 
@@ -23,14 +42,14 @@ extern void dump_vram(int start_addr, int end_addr);
 #define log_entry(_fmt, ...)  log(LOG_ENTRY, _fmt, ##__VA_ARGS__)
 #define log_exit(_fmt, ...)  log(LOG_EXIT, _fmt, ##__VA_ARGS__)
 #else
-#define log_d(_fmt, ...) 
-#define log_w(_fmt, ...)  
-#define log_i(_fmt, ...)  
-#define log_v(_fmt, ...)  
-#define log_e(_fmt, ...)  
-#define log_entry(_fmt, ...)  
-#define log_exit(_fmt, ...) 
+#define log_d(_fmt, ...)
+#define log_w(_fmt, ...)
+#define log_i(_fmt, ...)
+#define log_v(_fmt, ...)
+#define log_e(_fmt, ...)
+#define log_entry(_fmt, ...)
+#define log_exit(_fmt, ...)
 
 #endif				/* DEBUG */
 
-#endif				
+#endif

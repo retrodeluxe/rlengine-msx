@@ -1,7 +1,7 @@
 /*
- * RetroDeLuxe Engine MSX1
+ * RetroDeLuxe Engine for MSX
  *
- * Copyright (C) 2013 Enric Geijo
+ * Copyright (C) 2017 Enric Martin Geijo (retrodeluxemsx@gmail.com)
  *
  * RDLEngine is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -16,6 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "msx.h"
 #include "vdp.h"
 #include "sys.h"
