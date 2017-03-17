@@ -17,9 +17,17 @@
 #define is_colliding_down(x)	(((x)->collision_state & COLLISION_DOWN) != 0)
 #define is_colliding_up(x)	(((x)->collision_state & COLLISION_UP) != 0)
 
+#define MAX_CROUPS 5
+
+struct tile_collision_group {
+        uint8_t start;
+        uint8_t end;
+        void (*handler)();
+};
+
 void phys_init();
 void phys_set_sprite_collision_handler(void (*handler));
-void phys_set_tile_collision_handler (void (*handler), uint8_t tile);
+void phys_set_tile_collision_handler(struct tile_object *tob, void (*handler));
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);

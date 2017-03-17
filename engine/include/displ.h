@@ -15,11 +15,20 @@ struct animator {
 };
 
 struct displ_object {
-	uint8_t type;
+	uint8_t type; 	/*< sprite or dynamic tile */
+
+	/* static animation data */
+	int8_t max;	/*<  max coordinate */
+	int8_t min;	/*<  min coordinate */
+	int8_t speed;	/*<  speed */
+	int8_t color;
+
+	/* dynamic animation data */
 	uint8_t state;
 	int16_t xpos;
 	int16_t ypos;
 	int8_t vy;
+	int8_t vx;
 	uint8_t collision_state;
 	struct spr_sprite_def *spr;
 	struct tile_object *tob;
