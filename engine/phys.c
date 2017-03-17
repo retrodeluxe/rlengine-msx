@@ -11,11 +11,15 @@
 #include "sys.h"
 #include "sprite.h"
 #include "bitmap.h"
+#include "tile.h"
 
 static uint8_t colliding_tiles[32];
 static uint8_t colliding_tiles_down[32];
 static uint8_t tile[12];
 static void (*sprite_colision_cb)();
+
+static struct tile_collision_group cgroup[MAX_CROUPS];
+static uint8_t n_cgroups;
 
 #define STATFL 0xf3e7;
 #define SPR_COLISION_MASK 32
@@ -33,6 +37,7 @@ void phys_init()
 {
 	sys_memset(colliding_tiles, 255, 32);
 	sys_memset(colliding_tiles_down, 255, 32);
+	n_cgroups = 0;
 }
 
 
@@ -46,12 +51,30 @@ void phys_set_sprite_collision_handler(void (*handler))
 /**
  * set callbacks for specific tiles
  */
-void phys_set_tile_collision_handler (void (*handler), uint8_t tile)
+void phys_set_tile_collision_handler(struct tile_object *tob, void (*handler))
 {
+	uint8_t base_tile = tob->ts->pidx;
+	uint8_t num_tiles = tob->ts->frame_w * tob->ts->frame_h *
+		tob->ts->n_frames * tob->ts->n_dirs;
 
+	cgroup[n_cgroups].start = base_tile;
+	cgroup[n_cgroups].end = base_tile + num_tiles;
+	cgroup[n_cgroups].handler = handler;
+	n_cgroups++;
 }
 
-
+/*
+ * if the tile has a handler set, notigy
+ */
+static void phys_tile_collision_notify(uint8_t tile)
+{
+	uint8_t i;
+	for (i = 0; i < n_cgroups; i++) {
+		if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
+			cgroup[i].handler();
+		}
+	}
+}
 /*
  * Set collision flag for a specific tile (all directions)
  */
@@ -124,6 +147,12 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	tile[5] = *(base + TILE_WIDTH + 1);
 	tile[6] = *(base + TILE_WIDTH * 2 + 1);
 	tile[7] = *(base + TILE_WIDTH * 3 + 1);
+
+	// check for special tiles
+	// TODO do this only if there is any collision??
+	for (i = 2; i < 8; i++) {
+		phys_tile_collision_notify(tile[i]);
+	}
 
         if (dx < 0) {
 		if (is_coliding_tile_pair(tile[2], tile[3])) {
