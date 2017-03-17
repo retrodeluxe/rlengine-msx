@@ -1,11 +1,3 @@
-/**
- *
- * Copyright (C) Retro DeLuxe 2017, All rights reserved.
- *
- */
-
-#define DEBUG
-
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
@@ -22,61 +14,18 @@
 #include "gen/game_test_sprites_ext.h"
 #include "gen/game_test_maps.h"
 
-#include <stdlib.h>
+#include "anim.h"
+#include "logic.h"
+#include "scene.h"
 
-struct tile_set logo;
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
 struct tile_set tileset_map3;
 struct tile_set tileset_map4;
 struct tile_set tileset_map5;
 
-enum tile_sets_t {
-	TILE_SCROLL,
-	TILE_CHECKPOINT,
-	TILE_CROSS,
-	TILE_HEART,
-	TILE_BELL,
-	TILE_SWITCH,
-	TILE_TOGGLE,
-	TILE_TELETRANSPORT,
-	TILE_CUP,
-	TILE_DRAGON,
-	TILE_LAVA,
-	TILE_SPEAR,
-	TILE_WATER,
-	TILE_SATAN,
-	TILE_ARCHER_SKELETON,
-	TILE_GARGOLYNE,
-	TILE_PLANT,
-	TILE_PRIEST,
-	TILE_MAX,
-};
-
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
-
-enum spr_patterns_t {
-	PATRN_BAT,
-	PATRN_RAT,
-	PATRN_SPIDER,
-	PATRN_TEMPLAR,
-	PATRN_MONK,
-	PATRN_WORM,
-	PATRN_SKELETON,
-	PATRN_PALADIN,
-	PATRN_GUADANYA,
-	PATRN_GHOST,
-	PATRN_DEMON,
-	PATRN_DEATH,
-	PATRN_DARKBAT,
-	PATRN_FLY,
-	PATRN_SKELETON_CEILING,
-	PATRN_FISH,
-	PATRN_FIREBALL,
-	PATRN_WATERDROP,
-	PATRN_MAX,
-};
 
 struct spr_pattern_set spr_pattern[PATRN_MAX];
 struct spr_sprite_def enemy_sprites[31];
@@ -87,152 +36,82 @@ struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];
 struct displ_object dpo_monk;
 
-enum dpo_state_t {
-	STATE_IDLE,
-	STATE_JUMPING,
-	STATE_ONAIR,
-	STATE_ONCEILING,
-	STATE_FALLING,
-	STATE_LANDING,
-	STATE_ONGROUND,
-};
-
-#define dpo_set_state(x) dpo->state = (x)
-#define dpo_in_state(x) dpo->state == (x)
+extern struct list_head *elem;
+extern struct displ_object *dpo;
 
 struct list_head display_list;
-struct list_head *elem, *elem2, *elem3;
-
-struct animator animators[7];
-
-enum anim_t {
-	ANIM_LEFT_RIGHT,
-	ANIM_GRAVITY,
-	ANIM_STATIC,
-	ANIM_JOYSTICK,
-	ANIM_JUMP,
-	ANIM_CYCLE_TILE,
-};
 
 struct map_object_item *map_object;
 
-struct animator *anim;
-struct displ_object *dpo;
-
-uint8_t stick;
 uint8_t scr_tile_buffer[768];
 uint8_t spr_ct, tob_ct;
 
-struct game_state_t {
-	uint8_t map_x;	// position on the map in tile coordinates
-	uint8_t map_y;
-	uint8_t cross_cnt;
-	uint8_t live_cnt;
-} game_state;
-
-
-void init_resources();
-void show_title_screen();
-// void anim_up_down(struct displ_object *obj);
-// void anim_drop(struct displ_object *obj);
-void anim_static(struct displ_object *obj);
-void anim_gravity(struct displ_object *obj);
-void anim_left_right(struct displ_object *obj);
-// void anim_horizontal_projectile(struct displ_object *obj);
-void anim_joystick(struct displ_object *obj);
-void anim_jump(struct displ_object *obj);
-void anim_cycle_tile(struct displ_object *obj);
-
-void animate_all();
-// void spr_colision_handler();
-void init_monk();
-void init_game_state();
-void init_animators();
-void load_room();
-void free_patterns();
-void check_and_change_room();
-void show_score_panel();
-void find_room_data(struct map_object_item *map_obj);
-void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx);
-void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx);
-void add_animator(struct displ_object *dpo, enum anim_t animidx);
-
-void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy);
-
-void main()
+void find_room_data()
 {
-	vdp_set_mode(vdp_grp2);
-	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
-
-	//show_logo();
-	//show_title_screen();
-
-	sys_irq_init();
-	phys_init();
-	init_resources();
-	init_game_state();
-	init_animators();
-	init_monk();
-	load_room();
-	show_score_panel();
-
-	/** game loop **/
-	for(;;) {
-		stick = sys_get_stick(0);
-		check_and_change_room();
-		animate_all();
-	}
-}
-
-void init_game_state()
-{
-	// room 3
-	game_state.map_x = 96;
-	game_state.map_y = 44;
-}
-
-void show_score_panel()
-{
-	// TODO: For this need to figure out how to solve the problem with the font
-	//       the font will also be useful for other elements in the game.
-	// best option is to use an MSX font instead of the original 16pixel one, either that or just
-	// use the graphics and extend the size of the ROM
+	uint8_t pos = game_state.map_x / 32 + (game_state.map_y / 22 * 5);
+	map_object = (struct map_object_item *) object_index[pos];
+        log_e("find room pos %x\n", map_object);
 }
 
 
-void check_and_change_room()
+static void free_patterns()
 {
-	bool change = false;
-	if (dpo_monk.xpos > 240) {
-		dpo_monk.xpos = 0;
-		game_state.map_x+=32;
-		change = true;
-	} else if (dpo_monk.xpos == 0) {
-		dpo_monk.xpos = 240;
-		game_state.map_x-=32;
-		change = true;
+	uint8_t i;
+
+	for (i = 0; i < PATRN_MAX; i++)
+		spr_pattern[i].allocated = false;
+
+	for (i = 0; i < TILE_MAX; i++) {
+		tile_set_vfree(&tileset[i]);
 	}
-	if (dpo_monk.ypos > 192 - 32) {
-		dpo_monk.ypos = 0;
-		game_state.map_y+=22;
-		change = true;
-	} else if (dpo_monk.ypos < - 32) {
-		dpo_monk.ypos = 192 - 32 - 32;
-		game_state.map_y-=22;
-		change = true;
-	}
-	if (change) {
-		dpo_monk.state = STATE_ONGROUND;
-		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-		load_room();
-	}
+}
+
+static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
+{
+	sys_set_rom();
+	tile_set_valloc(&tileset[tileidx]);
+	sys_set_bios();
+	tileobject[objidx].x = map_object->x;
+	tileobject[objidx].y = map_object->y;
+	tileobject[objidx].cur_dir = 1;
+	tileobject[objidx].cur_anim_step = 0;
+	tileobject[objidx].ts = &tileset[tileidx];
+	tileobject[objidx].idx = 0;
+	dpo->type = DISP_OBJECT_TILE;
+	dpo->tob = &tileobject[objidx];
+	dpo->xpos = map_object->x;
+	dpo->ypos = map_object->y;
+	dpo->state = 0;
+	INIT_LIST_HEAD(&dpo->list);
+	list_add(&dpo->list, &display_list);
+	INIT_LIST_HEAD(&dpo->animator_list);
+	tob_ct++;
+}
+
+static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
+{
+	sys_set_rom();
+	spr_valloc_pattern_set(&spr_pattern[pattidx]);
+	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
+	sys_set_bios();
+	INIT_LIST_HEAD(&dpo->animator_list);
+	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
+	dpo->type = DISP_OBJECT_SPRITE;
+	dpo->spr = &enemy_sprites[objidx];
+	dpo->xpos = map_object->x;
+	dpo->ypos = map_object->y;
+	dpo->state = 0;
+	INIT_LIST_HEAD(&dpo->list);
+	list_add(&dpo->list, &display_list);
+	INIT_LIST_HEAD(&dpo->animator_list);
+	spr_ct++;
 }
 
 void load_room()
 {
 	uint8_t i;
 	spr_ct = 0, tob_ct = 0;
+
 	vdp_screen_disable();
 	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
 
@@ -243,7 +122,7 @@ void load_room()
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 	sys_set_bios();
 	INIT_LIST_HEAD(&display_list);
-	find_room_data(map_object);
+	find_room_data();
 	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
 		log_e("dpo %d type : %d\n", i ,map_object->type);
 		if (map_object->type == ACTIONITEM) {
@@ -257,8 +136,10 @@ void load_room()
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				add_tileobject(dpo, tob_ct, TILE_TELETRANSPORT);
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
+				//if (map_object->object.actionitem.action_id )
 				add_tileobject(dpo, tob_ct, TILE_HEART);
 				add_animator(dpo, ANIM_CYCLE_TILE);
+				phys_set_tile_collision_handler(dpo->tob, pickup_heart);
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
 				add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
@@ -343,7 +224,7 @@ void load_room()
 				//add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
-				//add_animator(dpo, ANIM_LEFT_RIGHT);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
 				//add_animator(dpo, ANIM_LEFT_RIGHT);
@@ -395,122 +276,7 @@ void load_room()
 	vdp_screen_enable();
 }
 
-void free_patterns()
-{
-	uint8_t i;
 
-	for (i = 0; i < PATRN_MAX; i++)
-		spr_pattern[i].allocated = false;
-
-	for (i = 0; i < TILE_MAX; i++) {
-		tile_set_vfree(&tileset[i]);
-	}
-}
-
-void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
-{
-	sys_set_rom();
-	tile_set_valloc(&tileset[tileidx]);
-	sys_set_bios();
-	tileobject[objidx].x = map_object->x;
-	tileobject[objidx].y = map_object->y;
-	tileobject[objidx].cur_dir = 1;
-	tileobject[objidx].cur_anim_step = 0;
-	tileobject[objidx].ts = &tileset[tileidx];
-	tileobject[objidx].idx = 0;
-	dpo->type = DISP_OBJECT_TILE;
-	dpo->tob = &tileobject[objidx];
-	dpo->xpos = map_object->x;
-	dpo->ypos = map_object->y;
-	dpo->state = 0;
-	INIT_LIST_HEAD(&dpo->list);
-	list_add(&dpo->list, &display_list);
-	INIT_LIST_HEAD(&dpo->animator_list);
-	tob_ct++;
-}
-
-void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
-{
-	sys_set_rom();
-	spr_valloc_pattern_set(&spr_pattern[pattidx]);
-	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
-	sys_set_bios();
-	INIT_LIST_HEAD(&dpo->animator_list);
-	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
-	dpo->type = DISP_OBJECT_SPRITE;
-	dpo->spr = &enemy_sprites[objidx];
-	dpo->xpos = map_object->x;
-	dpo->ypos = map_object->y;
-	dpo->state = 0;
-	INIT_LIST_HEAD(&dpo->list);
-	list_add(&dpo->list, &display_list);
-	INIT_LIST_HEAD(&dpo->animator_list);
-	spr_ct++;
-}
-
-void add_animator(struct displ_object *dpo, enum anim_t animidx)
-{
-	list_add(&animators[animidx].list, &dpo->animator_list);
-}
-
-void find_room_data(struct map_object_item *map_obj)
-{
-	uint8_t pos = game_state.map_x / 32 + (game_state.map_y / 22 * 5);
-	map_object = (struct map_object_item *) object_index[pos];
-	log_e("found room %d %d\n", pos, map_obj);
-	log_e("should be room %d\n", room13);
-}
-
-void animate_all() {
-	list_for_each(elem, &display_list) {
-		dpo = list_entry(elem, struct displ_object, list);
-		list_for_each(elem2, &dpo->animator_list) {
-			anim = list_entry(elem2, struct animator, list);
-			anim->run(dpo);
-		}
-	}
-}
-
-/**
- * dpo animate handles collisions prior to animation.
- *   state transitions must be handled by animators.
- */
-void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
-{
-	int8_t cdx, cdy;
-	int16_t xpos, ypos;
-	cdx = dx;
-	cdy = dy;
-
-	if (dx != 0 || dy != 0) {
-		dpo->xpos += dx;
-		dpo->ypos += dy;
-		phys_detect_tile_collisions(dpo, scr_tile_buffer, dx, dy);
-		// corrections on deltas to account for
-		// fixed point physics and 8x8 tile collisions
-		if (is_colliding_down(dpo)) {
-			ypos = (dpo->ypos / 8) * 8;
-			cdy = ypos - dpo->ypos + dy; /* ensure there is collision with ground always */
-			dpo->ypos = ypos;
-		}
-		if (dy < 0 && dpo->ypos > 0  &&
-			is_colliding_up(dpo)) {
-			ypos = (dpo->ypos / 8) * 8 + 6;
-		 	cdy = ypos - dpo->ypos + dy;
-		 	dpo->ypos = ypos;
-		}
-
-		if (!is_colliding_up(dpo) &&
-			(is_colliding_left(dpo) || is_colliding_right(dpo))) {
-			dpo->xpos -= dx;
-			cdx = 0;
-		}
-		if (cdx != 0 || cdy != 0) {
-			spr_animate(dpo->spr, cdx, cdy, 0);
-		}
-		//log_e("B ypos %d state %d colision %d\n", dpo->ypos, dpo->state, dpo->collision_state);
-	}
-}
 
 void init_monk()
 {
@@ -523,139 +289,6 @@ void init_monk()
 	dpo_monk.spr = &monk_sprite;
 	dpo_monk.collision_state = 0;
 	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-}
-
-void anim_static(struct displ_object *obj)
-{
-	// do nothing, just make sure we can display the sprite
-}
-
-void anim_cycle_tile(struct displ_object *dpo)
-{
-	if (dpo->state++ == 10) {
-		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
-			dpo->tob->cur_anim_step++;
-		} else {
-			dpo->tob->cur_anim_step = 0;
-		}
-		dpo->state = 0;
-	}
-}
-
-/**
- * jump animation is enabled from joystick and disables itself
- */
-void anim_jump(struct displ_object *dpo)
-{
-	static uint8_t jmp_ct;
-
-	if (dpo->state == STATE_JUMPING) {
-		dpo->state = STATE_ONAIR;
-		dpo->vy = - 7;
-		jmp_ct = 5;
-	} else if (dpo->state == STATE_ONAIR) {
-		dpo_animate(dpo, 0, dpo->vy);
-		if (is_colliding_up(dpo) || dpo->vy >= 0) {
-			dpo->state = STATE_ONCEILING;
-			dpo->vy = 0;
-		} else {
-			dpo->vy++;
-		}
-	} else if (dpo->state == STATE_ONCEILING) {
-		dpo->vy = 0;
-		dpo_animate(dpo, 0, dpo->vy);
-		if (--jmp_ct == 0) {
-			dpo->state = STATE_FALLING;
-		}
-	} else if (dpo->state == STATE_FALLING) {
-		dpo_animate(dpo, 0, dpo->vy);
-		if (is_colliding_down(dpo)) {
-			dpo->state = STATE_LANDING;
-		}
-	} else if (dpo->state == STATE_LANDING) {
-		list_del(&animators[ANIM_JUMP].list);
-		dpo->state = STATE_ONGROUND;
-	}
-	//log_e("jump collision %d state %d\n", dpo->collision_state, dpo->state);
-}
-
-
-void anim_gravity(struct displ_object *dpo)
-{
-	if (!is_colliding_down(dpo)) {
-		dpo_animate(dpo, 0, dpo->vy);
-		if(dpo->vy++ > 2)
-			dpo->vy = 2;
-	}
-}
-
-
-void anim_joystick(struct displ_object *obj)
-{
-	if (stick == STICK_LEFT || stick == STICK_UP_LEFT ||
-		stick == STICK_DOWN_LEFT) {
-			dpo_animate(obj, -2, 0);
-	}
-	if (stick == STICK_RIGHT || stick == STICK_UP_RIGHT ||
-		stick == STICK_DOWN_RIGHT) {
-			dpo_animate(obj, 2, 0);
-	}
-	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
-		stick == STICK_UP_LEFT) {
-		if (dpo->state == STATE_ONGROUND) {
-			dpo_animate(obj, 0, -1);
-			list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
-			obj->state = STATE_JUMPING;
-		}
-	}
-	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
-		stick == STICK_DOWN_RIGHT) {
-	}
-	if (stick)
-	 	log_e("state : %d colisi %d\n", dpo->state, dpo->collision_state);
-}
-
-
-void anim_left_right(struct displ_object *obj)
-{
-	// FIXME: a-posteriory correction should never be necessary
-	if (obj->state == 0 && !is_colliding_right(obj)) {
-		obj->xpos++;
-		spr_animate(obj->spr, 1, 0, 0);
-	} else if (obj->state == 1 && !is_colliding_left(obj)) {
-		obj->xpos--;
-		spr_animate(obj->spr, -1, 0, 0);
-	}
-	if (is_colliding_left(obj)) {
-		obj->state = 0;
-	} else if (is_colliding_right(obj)) {
-		obj->state = 1;
-	}
-	if (!is_colliding_down(obj)) {
-		if (obj->state == 0) {
-			obj->state = 1;
-			obj->xpos-=2;
-			spr_animate(obj->spr, -2, 0, 0);
-		} else {
-			obj->xpos+=2;
-			spr_animate(obj->spr, 2, 0, 0);
-			obj->state = 0;
-		}
-		//phys_detect_tile_collisions(obj, map_buf);
-	}
-}
-
-void init_animators()
-{
-	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
-	animators[ANIM_GRAVITY].run = anim_gravity;
-	animators[ANIM_STATIC].run = anim_static;
-	// animators[3].run = anim_up_down;
-	// animators[4].run = anim_drop;
-	animators[ANIM_JOYSTICK].run = anim_joystick;
-	animators[ANIM_JUMP].run = anim_jump;
-	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 }
 
 void init_resources()
@@ -728,12 +361,6 @@ void init_resources()
 	phys_clear_colliding_tile(38); // step white
 	phys_set_down_colliding_tile(16);
 	phys_set_down_colliding_tile(38);
-}
 
-void show_title_screen()
-{
-	// requires processing the image in a way that fits in the ROM.
-
-	do {
-	} while (sys_get_key(8) & 1);
+        init_monk();
 }
