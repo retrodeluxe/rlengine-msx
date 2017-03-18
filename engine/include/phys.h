@@ -52,6 +52,7 @@ void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), 
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);
+void phys_clear_tile_collision_handlers();
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map, int8_t dx, int8_t dy);
 
 #endif

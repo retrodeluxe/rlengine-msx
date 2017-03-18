@@ -124,6 +124,7 @@ void load_room()
 
 	spr_init();
 	free_patterns();
+	phys_clear_tile_collision_handlers();
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
@@ -134,12 +135,20 @@ void load_room()
 		log_e("dpo %d type : %d\n", i ,map_object->type);
 		if (map_object->type == ACTIONITEM) {
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
-				add_tileobject(dpo, tob_ct, TILE_SCROLL);
+				id = map_object->object.actionitem.action_id;
+				if (game_state.scroll[id] == 0) {
+					add_tileobject(dpo, tob_ct, TILE_SCROLL);
+					phys_set_tile_collision_handler(dpo, pickup_scroll, id);
+				}
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 				add_tileobject(dpo, tob_ct, TILE_TOGGLE);
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
-				add_tileobject(dpo, tob_ct, TILE_CROSS);
-				add_animator(dpo, ANIM_CYCLE_TILE);
+				id = map_object->object.actionitem.action_id;
+				if (game_state.cross[id] == 0) {
+					add_tileobject(dpo, tob_ct, TILE_CROSS);
+					add_animator(dpo, ANIM_CYCLE_TILE);
+					phys_set_tile_collision_handler(dpo, pickup_cross, id);
+				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				add_tileobject(dpo, tob_ct, TILE_TELETRANSPORT);
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
@@ -148,7 +157,6 @@ void load_room()
 				if (game_state.hearth[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_HEART);
 					add_animator(dpo, ANIM_CYCLE_TILE);
-					log_e("sent dpo %x\n", dpo);
 					phys_set_tile_collision_handler(dpo, pickup_heart, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {

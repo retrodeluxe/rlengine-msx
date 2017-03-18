@@ -71,11 +71,17 @@ void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), 
 		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
 
 	cgroup[n_cgroups].start = base_tile;
-	cgroup[n_cgroups].end = base_tile + num_tiles;
+	cgroup[n_cgroups].end = base_tile + num_tiles - 1;
 	cgroup[n_cgroups].handler = handler;
 	cgroup[n_cgroups].data = data;
 	cgroup[n_cgroups].dpo = dpo;
+	//log_e("adding tile colision handler start %d, end %d\n", base_tile, base_tile + num_tiles);
 	n_cgroups++;
+}
+
+void phys_clear_tile_collision_handlers()
+{
+	n_cgroups = 0;
 }
 
 /*
