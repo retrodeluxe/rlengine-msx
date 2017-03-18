@@ -31,6 +31,9 @@ void show_score_panel();
 struct tile_set logo;
 
 uint8_t stick;
+uint16_t reftick;
+
+bool fps_stall;
 
 struct animator *anim;
 struct displ_object *dpo;
@@ -57,9 +60,18 @@ void main()
 
 	/** game loop **/
 	for(;;) {
+		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
 		check_and_change_room();
 		animate_all();
+
+		/* framerate limiter 25/30fps */
+		fps_stall = true;
+		while (sys_get_ticks() - reftick < 2) {
+			fps_stall = false;
+		}
+		if (fps_stall)
+			log_w("fps stall!\n");
 	}
 }
 
