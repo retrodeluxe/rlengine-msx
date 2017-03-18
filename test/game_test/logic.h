@@ -16,7 +16,8 @@ struct game_state_t {
 	uint8_t invisible_trigger[5];
 	uint8_t checkpoint[8];
 	uint8_t toggle[3];
-
+	bool cross_switch;
+	bool cross_switch_enable;
 };
 
 extern struct game_state_t game_state;
@@ -27,4 +28,5 @@ void pickup_cross(struct displ_object *dpo, uint8_t data);
 void checkpoint_handler(struct displ_object *dpo, uint8_t data);
 void toggle_handler(struct displ_object *dpo, uint8_t data);
 void bell_handler(struct displ_object *dpo, uint8_t data);
+void crosswitch_handler(struct displ_object *dpo, uint8_t data);
 #endif
