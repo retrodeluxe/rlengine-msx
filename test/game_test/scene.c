@@ -181,9 +181,12 @@ void load_room()
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
-				// TODO
-				/* switch is the round cross in the skeleton room */
+				game_state.cross_switch_enable = true;
 				add_tileobject(dpo, tob_ct, TILE_SWITCH);
+				phys_set_tile_collision_handler(dpo, crosswitch_handler, 0);
+				if(game_state.cross_switch) {
+					dpo->tob->cur_anim_step = 1;
+				}
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
 				// TODO: end game sequence
 				add_tileobject(dpo, tob_ct, TILE_CUP);
@@ -224,6 +227,7 @@ void load_room()
 		} else if (map_object->type == ROPE) {
 			map_object++;
 		} else if (map_object->type == DOOR) {
+			// Some of these will show depending on the game_state
 			map_object++;
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
