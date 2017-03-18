@@ -111,8 +111,8 @@ void anim_joystick(struct displ_object *dpo)
 	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
 		stick == STICK_DOWN_RIGHT) {
 	}
-	if (stick)
-	 	log_e("state : %d colisi %d\n", dpo->state, dpo->collision_state);
+	// if (stick)
+	//  	log_e("state : %d colisi %d\n", dpo->state, dpo->collision_state);
 }
 
 /**
@@ -168,6 +168,7 @@ void anim_static(struct displ_object *obj)
 
 void anim_cycle_tile(struct displ_object *dpo)
 {
+        // maybe I can just set the objet to gone.
 	if (dpo->state++ == 10) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
@@ -177,6 +178,9 @@ void anim_cycle_tile(struct displ_object *dpo)
 		}
 		dpo->state = 0;
 	}
+        if (dpo->state == 100) {
+                tile_object_hide(dpo->tob, scr_tile_buffer, true);
+        }
 }
 
 void anim_left_right(struct displ_object *obj)

@@ -212,7 +212,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"1",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -1545,7 +1545,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"1",
                      "type":"toggle"
                     },
                  "propertytypes":
@@ -1919,7 +1919,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"3",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -2192,7 +2192,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"2",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -3181,7 +3181,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"4",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -3862,7 +3862,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"5",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -4171,7 +4171,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"6",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -6024,7 +6024,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"7",
                      "type":"heart"
                     },
                  "propertytypes":

@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _MSX_H_PHYS
 #define _MSX_H_PHYS
 
@@ -41,12 +41,14 @@
 struct tile_collision_group {
         uint8_t start;
         uint8_t end;
-        void (*handler)();
+        uint8_t data;
+        struct displ_object *dpo;
+        void (*handler)(struct displ_object *dpo, uint8_t data);
 };
 
 void phys_init();
 void phys_set_sprite_collision_handler(void (*handler));
-void phys_set_tile_collision_handler(struct tile_object *tob, void (*handler));
+void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), uint8_t data);
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);

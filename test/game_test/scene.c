@@ -88,6 +88,13 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	tob_ct++;
 }
 
+void remove_tileobject(struct displ_object *dpo)
+{
+	list_del(&dpo->list);
+	tile_object_hide(dpo->tob, scr_tile_buffer, true);
+}
+
+
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
 	sys_set_rom();
@@ -109,7 +116,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 
 void load_room()
 {
-	uint8_t i;
+	uint8_t i, id;
 	spr_ct = 0, tob_ct = 0;
 
 	vdp_screen_disable();
@@ -136,10 +143,14 @@ void load_room()
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				add_tileobject(dpo, tob_ct, TILE_TELETRANSPORT);
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
-				//if (map_object->object.actionitem.action_id )
-				add_tileobject(dpo, tob_ct, TILE_HEART);
-				add_animator(dpo, ANIM_CYCLE_TILE);
-				phys_set_tile_collision_handler(dpo->tob, pickup_heart);
+				/* check status before showing item */
+				id = map_object->object.actionitem.action_id;
+				if (game_state.hearth[id] == 0) {
+					add_tileobject(dpo, tob_ct, TILE_HEART);
+					add_animator(dpo, ANIM_CYCLE_TILE);
+					log_e("sent dpo %x\n", dpo);
+					phys_set_tile_collision_handler(dpo, pickup_heart, id);
+				}
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
 				add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {

@@ -148,3 +148,21 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 	}
 	//log_e("showing : %d at pos %d dir %d step %d nf %d\n", tile, ptr, to->cur_dir, to->cur_anim_step, to->ts->n_frames);
 }
+
+void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram)
+{
+	uint16_t offset = to->x/8 + to->y/8 * 32;
+	uint8_t *ptr = scrbuf + offset;
+	uint8_t x,y;
+
+	for (y = 0; y < to->ts->frame_h; y++) {
+		for (x = 0; x < to->ts->frame_w; x++) {
+			*(ptr + x) = 0;
+			if (refresh_vram) {
+				vdp_poke(vdp_base_names_grp1 + offset + x, 0);
+			}
+		}
+		ptr += 32;
+		offset += 32;
+	}
+}

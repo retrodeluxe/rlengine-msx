@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _TILE_H_
 #define _TILE_H_
 
@@ -80,6 +80,7 @@ extern void tile_map_clip(struct tile_map *tm, struct gfx_viewport *vp,
 
 
 extern void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram);
+extern void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram);
 #define     set_tile_vram(_x,_y,_tile) vdp_poke(vdp_base_names_grp1+32*_y+_x, _tile)
 
 #endif

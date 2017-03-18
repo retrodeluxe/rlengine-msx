@@ -64,15 +64,17 @@ void phys_set_sprite_collision_handler(void (*handler))
 /**
  * set callbacks for specific tiles
  */
-void phys_set_tile_collision_handler(struct tile_object *tob, void (*handler))
+void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), uint8_t data)
 {
-	uint8_t base_tile = tob->ts->pidx;
-	uint8_t num_tiles = tob->ts->frame_w * tob->ts->frame_h *
-		tob->ts->n_frames * tob->ts->n_dirs;
+	uint8_t base_tile = dpo->tob->ts->pidx;
+	uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
+		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
 
 	cgroup[n_cgroups].start = base_tile;
 	cgroup[n_cgroups].end = base_tile + num_tiles;
 	cgroup[n_cgroups].handler = handler;
+	cgroup[n_cgroups].data = data;
+	cgroup[n_cgroups].dpo = dpo;
 	n_cgroups++;
 }
 
@@ -84,7 +86,7 @@ static void phys_tile_collision_notify(uint8_t tile)
 	uint8_t i;
 	for (i = 0; i < n_cgroups; i++) {
 		if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
-			cgroup[i].handler();
+			cgroup[i].handler(cgroup[i].dpo, cgroup[i].data);
 		}
 	}
 }
