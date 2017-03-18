@@ -1,8 +1,19 @@
-/****
+/*
+ * RetroDeLuxe Engine for MSX
  *
- * Convert TGA file to TMS9918 format for Sprites and Tiles
+ * Copyright (C) 2017 Enric Martin Geijo (retrodeluxemsx@gmail.com)
  *
- * RetroDeluxe 2012
+ * RDLEngine is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, version 2.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -14,6 +25,7 @@
 #include <getopt.h>
 #include <libgen.h>
 #include <string.h>
+
 #define PALSIZE 16
 #define MAX_SCR2_SIZE   6144
 
