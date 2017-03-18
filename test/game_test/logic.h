@@ -11,7 +11,6 @@ struct game_state_t {
 
 extern struct game_state_t game_state;
 
-void init_game_state();
 void pickup_heart();
 
 #endif

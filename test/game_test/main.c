@@ -28,7 +28,6 @@ void animate_all();
 void check_and_change_room();
 void show_score_panel();
 
-
 struct tile_set logo;
 
 uint8_t stick;

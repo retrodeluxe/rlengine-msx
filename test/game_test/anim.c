@@ -14,10 +14,6 @@
 #include "logic.h"
 #include "scene.h"
 
-extern uint8_t scr_tile_buffer[768];
-extern uint8_t stick;
-extern struct displ_object dpo_monk;
-
 struct animator animators[7];
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)

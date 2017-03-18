@@ -1,8 +1,6 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
-
-
 enum tile_sets_t {
 	TILE_SCROLL,
 	TILE_CHECKPOINT,
@@ -49,8 +47,10 @@ enum spr_patterns_t {
 
 extern struct list_head display_list;
 extern struct spr_sprite_def monk_sprite;
+extern struct displ_object dpo_monk;
 
-void load_room();
-void init_resources();
+extern uint8_t scr_tile_buffer[768];
+extern uint8_t stick;
+
 
 #endif
