@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 #   RetroDeLuxe Engine for MSX
 #
@@ -16,7 +17,6 @@
 #   this program; If not, see <http://www.gnu.org/licenses/>.
 #
 
-#!/usr/bin/env python
 #######
 #
 # Read json tile data from Tiled and generate a C header
