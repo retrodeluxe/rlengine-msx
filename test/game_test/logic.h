@@ -24,5 +24,7 @@ extern struct game_state_t game_state;
 void pickup_heart(struct displ_object *dpo, uint8_t data);
 void pickup_scroll(struct displ_object *dpo, uint8_t data);
 void pickup_cross(struct displ_object *dpo, uint8_t data);
-
+void checkpoint_handler(struct displ_object *dpo, uint8_t data);
+void toggle_handler(struct displ_object *dpo, uint8_t data);
+void bell_handler(struct displ_object *dpo, uint8_t data);
 #endif

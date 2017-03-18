@@ -21,7 +21,7 @@ void init_game_state()
 
 	// room 3
 	game_state.map_x = 64;
-	game_state.map_y = 44;
+	game_state.map_y = 22;
 }
 
 
@@ -44,4 +44,26 @@ void pickup_cross(struct displ_object *dpo, uint8_t data)
         game_state.cross[data] = 1;
         game_state.cross_cnt++;
         remove_tileobject(dpo);
+}
+
+void checkpoint_handler(struct displ_object *dpo, uint8_t data)
+{
+        game_state.checkpoint[data] = 1;
+        dpo->tob->cur_anim_step = 1;
+        update_tileobject(dpo);
+}
+
+
+void toggle_handler(struct displ_object *dpo, uint8_t data)
+{
+        game_state.toggle[data] = 1;
+        dpo->tob->cur_anim_step = 1;
+        update_tileobject(dpo);
+}
+
+void bell_handler(struct displ_object *dpo, uint8_t data)
+{
+        game_state.bell = 1;
+        dpo->tob->cur_anim_step = 1;
+        update_tileobject(dpo);
 }

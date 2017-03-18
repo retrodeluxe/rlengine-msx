@@ -53,5 +53,6 @@ extern uint8_t scr_tile_buffer[768];
 extern uint8_t stick;
 
 extern void remove_tileobject(struct displ_object *dpo);
+extern void update_tileobject(struct displ_object *dpo);
 
 #endif

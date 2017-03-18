@@ -94,6 +94,11 @@ void remove_tileobject(struct displ_object *dpo)
 	tile_object_hide(dpo->tob, scr_tile_buffer, true);
 }
 
+void update_tileobject(struct displ_object *dpo)
+{
+	tile_object_show(dpo->tob, scr_tile_buffer, true);
+}
+
 
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
@@ -141,7 +146,14 @@ void load_room()
 					phys_set_tile_collision_handler(dpo, pickup_scroll, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
-				add_tileobject(dpo, tob_ct, TILE_TOGGLE);
+				id = map_object->object.actionitem.action_id;
+				if (game_state.toggle[id] == 0) {
+					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
+					phys_set_tile_collision_handler(dpo, toggle_handler, id);
+				} else {
+					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
+					dpo->tob->cur_anim_step = 1;
+				}
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.cross[id] == 0) {
@@ -150,9 +162,9 @@ void load_room()
 					phys_set_tile_collision_handler(dpo, pickup_cross, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
+				// TODO: just go to the other one
 				add_tileobject(dpo, tob_ct, TILE_TELETRANSPORT);
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
-				/* check status before showing item */
 				id = map_object->object.actionitem.action_id;
 				if (game_state.hearth[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_HEART);
@@ -160,15 +172,32 @@ void load_room()
 					phys_set_tile_collision_handler(dpo, pickup_heart, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
-				add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
+				id = map_object->object.actionitem.action_id;
+				if (game_state.checkpoint[id] == 0) {
+					add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
+					phys_set_tile_collision_handler(dpo, checkpoint_handler, id);
+				} else {
+					add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
+					dpo->tob->cur_anim_step = 1;
+				}
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
+				// TODO
+				/* switch is the round cross in the skeleton room */
 				add_tileobject(dpo, tob_ct, TILE_SWITCH);
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
+				// TODO: end game sequence
 				add_tileobject(dpo, tob_ct, TILE_CUP);
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
+				// TODO
 				// invisible, but needs collision detection.
 			} else if (map_object->object.actionitem.type == TYPE_BELL) {
-				add_tileobject(dpo, tob_ct, TILE_BELL);
+				if (game_state.bell == 0) {
+					add_tileobject(dpo, tob_ct, TILE_BELL);
+					phys_set_tile_collision_handler(dpo, bell_handler, id);
+				} else {
+					add_tileobject(dpo, tob_ct, TILE_BELL);
+					dpo->tob->cur_anim_step = 1;
+				}
 			} else {
 				map_object++;
 				continue;
@@ -334,12 +363,12 @@ void init_resources()
 
 	/** initialize dynamic tile sets */
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART], hearth, 2, 2, 2, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_BELL], bell, 2, 2, 1, 2);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_SWITCH], crosswitch, 2, 2, 1, 2);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_TOGGLE], toggle, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_BELL], bell, 2, 2, 2, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SWITCH], crosswitch, 2, 2, 2, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_TOGGLE], toggle, 2, 2, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TELETRANSPORT], portal, 2, 3, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CUP], cup, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);
