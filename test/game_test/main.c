@@ -49,7 +49,6 @@ void main()
 	//show_title_screen();
 
 	sys_irq_init();
-	phys_init();
 	init_map_index();
 	init_resources();
 	init_animators();
@@ -62,6 +61,7 @@ void main()
 	for(;;) {
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
+
 		check_and_change_room();
 		animate_all();
 

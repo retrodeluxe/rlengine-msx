@@ -128,8 +128,10 @@ void load_room()
 	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
 
 	spr_init();
+	phys_init();
 	free_patterns();
-	phys_clear_tile_collision_handlers();
+	init_tile_collisions();
+	
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
@@ -232,11 +234,14 @@ void load_room()
 			if (type == 2) {
 				if (game_state.bell == 0)
 					add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
+					phys_set_colliding_tile_object(dpo, true);
 			} else {
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
 				if (type == 0)
 					dpo->tob->cur_anim_step = 1;
+				phys_set_colliding_tile_object(dpo, false);
 			}
+
 			map_object++;
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
@@ -352,9 +357,20 @@ void init_monk()
 	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
 }
 
-void init_resources()
+void init_tile_collisions()
 {
 	uint8_t i;
+	for (i = 1; i < 76; i++)
+		phys_set_colliding_tile(i);
+
+	phys_clear_colliding_tile(16); // step brown
+	phys_clear_colliding_tile(38); // step white
+	phys_set_down_colliding_tile(16);
+	phys_set_down_colliding_tile(38);
+}
+
+void init_resources()
+{
 	tile_init();
 
 	sys_set_rom();
@@ -416,14 +432,6 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FIREBALL], SPR_SIZE_16x16, 1, 1, 2, fireball);
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WATERDROP], SPR_SIZE_16x16, 1, 1, 3, waterdrop);
 	sys_set_bios();
-
-	for (i = 1; i < 76; i++)
-		phys_set_colliding_tile(i);
-
-	phys_clear_colliding_tile(16); // step brown
-	phys_clear_colliding_tile(38); // step white
-	phys_set_down_colliding_tile(16);
-	phys_set_down_colliding_tile(38);
 
         init_monk();
 }

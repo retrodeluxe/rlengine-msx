@@ -79,9 +79,22 @@ void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), 
 	n_cgroups++;
 }
 
-void phys_clear_tile_collision_handlers()
+/**
+ * Sets all the tiles composing an object as coliding tiles
+ */
+void phys_set_colliding_tile_object(struct displ_object *dpo, bool down)
 {
-	n_cgroups = 0;
+	uint8_t i;
+	uint8_t base_tile = dpo->tob->ts->pidx;
+	uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
+		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
+
+	for (i = base_tile; i < base_tile + num_tiles; i++) {
+		if (down)
+			phys_set_down_colliding_tile(i);
+		else
+			phys_set_colliding_tile(i);
+	}
 }
 
 /*
