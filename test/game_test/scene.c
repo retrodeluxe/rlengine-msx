@@ -121,7 +121,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 
 void load_room()
 {
-	uint8_t i, id;
+	uint8_t i, id, type;
 	spr_ct = 0, tob_ct = 0;
 
 	vdp_screen_disable();
@@ -227,7 +227,16 @@ void load_room()
 		} else if (map_object->type == ROPE) {
 			map_object++;
 		} else if (map_object->type == DOOR) {
-			// Some of these will show depending on the game_state
+			type = map_object->object.door.type;
+			id = map_object->object.door.action_id;
+			if (type == 2) {
+				if (game_state.bell == 0)
+					add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
+			} else {
+				add_tileobject(dpo, tob_ct, TILE_DOOR);
+				if (type == 0)
+					dpo->tob->cur_anim_step = 1;
+			}
 			map_object++;
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
@@ -384,6 +393,8 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 3, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_DOOR], door, 1, 4, 2, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 
 	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);

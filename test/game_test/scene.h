@@ -20,6 +20,8 @@ enum tile_sets_t {
 	TILE_GARGOLYNE,
 	TILE_PLANT,
 	TILE_PRIEST,
+	TILE_DOOR,
+	TILE_TRAPDOOR,
 	TILE_MAX,
 };
 

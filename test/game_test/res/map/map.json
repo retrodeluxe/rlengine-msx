@@ -1083,16 +1083,12 @@
                  "name":"door",
                  "properties":
                     {
-                     "animated":"1",
-                     "close":"1",
-                     "flag":"ENTER",
+                     "action_id":"0",
                      "type":"0"
                     },
                  "propertytypes":
                     {
-                     "animated":"string",
-                     "close":"string",
-                     "flag":"string",
+                     "action_id":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -1195,12 +1191,12 @@
                  "name":"door",
                  "properties":
                     {
-                     "flag":"BELL",
+                     "action_id":"2",
                      "type":"2"
                     },
                  "propertytypes":
                     {
-                     "flag":"string",
+                     "action_id":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -1216,12 +1212,12 @@
                  "name":"door",
                  "properties":
                     {
-                     "flag":"TOGGLE00",
+                     "action_id":"1",
                      "type":"1"
                     },
                  "propertytypes":
                     {
-                     "flag":"string",
+                     "action_id":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -4225,12 +4221,12 @@
                  "name":"door",
                  "properties":
                     {
-                     "flag":"TOGGLE01",
+                     "action_id":"3",
                      "type":"0"
                     },
                  "propertytypes":
                     {
-                     "flag":"string",
+                     "action_id":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -4826,12 +4822,12 @@
                  "name":"door",
                  "properties":
                     {
-                     "flag":"TOGGLE02",
+                     "action_id":"4",
                      "type":"1"
                     },
                  "propertytypes":
                     {
-                     "flag":"string",
+                     "action_id":"string",
                      "type":"string"
                     },
                  "rotation":0,
