@@ -22,7 +22,7 @@ $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json
 
 $(built_til_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_TIL)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
-	$(hide) $(TGA2H) -t TILE -f $^ -o $@
+	$(hide) $(TGA2H) -t TILE -z -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles.h
 

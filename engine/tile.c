@@ -35,6 +35,35 @@ void tile_init()
 	bitmap_reset(bitmap_tile_bank, 0);
 }
 
+static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size)
+{
+	uint16_t count = size;
+	uint16_t offset_vram = offset;
+	uint8_t run_size;
+	uint8_t *in = buffer;
+	uint8_t prev_byte = -1;
+	uint8_t curr_byte;
+
+	while (count > 0) {
+		curr_byte = *in++;
+		vdp_poke_di(offset_vram, curr_byte);
+		offset_vram++;
+		if (curr_byte == prev_byte) {
+			run_size = *in++;
+			while (run_size > 0 && count > 0) {
+				vdp_poke_di(offset_vram, curr_byte);
+				count--;
+				offset_vram++;
+				run_size--;
+			}
+			prev_byte = -1;
+		} else {
+			count--;
+			prev_byte = curr_byte;
+		}
+	}
+}
+
 /**
  * set a tileset in a fixed position.
  */
@@ -43,8 +72,8 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 	uint16_t size, offset, i;
 	offset = 256 * 8 * bank + pos * 8;
 	size = ts->w * ts->h * 8;
-	vdp_copy_to_vram_di(ts->pattern, vdp_base_chars_grp1 + offset, size);
-	vdp_copy_to_vram_di(ts->color, vdp_base_color_grp1 + offset, size);
+	tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);
+	tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size);
 	for (i = pos; i < pos + (size / 8); i++)
 		bitmap_reset(bitmap_tile_bank, i);
 	ts->allocated = true;
@@ -71,8 +100,8 @@ void tile_set_valloc(struct tile_set *ts)
 
 	for (i = 0; i < 3; i++) {
 		offset = 256 * 8 * i + pos * 8;
-		vdp_copy_to_vram_di(ts->pattern, vdp_base_chars_grp1 + offset, size * 8);
-		vdp_copy_to_vram_di(ts->color, vdp_base_color_grp1 + offset, size * 8);
+		tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size * 8);
+		tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size * 8);
 	}
 
 	ts->allocated = true;
