@@ -82,6 +82,8 @@ struct tga_header
                                 /*                              a: alpha bits)  */
 };
 
+#define IMAGE_SIZE_B  (tga.width * tga.height / 8)
+
 struct rgb *image;              /* input image rgb data          */
 struct tga_header tga;          /* input image tga header        */
 struct rgb palette[PALSIZE];    /* target palette                */
@@ -89,6 +91,8 @@ struct scr2 *image_out_scr2;    /* image out in scr2 format      */
 struct fbit *image_out_4bit;    /* image out in 4bit pal format  */
 
 char *input_file;               /* name of input file used to name data */
+
+int rle_encode = 0;
 
 uint16_t rgb_square_error(uint8_t clr, uint16_t x, uint16_t y)
 {
@@ -458,6 +462,64 @@ void dump_sprite_file(FILE *fd, int only_header)
 }
 
 
+void dump_buffer_rle(struct scr2 *buffer, FILE *file, int type)
+{
+        int16_t curr_byte, prev_byte, cnt = 0;
+        uint8_t run_cnt = 0;
+        struct scr2 *p;
+
+        prev_byte = -1;
+
+        p = buffer;
+        while (cnt < IMAGE_SIZE_B) {
+                if (type == 0)
+                        curr_byte = (p++)->patrn;
+                else
+                        curr_byte = (p++)->color;
+                cnt++;
+                if (cnt == IMAGE_SIZE_B)
+                        fprintf(file,"0x%2.2X};\n\n", curr_byte);
+                else
+                        fprintf(file,"0x%2.2X,", curr_byte);
+                if (curr_byte == prev_byte) {
+                        run_cnt = 0;
+                        while (cnt < IMAGE_SIZE_B) {
+                                if (type == 0)
+                                        curr_byte = (p++)->patrn;
+                                else
+                                        curr_byte = (p++)->color;
+                                cnt++;
+                                if (curr_byte == prev_byte) {
+                                        run_cnt++;
+                                        if (run_cnt == 255) {
+                                                fprintf(file,"0x%2.2X,", run_cnt);
+                                                prev_byte = -1;
+                                                break;
+                                        }
+                                } else {
+                                        fprintf(file,"0x%2.2X,", run_cnt);
+                                        if (cnt == IMAGE_SIZE_B)
+                                                fprintf(file,"0x%2.2X};\n\n", curr_byte);
+                                        else
+                                                fprintf(file,"0x%2.2X,", curr_byte);
+                                        prev_byte = curr_byte;
+                                        run_cnt = 0;
+                                        break;
+                                }
+
+                        }
+
+                } else {
+                        prev_byte = curr_byte;
+                }
+                if (cnt == (tga.width * tga.height / 8)) {
+                        if (run_cnt != 0)
+                                fprintf(file,"0x%2.2X};\n\n", run_cnt);
+                        break;
+                }
+        }
+}
+
 void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
 {
     struct scr2 *p;
@@ -484,32 +546,37 @@ void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
     fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8);
     fprintf(file,"const unsigned char %s_tile[]={\n",dataname);
 
-    p = buffer;
-    for (cnt = 0; cnt < (tga.width * tga.height / 8) ; p++, cnt++) {
-        if(bytectr++ > 6) {
-            fprintf(file,"0x%2.2X,\n",p->patrn);
-            bytectr=0;
-        } else {
-            fprintf(file,"0x%2.2X,",p->patrn);
-        }
+    if (rle_encode)
+        dump_buffer_rle(buffer, file, 0);
+    else {
+            p = buffer;
+            for (cnt = 0; cnt < (tga.width * tga.height / 8) ; p++, cnt++) {
+                if(bytectr++ > 6) {
+                    fprintf(file,"0x%2.2X,\n",p->patrn);
+                    bytectr=0;
+                } else {
+                    fprintf(file,"0x%2.2X,",p->patrn);
+                }
+            }
+            fprintf(file,"0x%2.2X};\n\n",p->patrn);
     }
-    fprintf(file,"0x%2.2X};\n\n",p->patrn);
-
     fprintf(file,"const unsigned char %s_tile_color[]={\n",dataname);
 
-    p = buffer;
-    for (cnt = 0; cnt < (tga.width * tga.height / 8); p++, cnt++) {
-        if(bytectr++ > 6) {
-            fprintf(file,"0x%2.2X,\n",p->color);
-            bytectr=0;
-        } else {
-            fprintf(file,"0x%2.2X,",p->color);
-        }
+    if (rle_encode)
+        dump_buffer_rle(buffer, file, 1);
+    else {
+            p = buffer;
+            for (cnt = 0; cnt < (tga.width * tga.height / 8); p++, cnt++) {
+                if(bytectr++ > 6) {
+                    fprintf(file,"0x%2.2X,\n",p->color);
+                    bytectr=0;
+                } else {
+                    fprintf(file,"0x%2.2X,",p->color);
+                }
+            }
+            fprintf(file,"0x%2.2X};\n\n",p->color);
     }
-    fprintf(file,"0x%2.2X};\n\n",p->color);
-
 }
-
 
 void dump_tile_file(FILE *fd, int only_header)
 {
@@ -575,6 +642,7 @@ int main(int argc, char **argv)
 #define OPT_PALETTE 'p'
 #define OPT_TYPE    't'
 #define OPT_OUTPUT  'o'
+#define OPT_RLE 'z'
 
 
 #define ALL_OPTIONS \
@@ -583,8 +651,9 @@ int main(int argc, char **argv)
     { "palette", 0, 0, OPT_PALETTE }, \
     { "type",   1, 0, OPT_TYPE }, \
     { "output", 1, 0, OPT_OUTPUT }, \
+    { "rle", 0, 0, OPT_RLE }, \
 
-#define OPT_STR "hfpt:o:"
+#define OPT_STR "hfpt:o:z"
 
     static const struct option options[] = {
         ALL_OPTIONS
@@ -611,6 +680,9 @@ int main(int argc, char **argv)
                 break;
             case OPT_OUTPUT:
                 outfile = optarg;
+                break;
+            case OPT_RLE:
+                rle_encode = 1;
                 break;
         default:
             break;
