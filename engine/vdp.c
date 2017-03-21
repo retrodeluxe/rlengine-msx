@@ -99,6 +99,28 @@ void vdp_poke(uint16_t address, uint8_t value)
         __endasm;
 }
 
+void vdp_poke_di(uint16_t address, uint8_t value)
+{
+        address;
+        value;
+
+        __asm
+        di
+        ld l,4(ix)
+        ld h,5(ix)
+        ld a,l
+        //di
+        out (0x99),a
+        ld a,h
+        add a,#0x40
+        //ei
+        out (0x99),a
+        ld a,6(ix)
+        out (0x98),a
+        //ei
+        __endasm;
+}
+
 
 uint8_t vdp_peek(uint16_t address)
 {

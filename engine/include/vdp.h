@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _VDP_H_
 #define _VDP_H_
 
@@ -63,6 +63,7 @@ extern void vdp_screen_enable(void);
 extern void vdp_set_mode(char mode);
 extern void vdp_set_color(char ink, char border);
 extern void vdp_poke(uint16_t address, uint8_t value);
+extern void vdp_poke_di(uint16_t address, uint8_t value);
 extern uint8_t vdp_peek(uint16_t address);
 extern void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value);
 extern void vdp_copy_to_vram(uint8_t * buffer, uint16_t vaddress, uint16_t length);
