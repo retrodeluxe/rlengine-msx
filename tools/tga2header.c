@@ -508,11 +508,10 @@ void dump_buffer_rle(struct scr2 *buffer, FILE *file, int type)
                                 }
 
                         }
-
                 } else {
                         prev_byte = curr_byte;
                 }
-                if (cnt == (tga.width * tga.height / 8)) {
+                if (cnt == IMAGE_SIZE_B) {
                         if (run_cnt != 0)
                                 fprintf(file,"0x%2.2X};\n\n", run_cnt);
                         break;
