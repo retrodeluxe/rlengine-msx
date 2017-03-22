@@ -37,17 +37,18 @@ void tile_init()
 
 static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size)
 {
-	uint16_t count = size;
+	int16_t count = size;
 	uint16_t offset_vram = offset;
 	uint8_t run_size;
 	uint8_t *in = buffer;
-	uint8_t prev_byte = -1;
+	int16_t prev_byte = -1;
 	uint8_t curr_byte;
 
 	while (count > 0) {
 		curr_byte = *in++;
 		vdp_poke_di(offset_vram, curr_byte);
 		offset_vram++;
+		count--;
 		if (curr_byte == prev_byte) {
 			run_size = *in++;
 			while (run_size > 0 && count > 0) {
@@ -58,7 +59,6 @@ static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size
 			}
 			prev_byte = -1;
 		} else {
-			count--;
 			prev_byte = curr_byte;
 		}
 	}
