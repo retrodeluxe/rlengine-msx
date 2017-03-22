@@ -25,6 +25,7 @@
 #include "bitmap.h"
 
 uint8_t bitmap_tile_bank[32];
+uint8_t inflate_buffer[255];
 
 void tile_init()
 {
@@ -38,6 +39,7 @@ void tile_init()
 static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size)
 {
 	int16_t count = size;
+	uint8_t buffer_cnt = 0;
 	uint16_t offset_vram = offset;
 	uint8_t run_size;
 	uint8_t *in = buffer;
@@ -46,22 +48,31 @@ static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size
 
 	while (count > 0) {
 		curr_byte = *in++;
-		vdp_poke_di(offset_vram, curr_byte);
+		inflate_buffer[buffer_cnt++] = curr_byte;
 		offset_vram++;
 		count--;
+		if (buffer_cnt == 255) {
+			vdp_copy_to_vram_di(inflate_buffer, offset_vram - 255, 255);
+			buffer_cnt = 0;
+		}
 		if (curr_byte == prev_byte) {
 			run_size = *in++;
 			while (run_size > 0 && count > 0) {
-				vdp_poke_di(offset_vram, curr_byte);
+				inflate_buffer[buffer_cnt++] = curr_byte;
 				count--;
 				offset_vram++;
 				run_size--;
+				if (buffer_cnt == 255) {
+					vdp_copy_to_vram_di(inflate_buffer, offset_vram - 255, 255);
+					buffer_cnt = 0;
+				}
 			}
 			prev_byte = -1;
 		} else {
 			prev_byte = curr_byte;
 		}
 	}
+	vdp_copy_to_vram_di(inflate_buffer, offset_vram - buffer_cnt, buffer_cnt);
 }
 
 /**
