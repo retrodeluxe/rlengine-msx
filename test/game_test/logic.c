@@ -21,7 +21,7 @@ void init_game_state()
 
 	// room 3
 	game_state.map_x = 64;
-	game_state.map_y = 44;
+	game_state.map_y = 22;
 }
 
 
@@ -63,7 +63,7 @@ void toggle_handler(struct displ_object *dpo, uint8_t data)
 
 void bell_handler(struct displ_object *dpo, uint8_t data)
 {
-        game_state.bell = 1;
+        game_state.bell = true;
         dpo->tob->cur_anim_step = 1;
         update_tileobject(dpo);
 }
@@ -82,4 +82,11 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data)
                 game_state.cross_switch = true;
         }
         update_tileobject(dpo);
+}
+
+void trigger_handler(struct displ_object *dpo, uint8_t data)
+{
+        if(game_state.door_trigger)
+                return;
+        game_state.door_trigger = true;
 }

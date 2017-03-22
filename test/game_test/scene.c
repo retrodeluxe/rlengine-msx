@@ -122,6 +122,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 void load_room()
 {
 	uint8_t i, id, type;
+	bool add_dpo;
 	spr_ct = 0, tob_ct = 0;
 
 	vdp_screen_disable();
@@ -131,7 +132,7 @@ void load_room()
 	phys_init();
 	free_patterns();
 	init_tile_collisions();
-	
+
 	sys_set_rom();
 	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
@@ -193,10 +194,10 @@ void load_room()
 				// TODO: end game sequence
 				add_tileobject(dpo, tob_ct, TILE_CUP);
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
-				// TODO
-				// invisible, but needs collision detection.
+				add_tileobject(dpo, tob_ct, TILE_INVISIBLE_TRIGGER);
+				phys_set_tile_collision_handler(dpo, trigger_handler, id);
 			} else if (map_object->object.actionitem.type == TYPE_BELL) {
-				if (game_state.bell == 0) {
+				if (!game_state.bell) {
 					add_tileobject(dpo, tob_ct, TILE_BELL);
 					phys_set_tile_collision_handler(dpo, bell_handler, id);
 				} else {
@@ -231,17 +232,27 @@ void load_room()
 		} else if (map_object->type == DOOR) {
 			type = map_object->object.door.type;
 			id = map_object->object.door.action_id;
-			if (type == 2) {
-				if (game_state.bell == 0)
-					add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
-					phys_set_colliding_tile_object(dpo, true);
-			} else {
+			add_dpo = false;
+			if (id == 0) {
+				if (game_state.door_trigger)
+					add_dpo = true;
+			} else if (id == 1 && game_state.toggle[0] == 0) {
+				add_dpo = true;
+			} else if (id == 2 && !game_state.bell) {
+				add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
+				phys_set_colliding_tile_object(dpo, true);
+			} else if (id == 3 && game_state.toggle[1] == 0) {
+				add_dpo = true;
+			} else if (id == 4 && game_state.toggle[2] == 0) {
+				add_dpo = true;
+			}
+			if (add_dpo) {
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
-				if (type == 0)
+				if (type == 0) {
 					dpo->tob->cur_anim_step = 1;
+				}
 				phys_set_colliding_tile_object(dpo, false);
 			}
-
 			map_object++;
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
@@ -411,6 +422,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 3, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DOOR], door, 1, 4, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
 
 	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);

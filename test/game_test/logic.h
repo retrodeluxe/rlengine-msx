@@ -12,12 +12,13 @@ struct game_state_t {
 	uint8_t hearth[9];
 	uint8_t scroll[7];
 	uint8_t cross[12];
-	uint8_t bell;
+	bool bell;
 	uint8_t invisible_trigger[5];
 	uint8_t checkpoint[8];
 	uint8_t toggle[3];
 	bool cross_switch;
 	bool cross_switch_enable;
+	bool door_trigger;
 };
 
 extern struct game_state_t game_state;
@@ -29,4 +30,6 @@ void checkpoint_handler(struct displ_object *dpo, uint8_t data);
 void toggle_handler(struct displ_object *dpo, uint8_t data);
 void bell_handler(struct displ_object *dpo, uint8_t data);
 void crosswitch_handler(struct displ_object *dpo, uint8_t data);
+// void set_trigger_handler_object(struct map_object_item *map_object);
+void trigger_handler(struct displ_object *dpo, uint8_t data);
 #endif

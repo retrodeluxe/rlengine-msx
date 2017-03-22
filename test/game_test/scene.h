@@ -22,6 +22,7 @@ enum tile_sets_t {
 	TILE_PRIEST,
 	TILE_DOOR,
 	TILE_TRAPDOOR,
+	TILE_INVISIBLE_TRIGGER,
 	TILE_MAX,
 };
 
