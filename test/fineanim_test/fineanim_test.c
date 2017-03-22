@@ -161,7 +161,7 @@ void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
 	if (dx != 0 || dy != 0) {
 		dpo->xpos += dx;
 		dpo->ypos += dy;
-		phys_detect_tile_collisions(dpo, map_buf);
+		//phys_detect_tile_collisions(dpo, map_buf);
 		if (dy > 0 && is_colliding_down(dpo)) {
 			ypos = (dpo->ypos / 8) * 8;
 			cdy = ypos - dpo->ypos + dy;

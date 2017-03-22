@@ -73,7 +73,6 @@ void main()
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);
 
-	// FIXME this should be a macro... map_inflate(tilemap, dest_buffer);
 	map_inflate(tilemap_cmpr_dict, tilemap, map_buf, tilemap_cmpr_size, tilemap_w);
 
 	/* set tile map on screen */
@@ -142,6 +141,7 @@ void main()
 			dpo->xpos = map_object->x;
 			dpo->ypos = map_object->y;
 			dpo->state = 0;
+			log_e("adding object x: %d y: %d\n",  map_object->x,  map_object->y);
 			INIT_LIST_HEAD(&dpo->list);
 			list_add(&dpo->list, &display_list);
 			map_object++;
@@ -177,7 +177,7 @@ void main()
 void animate_all() {
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
-		phys_detect_tile_collisions(dpo, map_buf);
+		//phys_detect_tile_collisions(dpo, map_buf);
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
 			anim->run(dpo);
