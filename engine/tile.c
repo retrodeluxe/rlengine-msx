@@ -24,8 +24,18 @@
 #include "log.h"
 #include "bitmap.h"
 
+#define BANK0 0
+#define BANK1 1
+#define BANK2 2
+#define ALLBANKS 3
+
+#define BANK1_OFFSET 256 * 8
+#define BANK2_OFFSET BANK1_OFFSET * 2
+
+#define RLE_BUFSIZE 255
+
 uint8_t bitmap_tile_bank[32];
-uint8_t inflate_buffer[255];
+uint8_t inflate_buffer[RLE_BUFSIZE];
 
 void tile_init()
 {
@@ -36,7 +46,20 @@ void tile_init()
 	bitmap_reset(bitmap_tile_bank, 0);
 }
 
-static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size)
+static void tile_flush_inflate_buffer(uint16_t vram_offset, uint16_t size, uint8_t bank)
+{
+	if (bank == BANK0 || bank == ALLBANKS)
+		vdp_copy_to_vram_di(inflate_buffer, vram_offset, size);
+	if (bank == BANK1 || bank == ALLBANKS)
+		vdp_copy_to_vram_di(inflate_buffer, vram_offset + BANK1_OFFSET, size);
+	if (bank == BANK2 || bank == ALLBANKS)
+		vdp_copy_to_vram_di(inflate_buffer, vram_offset + BANK2_OFFSET, size);
+}
+
+/**
+ * Expands (RLE) a buffer all three char banks at the same time
+ */
+static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size, uint8_t bank)
 {
 	int16_t count = size;
 	uint8_t buffer_cnt = 0;
@@ -51,8 +74,8 @@ static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size
 		inflate_buffer[buffer_cnt++] = curr_byte;
 		offset_vram++;
 		count--;
-		if (buffer_cnt == 255) {
-			vdp_copy_to_vram_di(inflate_buffer, offset_vram - 255, 255);
+		if (buffer_cnt == RLE_BUFSIZE) {
+			tile_flush_inflate_buffer(offset_vram - RLE_BUFSIZE, RLE_BUFSIZE, bank);
 			buffer_cnt = 0;
 		}
 		if (curr_byte == prev_byte) {
@@ -62,8 +85,8 @@ static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size
 				count--;
 				offset_vram++;
 				run_size--;
-				if (buffer_cnt == 255) {
-					vdp_copy_to_vram_di(inflate_buffer, offset_vram - 255, 255);
+				if (buffer_cnt == RLE_BUFSIZE) {
+					tile_flush_inflate_buffer(offset_vram - RLE_BUFSIZE, RLE_BUFSIZE, bank);
 					buffer_cnt = 0;
 				}
 			}
@@ -72,7 +95,7 @@ static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size
 			prev_byte = curr_byte;
 		}
 	}
-	vdp_copy_to_vram_di(inflate_buffer, offset_vram - buffer_cnt, buffer_cnt);
+	tile_flush_inflate_buffer(offset_vram - buffer_cnt, buffer_cnt, bank);
 }
 
 /**
@@ -81,10 +104,10 @@ static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size
 void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 {
 	uint16_t size, offset, i;
-	offset = 256 * 8 * bank + pos * 8;
+	offset = pos * 8;
 	size = ts->w * ts->h * 8;
-	tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);
-	tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size);
+	tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size, bank);
+	tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size, bank);
 	for (i = pos; i < pos + (size / 8); i++)
 		bitmap_reset(bitmap_tile_bank, i);
 	ts->allocated = true;
@@ -109,15 +132,13 @@ void tile_set_valloc(struct tile_set *ts)
 	for (i = pos; i < pos + size; i++)
 		bitmap_reset(bitmap_tile_bank, i);
 
-	for (i = 0; i < 3; i++) {
-		offset = 256 * 8 * i + pos * 8;
-		tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size * 8);
-		tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size * 8);
-	}
+	offset = pos * 8;
+	tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size * 8, ALLBANKS);
+	tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size * 8, ALLBANKS);
 
 	ts->allocated = true;
 	ts->pidx = pos;
-	log_e("allocated tile set at pos %d\n", pos);
+	//log_e("allocated tile set at pos %d\n", pos);
 }
 
 /**
@@ -127,26 +148,8 @@ void tile_set_valloc(struct tile_set *ts)
  */
 void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 {
-	tile_set_to_vram_bank(ts, 0, pos);
-	tile_set_to_vram_bank(ts, 1, pos);
-	tile_set_to_vram_bank(ts, 2, pos);
+	tile_set_to_vram_bank(ts, ALLBANKS, pos);
 }
-
-// FIMXE: redefie viewport and map pos...
-// void tile_map_clip(struct tile_map *tm,
-// 		      struct gfx_viewport *vp, uint8_t * scrbuf,
-// 		      struct gfx_map_pos *p)
-// {
-// 	uint8_t i;
-// 	uint8_t *ptr = scrbuf + vp->x + vp->y * gfx_screen_tile_w;
-// 	uint8_t *src = tm->map + p->x + p->y * tm->w;
-//
-// 	for (i = 0; i <= vp->h; i++) {
-// 		sys_memcpy(ptr, src, vp->w);
-// 		ptr += gfx_screen_tile_w;
-// 		src += tm->w;
-// 	}
-// }
 
 void tile_set_vfree(struct tile_set *ts)
 {
@@ -178,7 +181,7 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 		for (x = 0; x < to->ts->frame_w; x++) {
 			*(ptr + x) = tile;
 			if (refresh_vram) {
-				vdp_poke(vdp_base_names_grp1 + offset + x, tile);
+				vdp_poke_di(vdp_base_names_grp1 + offset + x, tile);
 			}
 			tile++;
 		}
@@ -199,7 +202,7 @@ void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 		for (x = 0; x < to->ts->frame_w; x++) {
 			*(ptr + x) = 0;
 			if (refresh_vram) {
-				vdp_poke(vdp_base_names_grp1 + offset + x, 0);
+				vdp_poke_di(vdp_base_names_grp1 + offset + x, 0);
 			}
 		}
 		ptr += 32;
