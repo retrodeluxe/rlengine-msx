@@ -1057,7 +1057,7 @@
                  "y":192
                 }, 
                 {
-                 "height":88,
+                 "height":32,
                  "id":46,
                  "name":"actionitem",
                  "properties":
@@ -1075,7 +1075,7 @@
                  "visible":true,
                  "width":8,
                  "x":528,
-                 "y":248
+                 "y":288
                 }, 
                 {
                  "height":32,
