@@ -12,7 +12,7 @@
 
 #include "gen/game_test_tiles_ext.h"
 #include "gen/game_test_sprites_ext.h"
-#include "gen/game_test_maps.h"
+#include "gen/map.h"
 
 #include "anim.h"
 #include "logic.h"
@@ -372,7 +372,7 @@ void init_tile_collisions()
 void init_resources()
 {
 	tile_init();
-
+	vdp_clear_grp1(0);
 	sys_set_rom();
 	/** initialize static tile sets for map data */
 	INIT_TILE_SET(tileset_map1, maptiles1);

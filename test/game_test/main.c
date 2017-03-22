@@ -20,6 +20,16 @@
 #include "scene.h"
 #include "logic.h"
 
+#include "gen/intro_tileset_ext.h"
+
+// FIXME: currently no ext headers for map
+extern unsigned char intro_w;
+extern unsigned char intro_h;
+extern unsigned char intro_dict_size;
+extern unsigned int intro_cmpr_size;
+extern unsigned char intro_cmpr_dict[];
+extern unsigned int intro[];
+
 #include <stdlib.h>
 
 void show_logo();
@@ -29,6 +39,7 @@ void check_and_change_room();
 void show_score_panel();
 
 struct tile_set logo;
+struct tile_set tileset_intro;
 
 uint8_t stick;
 uint16_t reftick;
@@ -45,10 +56,11 @@ void main()
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
 
-	//show_logo();
-	//show_title_screen();
-
 	sys_irq_init();
+	//show_logo();
+	show_title_screen();
+
+
 	init_map_index();
 	init_resources();
 	init_animators();
@@ -102,7 +114,25 @@ void show_logo() {
 
 void show_title_screen()
 {
-	// TODO: requires processing the image in a way that fits in the ROM.
+	uint8_t i;
+	vdp_screen_disable();
+	tile_init();
+
+	sys_set_rom();
+
+	INIT_TILE_SET(tileset_intro, intro_tileset);
+	tile_set_to_vram(&tileset_intro, 1);
+	map_inflate_screen(intro, scr_tile_buffer, 0, 0);
+
+	vdp_memset(vdp_base_color_grp1, 8, 0);
+        vdp_memset(vdp_base_color_grp1 + 0x800, 8, 0);
+        vdp_memset(vdp_base_color_grp1 + 0x1000, 8, 0);
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+
+	sys_set_bios();
+
+	vdp_screen_enable();
+
 	do {
 	} while (sys_get_key(8) & 1);
 }
