@@ -6445,7 +6445,7 @@
         {
          "columns":125,
          "firstgid":1,
-         "image":"..\/tiles2.tga",
+         "image":"..\/..\/..\/map_test\/res\/tile\/tiles2.tga",
          "imageheight":16,
          "imagewidth":1000,
          "margin":0,

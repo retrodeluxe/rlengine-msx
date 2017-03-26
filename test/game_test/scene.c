@@ -138,6 +138,7 @@ void load_room()
 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 	sys_set_bios();
 	INIT_LIST_HEAD(&display_list);
+
 	find_room_data();
 	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
 		log_e("dpo %d type : %d\n", i ,map_object->type);
@@ -400,6 +401,14 @@ void init_resources()
 	/** fixed index allocations for map consistency **/
 	tile_set_to_vram(&tileset_map4, 126);
 	tile_set_to_vram(&tileset_map5, 126 + 32);
+
+	/** load font tileset */
+	INIT_TILE_SET(tileset[TILE_FONT_DIGITS], font_digits);
+	INIT_TILE_SET(tileset[TILE_FONT_UPPER], font_upper);
+	INIT_TILE_SET(tileset[TILE_FONT_LOWER], font_lower);
+	tile_set_valloc(&tileset[TILE_FONT_DIGITS]);
+	tile_set_valloc(&tileset[TILE_FONT_UPPER]);
+	tile_set_valloc(&tileset[TILE_FONT_LOWER]);
 
 	/** initialize dynamic tile sets */
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);

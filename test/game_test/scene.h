@@ -1,6 +1,9 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
+
+// NOTE: whenever you add something here remember to  initialize the pattern,
+//       because free_patterns() assumes that is the case
 enum tile_sets_t {
 	TILE_SCROLL,
 	TILE_CHECKPOINT,
@@ -23,6 +26,9 @@ enum tile_sets_t {
 	TILE_DOOR,
 	TILE_TRAPDOOR,
 	TILE_INVISIBLE_TRIGGER,
+	TILE_FONT_DIGITS,
+	TILE_FONT_UPPER,
+	TILE_FONT_LOWER,
 	TILE_MAX,
 };
 
