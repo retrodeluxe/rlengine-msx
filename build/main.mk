@@ -23,7 +23,6 @@ export MAKEFLAGS :=
 # warning 196: pointer target lost const qualifier
 #             we need to store ROM data as const, but is is assigned as non const
 #
-export ENGINE_CFLAGS  := -mz80 --std-c99 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include
 export ENGINE_LDFLAGS := --no-std-crt0 --use-stdout
 export ENGINE_ASFLAGS := -plosff
 
@@ -31,17 +30,16 @@ export ARCH := $(shell uname)
 
 ifeq ($(ARCH), Darwin)
 export SDCC_ROOT := $(TOP)/prebuilts/darwin/sdcc_3.6.5
+else
+export SDCC_ROOT := $(TOP)/prebuilts/x86_64/sdcc_3.6.5
+endif
 export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
 export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
 export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
 export SDCC_LIB := $(SDCC_ROOT)/share/lib/z80
-else
-export SDCC_ROOT := /usr/
-export CROSS_CC := sdcc
-export CROSS_AS := sdasz80
-export CROSS_LD := sdldz80
-export SDCC_LIB := $(SDCC_ROOT)/share/sdcc/lib/z80
-endif
+export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
+
+export ENGINE_CFLAGS  := -mz80 --std-c99 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
 
 export HOSTCC	:= gcc
 export TILED2H  := $(RLE_TOOLS)/map2header.py
