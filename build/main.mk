@@ -30,11 +30,11 @@ export ENGINE_ASFLAGS := -plosff
 export ARCH := $(shell uname)
 
 ifeq ($(ARCH), Darwin)
-export SDCC_ROOT := /usr/local
-export CROSS_CC := sdcc
-export CROSS_AS := sdasz80
-export CROSS_LD := sdldz80
-export SDCC_LIB := $(SDCC_ROOT)/share/sdcc/lib/z80
+export SDCC_ROOT := $(TOP)/prebuilts/darwin/sdcc_3.6.5
+export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
+export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
+export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
+export SDCC_LIB := $(SDCC_ROOT)/share/lib/z80
 else
 export SDCC_ROOT := /usr/
 export CROSS_CC := sdcc
