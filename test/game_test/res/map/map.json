@@ -6439,6 +6439,16 @@
         }],
  "nextobjectid":286,
  "orientation":"orthogonal",
+ "properties":
+    {
+     "room_heigth":22,
+     "room_width":32
+    },
+ "propertytypes":
+    {
+     "room_heigth":"int",
+     "room_width":"int"
+    },
  "renderorder":"right-down",
  "tileheight":8,
  "tilesets":[
