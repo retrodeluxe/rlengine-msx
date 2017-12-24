@@ -50,6 +50,7 @@ export CONFIG_ROM := $(BUILD_SYSTEM)/config_rom.mk
 export BUILD_ROM := $(BUILD_SYSTEM)/build_rom.mk
 export BUILD_ROM_32K := $(BUILD_SYSTEM)/build_32k_rom.mk
 export BUILD_ROM_48K := $(BUILD_SYSTEM)/build_48k_rom.mk
+export BUILD_ROM_ASCII8 := $(BUILD_SYSTEM)/build_ascii8_rom.mk
 export BUILD_RESOURCES := $(BUILD_SYSTEM)/build_resources.mk
 
 # Create output tree
