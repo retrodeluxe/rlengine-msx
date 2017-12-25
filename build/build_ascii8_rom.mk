@@ -85,10 +85,6 @@ $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 
 # Generate the actual ROM by aseembling the pieces.
 #
-define dd-rom-page
-dd if=$$(BUILT_ROM_PAGE_$(1)) of=$@ seek=$($(1)+4) bs=8192 conv=notrunc,sync
-endef
-
 $(built_rom_1Mb) : $(built_rom_bin) | $(BUILT_ROM_PAGES)
 	@mkdir -p $(LOCAL_BUILD_OUT_ROM)
 	tr "\000" "\377" < /dev/zero | dd ibs=1k count=128 of=$@
