@@ -22,3 +22,11 @@ Just run make.
 Currently supported platforms are MacOS (tested in Sierra) and Ubuntu (tested in 17.04)
 
 Makefiles inside subdirectories will be found and built. Check the test directory for examples on how to write makefiles for individual ROMs.
+
+# Creating assets
+
+Maps can be created using Tiled (http://www.mapeditor.org/download.html, also available in ubuntu as package) and exporting to json format.
+
+Some structure is assumed in the format of the map, please look at the samples in the test folder.
+
+Sprites and Tiles can be created as images and exported to TGA format with GIMP (select no RLE, top down export options). Note that each pixel will be set to the closest color in the MSX1 palette. In case of SPRITES pixel by pixel matching is carried out, in case of TILES (Screen 2), each line of 8 pixels are taken together and matched to the best color combination by minimum squared error; note that depending on the input palette used this may not produce an accurate output, therefore; using an input palette close to the MSX palette and adjusting manually the pixels so that they are SCR2 compliant is recommended.
