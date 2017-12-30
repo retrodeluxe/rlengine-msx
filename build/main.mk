@@ -36,6 +36,7 @@ endif
 export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
 export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
 export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
+export CROSS_LD_BANKED := $(SDCC_ROOT)/bin/sdldgb
 export SDCC_LIB := $(SDCC_ROOT)/share/lib/z80
 export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
 

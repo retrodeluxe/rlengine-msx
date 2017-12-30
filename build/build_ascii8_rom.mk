@@ -46,7 +46,7 @@ $$(BUILT_ROM_IHX_PAGE_$(1)): $$(BUILT_LOCAL_PAGE_$(1)_SRC_FILES)
 	@echo "-l z80" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo $$^ | tr ' ' '\n' >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-e" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
-	sdldgb -k $$(SDCC_LIB) -f $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
+	$(CROSS_LD_BANKED) -k $$(SDCC_LIB) -f $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 endef
 
 ROM_PAGES := $(shell seq 1 $(LOCAL_ROM_NUM_PAGES))
@@ -78,7 +78,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_AS
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	sdldgb -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	$(CROSS_LD_BANKED) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)

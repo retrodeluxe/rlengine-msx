@@ -39,7 +39,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BU
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	$(hide) sdldgb -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	$(CROSS_LD_BANKED) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
