@@ -1,6 +1,4 @@
-# rlengine-msx1
-
-RetroDeluxe Game Engine for MSX1 computers
+# RetroDeluxe Game Engine for MSX1 computers
 
 RLE is a game engine targeted at MSX1 Computers, written in C and aimed at
 making the development as easy as possible.
@@ -16,3 +14,11 @@ At the moment it provides:
 
 RLE is a work in progress, and although it still lacks a music player, is mature
 enough for development (see the tests folder for samples).
+
+# How to Build
+
+Just run make.
+
+Currently supported platforms are MacOS (tested in Sierra) and Ubuntu (tested in 17.04)
+
+Makefiles inside subdirectories will be found and built. Check the test directory for examples on how to write makefiles for individual ROMs.
