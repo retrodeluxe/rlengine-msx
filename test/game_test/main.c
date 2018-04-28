@@ -58,8 +58,7 @@ void main()
 
 	sys_irq_init();
 	//show_logo();
-	//show_title_screen();
-
+	show_title_screen();
 
 	init_map_index();
 	init_resources();
@@ -113,26 +112,26 @@ void show_logo() {
 
 void show_title_screen()
 {
-// 	uint8_t i;
-// 	vdp_screen_disable();
-// 	tile_init();
-//
-// 	sys_set_rom();
-//
-// 	INIT_TILE_SET(tileset_intro, intro_tileset);
-// 	tile_set_to_vram(&tileset_intro, 1);
-//
-// 	map_inflate_screen(intro, scr_tile_buffer, 0, 0);
-//
-// 	vdp_memset(vdp_base_color_grp1, 8, 0);
-//         vdp_memset(vdp_base_color_grp1 + 0x800, 8, 0);
-//         vdp_memset(vdp_base_color_grp1 + 0x1000, 8, 0);
-// 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
-//
-// 	sys_set_bios();
-//
-// 	vdp_screen_enable();
-//
-// 	do {
-// 	} while (sys_get_key(8) & 1);
+	uint8_t i;
+	vdp_screen_disable();
+	tile_init();
+
+	sys_set_rom();
+
+	INIT_TILE_SET(tileset_intro, intro_tileset);
+	tile_set_to_vram(&tileset_intro, 1);
+
+	map_inflate_screen(intro, scr_tile_buffer, 0, 0);
+
+	vdp_memset(vdp_base_color_grp1, 8, 0);
+        vdp_memset(vdp_base_color_grp1 + 0x800, 8, 0);
+        vdp_memset(vdp_base_color_grp1 + 0x1000, 8, 0);
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+
+	sys_set_bios();
+
+	vdp_screen_enable();
+
+	do {
+	} while (sys_get_key(8) & 1);
  }
