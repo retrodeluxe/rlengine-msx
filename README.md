@@ -15,6 +15,11 @@ At the moment it provides:
 RLE is a work in progress, and although it still lacks a music player, is mature
 enough for development (see the tests folder for samples).
 
+# Documentation (WIP)
+
+[How To Use Tile Map resources](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Use_Tile_Map_Resources.md)
+
+
 # How to Build
 
 Just run make.
