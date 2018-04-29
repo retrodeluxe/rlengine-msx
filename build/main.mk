@@ -2,6 +2,7 @@
 # Common definitions
 export BUILD_SYSTEM := $(TOP)/build
 export RLE_TEST  = $(TOP)test
+export RLE_ROMS = $(TOP)roms
 export RLE_TOOLS = $(TOP)tools
 
 export hide:= @
@@ -68,6 +69,13 @@ rle: outdirs
 test:
 	$(MAKE) -C $(RLE_TEST) all
 rle: test
+
+# Build ROMS
+#
+.PHONY: roms
+roms:
+	$(MAKE) -C $(RLE_ROMS) all
+rle: roms
 
 clean:
 	rm -Rf $(TOP)/out

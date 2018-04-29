@@ -3,6 +3,7 @@
 #
 include $(BUILD_SYSTEM)/boot.mk
 include $(BUILD_SYSTEM)/engine.mk
+include $(BUILD_SYSTEM)/tools.mk
 
 built_rom_ihx = $(LOCAL_BUILD_OUT_BIN)/$(LOCAL_ROM_NAME).ihx
 built_rom_bin = $(LOCAL_BUILD_OUT_BIN)/$(LOCAL_ROM_NAME).bin
