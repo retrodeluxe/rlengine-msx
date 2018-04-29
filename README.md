@@ -1,11 +1,13 @@
+[![Generic badge](https://img.shields.io/badge/BUILD-FAILING_[REFACTORING_ONGOING]-RED.svg)](https://shields.io/)
+
 # RetroDeluxe Game Engine for MSX1 computers
 
 RLE is a game engine targeted at MSX1 Computers, written in C and aimed at
 making the development as easy as possible.
-
+È
 At the moment it provides:
 
-* Build System support for 32K, 48K and up to 2048K ROMS
+* Build System support for 32K, 48K and up to 2048K ROMS˜
 * Automatic compilation of assets (Maps, Tiles, Sprites)
 * Low level HAL libraries (VDP, PSG, System)
 * High Level Helpers for Sprite and Tile Animation
@@ -18,7 +20,6 @@ enough for development (see the tests folder for samples).
 # Documentation (WIP)
 
 [How To Use Tile Map resources](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Use_Tile_Map_Resources.md)
-
 
 # How to Build
 
