@@ -16,9 +16,11 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _PSG_H_
 #define _PSG_H_
+
+#include <msx.h>
 
 struct ay_reg_map {
 	uint8_t A_tone_fine;

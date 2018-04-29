@@ -1,7 +1,7 @@
 #ifndef _MUSIC_H
 #define _MUSIC_H
 
-#include <stddef.h>
+#include "msx.h"
 
 /*
  * Trilo Tracker PSG Replayer Copyright 2016 Richard Cornelisse

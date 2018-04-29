@@ -16,9 +16,11 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _MSX_H_SYS
 #define _MSX_H_SYS
+
+#include "msx.h"
 
 #define MSEC_PER_TICK   16      // assume 60Hz
 #define MAX_PROCS 		10
