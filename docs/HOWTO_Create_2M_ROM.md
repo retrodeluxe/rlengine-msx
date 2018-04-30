@@ -44,14 +44,14 @@ If everything goes well, your ROM will be created in:
 256K ROMS will boot with the same page setup as 32K ROMs, but with an ASCII8
 mapper initialised as follows:
 
-| Bank  | Slot | ASCII8 Bank | Page |
-|-------|------|-------------|
-| 0     | BIOS |             | |
-| 1     | ROM  |  0 (0x4000-0x5FFF) |   0
-|       | ROM  |  1 (0x6000-0x7FFF) | 1
-| 2     | ROM  |  2 (0x8000-0x9FFF)| 2
-|       | ROM  |  3 (0xA000-0xBFFF) | 3
-| 3     | RAM  |             | | |
+| Bank  | Slot | ASCII8 Bank      | Page |
+|-------|------|------------------|------|
+| 0     | BIOS |                  |      |
+| 1     | ROM  |  0 (0x4000-0x5FFF) |   0|
+|       | ROM  |  1 (0x6000-0x7FFF) | 1  |
+| 2     | ROM  |  2 (0x8000-0x9FFF)| 2   |
+|       | ROM  |  3 (0xA000-0xBFFF) | 3  |
+| 3     | RAM  |                   |  -    |
 
 
 Paged code is linked to be used **only in ASCII8 bank 3**. It can be acessed by
@@ -70,14 +70,14 @@ sys_set_ascii_page3(4);
 
 will result in the following page setup:
 
-| Bank  | Slot | ASCII8 Bank | Page |
-|-------|------|-------------|
-| 0     | BIOS |             | |
-| 1     | ROM  |  0 (0x4000-0x5FFF) |   0
-|       | ROM  |  1 (0x6000-0x7FFF) | 1
-| 2     | ROM  |  2 (0x8000-0x9FFF)| 2
-|       | ROM  |  3 (0xA000-0xBFFF) | 4
-| 3     | RAM  |             | | |
+| Bank  | Slot | ASCII8 Bank      | Page |
+|-------|------|------------------|------|
+| 0     | BIOS |                  |      |
+| 1     | ROM  |  0 (0x4000-0x5FFF) |   0|
+|       | ROM  |  1 (0x6000-0x7FFF) | 1  |
+| 2     | ROM  |  2 (0x8000-0x9FFF)| 2   |
+|       | ROM  |  3 (0xA000-0xBFFF) | 4  |
+| 3     | RAM  |                   |  -    |
 
 
 *It is possible to define up to 251 **LOCAL_PAGE_X_SRC_FILES**, but management
