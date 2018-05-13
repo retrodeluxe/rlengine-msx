@@ -361,6 +361,7 @@ class ObjectGroupLayer:
 
     def dump_as_c_header_no_data(self, file, basename):
         count = 0
+        print >>file,("extern const unsigned char %s_%s_size;\n" % (basename, self.name))
         for item in self.raw_objects:
             print >>file,("extern const unsigned char %s_%s_obj%s[];\n" % (basename, self.name, count)),
             count = count + 1
@@ -368,6 +369,7 @@ class ObjectGroupLayer:
     def dump_as_c_header(self, file, basename):
         count = 0
         total_size = 0
+        print >>file,("const unsigned char %s_%s_size = %s;\n" % (basename, self.name, len(self.raw_objects)))
         for item in self.raw_objects:
             print >>file,("const unsigned char %s_%s_obj%s[] = {" % (basename, self.name, count)),
             _type = item['type']
@@ -618,7 +620,7 @@ class TileMapWriter:
                 print >>fout,("};")
 
             print >>fout,("struct %s_object_item {" % self.basename)
-            print >>fout,("    enum object_type type;")
+            print >>fout,("    enum %s_object_type type;" % self.basename)
             print >>fout,("    unsigned char x;")
             print >>fout,("    unsigned char y;")
             print >>fout,("    unsigned char w;")
