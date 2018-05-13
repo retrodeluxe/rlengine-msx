@@ -16,9 +16,8 @@ all: $(built_spr_res) $(built_map_res) $(built_til_res) $(built_spr_ext_res) $(b
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
-	$(hide) $(TILED2H) -s $^ -b > $@
+	$(hide) $(TILED2H) -s $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
-	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_maps.h
 
 $(built_til_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_TIL)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
