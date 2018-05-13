@@ -1,4 +1,4 @@
-[![Generic badge](https://img.shields.io/badge/BUILD-FAILING_[REFACTORING_ONGOING]-RED.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/build-passing-green.svg)](https://shields.io/)
 
 # RetroDeluxe Game Engine for MSX1 computers
 
