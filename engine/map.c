@@ -28,12 +28,12 @@
  *   width of the map is needed
  *   out buffer needs to be 4 times data_size
  */
-void map_inflate(const uint8_t * dict, uint16_t * in, uint8_t * out, uint16_t data_size,
+void map_inflate(const uint8_t * dict, uint8_t * in, uint8_t * out, uint16_t data_size,
 		 uint8_t w)
 {
 	uint8_t col = 0;
 	unsigned int idx;
-	uint16_t *src;
+	uint8_t *src;
 	uint8_t *dst = out;
 	/* FIXME: optimize this */
 	for (src = in; src < in + data_size; src++) {
