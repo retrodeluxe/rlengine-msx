@@ -12,9 +12,10 @@
 #include "sprite.h"
 #include "wq.h"
 #include "tile.h"
-#include "gen/compr_test.h"
-#include <stdlib.h>
 #include "map.h"
+#include <stdlib.h>
+
+#include "gen/compr_test.h"
 
 struct tile_set tileset_palette;
 struct tile_set tileset_logo;
@@ -23,6 +24,10 @@ struct tile_set tileset_intro;
 
 uint8_t map_buf[768];
 
+/**
+ * compr_test: test tile RLE decompression with different tile sets
+ *
+ */
 void main()
 {
 	uint8_t x,y;
@@ -49,7 +54,7 @@ void main()
 
 	do {
 	} while (sys_get_key(8) & 1);
-	/*
+
 
 	/*
 	 * load a tile set and generate a tile map manually
@@ -66,15 +71,13 @@ void main()
 	} while (sys_get_key(8) & 1);
 
 	/*
-	 * load a pre-processed tile map
+	 * load a pre-processed tile map (uncompressed)
 	 */
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1 /* offset of 1 */);
 
-  map_inflate(tilemap_cmpr_dict, tilemap, map_buf, 2000, tilemap_w);
-
 	for (i = 0; i < 768; i++)
-		vdp_poke(vdp_base_names_grp1 + i, *(map_buf + i));
+		vdp_poke(vdp_base_names_grp1 + i, *(map_tilemap + i));
 
 	do {
 	} while (1);

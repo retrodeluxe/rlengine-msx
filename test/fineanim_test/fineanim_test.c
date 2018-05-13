@@ -55,7 +55,7 @@ enum obj_state_t {
 
 struct animator animators[7];
 struct tile_set tileset_kv;
-struct map_object_item *map_object;
+struct map_object_item *map_object2;
 struct list_head *elem, *elem2, *elem3;
 struct animator *anim;
 struct displ_object *dpo;
@@ -89,9 +89,7 @@ void main()
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);
 
-	map_inflate(tilemap_cmpr_dict, tilemap, map_buf, tilemap_cmpr_size, tilemap_w);
-
-	vdp_copy_to_vram(map_buf, vdp_base_names_grp1, 768);
+	vdp_copy_to_vram(map_tilemap, vdp_base_names_grp1, 768);
 
 	SPR_DEFINE_PATTERN_SET(pattern_monk, SPR_SIZE_16x32, 1, 2, 3, monk1);
 	spr_valloc_pattern_set(&pattern_monk);

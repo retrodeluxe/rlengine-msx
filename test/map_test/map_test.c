@@ -18,11 +18,15 @@
 #include <stdlib.h>
 
 struct tile_set logo;
-struct tile_set kv;
+struct tile_set ts;
 
 uint8_t fb[768];
 uint8_t map_buf[8000];
 
+/**
+ * map_test: test different map compression/decompression methods
+ *
+ */
 void main()
 {
 	uint8_t i,x,y, d;
@@ -51,41 +55,58 @@ void main()
 	do {
 	} while (sys_get_key(8) & 1);
 
+
+    /*
+     * Load an uncompressed map
+     */
+
+
+    /*
+     * Load Map compressed in blocks
+     */
+
+    /*
+    * Load a map compressed RLE
+    */
+
+    /*
+     * Load a map split in segments and compressed RLE
+     */
+
+
 	/*
-	 * load a pre-processed tile map
+	 * Load a map split in segments and compressed using 4x4 blocks
 	 */
 
-	INIT_TILE_SET(kv, tiles2);
+	INIT_TILE_SET(ts, mulana);
 	// need an offset of one
-	tile_set_to_vram(&kv, 1);
+	tile_set_to_vram(&ts, 1);
 
 	// inflate map into a buffer, at once
- 	map_inflate(map_cmpr_dict, map, map_buf, 2000, map_w);
+ 	map_inflate(map1_layer1_segment0_dict, map1_layer1_segment0, map_buf, 192, 32);
 
 	x =0; y =0;
     do {
-    	d = sys_get_stick(0);
-    	if (d == 1 && y > 0)
-    		y--;
-    	if (d == 5 && y < (map_h - 26))
-    		y++;
-    	if (d == 3 && x < map_w - 32)
-    		x++;
-    	if (d == 7 && x > 0)
-    		x--;
-
-		ptr = fb;
-		src = map_buf + x + y * map_w;
-		for (i = 0; i <= 23; i++) {
-			sys_memcpy(ptr, src, 32);
-			ptr += gfx_screen_tile_w;
-			src += map_w;
-		}
+    	// d = sys_get_stick(0);
+    	// if (d == 1 && y > 0)
+    	// 	y--;
+    	// if (d == 5 && y < (map_h - 26))
+    	// 	y++;
+    	// if (d == 3 && x < map_w - 32)
+    	// 	x++;
+    	// if (d == 7 && x > 0)
+    	// 	x--;
+        //
+		// ptr = fb;
+		// src = map_buf + x + y * map_w;
+		// for (i = 0; i <= 23; i++) {
+		// 	sys_memcpy(ptr, src, 32);
+		// 	ptr += gfx_screen_tile_w;
+		// 	src += map_w;
+		// }
 
 		//map_inflate_screen(map_cmpr_dict, map, fb, map_w, x, y);
-		vdp_fastcopy_nametable(fb);
+		vdp_fastcopy_nametable(map_buf);
 
 	} while(1);
 }
-
-
