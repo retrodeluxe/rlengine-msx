@@ -50,10 +50,8 @@ void main()
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1 /* offset of 1 */);
 
-  map_inflate(tilemap_cmpr_dict, tilemap, map_buf, 2000, tilemap_w);
-
 	for (i = 0; i < 768; i++)
-		vdp_poke(vdp_base_names_grp1 + i, *(map_buf + i));
+		vdp_poke(vdp_base_names_grp1 + i, *(map_tilemap + i));
 
 	do {
 	} while (1);

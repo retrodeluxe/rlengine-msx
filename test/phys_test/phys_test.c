@@ -70,13 +70,13 @@ void main()
 	vdp_clear_grp1(0);
 	spr_init();
 
+    init_map_object_layers();
+
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);
 
-	map_inflate(tilemap_cmpr_dict, tilemap, map_buf, tilemap_cmpr_size, tilemap_w);
-
 	/* set tile map on screen */
-	vdp_copy_to_vram(map_buf, vdp_base_names_grp1, 768);
+	vdp_copy_to_vram(map_tilemap, vdp_base_names_grp1, 768);
 
 	SPR_DEFINE_PATTERN_SET(pattern_smiley, SPR_SIZE_16x16, 1, 2, 2, smiley);
 	SPR_DEFINE_PATTERN_SET(pattern_bullet, SPR_SIZE_16x16, 1, 2, 2, bullet);
@@ -108,8 +108,8 @@ void main()
 
 	/* build scene */
 	INIT_LIST_HEAD(&display_list);
-	map_object = (struct map_object_item *) objects;
-	for (dpo = display_object, i = 0; i < objects_nitems; i++, dpo++) {
+	for (dpo = display_object, i = 0; i < map_objects_size; i++, dpo++) {
+        map_object = (struct map_object_item *) map_object_objects[i];
 		if (map_object->type == SPRITE) {
 			if (map_object->object.sprite.type == TYPE_SMILEY) {
 				SPR_DEFINE_SPRITE(enemy_sprites[i], &pattern_smiley, 6, smiley_color);
@@ -131,7 +131,6 @@ void main()
 				INIT_LIST_HEAD(&dpo->animator_list);
 				list_add(&animators[3].list, &dpo->animator_list);
 			} else {
-				map_object++;
 				continue;
 			}
 
@@ -144,7 +143,6 @@ void main()
 			log_e("adding object x: %d y: %d\n",  map_object->x,  map_object->y);
 			INIT_LIST_HEAD(&dpo->list);
 			list_add(&dpo->list, &display_list);
-			map_object++;
 		}
 	}
 
