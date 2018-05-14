@@ -159,7 +159,7 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
  * Update dpo collision_state
  */
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
-        uint8_t *map, int8_t dx, int8_t dy)
+        uint8_t *map, int8_t dx, int8_t dy, uint8_t margin)
 {
 	int16_t x,y;
 	uint8_t *base;
@@ -223,7 +223,7 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 }
 
 static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
-        uint8_t *map, int8_t dx, int8_t dy)
+        uint8_t *map, int8_t dx, int8_t dy, uint8_t inner)
 {
 
 	uint8_t x,y;
@@ -232,51 +232,82 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
 	x = obj->xpos;
 	y = obj->ypos;
 
-	/* adjust box size  : this may have to be 4 */
-	if (x >= 2) x = x - 2;
-	if (y >= 2) y = y - 2;
+    /**
+     * Inner Collision
+     */
+    if(inner) {
 
-	base = map + x / 8 + y / 8 * TILE_WIDTH;
+        x = x - 2;
+        y = y + inner;
 
-	tile[0] = *(base);
-	tile[1] = *(base + 1);
-	tile[2] = *(base + 2);
-	tile[3] = *(base + 3);
-	tile[4] = *(base + TILE_WIDTH);
-	tile[5] = *(base + TILE_WIDTH * 2);
-	tile[6] = *(base + TILE_WIDTH * 3);
-	tile[7] = *(base + TILE_WIDTH * 3 + 1);
-	tile[8] = *(base + TILE_WIDTH * 3 + 2);
-	tile[9] = *(base + TILE_WIDTH * 3 + 3);
-	tile[10] = *(base + 3 + TILE_WIDTH);
-	tile[11] = *(base + 3 + TILE_WIDTH * 2);
+        base = map + x / 8 + y / 8 * TILE_WIDTH;
+        tile[0] = *(base);
+    	tile[1] = *(base + 1);
+    	tile[2] = *(base + TILE_WIDTH);
+    	tile[3] = *(base + TILE_WIDTH + 1);
 
-	obj->collision_state = 0;
-	if (dx < 0 && is_coliding_tile_pair(tile[4], tile[5])) {
-		obj->collision_state |= COLLISION_LEFT;
-	}
-	if (dx > 0 && is_coliding_tile_pair(tile[10], tile[11])) {
-		obj->collision_state |= COLLISION_RIGHT;
-	}
-	if (dy < 0 && is_coliding_tile_pair(tile[1], tile[2])) {
-		obj->collision_state |= COLLISION_UP;
-	}
-	if (dy > 0 && is_coliding_tile_pair(tile[7], tile[8])) {
-		obj->collision_state |= COLLISION_DOWN;
-	}
+        obj->collision_state = 0;
+    	if (dx < 0 && is_coliding_tile_pair(tile[0], tile[2])) {
+    		obj->collision_state |= COLLISION_LEFT;
+    	}
+    	if (dx > 0 && is_coliding_tile_pair(tile[1], tile[3])) {
+    		obj->collision_state |= COLLISION_RIGHT;
+    	}
+    	if (dy < 0 && is_coliding_tile_pair(tile[0], tile[1])) {
+    		obj->collision_state |= COLLISION_UP;
+    	}
+    	if (dy > 0 && is_coliding_tile_pair(tile[2], tile[3])) {
+    		obj->collision_state |= COLLISION_DOWN;
+    	}
+
+    } else {
+
+    	/* adjust box size  : this may have to be 4 */
+    	if (x >= 2) x = x - 2;
+    	if (y >= 2) y = y - 2;
+
+    	base = map + x / 8 + y / 8 * TILE_WIDTH;
+
+    	tile[0] = *(base);
+    	tile[1] = *(base + 1);
+    	tile[2] = *(base + 2);
+    	tile[3] = *(base + 3);
+    	tile[4] = *(base + TILE_WIDTH);
+    	tile[5] = *(base + TILE_WIDTH * 2);
+    	tile[6] = *(base + TILE_WIDTH * 3);
+    	tile[7] = *(base + TILE_WIDTH * 3 + 1);
+    	tile[8] = *(base + TILE_WIDTH * 3 + 2);
+    	tile[9] = *(base + TILE_WIDTH * 3 + 3);
+    	tile[10] = *(base + 3 + TILE_WIDTH);
+    	tile[11] = *(base + 3 + TILE_WIDTH * 2);
+
+    	obj->collision_state = 0;
+    	if (dx < 0 && is_coliding_tile_pair(tile[4], tile[5])) {
+    		obj->collision_state |= COLLISION_LEFT;
+    	}
+    	if (dx > 0 && is_coliding_tile_pair(tile[10], tile[11])) {
+    		obj->collision_state |= COLLISION_RIGHT;
+    	}
+    	if (dy < 0 && is_coliding_tile_pair(tile[1], tile[2])) {
+    		obj->collision_state |= COLLISION_UP;
+    	}
+    	if (dy > 0 && is_coliding_tile_pair(tile[7], tile[8])) {
+    		obj->collision_state |= COLLISION_DOWN;
+    	}
+    }
 }
 
 /*
  * Update collision state of a display object 16x16
  */
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
-	int8_t dx, int8_t dy)
+	int8_t dx, int8_t dy, uint8_t margin)
 {
        uint8_t size = obj->spr->pattern_set->size;
 
        if (size == SPR_SIZE_16x16) {
-	       phys_detect_tile_collisions_16x16(obj,map, dx, dy);
+	       phys_detect_tile_collisions_16x16(obj,map, dx, dy, margin);
        } else if (size = SPR_SIZE_16x32) {
-	       phys_detect_tile_collisions_16x32(obj, map, dx, dy);
+	       phys_detect_tile_collisions_16x32(obj, map, dx, dy, margin);
        }
 }
