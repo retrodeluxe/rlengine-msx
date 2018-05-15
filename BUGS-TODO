@@ -1,3 +1,0 @@
-*** engine/vdp.c ***
-- vdp_fastcopy_nametable only works properly in msx2, something is wrong with
-the wait for vsync in msx1
