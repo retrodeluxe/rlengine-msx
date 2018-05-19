@@ -19,7 +19,7 @@
 - sys: add timers with callbacks
 
 ## Tests / Samples
-- add dyntile test
+- (DONE) add dyntile test
 - game_test:
    - fix build
    - use to ascii8 ROM type
