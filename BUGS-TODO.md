@@ -9,7 +9,7 @@
 - music: trilo-tracker psg replayer
 - sfx: trilo-tracker sfx replayer
 - sys: fix time sync problems (clock runs slow)
-- vdp: add helpers to avoid using constants to access name tables, etc.
+- ~~vdp: add helpers to avoid using constants to access name tables, etc.~~
 - spr: fix spr_animate to support 8 directions and up/down animation
 - event: add module for event driven user input
 - mem: some memory management
@@ -19,7 +19,7 @@
 - sys: add timers with callbacks
 
 ## Tests / Samples
-- (DONE) add dyntile test
+- ~~add dyntile test~~
 - game_test:
    - fix build
    - use to ascii8 ROM type
@@ -31,8 +31,8 @@
 ## Tools
 
 ##### Map2Header - Tiled Map compiler
-- (DONE) If dictionary is bigger than 256, raise overflow error
-- (DONE) Add compressed size for the tile Layers
+- ~~If dictionary is bigger than 256, raise overflow error~~
+- ~~Add compressed size for the tile Layers~~
 - Support multiple tile layers?
 - add variables for segment size (w,h)
 - add number of objects per room variables
@@ -40,10 +40,10 @@
 - add support for non segmented maps, and RLE compression
 
 ##### Tmu2Header - TriloTracker compiler
-- (DONE) Load TMU song
+- ~~Load TMU song~~
 - Process
 - Generate header
 
 ##### Tga2Header - Graphic Assets compiler
 - Add PNG support
-- Document better process to export TGA from GIMP
+- ~~Document better process to export TGA from GIMP~~
