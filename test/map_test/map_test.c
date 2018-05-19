@@ -50,7 +50,7 @@ void main()
 	i = 0;
 	for (y=0; y < retro_logo_tile_h; y++)
 		for (x=0; x < retro_logo_tile_w; x++)
-			vdp_poke(vdp_base_names_grp1 + 11 + 9 * 32 + x + y * 32, i++);
+			vdp_poke_names(11 + 9 * 32 + x + y * 32, i++);
 
 	do {
 	} while (sys_get_key(8) & 1);

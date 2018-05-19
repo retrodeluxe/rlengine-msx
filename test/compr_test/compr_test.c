@@ -41,7 +41,7 @@ void main()
 	tile_set_to_vram(&tileset_palette, 0);
 
 	for (i=0; i< 255; i++)
-		vdp_poke(vdp_base_names_grp1 + i, i);
+		vdp_poke_names(i, i);
 
 	do {
 	} while (sys_get_key(8) & 1);
@@ -50,7 +50,7 @@ void main()
 	tile_set_to_vram(&tileset_intro, 0);
 
 	for (i=0; i< 255; i++)
-		vdp_poke(vdp_base_names_grp1 + i, i);
+		vdp_poke_names(i, i);
 
 	do {
 	} while (sys_get_key(8) & 1);
@@ -65,7 +65,7 @@ void main()
 	i = 0;
 	for (y = 0; y < retro_logo_tile_h; y++)
 		for (x = 0; x < retro_logo_tile_w; x++)
-			vdp_poke(vdp_base_names_grp1 + 11 + 9 * 32 + x + y * 32, i++);
+			vdp_poke_names(11 + 9 * 32 + x + y * 32, i++);
 
 	do {
 	} while (sys_get_key(8) & 1);
@@ -77,7 +77,7 @@ void main()
 	tile_set_to_vram(&tileset_kv, 1 /* offset of 1 */);
 
 	for (i = 0; i < 768; i++)
-		vdp_poke(vdp_base_names_grp1 + i, *(map_tilemap + i));
+		vdp_poke_names(i, *(map_tilemap + i));
 
 	do {
 	} while (1);

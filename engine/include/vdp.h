@@ -58,6 +58,8 @@ struct vdp_hw_sprite {
 	uint8_t color;
 };
 
+#define vdp_poke_names(OFFSET, PATTERN) 	vdp_poke(vdp_base_names_grp1 + (OFFSET), PATTERN)
+
 extern void vdp_screen_disable(void);
 extern void vdp_screen_enable(void);
 extern void vdp_set_mode(char mode);
