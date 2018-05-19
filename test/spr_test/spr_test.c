@@ -16,10 +16,15 @@
 /**
  * Global data is placed in 0xC000 (RAM page 2) in 32K roms by default
  */
-struct spr_pattern_set bee_patt;
-struct spr_pattern_set rat_patt;
-struct spr_pattern_set egg_patt;
-struct spr_pattern_set monk_patt;
+
+
+ enum spr_patterns_t {
+ 	PATRN_BEE,
+ 	PATRN_RAT,
+ 	PATRN_EGG,
+ 	PATRN_MONK,
+ };
+
 struct spr_sprite_def eggspr;
 struct spr_sprite_def monk;
 
@@ -60,17 +65,17 @@ void main()
 	/**
 	 * Single layer sprites with animation in two directions
 	 */
-	SPR_DEFINE_PATTERN_SET(bee_patt, SPR_SIZE_16x16, 1, 2, 2, bee1);
-	SPR_DEFINE_PATTERN_SET(rat_patt, SPR_SIZE_16x16, 1, 2, 2, rat);
-	SPR_DEFINE_PATTERN_SET(egg_patt, SPR_SIZE_16x16, 2, 3, 4, eggerland);
+	SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2, 2, bee1);
+	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, 2, rat);
+	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3, 4, eggerland);
 
-	spr_valloc_pattern_set(&bee_patt);
-	spr_valloc_pattern_set(&rat_patt);
-	spr_valloc_pattern_set(&egg_patt);
+	spr_valloc_pattern_set(PATRN_BEE);
+	spr_valloc_pattern_set(PATRN_RAT);
+	spr_valloc_pattern_set(PATRN_EGG);
 
 	for (i = 0; i< 10; i++) {
-		SPR_DEFINE_SPRITE(bee[i], &bee_patt, 10, bee1_color);
-		SPR_DEFINE_SPRITE(rats[i], &rat_patt, 10, rat_color);
+		spr_init_sprite(&bee[i], PATRN_BEE);
+		spr_init_sprite(&rats[i], PATRN_RAT);
 		// set in random initial positions
 		spr_set_pos(&bee[i], i * 20, i * 20);
 		spr_set_pos(&rats[i], 16 + i * 20, 16 + i * 20);
@@ -78,7 +83,7 @@ void main()
 		spr_show(&rats[i]);
 	}
 
-	SPR_DEFINE_SPRITE(eggspr, &egg_patt, 10, eggerland_color);
+	spr_init_sprite(&eggspr, PATRN_EGG);
 	spr_set_pos(&eggspr, 100, 100);
 	spr_show(&eggspr);
 
@@ -97,10 +102,10 @@ void main()
 	/**
 	 * Composite sprites
 	 */
-	SPR_DEFINE_PATTERN_SET(monk_patt, SPR_SIZE_16x32, 1, 2, 4, monk1);
-	spr_valloc_pattern_set(&monk_patt);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, 4, monk1);
+	spr_valloc_pattern_set(PATRN_MONK);
 
-	SPR_DEFINE_SPRITE(monk, &monk_patt, 10, monk1_color);
+	spr_init_sprite(&monk, PATRN_MONK);
 	spr_set_pos(&monk, 100, 100);
 	spr_show(&monk);
 

@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _MSX_H_SPRITE
 #define _MSX_H_SPRITE
 
@@ -36,6 +36,9 @@
 #define SPR_SHOW_16x16 1
 #define SPR_ZOOM_OFF 0
 #define SPR_ZOOM_ON 1
+
+/* max number of patterns to be held in memory */
+#define SPR_PATRN_MAX 48
 
 /**
  * spr_pattern_set:
@@ -72,29 +75,23 @@ struct spr_delta_pos {
 	char dy;
 };
 
+extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
+
 /**
  * helper macros for sprite definition from generated data
  */
-#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, DIRS, STEPS, PATTERNS) 	(X).size = (SIZE);\
-									(X).n_planes = (PLANES);\
-									(X).n_anim_steps = (STEPS);\
-									(X).n_dirs = (DIRS); \
-									(X).allocated = false; \
-									(X).patterns = (PATTERNS); \
-									(X).colors = PATTERNS ## _color
-
-#define SPR_DEFINE_SPRITE(X, PATTERN_SET, ANIM_TRH, COLORS)		(X).pattern_set = (PATTERN_SET);\
-									(X).cur_anim_step = 0; \
-									(X).cur_dir = 0;\
-									(X).anim_ctr_treshold = (ANIM_TRH);\
-									(X).anim_ctr = 0;\
-									spr_set_plane_colors(&(X),(COLORS))
-
+#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, DIRS, STEPS, PATTERNS) 	spr_pattern[(X)].size = (SIZE);\
+									spr_pattern[(X)].n_planes = (PLANES);\
+									spr_pattern[(X)].n_anim_steps = (STEPS);\
+									spr_pattern[(X)].n_dirs = (DIRS); \
+									spr_pattern[(X)].allocated = false; \
+									spr_pattern[(X)].patterns = (PATTERNS); \
+									spr_pattern[(X)].colors = PATTERNS ## _color
 
 extern void spr_init();
-extern void spr_init_sprite(struct spr_sprite_def *sp, struct spr_pattern_set *ps);
-extern uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps);
-extern void spr_vfree_pattern_set(struct spr_pattern_set *ps);
+extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
+extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
+extern void spr_vfree_pattern_set(uint8_t patrn_idx);
 extern void spr_set_pos(struct spr_sprite_def *sp, uint8_t x, uint8_t y);
 extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors);
 extern uint8_t spr_show(struct spr_sprite_def *sp);

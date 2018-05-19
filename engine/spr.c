@@ -29,6 +29,9 @@ uint8_t spr_attr_valloc[vdp_hw_max_sprites];
 // sprite pattern allocation table
 uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 
+// spr pattern sets
+struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
+
 /**
  * spr_init: initialize vdp sprites and allocation tables
  */
@@ -39,26 +42,29 @@ void spr_init(void)
 	vdp_memset(vdp_base_spatr_grp1, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites, 212);
 	sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
+	sys_memset(spr_pattern, 0,  sizeof(struct spr_pattern_set) * SPR_PATRN_MAX);
 }
 
-void spr_init_sprite(struct spr_sprite_def *sp, struct spr_pattern_set *ps)
+void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)
 {
-	sp->pattern_set = ps;
+	sp->pattern_set = &spr_pattern[patrn_idx];
 	sp->cur_anim_step = 0;
 	sp->cur_dir = 0;
 	sp->anim_ctr_treshold = 5;
 	sp->anim_ctr = 0;
-	spr_set_plane_colors(sp, ps->colors);
+	spr_set_plane_colors(sp, spr_pattern[patrn_idx].colors);
 }
 
 /**
  * spr_valloc_pattern_set:
  *		finds a gap to allocate a pattern set
  */
-uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps)
+uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 {
 	uint16_t npat;
 	uint8_t i, idx, f = 0;
+
+	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
 
 	if (ps->allocated)
 		return true;
@@ -73,16 +79,18 @@ uint8_t spr_valloc_pattern_set(struct spr_pattern_set *ps)
 			vdp_copy_to_vram(ps->patterns, vdp_base_sppat_grp1 + idx * 8, npat * 8);
 			ps->pidx = idx;
 			ps->allocated = true;
-			log_e("spr allocated to %d\n", idx);
 			return true;
 		}
 	}
 	return false;
 }
 
-void spr_vfree_pattern_set(struct spr_pattern_set *ps)
+void spr_vfree_pattern_set(uint8_t patrn_idx)
 {
 	uint8_t npat;
+
+	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
+
 	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
 	ps->allocated = false;
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);

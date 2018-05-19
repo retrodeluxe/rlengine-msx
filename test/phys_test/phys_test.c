@@ -41,12 +41,12 @@ enum anim_t {
 	ANUM_UP_DOWN,
 	ANIM_DROP,
 	ANIM_JOYSTICK,
-    ANIM_JUMP,
-    ANIM_THROW_ARROW,
-    ANIM_SPIT_BULLETS
+	ANIM_JUMP,
+	ANIM_THROW_ARROW,
+	ANIM_SPIT_BULLETS
 };
 
-struct spr_pattern_set spr_pattern[PATRN_MAX];
+// struct spr_pattern_set spr_pattern[PATRN_MAX];
 
 struct spr_sprite_def enemy_sprites[32];
 struct spr_sprite_def arrow_sprite;
@@ -64,9 +64,6 @@ struct list_head *elem, *elem2, *elem3;
 struct animator *anim;
 struct displ_object *dpo;
 
-struct work_struct animation_work;
-
-uint8_t map_buf[768];
 uint8_t stick;
 
 void anim_up_down(struct displ_object *obj);
@@ -85,28 +82,28 @@ void init_monk();
 
 void init_patterns()
 {
-    SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SMILEY], SPR_SIZE_16x16, 1, 2, 2, smiley);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BULLET], SPR_SIZE_16x16, 1, 2, 2, bullet);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SKELETON], SPR_SIZE_16x32, 1, 2, 2, archer_skeleton);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_ARROW], SPR_SIZE_16x16, 1, 2, 1, arrow);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_PLANT], SPR_SIZE_16x16, 1, 1, 2, plant);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WATERDROP], SPR_SIZE_16x16, 1, 1, 3, waterdrop);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SPIDER], SPR_SIZE_16x16, 1, 1, 2, spider);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_MONK], SPR_SIZE_16x32, 1, 2, 3, monk1);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_MONK_DEATH], SPR_SIZE_16x32, 1, 1, 2, monk_death);
+    SPR_DEFINE_PATTERN_SET(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, 2, smiley);
+	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, 2, bullet);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, 2, archer_skeleton);
+	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, 1, arrow);
+	SPR_DEFINE_PATTERN_SET(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, 2, plant);
+	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, 3, waterdrop);
+	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, 2, spider);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, 3, monk1);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, 2, monk_death);
 }
 
 void init_animators()
 {
-    animators[ANIM_LEFT_RIGHT].run = anim_left_right;
-    animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;
-    animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
-    animators[ANUM_UP_DOWN].run = anim_up_down;
-    animators[ANIM_DROP].run = anim_drop;
-    animators[ANIM_JOYSTICK].run = anim_joystick;
-    animators[ANIM_JUMP].run = anim_jump;
-    animators[ANIM_THROW_ARROW].run = anim_throw_arrow;
-    animators[ANIM_SPIT_BULLETS].run = anim_spit_bullets;
+	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
+	animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;
+	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
+	animators[ANUM_UP_DOWN].run = anim_up_down;
+	animators[ANIM_DROP].run = anim_drop;
+	animators[ANIM_JOYSTICK].run = anim_joystick;
+	animators[ANIM_JUMP].run = anim_jump;
+	animators[ANIM_THROW_ARROW].run = anim_throw_arrow;
+	animators[ANIM_SPIT_BULLETS].run = anim_spit_bullets;
 }
 
 static void add_animator(struct displ_object *dpo, enum anim_t animidx)
@@ -114,17 +111,22 @@ static void add_animator(struct displ_object *dpo, enum anim_t animidx)
 	list_add(&animators[animidx].list, &dpo->animator_list);
 }
 
-static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
+/**
+ * displ_add_sprite
+ *   - requires display_list, spr_pattern, displ_sprites?
+ */
+static void add_sprite(struct displ_object *dpo, uint8_t objidx,
+	enum spr_patterns_t pattidx, uint8_t x, uint8_t y)
 {
-	spr_valloc_pattern_set(&spr_pattern[pattidx]);
-	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
-	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
+	spr_valloc_pattern_set(pattidx);
+	spr_init_sprite(&enemy_sprites[objidx], pattidx);
+	spr_set_pos(&enemy_sprites[objidx], x, y);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
-	dpo->xpos = map_object->x;
-	dpo->ypos = map_object->y;
+	dpo->xpos = x;
+	dpo->ypos = y;
 	dpo->state = 0;
-    dpo->collision_state = 0;
+	dpo->collision_state = 0;
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
 	INIT_LIST_HEAD(&dpo->animator_list);
@@ -132,7 +134,8 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 
 void main()
 {
-	uint8_t i,d;
+	uint8_t i,d, x, y;
+	enum map_object_property_type spr_type;
 
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
@@ -154,29 +157,37 @@ void main()
 	INIT_LIST_HEAD(&display_list);
 	for (dpo = display_object, i = 0; i < map_objects_size; i++, dpo++) {
         map_object = (struct map_object_item *) map_object_objects[i];
-		if (map_object->type == SPRITE) {
-			if (map_object->object.sprite.type == TYPE_SMILEY) {
-                add_sprite(dpo, i, PATRN_SMILEY);
-                add_animator(dpo, ANIM_LEFT_RIGHT);
-			} else if (map_object->object.sprite.type == TYPE_ARCHER_SKELETON) {
-                add_sprite(dpo, i, PATRN_SKELETON);
-                add_animator(dpo, ANIM_THROW_ARROW);
-				enemy_sprites[i].cur_dir = 1;
-                enemy_sprites[i].cur_anim_step = 1;
-			} else if (map_object->object.sprite.type == TYPE_PLANT) {
-                add_sprite(dpo, i, PATRN_PLANT);
-                add_animator(dpo, ANIM_SPIT_BULLETS);
-			} else if (map_object->object.sprite.type == TYPE_WATERDROP) {
-                add_sprite(dpo, i, PATRN_WATERDROP);
-                add_animator(dpo, ANIM_DROP);
-			} else if (map_object->object.sprite.type == TYPE_SPIDER) {
-                add_sprite(dpo, i, PATRN_SPIDER);
-                add_animator(dpo, ANUM_UP_DOWN);
-			} else {
-				continue;
-			}
-		}
-	}
+        if (map_object->type == SPRITE) {
+            spr_type = map_object->object.sprite.type;
+            x = map_object->x; y = map_object->y;
+            switch(spr_type) {
+                case TYPE_SMILEY:
+                    add_sprite(dpo, i, PATRN_SMILEY, x, y);
+                    add_animator(dpo, ANIM_LEFT_RIGHT);
+                    break;
+                case TYPE_ARCHER_SKELETON:
+                    add_sprite(dpo, i, PATRN_SKELETON, x, y);
+                    add_animator(dpo, ANIM_THROW_ARROW);
+                    enemy_sprites[i].cur_dir = 1;
+                    enemy_sprites[i].cur_anim_step = 1;
+                    break;
+                case TYPE_PLANT:
+                    add_sprite(dpo, i, PATRN_PLANT, x, y);
+                    add_animator(dpo, ANIM_SPIT_BULLETS);
+                    break;
+                case TYPE_WATERDROP:
+                    add_sprite(dpo, i, PATRN_WATERDROP, x, y);
+                    add_animator(dpo, ANIM_DROP);
+                    break;
+                case TYPE_SPIDER:
+                    add_sprite(dpo, i, PATRN_SPIDER, x, y);
+                    add_animator(dpo, ANUM_UP_DOWN);
+                    break;
+                default:
+                    continue;
+            }
+        }
+    }
 
     /* Add monk */
 	init_monk();
@@ -187,11 +198,11 @@ void main()
 	list_add(&dpo_monk.list, &display_list);
 
     /* Define Projectiles */
-    spr_valloc_pattern_set(&spr_pattern[PATRN_ARROW]);
-    spr_valloc_pattern_set(&spr_pattern[PATRN_BULLET]);
-    spr_init_sprite(&arrow_sprite, &spr_pattern[PATRN_ARROW]);
-    spr_init_sprite(&bullet_sprite[0], &spr_pattern[PATRN_BULLET]);
-    spr_init_sprite(&bullet_sprite[1], &spr_pattern[PATRN_BULLET]);
+    spr_valloc_pattern_set(PATRN_ARROW);
+    spr_valloc_pattern_set(PATRN_BULLET);
+    spr_init_sprite(&arrow_sprite, PATRN_ARROW);
+    spr_init_sprite(&bullet_sprite[0], PATRN_BULLET);
+    spr_init_sprite(&bullet_sprite[1], PATRN_BULLET);
 
     /* Show them all */
 	list_for_each(elem, &display_list) {
@@ -216,27 +227,28 @@ void main()
 	} while (sys_get_key(8) & 1);
 }
 
-void animate_all() {
-	list_for_each(elem, &display_list) {
-		dpo = list_entry(elem, struct displ_object, list);
-		list_for_each(elem2, &dpo->animator_list) {
-			anim = list_entry(elem2, struct animator, list);
-			anim->run(dpo);
-		}
-	}
+void animate_all()
+{
+    list_for_each(elem, &display_list) {
+        dpo = list_entry(elem, struct displ_object, list);
+        list_for_each(elem2, &dpo->animator_list) {
+            anim = list_entry(elem2, struct animator, list);
+            anim->run(dpo);
+        }
+    }
 }
 
 void init_monk()
 {
-    spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
-	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
-	dpo_monk.xpos = 100;
-	dpo_monk.ypos = 192 - 48;
-	dpo_monk.type = DISP_OBJECT_SPRITE;
-	dpo_monk.state = 0;
-	dpo_monk.spr = &monk_sprite;
+    spr_valloc_pattern_set(PATRN_MONK);
+    spr_init_sprite(&monk_sprite, PATRN_MONK);
+    dpo_monk.xpos = 100;
+    dpo_monk.ypos = 192 - 48;
+    dpo_monk.type = DISP_OBJECT_SPRITE;
+    dpo_monk.state = 0;
+    dpo_monk.spr = &monk_sprite;
     dpo_monk.collision_state = 0;
-	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
+    spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
 }
 
 void monk_death_anim()
@@ -251,7 +263,7 @@ void monk_death_anim()
 void spr_colision_handler() {
 	list_for_each(elem3, &display_list) {
 		dpo = list_entry(elem3, struct displ_object, list);
-        // XXX: optimize with bitwise operations
+		// XXX: optimize with bitwise operations
 		if (((dpo->xpos > dpo_monk.xpos) && (dpo->xpos < dpo_monk.xpos + 16)) ||
 			((dpo->xpos + 16 > dpo_monk.xpos) && (dpo->xpos + 16 < dpo_monk.xpos + 16))) {
 			// TODO: here check for y coordinates for beter accuracy
