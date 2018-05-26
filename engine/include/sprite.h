@@ -40,6 +40,8 @@
 /* max number of patterns to be held in memory */
 #define SPR_PATRN_MAX 48
 
+/* max number of states per sprites */
+#define SPR_STATES_MAX 8
 /**
  * spr_pattern_set:
  *		a set of sprite patterns plus data used for animation
@@ -49,8 +51,9 @@ struct spr_pattern_set {
 	bool allocated;
 	uint8_t size;
 	uint8_t n_planes;
-	uint8_t n_dirs;
-	uint8_t n_anim_steps;
+	uint8_t n_states;
+	uint8_t state_steps[SPR_STATES_MAX];
+	uint8_t n_steps;
 	uint8_t *patterns;
 	uint8_t *colors;
 };
@@ -63,8 +66,9 @@ struct spr_sprite_def {
 	uint8_t aidx;
 	struct vdp_hw_sprite planes[6];
 	struct spr_pattern_set *pattern_set;
-	uint8_t cur_dir;
+	uint8_t cur_state;
 	uint8_t cur_anim_step;
+	uint8_t state_anim_ctr[SPR_STATES_MAX];
 	uint8_t anim_ctr;
 	uint8_t anim_ctr_treshold;
 };
@@ -80,15 +84,16 @@ extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 /**
  * helper macros for sprite definition from generated data
  */
-#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, DIRS, STEPS, PATTERNS) 	spr_pattern[(X)].size = (SIZE);\
+#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, STATES, STEPS, PATTERNS) 	spr_pattern[(X)].size = (SIZE);\
 									spr_pattern[(X)].n_planes = (PLANES);\
-									spr_pattern[(X)].n_anim_steps = (STEPS);\
-									spr_pattern[(X)].n_dirs = (DIRS); \
+									sys_memcpy(spr_pattern[(X)].state_steps, (STEPS), (STATES));\
+									spr_pattern[(X)].n_states = (STATES); \
 									spr_pattern[(X)].allocated = false; \
 									spr_pattern[(X)].patterns = (PATTERNS); \
 									spr_pattern[(X)].colors = PATTERNS ## _color
 
 extern void spr_init();
+//extern voud spr_define_pattern_set(uint8_t size, uint8_t planes, uint8_t state, uint8_t *steps, )
 extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
 extern void spr_vfree_pattern_set(uint8_t patrn_idx);

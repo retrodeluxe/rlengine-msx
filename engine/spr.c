@@ -49,7 +49,7 @@ void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)
 {
 	sp->pattern_set = &spr_pattern[patrn_idx];
 	sp->cur_anim_step = 0;
-	sp->cur_dir = 0;
+	sp->cur_state = 0;
 	sp->anim_ctr_treshold = 5;
 	sp->anim_ctr = 0;
 	spr_set_plane_colors(sp, spr_pattern[patrn_idx].colors);
@@ -63,13 +63,23 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 {
 	uint16_t npat;
 	uint8_t i, idx, f = 0;
+	uint8_t n_steps = 0;
 
 	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
 
 	if (ps->allocated)
 		return true;
 
-	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
+	for (i= 0; i < ps->n_states; i++) {
+		n_steps += ps->state_steps[i];
+	}
+	ps->n_steps = n_steps;
+
+	log_e("TOTAL steps %d\n", n_steps);
+
+	npat = ps->n_planes * ps->n_steps * ps->size;
+
+	log_e("TOTAL 8x8 patterns %d\n", npat);
 
 	for (i = 0; i < vdp_hw_max_patterns - 1; i++) {
 		f = f * spr_patt_valloc[i] + spr_patt_valloc[i];
@@ -91,26 +101,29 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 
 	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
 
-	npat = ps->n_planes * ps->n_dirs * ps->n_anim_steps * ps->size;
+	npat = ps->n_planes * ps->n_steps * ps->size;
 	ps->allocated = false;
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 
 static void spr_calc_patterns(struct spr_sprite_def *sp)
 {
-	uint8_t i, base, base2, frame;
+	uint8_t i, base = 0, base2, frame;
 
 	struct spr_pattern_set *ps = sp->pattern_set;
+	for (i = 0; i < sp->cur_state; i++) {
+		base += ps->state_steps[i];
+	}
 	switch (ps->size) {
 		case SPR_SIZE_16x16:
-			base = sp->cur_dir * ps->n_anim_steps * (ps->size * ps->n_planes);
+			base *= (ps->size * ps->n_planes);
 			frame = sp->cur_anim_step * (ps->size * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++)
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * ps->size;
 			break;
 		case SPR_SIZE_16x32:
-			base = sp->cur_dir * ps->n_anim_steps * (SPR_SIZE_16x16 * ps->n_planes);
-			base2 = base + ps->n_planes * ps->n_dirs * ps->n_anim_steps * SPR_SIZE_16x16;
+			base *= (SPR_SIZE_16x16 * ps->n_planes);
+			base2 = base + ps->n_planes * ps->n_states * ps->n_steps * SPR_SIZE_16x16;
 			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
@@ -193,32 +206,32 @@ void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char
 {
 	uint8_t old_dir, x, y;
 
-	old_dir = sp->cur_dir;
+	old_dir = sp->cur_state;
 
 	// FIMXE : two directions  assumes x
 	//         one directon doesn't swictch which is fine
-	if (sp->pattern_set->n_dirs < 3) {
+	if (sp->pattern_set->n_states < 3) {
 		// handle 2 directions
 		if (dx > 0)
-			sp->cur_dir = 1;
+			sp->cur_state = 1;
 		if (dx < 0)
-			sp->cur_dir = 0;
-	} else if (sp->pattern_set->n_dirs < 5) {
+			sp->cur_state = 0;
+	} else if (sp->pattern_set->n_states < 5) {
 		// handle 4 directions
 		if (dx > 0)
-			sp->cur_dir = 3;
+			sp->cur_state = 3;
 		if (dx < 0)
-			sp->cur_dir = 1;
+			sp->cur_state = 1;
 		if (dy > 0)
-			sp->cur_dir = 0;
+			sp->cur_state = 0;
 		if (dy < 0)
-			sp->cur_dir = 2;
+			sp->cur_state = 2;
 	} else {
 		// handle 8 directions
-		//sp->cur_dir = dir - 1;
+		//sp->cur_state = dir - 1;
 	}
 
-	if (old_dir == sp->cur_dir) {
+	if (old_dir == sp->cur_state) {
 
 		if (!collision)
 			sp->anim_ctr++;
@@ -234,7 +247,7 @@ void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char
 		sp->cur_anim_step = 0;
 	}
 
-	if (sp->cur_anim_step > sp->pattern_set->n_anim_steps - 1)
+	if (sp->cur_anim_step > sp->pattern_set->n_steps - 1)
 		sp->cur_anim_step = 0;
 
 	x = (sp->planes[0]).x + dx;
