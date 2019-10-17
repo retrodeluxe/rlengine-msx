@@ -38,6 +38,7 @@
 - add number of objects per room variables
 - document the interface
 - add support for non segmented maps, and RLE compression
+- port to python3
 
 ##### Tmu2Header - TriloTracker compiler
 - ~~Load TMU song~~
