@@ -196,12 +196,12 @@ void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length)
         ld e,8(ix) ;length
         ld d,9(ix)
         ld c,#0x98
-        ld b,e
-        dec de
-        inc d
 vdp__copy_to_vram_loop:
-        outi
-        jp nz,vdp__copy_to_vram_loop
+	outi
+	dec de
+	ld  a,d
+	or e
+        jr nz,vdp__copy_to_vram_loop
         __endasm;
 }
 

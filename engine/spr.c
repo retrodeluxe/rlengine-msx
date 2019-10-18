@@ -125,7 +125,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp)
 			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
-				(sp->planes[i+3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
+				(sp->planes[i + 3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
 			}
 			break;
 	}
@@ -137,8 +137,9 @@ void spr_update(struct spr_sprite_def *sp)
 	spr_calc_patterns(sp);
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
 		vdp_set_hw_sprite(&sp->planes[i], sp->aidx + i);
-		if (sp->pattern_set->size == SPR_SIZE_16x32)
+		if (sp->pattern_set->size == SPR_SIZE_16x32) {
 			vdp_set_hw_sprite(&sp->planes[i+3], sp->aidx + i + sp->pattern_set->n_planes);
+		}
 	}
 
 }

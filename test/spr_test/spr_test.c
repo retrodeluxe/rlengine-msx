@@ -43,10 +43,44 @@ void main()
 {
 	unsigned int count = 0;
 	uint8_t i;
+	uint8_t two_states[] = {2,2};
+	uint8_t four_states[] = {4,4,4};
+	uint8_t monk_states[] = {3,3};
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
+
+	spr_init();
+	/**
+	 * Composite sprites
+	 */
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, monk_states, monk1);
+	spr_valloc_pattern_set(PATRN_MONK);
+
+	// for (int i = 0; i< 32; i++) {
+	// 	bee_hw.y = 0 + i * 8;
+	// 	bee_hw.x = 100;
+	// 	bee_hw.pattern = i * 4;
+	// 	bee_hw.color = 10;
+	// 	vdp_set_hw_sprite(&bee_hw, i);
+	// }
+	//
+	// do {
+	// } while (sys_get_key(8) & 1);
+
+	spr_init_sprite(&monk, PATRN_MONK);
+	spr_set_pos(&monk, 100, 100);
+	spr_show(&monk);
+
+	do {
+		do {
+			// delay a few ms
+		} while (count++ < 0x01ff);
+		count=0;
+		spr_animate(&monk,-1,0,0);
+	} while (sys_get_key(8) & 1);
+
 	spr_init();
 
 	/**
@@ -65,9 +99,10 @@ void main()
 	/**
 	 * Single layer sprites with animation in two directions
 	 */
-	SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2, 2, bee1);
-	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, 2, rat);
-	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3, 4, eggerland);
+
+	SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2, two_states, bee1);
+	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_states, rat);
+	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3, four_states, eggerland);
 
 	spr_valloc_pattern_set(PATRN_BEE);
 	spr_valloc_pattern_set(PATRN_RAT);
@@ -98,22 +133,7 @@ void main()
 		}
 	} while (sys_get_key(8) & 1);
 
-	spr_init();
-	/**
-	 * Composite sprites
-	 */
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, 4, monk1);
-	spr_valloc_pattern_set(PATRN_MONK);
-
-	spr_init_sprite(&monk, PATRN_MONK);
-	spr_set_pos(&monk, 100, 100);
-	spr_show(&monk);
 
 	do {
-		do {
-			// delay a few ms
-		} while (count++ < 0x01ff);
-		count=0;
-		spr_animate(&monk,-1,0,0);
 	} while (sys_get_key(8) & 1);
 }

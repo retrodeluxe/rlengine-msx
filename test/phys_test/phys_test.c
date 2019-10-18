@@ -82,15 +82,24 @@ void init_monk();
 
 void init_patterns()
 {
-    SPR_DEFINE_PATTERN_SET(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, 2, smiley);
-	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, 2, bullet);
-	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, 2, archer_skeleton);
-	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, 1, arrow);
-	SPR_DEFINE_PATTERN_SET(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, 2, plant);
-	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, 3, waterdrop);
-	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, 2, spider);
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, 3, monk1);
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, 2, monk_death);
+	uint8_t two_step_state[] = {2,2};
+	uint8_t single_step_state[] = {1,1};
+	uint8_t three_step_state[] = {3,3};
+	uint8_t bullet_state[] = {1,1};
+	uint8_t plant_state[] = {2};
+	uint8_t waterdrop_state[] = {3};
+	uint8_t spider_state[]={2};
+	uint8_t archer_state[]={2,2};
+
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1);
+	SPR_DEFINE_PATTERN_SET(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, two_step_state, smiley);
+	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, bullet_state, bullet);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, archer_state, archer_skeleton);
+	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow);
+	SPR_DEFINE_PATTERN_SET(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, plant_state, plant);
+	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
+	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, spider_state, spider);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, two_step_state, monk_death);
 }
 
 void init_animators()
@@ -142,19 +151,22 @@ void main()
 	vdp_clear_grp1(0);
 	spr_init();
 
-    init_map_object_layers();
+	init_map_object_layers();
 
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);
 
 	/* set tile map on screen */
-	vdp_copy_to_vram(map_tilemap, vdp_base_names_grp1, 768);
+	vdp_fastcopy_nametable(map_tilemap);
 
-    init_patterns();
-    init_animators();
+	init_patterns();
+	init_animators();
 
 	/* build scene */
 	INIT_LIST_HEAD(&display_list);
+	init_monk();
+	INIT_LIST_HEAD(&dpo_monk.animator_list);
+
 	for (dpo = display_object, i = 0; i < map_objects_size; i++, dpo++) {
         map_object = (struct map_object_item *) map_object_objects[i];
         if (map_object->type == SPRITE) {
@@ -168,7 +180,7 @@ void main()
                 case TYPE_ARCHER_SKELETON:
                     add_sprite(dpo, i, PATRN_SKELETON, x, y);
                     add_animator(dpo, ANIM_THROW_ARROW);
-                    enemy_sprites[i].cur_dir = 1;
+                    enemy_sprites[i].cur_state = 1;
                     enemy_sprites[i].cur_anim_step = 1;
                     break;
                 case TYPE_PLANT:
@@ -190,21 +202,20 @@ void main()
     }
 
     /* Add monk */
-	init_monk();
-	INIT_LIST_HEAD(&dpo_monk.animator_list);
+
 	list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list); // joystick
 	//list_add(&animators[1].list, &dpo_monk.animator_list); // gravity
 	INIT_LIST_HEAD(&dpo_monk.list);
 	list_add(&dpo_monk.list, &display_list);
 
-    /* Define Projectiles */
-    spr_valloc_pattern_set(PATRN_ARROW);
-    spr_valloc_pattern_set(PATRN_BULLET);
-    spr_init_sprite(&arrow_sprite, PATRN_ARROW);
-    spr_init_sprite(&bullet_sprite[0], PATRN_BULLET);
-    spr_init_sprite(&bullet_sprite[1], PATRN_BULLET);
+	/* Define Projectiles */
+	spr_valloc_pattern_set(PATRN_ARROW);
+	spr_valloc_pattern_set(PATRN_BULLET);
+	spr_init_sprite(&arrow_sprite, PATRN_ARROW);
+	spr_init_sprite(&bullet_sprite[0], PATRN_BULLET);
+	spr_init_sprite(&bullet_sprite[1], PATRN_BULLET);
 
-    /* Show them all */
+	/* Show them all */
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
 		if (dpo->type == DISP_OBJECT_SPRITE) {
@@ -216,8 +227,8 @@ void main()
 	phys_init();
 
 	phys_set_colliding_tile(1);
-    phys_set_colliding_tile(2);
-    phys_set_colliding_tile(3);
+	phys_set_colliding_tile(2);
+	phys_set_colliding_tile(3);
 	//phys_set_sprite_collision_handler(spr_colision_handler);
 
 	/* game loop */
@@ -245,7 +256,7 @@ void init_monk()
     dpo_monk.xpos = 100;
     dpo_monk.ypos = 192 - 48;
     dpo_monk.type = DISP_OBJECT_SPRITE;
-    dpo_monk.state = 0;
+    dpo_monk.state = 1;
     dpo_monk.spr = &monk_sprite;
     dpo_monk.collision_state = 0;
     spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
@@ -280,7 +291,7 @@ void spr_colision_handler() {
  */
 void throw_arrow(uint8_t xpos, uint8_t ypos)
 {
-    arrow_sprite.cur_dir = 1;
+    arrow_sprite.cur_state = 1;
     arrow_sprite.cur_anim_step = 0;
     INIT_LIST_HEAD(&dpo_arrow.animator_list);
     list_add(&animators[2].list, &dpo_arrow.animator_list);
