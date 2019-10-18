@@ -196,12 +196,12 @@ void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length)
         ld e,8(ix) ;length
         ld d,9(ix)
         ld c,#0x98
+        ld b,e
+        dec de
+        inc d
 vdp__copy_to_vram_loop:
         outi
-        dec de
-        ld a,d
-        or e
-        jr nz,vdp__copy_to_vram_loop
+        jp nz,vdp__copy_to_vram_loop
         __endasm;
 }
 
@@ -392,21 +392,23 @@ void vdp_fastcopy_nametable(uint8_t *buffer)
         add  a,#0x40
         ei
         out  (0x99),a
-        ld   b,#96    ; 96*8 = 768 blocks
+        ld   b,#0    ; 256*3 = 768 blocks
         ld   l,4(ix)  ; buffer address
         ld   h,5(ix)
         ld   c,#0x98
 vdp__fastcopy_nametable_loop:
-        ld   d,b
         outi
+        nop
+        nop
+        nop
         outi
+        nop
+        nop
+        nop
         outi
-        outi
-        outi
-        outi
-        outi
-        ld   b,d
-        outi
+        nop
+        nop
+        nop
         jr   nz,vdp__fastcopy_nametable_loop
         __endasm;
 }
