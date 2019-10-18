@@ -121,7 +121,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp)
 			break;
 		case SPR_SIZE_16x32:
 			base *= (SPR_SIZE_16x16 * ps->n_planes);
-			base2 = base + ps->n_planes * ps->n_states * ps->n_steps * SPR_SIZE_16x16;
+			base2 = base + ps->n_planes * ps->n_steps * SPR_SIZE_16x16;
 			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
