@@ -507,21 +507,19 @@ void anim_left_right(struct displ_object *obj)
 
 	switch(obj->state) {
 		case STATE_MOVING_LEFT:
+			dx = -1;
 			if (is_colliding_left(obj)
 				|| !is_colliding_down(obj)) {
 				obj->state = STATE_MOVING_RIGHT;
 				dx = 1;
-			} else {
-				dx = -1;
 			}
 			break;
 		case STATE_MOVING_RIGHT:
+			dx = 1;
 			if (is_colliding_right(obj)
 				|| !is_colliding_down(obj)) {
 				obj->state = STATE_MOVING_LEFT;
 				dx = -1;
-			} else {
-				dx = 1;
 			}
 			break;
 	}
@@ -575,7 +573,7 @@ void anim_drop(struct displ_object *obj) {
 	}
 	spr_update(obj->spr);
 
-	phys_detect_tile_collisions(obj, map_tilemap, 0, 1);
+	phys_detect_tile_collisions(obj, map_tilemap, 0, 4);
 }
 /*
  * Two state vertical translation with direction switch on collision
