@@ -19,7 +19,7 @@
 
 #include "msx.h"
 #include "log.h"
-#include "displ.h"
+#include "dpo.h"
 #include "phys.h"
 #include "sys.h"
 #include "sprite.h"
@@ -98,7 +98,7 @@ void phys_set_colliding_tile_object(struct displ_object *dpo, bool down)
 }
 
 /*
- * if the tile has a handler set, notigy
+ * if the tile has a handler set, notify
  */
 static void phys_tile_collision_notify(uint8_t tile)
 {

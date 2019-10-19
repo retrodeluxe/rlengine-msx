@@ -109,7 +109,7 @@ void main()
 void update_bees1() {
 	uint8_t i;
 	for (i = 0; i< 4; i++)  {
-		spr_animate(&bee[i],-1,0,0);
+		spr_animate(&bee[i],-1,0);
 	}
 	queue_delayed_work(&work1,0,100);
 }
@@ -117,6 +117,6 @@ void update_bees1() {
 void update_bees2() {
 	uint8_t i;
 	for (i = 4; i< 8; i++)  {
-		spr_animate(&bee[i],1,0,0);
+		spr_animate(&bee[i],1,0);
 	}
 }

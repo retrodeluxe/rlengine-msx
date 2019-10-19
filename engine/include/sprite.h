@@ -42,6 +42,15 @@
 
 /* max number of states per sprites */
 #define SPR_STATES_MAX 8
+
+/* predefined states for simple amimation */
+enum spr_state {
+	SPR_STATE_LEFT,
+	SPR_STATE_RIGHT,
+	SPR_STATE_UP,
+	SPR_STATE_DOWN
+};
+
 /**
  * spr_pattern_set:
  *		a set of sprite patterns plus data used for animation
@@ -102,7 +111,6 @@ extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors);
 extern uint8_t spr_show(struct spr_sprite_def *sp);
 extern void spr_update(struct spr_sprite_def *sp);
 extern void spr_hide(struct spr_sprite_def *sp);
-extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy,
-		     char collision);
+extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy);
 
 #endif

@@ -17,7 +17,6 @@
  * Global data is placed in 0xC000 (RAM page 2) in 32K roms by default
  */
 
-
  enum spr_patterns_t {
  	PATRN_BEE,
  	PATRN_RAT,
@@ -78,7 +77,7 @@ void main()
 			// delay a few ms
 		} while (count++ < 0x01ff);
 		count=0;
-		spr_animate(&monk,-1,0,0);
+		spr_animate(&monk,-1,0);
 	} while (sys_get_key(8) & 1);
 
 	spr_init();
@@ -128,8 +127,8 @@ void main()
 		} while (count++ < 0x01ff);
 		count=0;
 		for (i = 0; i< 10; i++) {
-			spr_animate(&bee[i],1,-1,0);
-			spr_animate(&rats[i],-1,1,0);
+			spr_animate(&bee[i],1,-1);
+			spr_animate(&rats[i],-1,1);
 		}
 	} while (sys_get_key(8) & 1);
 

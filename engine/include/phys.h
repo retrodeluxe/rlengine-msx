@@ -20,7 +20,7 @@
 #ifndef _MSX_H_PHYS
 #define _MSX_H_PHYS
 
-#include "displ.h"
+#include "dpo.h"
 
 #define COLLISION_LEFT 	1
 #define COLLISION_RIGHT	2
@@ -35,6 +35,9 @@
 #define is_colliding_right(x)	(((x)->collision_state & COLLISION_RIGHT) != 0)
 #define is_colliding_down(x)	(((x)->collision_state & COLLISION_DOWN) != 0)
 #define is_colliding_up(x)	(((x)->collision_state & COLLISION_UP) != 0)
+#define is_colliding_x(x)	(is_colliding_left((x)) || is_colliding_right((x)))
+#define is_colliding_y(x)	(is_colliding_up((x)) || is_colliding_down((x)))
+#define is_colliding(x)		(((x)->collision_state) != 0)
 
 #define MAX_CROUPS 5
 

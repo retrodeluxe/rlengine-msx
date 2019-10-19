@@ -163,6 +163,7 @@ uint8_t spr_show(struct spr_sprite_def *sp)
 			return true;
 		}
 	}
+	log_e("could not allocate attribute\n");
 	return false;
 }
 
@@ -198,48 +199,53 @@ void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors)
 }
 
 /**
- *
+ * Handle sprite animation for simple cases of 2 and 4 states with collision
  */
-void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char collision)
+void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy)
 {
 	uint8_t old_dir, x, y;
 	struct spr_pattern_set *ps = sp->pattern_set;
 
 	old_dir = sp->cur_state;
 
+	/* update state based on direction of movement */
 	if (sp->pattern_set->n_states < 3) {
-		// handle 2 directions
-		if (dx > 0)
-			sp->cur_state = 1;
-		if (dx < 0)
-			sp->cur_state = 0;
+
+		if (dx > 0) {
+			sp->cur_state = SPR_STATE_RIGHT;
+		} else if (dx < 0) {
+			sp->cur_state = SPR_STATE_LEFT;
+		}
+
 	} else if (sp->pattern_set->n_states < 5) {
-		// handle 4 directions
-		if (dx > 0)
-			sp->cur_state = 3;
-		if (dx < 0)
-			sp->cur_state = 1;
-		if (dy > 0)
-			sp->cur_state = 0;
-		if (dy < 0)
-			sp->cur_state = 2;
+
+		if (dx > 0) {
+			sp->cur_state = SPR_STATE_RIGHT;
+		} else if (dx < 0) {
+			sp->cur_state = SPR_STATE_LEFT;
+		}
+		if (dy > 0) {
+			sp->cur_state = SPR_STATE_DOWN;
+		} else if (dy < 0) {
+			sp->cur_state = SPR_STATE_UP;
+		}
+
 	} else {
-		// handle 8 directions
-		//sp->cur_state = dir - 1;
+
+		log_e("Only 2 or 4 states supported\n");
 	}
 
+	/* update animation frame */
 	if (old_dir == sp->cur_state) {
-
-		if (!collision)
-			sp->anim_ctr++;
-		else
-			sp->anim_ctr += 2;
-
+		sp->anim_ctr++;
+		//if (collision) {
+			/* animate faster when colliding */
+		//	sp->anim_ctr++;
+		//}
 		if (sp->anim_ctr > sp->anim_ctr_treshold) {
 			sp->cur_anim_step++;
 			sp->anim_ctr = 0;
 		}
-
 	} else {
 		sp->cur_anim_step = 0;
 	}
@@ -247,10 +253,4 @@ void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char
 	if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
 		sp->cur_anim_step = 0;
 
-	x = (sp->planes[0]).x + dx;
-	y = (sp->planes[0]).y + dy;
-	if (!collision) {
-		spr_set_pos(sp, x, y);
-	}
-	spr_update(sp);
 }

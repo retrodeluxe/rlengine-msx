@@ -15,7 +15,7 @@
 #include "map.h"
 #include "log.h"
 #include <stdlib.h>
-#include "displ.h"
+#include "dpo.h"
 #include "phys.h"
 #include "list.h"
 
@@ -201,7 +201,7 @@ void main()
         }
     }
 
-    /* Add monk */
+	/* add monk */
 
 	list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list); // joystick
 	//list_add(&animators[1].list, &dpo_monk.animator_list); // gravity
@@ -251,15 +251,15 @@ void animate_all()
 
 void init_monk()
 {
-    spr_valloc_pattern_set(PATRN_MONK);
-    spr_init_sprite(&monk_sprite, PATRN_MONK);
-    dpo_monk.xpos = 100;
-    dpo_monk.ypos = 192 - 48;
-    dpo_monk.type = DISP_OBJECT_SPRITE;
-    dpo_monk.state = 1;
-    dpo_monk.spr = &monk_sprite;
-    dpo_monk.collision_state = 0;
-    spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
+	spr_valloc_pattern_set(PATRN_MONK);
+	spr_init_sprite(&monk_sprite, PATRN_MONK);
+	dpo_monk.xpos = 100;
+	dpo_monk.ypos = 192 - 48;
+	dpo_monk.type = DISP_OBJECT_SPRITE;
+	dpo_monk.state = 1;
+	dpo_monk.spr = &monk_sprite;
+	dpo_monk.collision_state = 0;
+	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
 }
 
 void monk_death_anim()
@@ -291,19 +291,19 @@ void spr_colision_handler() {
  */
 void throw_arrow(uint8_t xpos, uint8_t ypos)
 {
-    arrow_sprite.cur_state = 1;
-    arrow_sprite.cur_anim_step = 0;
-    INIT_LIST_HEAD(&dpo_arrow.animator_list);
-    list_add(&animators[2].list, &dpo_arrow.animator_list);
-    spr_set_pos(&arrow_sprite, xpos + 16, ypos + 16);
-    dpo_arrow.type = DISP_OBJECT_SPRITE;
-    dpo_arrow.spr = &arrow_sprite;
-    dpo_arrow.xpos = xpos + 16;
-    dpo_arrow.ypos = ypos + 16;
-    dpo_arrow.state = 0;
-    INIT_LIST_HEAD(&dpo_arrow.list);
-    list_add(&dpo_arrow.list, &display_list);
-    spr_show(dpo_arrow.spr);
+	arrow_sprite.cur_state = 1;
+	arrow_sprite.cur_anim_step = 0;
+	INIT_LIST_HEAD(&dpo_arrow.animator_list);
+	list_add(&animators[2].list, &dpo_arrow.animator_list);
+	spr_set_pos(&arrow_sprite, xpos + 16, ypos + 16);
+	dpo_arrow.type = DISP_OBJECT_SPRITE;
+	dpo_arrow.spr = &arrow_sprite;
+	dpo_arrow.xpos = xpos + 16;
+	dpo_arrow.ypos = ypos + 16;
+	dpo_arrow.state = 0;
+	INIT_LIST_HEAD(&dpo_arrow.list);
+	list_add(&dpo_arrow.list, &display_list);
+	spr_show(dpo_arrow.spr);
 }
 
 /**
@@ -404,7 +404,7 @@ void anim_jump(struct displ_object *obj)
 	if (obj->state == 2){
 		if (!is_colliding_up(obj)) {
 			obj->ypos-=3;
-			spr_animate(obj->spr, 0, -3 ,0);
+			spr_animate(obj->spr, 0, -3);
 		}
 		if (--jmp_ct == 0 || is_colliding_up(obj)) {
 			jmp_ct = 16;
@@ -414,7 +414,7 @@ void anim_jump(struct displ_object *obj)
 	if (obj->state == 3) {
 		if (!is_colliding_up(obj)) {
 			obj->ypos-=2;
-			spr_animate(obj->spr, 0, -2 ,0);
+			spr_animate(obj->spr, 0, -2);
 		}
 		if (--jmp_ct == 0 || is_colliding_up(obj)) {
 			obj->state = 4;
@@ -441,14 +441,14 @@ void anim_joystick(struct displ_object *obj)
 			if (!is_colliding_left(obj)) {
                 dx = -1;
                 obj->xpos+=dx;
-                spr_animate(obj->spr, dx, dy ,0);
+                spr_animate(obj->spr, dx, dy);
 			}
 			break;
 		case STICK_RIGHT:
 			if (!is_colliding_right(obj)) {
                 dx = 1;
                 obj->xpos+=dx;
-                spr_animate(obj->spr, dx, dy ,0);
+                spr_animate(obj->spr, dx, dy);
 			}
 			break;
 		case STICK_UP:
@@ -480,7 +480,7 @@ void anim_horizontal_projectile(struct displ_object *obj)
         dx =-3;
 	}
     obj->xpos+=dx;
-    spr_animate(obj->spr, dx, 0, 0);
+    spr_animate(obj->spr, dx, 0);
 
     phys_detect_tile_collisions(obj, map_tilemap, dx, 0, 0);
 
@@ -513,7 +513,7 @@ void anim_left_right(struct displ_object *obj)
     }
 
     obj->xpos+=dx;
-    spr_animate(obj->spr, dx, 0, 0);
+    spr_animate(obj->spr, dx, 0);
 
     if (is_colliding_left(obj)) {
         obj->state = 0;
@@ -574,7 +574,7 @@ void anim_drop(struct displ_object *obj) {
 	}
 	spr_update(obj->spr);
 
-    phys_detect_tile_collisions(obj, map_tilemap, 0, 1, 0);
+	phys_detect_tile_collisions(obj, map_tilemap, 0, 1, 0);
 }
 /*
  * Two state vertical translation with direction switch on collision
@@ -596,7 +596,7 @@ void anim_up_down(struct displ_object *obj)
 		dy = 1;
 	}
     obj->ypos+=dy;
-    spr_animate(obj->spr, 0, dy, 0);
+    spr_animate(obj->spr, 0, dy);
 
     phys_detect_tile_collisions(obj, map_tilemap, 0, dy, 4);
 }
@@ -622,7 +622,7 @@ void anim_falling_bullets(struct displ_object *obj)
     }
     obj->ypos+=dy;
     obj->xpos+=dx;
-    spr_animate(obj->spr, dx, dy, 0);
+    spr_animate(obj->spr, dx, dy);
 
     phys_detect_tile_collisions(obj, map_tilemap, dx, dy, 2);
 	if (is_colliding_down(obj)) {
