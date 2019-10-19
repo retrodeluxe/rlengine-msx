@@ -30,23 +30,23 @@
 	struct spr_sprite_def *sp = dpo->spr;
  	struct spr_pattern_set *ps = sp->pattern_set;
 
+	x = (sp->planes[0]).x;
+	y = (sp->planes[0]).y;
+	
 	if (dpo-> type == DISP_OBJECT_SPRITE) {
 		spr_animate(sp, dx, dy);
 
 		if (!is_colliding_x(dpo)) {
     			dpo->xpos += dx;
-			x = (sp->planes[0]).x + dx;
+			x += dx;
 		}
 
 		if (!is_colliding_y(dpo)) {
 			dpo->ypos += dy;
-			y = (sp->planes[0]).y + dy;
+			y += dy;
 		}
 
- 		if (!is_colliding(dpo)) {
- 			spr_set_pos(sp, x, y);
-		}
-
+ 		spr_set_pos(sp, x, y);
  		spr_update(sp);
 	}
  }

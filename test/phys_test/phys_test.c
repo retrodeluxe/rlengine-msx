@@ -38,12 +38,19 @@ enum anim_t {
 	ANIM_LEFT_RIGHT,
 	ANIM_FALLING_BULLETS,
 	ANIM_HORIZONTAL_PROJECTILE,
-	ANUM_UP_DOWN,
+	ANIM_UP_DOWN,
 	ANIM_DROP,
 	ANIM_JOYSTICK,
 	ANIM_JUMP,
 	ANIM_THROW_ARROW,
 	ANIM_SPIT_BULLETS
+};
+
+enum obj_state {
+	STATE_MOVING_LEFT,
+	STATE_MOVING_RIGHT,
+	STATE_MOVING_DOWN,
+	STATE_MOVING_UP
 };
 
 // struct spr_pattern_set spr_pattern[PATRN_MAX];
@@ -79,6 +86,7 @@ void animate_all();
 void spr_colision_handler();
 void init_monk();
 
+uint8_t screen_buf[768];
 
 void init_patterns()
 {
@@ -107,7 +115,7 @@ void init_animators()
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
 	animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
-	animators[ANUM_UP_DOWN].run = anim_up_down;
+	animators[ANIM_UP_DOWN].run = anim_up_down;
 	animators[ANIM_DROP].run = anim_drop;
 	animators[ANIM_JOYSTICK].run = anim_joystick;
 	animators[ANIM_JUMP].run = anim_jump;
@@ -157,7 +165,9 @@ void main()
 	tile_set_to_vram(&tileset_kv, 1);
 
 	/* set tile map on screen */
-	vdp_fastcopy_nametable(map_tilemap);
+	sys_memset(screen_buf,0,768);
+	sys_memcpy(screen_buf, map_tilemap, 768);
+	vdp_fastcopy_nametable(screen_buf);
 
 	init_patterns();
 	init_animators();
@@ -193,7 +203,8 @@ void main()
                     break;
                 case TYPE_SPIDER:
                     add_sprite(dpo, i, PATRN_SPIDER, x, y);
-                    add_animator(dpo, ANUM_UP_DOWN);
+                    add_animator(dpo, ANIM_UP_DOWN);
+		    dpo->state = STATE_MOVING_DOWN;
                     break;
                 default:
                     continue;
@@ -235,6 +246,8 @@ void main()
 	do {
 		stick = sys_get_stick(0);
 		animate_all();
+		//vdp_fastcopy_nametable(screen_buf);
+		//sys_memcpy(screen_buf, map_tilemap, 768);
 	} while (sys_get_key(8) & 1);
 }
 
@@ -434,25 +447,16 @@ void anim_jump(struct displ_object *obj)
  */
 void anim_joystick(struct displ_object *obj)
 {
-    int8_t dx = 0,dy = 0;
+	int8_t dx = 0,dy = 0;
 
 	switch(stick) {
 		case STICK_LEFT:
-			if (!is_colliding_left(obj)) {
-                dx = -1;
-                obj->xpos+=dx;
-                spr_animate(obj->spr, dx, dy);
-			}
+			dx = -1;
 			break;
 		case STICK_RIGHT:
-			if (!is_colliding_right(obj)) {
-                dx = 1;
-                obj->xpos+=dx;
-                spr_animate(obj->spr, dx, dy);
-			}
+			dx = 1;
 			break;
 		case STICK_UP:
-            // FIXME: handle this properly
 			if (obj->state == 0 && is_colliding_down(obj)) {
 				list_add(&animators[6].list, &dpo_monk.animator_list);
 				obj->state = 1;
@@ -465,7 +469,8 @@ void anim_joystick(struct displ_object *obj)
 			break;
 	}
 
-    phys_detect_tile_collisions(obj, map_tilemap, dx, dy, 0);
+	phys_detect_tile_collisions(obj, map_tilemap, dx, dy);
+	dpo_simple_animate(obj, dx, dy);
 }
 
 /**
@@ -473,21 +478,23 @@ void anim_joystick(struct displ_object *obj)
  */
 void anim_horizontal_projectile(struct displ_object *obj)
 {
-    int8_t dx = 0;
-	if (obj->state == 0 && !is_colliding_right(obj)) {
-        dx = 3;
-	} else if (obj->state == 1 && !is_colliding_left(obj)) {
-        dx =-3;
+	int8_t dx = 0;
+
+	switch (obj->state) {
+		case STATE_MOVING_LEFT:
+			dx = 3;
+			break;
+		case STATE_MOVING_RIGHT:
+			dx = -3;
+			break;
 	}
-    obj->xpos+=dx;
-    spr_animate(obj->spr, dx, 0);
+	dpo_simple_animate(obj, dx, 0);
+	phys_detect_tile_collisions(obj, map_tilemap, dx, 0);
 
-    phys_detect_tile_collisions(obj, map_tilemap, dx, 0, 0);
-
-    if (is_colliding_left(obj) || is_colliding_right(obj)) {
-        spr_hide(obj->spr);
-        list_del(&obj->list);
-    }
+	if (is_colliding_left(obj) || is_colliding_right(obj)) {
+		spr_hide(obj->spr);
+		list_del(&obj->list);
+	}
 }
 
 /**
@@ -496,36 +503,30 @@ void anim_horizontal_projectile(struct displ_object *obj)
  */
 void anim_left_right(struct displ_object *obj)
 {
-    int8_t dx = 0;
+	int8_t dx = 0;
 
-	if (obj->state == 0 && !is_colliding_right(obj)) {
-        dx = 1;
-	} else if (obj->state == 1 && !is_colliding_left(obj)) {
-        dx = -1;
+	switch(obj->state) {
+		case STATE_MOVING_LEFT:
+			if (is_colliding_left(obj)
+				|| !is_colliding_down(obj)) {
+				obj->state = STATE_MOVING_RIGHT;
+				dx = 1;
+			} else {
+				dx = -1;
+			}
+			break;
+		case STATE_MOVING_RIGHT:
+			if (is_colliding_right(obj)
+				|| !is_colliding_down(obj)) {
+				obj->state = STATE_MOVING_LEFT;
+				dx = -1;
+			} else {
+				dx = 1;
+			}
+			break;
 	}
-
-    // avoid walking on the air
-    if (!is_colliding_down(obj)) {
-        if (obj->state == 0)
-            dx = -1;
-        else
-            dx = 1;
-    }
-
-    obj->xpos+=dx;
-    spr_animate(obj->spr, dx, 0);
-
-    if (is_colliding_left(obj)) {
-        obj->state = 0;
-    } else if (is_colliding_right(obj)) {
-        obj->state = 1;
-    } else if (obj->state == 0 && !is_colliding_down(obj)) {
-        obj->state = 1;
-    } else if (obj->state == 1 && !is_colliding_down(obj)) {
-        obj->state = 0;
-    }
-
-    phys_detect_tile_collisions(obj, map_tilemap, dx, 1,0 );
+	phys_detect_tile_collisions(obj, screen_buf, dx, 4);
+	dpo_simple_animate(obj, dx, 0);
 }
 
 
@@ -574,7 +575,7 @@ void anim_drop(struct displ_object *obj) {
 	}
 	spr_update(obj->spr);
 
-	phys_detect_tile_collisions(obj, map_tilemap, 0, 1, 0);
+	phys_detect_tile_collisions(obj, map_tilemap, 0, 1);
 }
 /*
  * Two state vertical translation with direction switch on collision
@@ -582,23 +583,25 @@ void anim_drop(struct displ_object *obj) {
  */
 void anim_up_down(struct displ_object *obj)
 {
-    int8_t dy;
+	int8_t dy;
 
-    if (is_colliding_down(obj)) {
-		obj->state = 0;
+	switch(obj->state) {
+		case STATE_MOVING_UP:
+			dy = -1;
+			break;
+		case STATE_MOVING_DOWN:
+			dy = 1;
+			break;
+	}
+
+	dpo_simple_animate(obj, 0, dy);
+	phys_detect_tile_collisions(obj, map_tilemap, 0, dy);
+
+	if (is_colliding_down(obj)) {
+		obj->state = STATE_MOVING_UP;
 	} else if (is_colliding_up(obj)) {
-		obj->state = 1;
+		obj->state = STATE_MOVING_DOWN;
 	}
-
-	if (obj->state == 0 && !is_colliding_up(obj)) {
-		dy= -1;
-	} else if (obj->state == 1 && !is_colliding_down(obj)) {
-		dy = 1;
-	}
-    obj->ypos+=dy;
-    spr_animate(obj->spr, 0, dy);
-
-    phys_detect_tile_collisions(obj, map_tilemap, 0, dy, 4);
 }
 
 /**
@@ -607,31 +610,29 @@ void anim_up_down(struct displ_object *obj)
  */
 void anim_falling_bullets(struct displ_object *obj)
 {
-    static uint8_t frame_cnt_a = 0;
-    static uint8_t frame_cnt_b = 0;
+	static uint8_t frame_cnt_a = 0;
+	static uint8_t frame_cnt_b = 0;
 
-    int8_t dx=0, dy=0;
+	int8_t dx=0, dy=0;
 
-    if (obj->state == 1) {
-        frame_cnt_a++;  // compiler issue, frame_cnt_a is not initialised to 0 but to 255
-        dx = 1;
-        dy = -3 + frame_cnt_a++ >> 3;
-    } else if (obj->state == 0) {
-        dx = -1;
-        dy = -3 + frame_cnt_b++ >> 3;
-    }
-    obj->ypos+=dy;
-    obj->xpos+=dx;
-    spr_animate(obj->spr, dx, dy);
+	if (obj->state == 1) {
+		frame_cnt_a++;  // compiler issue, frame_cnt_a is not initialised to 0 but to 255
+		dx = 1;
+		dy = -3 + frame_cnt_a++ >> 3;
+	} else if (obj->state == 0) {
+		dx = -1;
+		dy = -3 + frame_cnt_b++ >> 3;
+	}
+	dpo_simple_animate(obj, dx, dy);
+	phys_detect_tile_collisions(obj, map_tilemap, dx, dy);
 
-    phys_detect_tile_collisions(obj, map_tilemap, dx, dy, 2);
 	if (is_colliding_down(obj)) {
-        if (obj->state == 1) {
-            frame_cnt_a = 0;
-        } else {
-            frame_cnt_b = 0;
-        }
-        spr_hide(obj->spr);
-        list_del(&obj->list);
+		if (obj->state == 1) {
+			frame_cnt_a = 0;
+		} else {
+			frame_cnt_b = 0;
+		}
+		spr_hide(obj->spr);
+		list_del(&obj->list);
 	}
 }

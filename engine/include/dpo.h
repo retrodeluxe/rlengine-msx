@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _MSX_DISP_LIST_H_
 #define _MSX_DISP_LIST_H_
 
@@ -54,5 +54,7 @@ struct displ_object {
 	struct list_head list;
 	struct list_head animator_list;
 };
+
+void dpo_simple_animate(struct displ_object *dpo, signed char dx, signed char dy);
 
 #endif
