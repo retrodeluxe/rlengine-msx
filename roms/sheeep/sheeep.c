@@ -358,7 +358,7 @@ void main()
 			if (!jump)
 				dy = 2;
 
-			phys_detect_tile_collisions(&dpo_main, screen_buffer, dx, dy, 0);
+			phys_detect_tile_collisions(&dpo_main, screen_buffer, dx, dy);
 			vdp_fastcopy_nametable(screen_buffer);
 			if (!jump && !is_colliding_down(&dpo_main)) {
 				if (indust.cur_state == LEFT_RUN) {
