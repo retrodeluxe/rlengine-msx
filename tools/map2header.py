@@ -308,8 +308,8 @@ class ObjectGroupLayer:
     """ Contains an object group layer
 	"""
     def __init__(self, raw):
-        self.w = raw['width']
-        self.h = raw['height']
+        #self.w = raw['width']
+        #self.h = raw['height']
         self.x = raw['x']
         self.y = raw['y']
         self.name = raw['name'].replace(' ','_')
