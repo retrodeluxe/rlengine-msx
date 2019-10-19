@@ -12,7 +12,7 @@
 #include "tile.h"
 #include "map.h"
 #include "log.h"
-#include "displ.h"
+#include "dpo.h"
 #include "phys.h"
 #include "list.h"
 

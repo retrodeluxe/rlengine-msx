@@ -14,7 +14,6 @@
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room00",
          "objects":[
                 {
@@ -99,15 +98,27 @@
                  "y":136
                 }],
          "opacity":1,
+         "properties":
+            {
+             "rl_compr":"block",
+             "rl_seg_h":"21",
+             "rl_seg_w":"32",
+             "rl_segment":"true"
+            },
+         "propertytypes":
+            {
+             "rl_compr":"string",
+             "rl_seg_h":"string",
+             "rl_seg_w":"string",
+             "rl_segment":"string"
+            },
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room01",
          "objects":[
                 {
@@ -132,13 +143,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room02",
          "objects":[
                 {
@@ -305,13 +314,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room03",
          "objects":[
                 {
@@ -475,13 +482,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room04",
          "objects":[
                 {
@@ -726,13 +731,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room10",
          "objects":[
                 {
@@ -819,13 +822,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room11",
          "objects":[
                 {
@@ -1026,13 +1027,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room12",
          "objects":[
                 {
@@ -1101,13 +1100,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room13",
          "objects":[
                 {
@@ -1272,13 +1269,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room14",
          "objects":[
                 {
@@ -1651,13 +1646,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room20",
          "objects":[
                 {
@@ -1900,13 +1893,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room21",
          "objects":[
                 {
@@ -2131,13 +2122,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room22",
          "objects":[
                 {
@@ -2404,13 +2393,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room23",
          "objects":[
                 {
@@ -2619,13 +2606,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room24",
          "objects":[
                 {
@@ -2832,13 +2817,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room30",
          "objects":[
                 {
@@ -3195,13 +3178,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room31",
          "objects":[
                 {
@@ -3702,13 +3683,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room32",
          "objects":[
                 {
@@ -3876,13 +3855,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room33",
          "objects":[
                 {
@@ -4185,13 +4162,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room34",
          "objects":[
                 {
@@ -4732,13 +4707,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room40",
          "objects":[
                 {
@@ -4861,13 +4834,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room41",
          "objects":[
                 {
@@ -5057,13 +5028,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room42",
          "objects":[
                 {
@@ -5477,13 +5446,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room43",
          "objects":[
                 {
@@ -6092,13 +6059,11 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":112,
          "name":"room44",
          "objects":[
                 {
@@ -6433,7 +6398,6 @@
             },
          "type":"objectgroup",
          "visible":true,
-         "width":160,
          "x":0,
          "y":0
         }],
@@ -6441,21 +6405,26 @@
  "orientation":"orthogonal",
  "properties":
     {
-     "room_heigth":22,
-     "room_width":32
+     "rl_compr":"block",
+     "rl_seg_h":22,
+     "rl_seg_w":32,
+     "rl_segment":"True"
     },
  "propertytypes":
     {
-     "room_heigth":"int",
-     "room_width":"int"
+     "rl_compr":"string",
+     "rl_seg_h":"int",
+     "rl_seg_w":"int",
+     "rl_segment":"string"
     },
  "renderorder":"right-down",
+ "tiledversion":"1.0.3",
  "tileheight":8,
  "tilesets":[
         {
          "columns":125,
          "firstgid":1,
-         "image":"..\/..\/..\/map_test\/res\/tile\/tiles2.tga",
+         "image":"..\/..\/..\/..\/tiles2.png",
          "imageheight":16,
          "imagewidth":1000,
          "margin":0,
@@ -6466,6 +6435,7 @@
          "tilewidth":8
         }],
  "tilewidth":8,
+ "type":"map",
  "version":1,
  "width":160
 }

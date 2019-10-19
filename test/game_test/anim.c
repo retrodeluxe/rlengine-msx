@@ -6,7 +6,7 @@
 #include "tile.h"
 #include "map.h"
 #include "log.h"
-#include "displ.h"
+#include "dpo.h"
 #include "phys.h"
 #include "list.h"
 
@@ -84,7 +84,7 @@ void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
 			cdx = 0;
 		}
 		if (cdx != 0 || cdy != 0) {
-			spr_animate(dpo->spr, cdx, cdy, 0);
+			spr_animate(dpo->spr, cdx, cdy);
 		}
 		//log_e("B ypos %d state %d colision %d\n", dpo->ypos, dpo->state, dpo->collision_state);
 	}
@@ -188,10 +188,10 @@ void anim_left_right(struct displ_object *obj)
 	// FIXME: a-posteriory correction should never be necessary
 	if (obj->state == 0 && !is_colliding_right(obj)) {
 		obj->xpos++;
-		spr_animate(obj->spr, 1, 0, 0);
+		spr_animate(obj->spr, 1, 0);
 	} else if (obj->state == 1 && !is_colliding_left(obj)) {
 		obj->xpos--;
-		spr_animate(obj->spr, -1, 0, 0);
+		spr_animate(obj->spr, -1, 0);
 	}
 	if (is_colliding_left(obj)) {
 		obj->state = 0;
@@ -202,10 +202,10 @@ void anim_left_right(struct displ_object *obj)
 		if (obj->state == 0) {
 			obj->state = 1;
 			obj->xpos-=2;
-			spr_animate(obj->spr, -2, 0, 0);
+			spr_animate(obj->spr, -2, 0);
 		} else {
 			obj->xpos+=2;
-			spr_animate(obj->spr, 2, 0, 0);
+			spr_animate(obj->spr, 2, 0);
 			obj->state = 0;
 		}
 		//phys_detect_tile_collisions(obj, map_buf);
