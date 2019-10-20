@@ -1,0 +1,6 @@
+#include "gen/game_test_sprites.h"
+#include "gen/intro_map_layer_intro.h"
+#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/intro_tileset.h"
+#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/font_digits.h"
+#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/font_upper.h"
+#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/font_lower.h"
