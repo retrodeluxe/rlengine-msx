@@ -10,12 +10,12 @@ At the moment it provides:
 * Build System support for 32K, 48K and up to 2048K ROMS
 * Automatic compilation of assets (Maps, Tiles, Sprites)
 * Low level HAL libraries (VDP, PSG, System)
+* Vortex Tracker II Music Player
 * High Level Helpers for Sprite and Tile Animation
 * Different modes of compression for Map and Tile Data (RLE, Block)
 * Basic Physics and Animation Support
 
-RLE is a work in progress, and although it still lacks a music player, is mature
-enough for development (see the tests folder for samples).
+RLE is a work in progress, but mature enough for development (see the tests folder for samples).
 
 # How to Build
 
