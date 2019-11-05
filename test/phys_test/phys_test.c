@@ -18,6 +18,9 @@
 #include "dpo.h"
 #include "phys.h"
 #include "list.h"
+#include "pt3.h"
+#include "pt3_nt2.h"
+#include "song.h"
 
 #include "gen/phys_test.h"
 
@@ -72,7 +75,9 @@ struct animator *anim;
 struct displ_object *dpo;
 
 uint8_t stick;
+uint8_t music_ready;
 
+void play_music();
 void anim_up_down(struct displ_object *obj);
 void anim_drop(struct displ_object *obj);
 void anim_falling_bullets(struct displ_object *obj);
@@ -87,6 +92,7 @@ void spr_colision_handler();
 void init_monk();
 
 uint8_t screen_buf[768];
+uint16_t reftick;
 
 void init_patterns()
 {
@@ -149,6 +155,13 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx,
 	INIT_LIST_HEAD(&dpo->animator_list);
 }
 
+
+void play_music()
+{
+	PT3Decode();
+	PT3PlayAY();
+}
+
 void main()
 {
 	uint8_t i,d, x, y;
@@ -193,10 +206,10 @@ void main()
                     enemy_sprites[i].cur_state = 1;
                     enemy_sprites[i].cur_anim_step = 1;
                     break;
-                case TYPE_PLANT:
-                    add_sprite(dpo, i, PATRN_PLANT, x, y);
-                    add_animator(dpo, ANIM_SPIT_BULLETS);
-                    break;
+                 case TYPE_PLANT:
+                     add_sprite(dpo, i, PATRN_PLANT, x, y);
+                     add_animator(dpo, ANIM_SPIT_BULLETS);
+                     break;
                 case TYPE_WATERDROP:
                     add_sprite(dpo, i, PATRN_WATERDROP, x, y);
                     add_animator(dpo, ANIM_DROP);
@@ -234,8 +247,13 @@ void main()
 		}
 	}
 
+	sys_memcpy(NoteTable, NT, 96*2);
+	PT3Init((unsigned int) SONG00 ,0);
+
 	sys_irq_init();
 	phys_init();
+	music_ready = 0;
+	sys_proc_register(play_music);
 
 	phys_set_colliding_tile(1);
 	phys_set_colliding_tile(2);
@@ -243,12 +261,16 @@ void main()
 	//phys_set_sprite_collision_handler(spr_colision_handler);
 
 	/* game loop */
-	do {
+	for(;;) {
+		__asm halt __endasm;
+		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
 		animate_all();
+		if (sys_get_ticks() - reftick >= 2)
+			log_e("stall\n");
 		//vdp_fastcopy_nametable(screen_buf);
 		//sys_memcpy(screen_buf, map_tilemap, 768);
-	} while (sys_get_key(8) & 1);
+	}
 }
 
 void animate_all()

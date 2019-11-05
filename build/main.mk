@@ -41,7 +41,7 @@ export CROSS_LD_BANKED := $(SDCC_ROOT)/bin/sdldgb
 export SDCC_LIB := $(SDCC_ROOT)/share/lib/z80
 export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
 
-export ENGINE_CFLAGS  := -mz80 --std-c99 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+export ENGINE_CFLAGS  := -mz80 --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
 
 export HOSTCC	:= gcc
 export TILED2H  := $(RLE_TOOLS)/map2header.py
