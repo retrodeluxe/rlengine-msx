@@ -158,8 +158,8 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx,
 
 void play_music()
 {
-	PT3Decode();
-	PT3PlayAY();
+	pt3_decode();
+	pt3_play();
 }
 
 void main()
@@ -206,10 +206,10 @@ void main()
                     enemy_sprites[i].cur_state = 1;
                     enemy_sprites[i].cur_anim_step = 1;
                     break;
-                 case TYPE_PLANT:
-                     add_sprite(dpo, i, PATRN_PLANT, x, y);
-                     add_animator(dpo, ANIM_SPIT_BULLETS);
-                     break;
+                case TYPE_PLANT:
+                    add_sprite(dpo, i, PATRN_PLANT, x, y);
+                    add_animator(dpo, ANIM_SPIT_BULLETS);
+                    break;
                 case TYPE_WATERDROP:
                     add_sprite(dpo, i, PATRN_WATERDROP, x, y);
                     add_animator(dpo, ANIM_DROP);
@@ -247,8 +247,8 @@ void main()
 		}
 	}
 
-	sys_memcpy(NoteTable, NT, 96*2);
-	PT3Init((unsigned int) SONG00 ,0);
+	pt3_init_notes(NT);
+	pt3_init(SONG00 ,0);
 
 	sys_irq_init();
 	phys_init();
@@ -262,7 +262,7 @@ void main()
 
 	/* game loop */
 	for(;;) {
-		__asm halt __endasm;
+		wait_vsync();
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
 		animate_all();
