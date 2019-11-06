@@ -10,5 +10,5 @@ LOCAL_PAGE_3_SRC_FILES := swap3.c
 #LOCAL_PAGE_4_SRC_FILES := swap4.c
 
 LOCAL_ROM_NAME := game_test
-LOCAL_SRC_FILES := main.c #logic.c anim.c scene.c
+LOCAL_SRC_FILES := main.c #logic.c #anim.c scene.c
 include $(BUILD_ROM_ASCII8)

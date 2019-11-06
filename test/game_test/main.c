@@ -20,6 +20,8 @@
 #include "anim.h"
 #include "scene.h"
 #include "logic.h"
+#include "pt3.h"
+#include "pt3_nt2.h"
 
 #include "gen/intro_tileset_ext.h"
 #include "gen/game_test_tiles_ext.h"
@@ -28,6 +30,7 @@
 extern const unsigned char intro_map_intro_w;
 extern const unsigned char intro_map_intro_h;
 extern const unsigned char intro_map_intro[];
+extern const unsigned char title_pt3[];
 
 #include <stdlib.h>
 void show_logo();
@@ -35,6 +38,7 @@ void show_title_screen();
 void animate_all();
 void check_and_change_room();
 void show_score_panel();
+void play_music();
 
 struct tile_set logo;
 struct tile_set tileset_intro;
@@ -50,6 +54,7 @@ struct displ_object *dpo;
 struct list_head *elem,*elem2;
 
 uint8_t scr_tile_buffer[768];
+extern void sys_set_ascii_page3(char page);
 
 void main()
 {
@@ -57,8 +62,6 @@ void main()
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
 
-	sys_irq_init();
-	//show_logo();
 	show_title_screen();
 
 	//init_map_index();
@@ -70,6 +73,7 @@ void main()
 	show_score_panel();
 	/** game loop **/
 	for(;;) {
+		wait_vsync();
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
 
@@ -105,13 +109,20 @@ void show_score_panel()
 // }
 
 
+void play_music()
+{
+	pt3_decode();
+	pt3_play();
+}
+
+
 void show_logo() {
 	// TODO : add resources
 	do {
 	} while (sys_get_key(8) & 1);
 }
 
-extern void sys_set_ascii_page3(char page);
+
 
 void show_title_screen()
 {
@@ -132,9 +143,14 @@ void show_title_screen()
 	font_vprint(&font, 7, 22, "PRESS SPACE KEY~");
 
 	vdp_screen_enable();
-
-
+	sys_set_ascii_page3(6);
+	pt3_init_notes(NT);
+	pt3_init(title_pt3, 0);
+	sys_irq_init();
+	//show_logo();
+	sys_proc_register(play_music);
 
 	do {
+		wait_vsync();
 	} while (sys_get_key(8) & 1);
  }
