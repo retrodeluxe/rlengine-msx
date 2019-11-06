@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _MSX_H_
 #define _MSX_H_
 
@@ -27,5 +27,5 @@
 
 #define asm__di                 __asm di __endasm
 #define asm__ei                 __asm ei __endasm
-
+#define wait_vsync()		__asm halt __endasm
 #endif				/* _MSX_H_ */
