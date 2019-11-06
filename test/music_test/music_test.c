@@ -26,23 +26,22 @@ void main()
 
 	vdp_print_grp1(0, 0, "Music Test");
 
-	sys_memcpy(NoteTable, NT, 96*2);
-	PT3Init((unsigned int) SONG00 ,0);
+	pt3_init_notes(NT);
+	pt3_init(SONG00 ,0);
 
 	sys_irq_init();
 	sys_proc_register(play_music);
 	do {
-		__asm halt __endasm;
-		PT3Decode();
-		log_e("0");
+		wait_vsync();
 	} while (sys_get_key(8) & 1);
 
-	PT3Mute();
+	pt3_mute();
 
 	sys_reboot();
 }
 
 void play_music()
 {
-	PT3PlayAY();
+	pt3_decode();
+	pt3_play();
 }

@@ -1,70 +1,27 @@
-/* =============================================================================
-   SDCC Vortex Tracker II PT3 player for MSX
+/*
+ *  SDCC Vortex Tracker II PT3 player for MSX
+ *
+ * - Vortex Tracker II v1.0 PT3 player for ZX Spectrum by S.V.Bulba
+ *	 <vorobey@mail.khstu.ru> http://bulba.at.kz
+ *  - (09-Jan-05) Adapted to MSX by Alfonso D. C. aka Dioniso <dioniso072@yahoo.es>
+ *  - Arrangements for MSX ROM: MSXKun/Paxanga soft >
+ *    http://paxangasoft.retroinvaders.com/
+ *  - asMSX version: SapphiRe > http://www.z80st.es/
+ *  - Adapted to SDCC: mvac7/303bcn > <mvac7303b@gmail.com>
+ *  - Clean up and refactoring by Retro Deluxe 2019
+ *
+ * Limitations of this version:
+ * - No version detection (just for Vortex Tracker II and PT3.5).
+ * - No frequency table decompression (default is number 2).
+ * - No volume table decompression (Vortex Tracker II/PT3.5 volume table used).
+ */
 
-   Version: 1.1
-   Date: 28/05/2019
-   Architecture: MSX
-   Format: C Object (SDCC .rel)
-   Programming language: C
-   WEB:
-   mail: mvac7303b@gmail.com
+#include "pt3.h"
+#include "sys.h"
 
-   Authors:
-    - Vortex Tracker II v1.0 PT3 player for ZX Spectrum by S.V.Bulba
-      <vorobey@mail.khstu.ru> http://bulba.at.kz
-    - (09-Jan-05) Adapted to MSX by Alfonso D. C. aka Dioniso
-      <dioniso072@yahoo.es>
-    - Arrangements for MSX ROM: MSXKun/Paxanga soft >
-      http://paxangasoft.retroinvaders.com/
-    - asMSX version: SapphiRe > http://www.z80st.es/
-    - Adapted to SDCC: mvac7/303bcn > <mvac7303b@gmail.com>
-
-   Description:
-     Adaptation of the Vortex Tracker II PT3 Player for MSX to be used in
-     software development in C (SDCC).
-
-   History of versions:
-    - 1.1 (28/05/2019) <current version> Adaptation to SDCC of asMSX
-                                         version by SapphiRe.
-    - 1.0 (21/10/2016) Adaptation to SDCC of the ROM version by Kun.
-
-In this replayer:
-
-Dioniso version:
- - No version detection (just for Vortex Tracker II and PT3.5).
- - No frequency table decompression (default is number 2).
-   Coger tabla segun quiera, en fichero aparte
- - No volume table decompression (Vortex Tracker II/PT3.5 volume table used).
-
-
-msxKun version:
- - Usable desde ROM (solo tiene en RAM area de trabajo, lo minimo posible).
-
-SapphiRe version:
- This version of the replayer uses a fixed volume and note table, if you need a
- different note table you can copy it from TABLES.TXT file, distributed with the
- original PT3 distribution. This version also allows the use of PT3 commands.
-
- PLAY and PSG WRITE routines seperated to allow independent calls
-
-
-mvac7 version:
- Adaptation to C (SDCC) of the SapphiRe version.
-
-============================================================================= */
-
-
-#include "../include/pt3.h"
-
-
-
-
-
-//VARS:
 char ChanA[29]; //CHNPRM_Size
 char ChanB[29];
 char ChanC[29];
-
 
 char DelyCnt;
 unsigned int CurESld;
@@ -74,13 +31,11 @@ char CurEDel;
 char Ns_Base;
 char AddToNs;
 
-
 //AYREGS::
 //char VT_[14];
 char AYREGS[14];
 unsigned int EnvBase;
 char VAR0END[240];
-
 
 /* --- Workarea --- (apunta a RAM que estaba antes en codigo automodificable)
  -El byte de estado en SETUP deberia ser algo asi (CH enable/disable no esta aun)
@@ -120,31 +75,21 @@ unsigned int PT3_ESldAdd;  //Envelope data (idem)
 
 char NoteTable[192];       //Note table
 
-
-
-
-
-
-
-// ================================================ REPLAYER =================================================
-
-
-
 /* -----------------------------------------------------------------------------
 PT3Mute
 Silence the PSG.
 ----------------------------------------------------------------------------- */
-void PT3Mute() __naked
+void pt3_mute() __naked
 {
-__asm
+	__asm
 MUTE:
-  XOR  A
+	XOR  A
 	LD   (#_AYREGS+AR_AmplA),A
 	LD   (#_AYREGS+AR_AmplB),A
-  LD   (#_AYREGS+AR_AmplC),A
-	JP   _PT3PlayAY                ;ROUT_A0
+	LD   (#_AYREGS+AR_AmplC),A
+	JP   _pt3_play
 
-__endasm;
+	__endasm;
 }
 // ----------------------------------------------------------------------------- END PT3Stop
 
@@ -156,33 +101,33 @@ PT3Init
 (unsigned int) Song data address
 (char) Loop - 0=off ; 1=on  (false = 0, true = 1));
 ----------------------------------------------------------------------------- */
-void PT3Init(unsigned int songADDR,char loop) __naked
+void pt3_init(uint8_t *song,uint8_t loop) __naked
 {
-songADDR;loop;
-__asm
+	song;
+	loop;
 
-  push IX
-  ld   IX,#0
-  add  IX,SP
+	__asm
 
-  ld   HL,#_PT3_SETUP
-  ld   A,6(IX)
-  or   A
-  jr   NZ,SongLoop
-  set  0,(HL)  ;not loop
-  jr   initSong
+	push IX
+	ld   IX,#0
+	add  IX,SP
+
+	ld   HL,#_PT3_SETUP
+	ld   A,6(IX)
+	or   A
+	jr   NZ,SongLoop
+	set  0,(HL)  ;not loop
+	jr   initSong
 
 SongLoop:
-  res  0,(HL)  ;loop
+	res  0,(HL)  ;loop
 
 initSong:
-  ld   L,4(IX)
-  ld   H,5(IX)
-  call playerINIT
-
-  pop  IX
-  ret
-
+	ld   L,4(IX)
+	ld   H,5(IX)
+	call playerINIT
+	pop  IX
+	ret
 
 ; HL - AddressOfModule
 playerINIT::
@@ -225,40 +170,37 @@ playerINIT::
 	RES  7,(HL)
 
 
-; Create Volume Table for Vortex Tracker II/PT3.5
-; (c) Ivan Roshin, adapted by SapphiRe ---
-  ld	HL,#0x11
-  ld	D,H
-  ld  E,H
-  ld  IX,#_VAR0END  ;_VT_+16
-  ld  B,#15
+	; Create Volume Table for Vortex Tracker II/PT3.5
+	; (c) Ivan Roshin, adapted by SapphiRe ---
+	ld	HL,#0x11
+	ld	D,H
+	ld  E,H
+	ld  IX,#_VAR0END  ;_VT_+16
+	ld  B,#15
 INITV1:
-  push HL
-  add  HL,DE
-  ex   DE,HL
-  sbc  HL,HL
-  ld   C,B
-  ld   B,#16
+	push HL
+	add  HL,DE
+	ex   DE,HL
+	sbc  HL,HL
+	ld   C,B
+	ld   B,#16
 INITV2:
-  ld   A,L
-  rla
-  ld   A,H
-  adc  A,#0
-  ld   (IX),A
-  inc  IX
-  add  HL,DE
-  djnz INITV2
-  pop  HL
-  ld   A,E
-  cp   #0x77
-  jr   NZ,INITV3
-  inc  E
+	ld   A,L
+	rla
+	ld   A,H
+	adc  A,#0
+	ld   (IX),A
+	inc  IX
+	add  HL,DE
+	djnz INITV2
+	pop  HL
+	ld   A,E
+	cp   #0x77
+	jr   NZ,INITV3
+	inc  E
 INITV3:
-  ld   B,C
-  djnz INITV1
-
-
-
+	ld   B,C
+	djnz INITV1
 
 ; --- INITIALIZE PT3 VARIABLES ---
 	xor	 A
@@ -287,62 +229,36 @@ INITV3:
 				    ;also EMPTYSAMORN comment
 	ret
 
-__endasm;
+	__endasm;
 }
-// ----------------------------------------------------------------------------- END playerINIT
 
-
-
-
-
-/*
-void PT3Loop(char)
-_PT3Loop::
-  push IX
-  ld   HL,#_PT3_SETUP
-  ld   A,4(IX)
-  or   A
-  jr   NZ,SongLoop
-  set  0,(HL)  ;not loop
-  pop  IX
-  ret
-SongLoop:
-  res  0,(HL)  ;loop
-  pop  IX
-  ret
-*/
-
-
-
-/* -----------------------------------------------------------------------------
-PT3PlayAY
-Play Song.
-Send data to AY registers
-Execute on each interruption of VBLANK
------------------------------------------------------------------------------ */
-//_PT3PlayAY::
-void PT3PlayAY() __naked
+void pt3_init_notes(uint8_t *note_table)
 {
-__asm
+	sys_memcpy(NoteTable, note_table, 96*2);
+}
 
-  ld   A,(#_AYREGS+AR_Mixer)
-  AND  #0b00111111
-  ld   B,A
+void pt3_play() __naked
+{
+	__asm
 
-  ld   A,#AR_Mixer
-  out  (#AY0index),A
-  in   A,(#AY0read)
-  and	 #0b11000000	; Mascara para coger dos bits de joys
+	ld   A,(#_AYREGS+AR_Mixer)
+	AND  #0b00111111
+	ld   B,A
+
+	ld   A,#AR_Mixer
+	out  (#AY0index),A
+	in   A,(#AY0read)
+	and	 #0b11000000	; Mascara para coger dos bits de joys
 	or	 B		        ; A�ado Byte de B
 
-  ld   (#_AYREGS+AR_Mixer),A
+	ld   (#_AYREGS+AR_Mixer),A
 
-  XOR  A
+	XOR  A
 
 	ld   C,#AY0index
 	ld   HL,#_AYREGS
 LOUT:
-  OUT  (C),A
+	OUT  (C),A
 	INC  C
 	OUTI
 	DEC  C
@@ -360,21 +276,12 @@ LOUT:
 
 __endasm;
 }
-// ----------------------------------------------------------------------------- END PT3PlayAY
 
-
-
-
-
-/* -----------------------------------------------------------------------------
-PT3Decode
-Decode a frame from PT3 song
------------------------------------------------------------------------------ */
-void PT3Decode() __naked
+void pt3_decode() __naked
 {
-__asm
+	__asm
 
-  XOR  A
+	XOR  A
 	LD   (#_PT3_AddToEn),A
 	LD   (#_AYREGS+AR_Mixer),A
 	DEC  A
@@ -401,7 +308,7 @@ __asm
 	LD   A,(HL)
 	INC  A
 PLNLP:
-  LD   (#_PT3_CrPsPtr),HL
+	LD   (#_PT3_CrPsPtr),HL
 	DEC  A
 	ADD  A,A
 	LD   E,A
@@ -424,12 +331,12 @@ PLNLP:
 	ld   SP,(#_PT3_PSP)
 
 PL1A:
-  LD   IX,#_ChanA+12
+	LD   IX,#_ChanA+12
 	CALL PTDECOD
 	LD   (#_PT3_AdInPtA),BC
 
 PL1B:
-  LD   HL,#_ChanB+CHNPRM_NtSkCn
+	LD   HL,#_ChanB+CHNPRM_NtSkCn
 	DEC  (HL)
 	JR   NZ,PL1C
 	LD   IX,#_ChanB+12
@@ -438,7 +345,7 @@ PL1B:
 	LD   (#_PT3_AdInPtB),BC
 
 PL1C:
-  LD   HL,#_ChanC+CHNPRM_NtSkCn
+	LD   HL,#_ChanC+CHNPRM_NtSkCn
 	DEC  (HL)
 	JR   NZ,PL1D
 	LD   IX,#_ChanC+12
@@ -451,7 +358,7 @@ PL1D:
 	ld   (#_DelyCnt),A
 
 PL2:
-  LD   IX,#_ChanA
+	LD   IX,#_ChanA
 	LD   HL,(#_AYREGS+AR_TonA)
 	CALL CHREGS
 	LD   (#_AYREGS+AR_TonA),HL
@@ -488,20 +395,18 @@ PL2:
 	LD   HL,#_CurEDel
 	OR   (HL)
 
-  RET  Z
-  DEC  (HL)
-  RET  NZ
-  LD   A,(#_PT3_Env_Del)
-  LD   (HL),A
-  LD   HL,(#_PT3_ESldAdd)
-  ADD  HL,DE
-  LD   (#_CurESld),HL
-  RET
-
-
+	RET  Z
+	DEC  (HL)
+	RET  NZ
+	LD   A,(#_PT3_Env_Del)
+	LD   (HL),A
+	LD   HL,(#_PT3_ESldAdd)
+	ADD  HL,DE
+	LD   (#_CurESld),HL
+	RET
 
 CHECKLP:
-  LD   HL,#_PT3_SETUP
+	LD   HL,#_PT3_SETUP
 	SET  7,(HL)   ; -------------------------------------------------------------- <<< ????
 	BIT  0,(HL)   ;loop bit
 	RET  Z
@@ -512,21 +417,19 @@ CHECKLP:
 	INC  (HL)
 	LD   HL,#_ChanA+CHNPRM_NtSkCn
 	INC  (HL)
-  JP   MUTE
-
-
+	JP   MUTE
 
 PD_OrSm:
-  LD   -12+CHNPRM_Env_En(IX),#0
+	LD   -12+CHNPRM_Env_En(IX),#0
 	CALL SETORN
 	LD   A,(BC)
 	INC  BC
 	RRCA
 
 PD_SAM:
-  ADD  A,A
+	ADD  A,A
 PD_SAM_:
-  LD   E,A
+	LD   E,A
 	LD   D,#0
 	ld	 HL,(#_PT3_SAMPTRS)
 	ADD  HL,DE
@@ -540,7 +443,7 @@ PD_SAM_:
 	JR   PD_LOOP
 
 PD_VOL:
-  RLCA
+	RLCA
 	RLCA
 	RLCA
 	RLCA
@@ -548,12 +451,12 @@ PD_VOL:
 	JR   PD_LP2
 
 PD_EOff:
-  LD   -12+CHNPRM_Env_En(IX),A
+	LD   -12+CHNPRM_Env_En(IX),A
 	LD   -12+CHNPRM_PsInOr(IX),A
 	JR   PD_LP2
 
 PD_SorE:
-  DEC  A
+	DEC  A
 	JR   NZ,PD_ENV
 	LD   A,(BC)
 	INC  BC
@@ -561,15 +464,15 @@ PD_SorE:
 	JR   PD_LP2
 
 PD_ENV:
-  CALL SETENV
+	CALL SETENV
 	JR   PD_LP2
 
 PD_ORN:
-  CALL SETORN
+	CALL SETORN
 	JR   PD_LOOP
 
 PD_ESAM:
-  LD   -12+CHNPRM_Env_En(IX),A
+	LD   -12+CHNPRM_Env_En(IX),A
 	LD   -12+CHNPRM_PsInOr(IX),A
 	CALL NZ,SETENV
 	LD   A,(BC)
@@ -577,16 +480,16 @@ PD_ESAM:
 	JR   PD_SAM_
 
 PTDECOD:
-  LD   A,-12+CHNPRM_Note(IX)
+	LD   A,-12+CHNPRM_Note(IX)
 	LD   (#_PT3_PrNote),A           ;LD   (#PrNote+1),A
-  LD   L,CHNPRM_CrTnSl-12(IX)
-  LD   H,CHNPRM_CrTnSl+1-12(IX)
-  LD  (#_PT3_PrSlide),HL
+	LD   L,CHNPRM_CrTnSl-12(IX)
+	LD   H,CHNPRM_CrTnSl+1-12(IX)
+	LD  (#_PT3_PrSlide),HL
 
 PD_LOOP:
-  ld   DE,#0x2010
+	ld   DE,#0x2010
 PD_LP2:
-  ld   A,(BC)
+	ld   A,(BC)
 	inc  BC
 	ADD  A,E
 	JR   C,PD_OrSm
@@ -617,11 +520,11 @@ PD_LP2:
 ;	ADD  HL,DE
 ;	POP  DE
 
-  ADD  HL,DE
-  LD   E,(HL)
-  INC  HL
-  LD   D,(HL)
-  PUSH DE
+	ADD  HL,DE
+	LD   E,(HL)
+	INC  HL
+	LD   D,(HL)
+	PUSH DE
 
 	JR   PD_LOOP
 
