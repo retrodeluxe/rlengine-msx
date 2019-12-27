@@ -1,4 +1,4 @@
-#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/maptiles3.h"
-#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/dragon.h"
-#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/checkpoint.h"
-#include "/media/geijoenr/geix/MSX/rlengine-msx1/test/game_test/gen/title.h"
+#include "gen/maptiles3.h"
+#include "gen/dragon.h"
+#include "gen/checkpoint.h"
+#include "gen/title.h"
