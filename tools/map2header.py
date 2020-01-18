@@ -519,10 +519,50 @@ class TileMapWriter:
         def generate_headers(self):
             self.extract_properties()
             self.write_definitions()
+            self.write_initialization()
             self.write_tilelayers()
             self.write_objectgroup_layers()
             self.write_grouping_header()
 
+
+        def write_initialization(self):
+            """
+            write DATA segment vars for initialization code
+            """
+            filename, file_extension = os.path.splitext(self.output)
+            basepath= ntpath.basename(self.output)
+            basename, base_extension = os.path.splitext(basepath)
+
+            fout = open(filename + '_init.h', 'w+')
+            basename = basename + '_init'
+
+            print >>fout,("#ifndef __MAP_INIT_H")
+            print >>fout,("#define __MAP_INIT_H")
+
+            #
+            # Object Group layers
+            #
+            count = 0
+            for layer in self.tilemap.objectgroup_layers:
+                print >>fout,("unsigned char *%s_object_%s[%s];" % (self.basename, layer.name.replace(' ','_'), len(layer.objects)))
+            print >>fout,("/*\n * Initialization\n */")
+            if count > 0:
+                print >>fout,("unsigned char *%s_object[%s];" % (self.basename, count))
+
+            print >>fout,("void init() {\n main();\n}")
+            print >>fout,("void init_%s_object_layers() {" % self.basename)
+            for layer in self.tilemap.objectgroup_layers:
+                count = 0
+                name = layer.name.replace(' ','_')
+                for object in layer.objects:
+                    print >>fout,( "\t%s_object_%s[%s] = %s_%s_obj%s; " % (self.basename, name, count, self.basename, name, count))
+                    count = count + 1
+            print >>fout,("}")
+            for layer in self.tilemap.tile_layers:
+                layer.dump_as_c_header_accessor(fout, self.basename)
+
+
+            print >>fout,("#endif")
 
         def write_grouping_header(self):
             """
@@ -629,28 +669,6 @@ class TileMapWriter:
             if len(self.object_properties.keys()) > 0:
                 print >>fout,("    union %s_object object;" % self.basename)
             print >>fout,"};\n"
-
-            #
-            # Object Group layers
-            #
-            count = 0
-            for layer in self.tilemap.objectgroup_layers:
-                print >>fout,("unsigned char *%s_object_%s[%s];" % (self.basename, layer.name.replace(' ','_'), len(layer.objects)))
-            print >>fout,("/*\n * Initialization\n */")
-            if count > 0:
-                print >>fout,("unsigned char *%s_object[%s];" % (self.basename, count))
-
-            print >>fout,("void init() {\n main();\n}")
-            print >>fout,("void init_%s_object_layers() {" % self.basename)
-            for layer in self.tilemap.objectgroup_layers:
-                count = 0
-                name = layer.name.replace(' ','_')
-                for object in layer.objects:
-                    print >>fout,( "\t%s_object_%s[%s] = %s_%s_obj%s; " % (self.basename, name, count, self.basename, name, count))
-                    count = count + 1
-            print >>fout,("}")
-            for layer in self.tilemap.tile_layers:
-                layer.dump_as_c_header_accessor(fout, self.basename)
 
             print >>fout,"#endif"
 
