@@ -3,11 +3,11 @@ include $(CONFIG_ROM)
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)
 
-LOCAL_ROM_NUM_PAGES := 3
+LOCAL_ROM_NUM_PAGES := 4
 LOCAL_PAGE_1_SRC_FILES := swap1.c
 LOCAL_PAGE_2_SRC_FILES := swap2.c
 LOCAL_PAGE_3_SRC_FILES := swap3.c
-#LOCAL_PAGE_4_SRC_FILES := swap4.c
+LOCAL_PAGE_4_SRC_FILES := swap4.c
 
 LOCAL_ROM_NAME := game_test
 LOCAL_SRC_FILES := main.c #logic.c #anim.c scene.c

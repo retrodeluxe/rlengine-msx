@@ -1,4 +1,3 @@
-#include "gen/game_test_sprites.h"
 #include "gen/intro_map_layer_intro.h"
 #include "gen/intro_tileset.h"
 #include "gen/font_digits.h"

@@ -27,3 +27,5 @@
 #include "gen/hearth_status.h"
 #include "gen/water.h"
 #include "gen/maptiles2.h"
+#include "gen/dragon.h"
+#include "gen/checkpoint.h"
