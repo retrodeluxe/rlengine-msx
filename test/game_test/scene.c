@@ -12,11 +12,15 @@
 
 #include "gen/game_test_tiles_ext.h"
 #include "gen/game_test_sprites_ext.h"
-#include "gen/map.h"
+
+#include "gen/map_defs.h"
 
 #include "anim.h"
 #include "logic.h"
 #include "scene.h"
+
+extern unsigned char *map_object_layer[25];
+extern void sys_set_ascii_page3(char page);
 
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
@@ -27,7 +31,6 @@ struct tile_set tileset_map5;
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
 
-struct spr_pattern_set spr_pattern[PATRN_MAX];
 struct spr_sprite_def enemy_sprites[31];
 struct spr_sprite_def monk_sprite;
 
@@ -43,14 +46,12 @@ struct list_head display_list;
 
 struct map_object_item *map_object;
 
-uint8_t scr_tile_buffer[768];
 uint8_t spr_ct, tob_ct;
 
-void find_room_data()
+
+void find_room_data(uint8_t room)
 {
-	uint8_t pos = game_state.map_x / 32 + (game_state.map_y / 22 * 5);
-	map_object = (struct map_object_item *) object_index[pos];
-        log_e("find room pos %x\n", map_object);
+	map_object = (struct map_object_item *) map_object_layer[room];
 }
 
 
@@ -68,9 +69,11 @@ static void free_patterns()
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
-	sys_set_rom();
+	// before Allocating to VRAM tiles
+
+	sys_set_ascii_page3(5);
 	tile_set_valloc(&tileset[tileidx]);
-	sys_set_bios();
+
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
 	tileobject[objidx].cur_dir = 1;
@@ -88,6 +91,7 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	tob_ct++;
 }
 
+
 void remove_tileobject(struct displ_object *dpo)
 {
 	list_del(&dpo->list);
@@ -102,10 +106,11 @@ void update_tileobject(struct displ_object *dpo)
 
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
-	sys_set_rom();
-	spr_valloc_pattern_set(&spr_pattern[pattidx]);
-	spr_init_sprite(&enemy_sprites[objidx], &spr_pattern[pattidx]);
-	sys_set_bios();
+	sys_set_ascii_page3(7);
+	spr_valloc_pattern_set(pattidx);
+	// this has changed....
+	spr_init_sprite(&enemy_sprites[objidx], pattidx);
+	//sys_set_bios();
 	INIT_LIST_HEAD(&dpo->animator_list);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
@@ -119,29 +124,47 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_ct++;
 }
 
-void load_room()
+extern unsigned char *map_map_segment_dict[25];
+extern unsigned char *map_map_segment[25];
+
+void load_room(uint8_t room)
 {
 	uint8_t i, id, type;
 	bool add_dpo;
 	spr_ct = 0, tob_ct = 0;
 
 	vdp_screen_disable();
-	map_inflate_screen(map, scr_tile_buffer, game_state.map_x, game_state.map_y);
 
-	spr_init();
-	phys_init();
-	free_patterns();
-	init_tile_collisions();
+	// that doesn't work anymore because the map is split in blocks,
+	// map_map_segment_dict
 
-	sys_set_rom();
-	spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
-	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
-	sys_set_bios();
+	sys_set_ascii_page3(6);
+
+	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
+	//
+	// spr_init();
+	// phys_init();
+	//free_patterns();
+	// init_tile_collisions();
+
+	// sys_set_rom();
+	// spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
+	// spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
+	// sys_set_bios();
+
+
 	INIT_LIST_HEAD(&display_list);
 
-	find_room_data();
+	// reading the map layer object requries swap4
+
+	sys_set_ascii_page3(7);
+
+log_e("room : %d\n",room);
+	find_room_data(room);
 	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
 		log_e("dpo %d type : %d\n", i ,map_object->type);
+			log_e("dpo %d x : %d\n", i ,map_object->x);
+				log_e("dpo %d y : %d\n", i ,map_object->y);
 		if (map_object->type == ACTIONITEM) {
 			if (map_object->object.actionitem.type == TYPE_SCROLL) {
 				id = map_object->object.actionitem.action_id;
@@ -349,6 +372,8 @@ void load_room()
 			tile_object_show(dpo->tob, scr_tile_buffer, false);
 		}
 	}
+
+
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 
 	vdp_screen_enable();
@@ -356,18 +381,18 @@ void load_room()
 
 
 
-void init_monk()
-{
-	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
-	dpo_monk.xpos = 100;
-	dpo_monk.ypos = 192 - 64;
-	dpo_monk.vy = 0;
-	dpo_monk.type = DISP_OBJECT_SPRITE;
-	dpo_monk.state = STATE_ONGROUND;
-	dpo_monk.spr = &monk_sprite;
-	dpo_monk.collision_state = 0;
-	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-}
+// void init_monk()
+// {
+// 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
+// 	dpo_monk.xpos = 100;
+// 	dpo_monk.ypos = 192 - 64;
+// 	dpo_monk.vy = 0;
+// 	dpo_monk.type = DISP_OBJECT_SPRITE;
+// 	dpo_monk.state = STATE_ONGROUND;
+// 	dpo_monk.spr = &monk_sprite;
+// 	dpo_monk.collision_state = 0;
+// 	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
+// }
 
 void init_tile_collisions()
 {
@@ -383,33 +408,51 @@ void init_tile_collisions()
 
 void init_resources()
 {
+	uint8_t two_step_state[] = {2,2};
+	uint8_t single_step_state[] = {1,1};
+	uint8_t three_step_state[] = {3,3};
+	uint8_t bullet_state[] = {1,1};
+	uint8_t bat_state[] = {2};
+	uint8_t waterdrop_state[] = {3};
+	uint8_t single_four_state[] = {4};
+	uint8_t spider_state[]={2};
+	uint8_t archer_state[]={2,2};
+
+
 	tile_init();
 	vdp_clear_grp1(0);
-	sys_set_rom();
+
+	sys_set_ascii_page3(4);  // PAGE 1 -- it would be good to define this with labels
+
 	/** initialize static tile sets for map data */
 	INIT_TILE_SET(tileset_map1, maptiles1);
 	INIT_TILE_SET(tileset_map2, maptiles2);
-	INIT_TILE_SET(tileset_map3, maptiles3);
 	INIT_TILE_SET(tileset_map4, maptiles4);
 	INIT_TILE_SET(tileset_map5, maptiles5);
 
 	/** allocate static tiles for map */
 	tile_set_valloc(&tileset_map1);
 	tile_set_valloc(&tileset_map2);
-	tile_set_valloc(&tileset_map3);
 
 	/** fixed index allocations for map consistency **/
 	tile_set_to_vram(&tileset_map4, 126);
 	tile_set_to_vram(&tileset_map5, 126 + 32);
 
-	/** load font tileset */
-	INIT_TILE_SET(tileset[TILE_FONT_DIGITS], font_digits);
-	INIT_TILE_SET(tileset[TILE_FONT_UPPER], font_upper);
-	INIT_TILE_SET(tileset[TILE_FONT_LOWER], font_lower);
-	tile_set_valloc(&tileset[TILE_FONT_DIGITS]);
-	tile_set_valloc(&tileset[TILE_FONT_UPPER]);
-	tile_set_valloc(&tileset[TILE_FONT_LOWER]);
+	sys_set_ascii_page3(6);
+	INIT_TILE_SET(tileset_map3, maptiles3);
+	tile_set_valloc(&tileset_map3);
 
+
+	/** load font tileset */
+	// INIT_TILE_SET(tileset[TILE_FONT_DIGITS], font_digits);
+	// INIT_TILE_SET(tileset[TILE_FONT_UPPER], font_upper);
+	// INIT_TILE_SET(tileset[TILE_FONT_LOWER], font_lower);
+	// tile_set_valloc(&tileset[TILE_FONT_DIGITS]);
+	// tile_set_valloc(&tileset[TILE_FONT_UPPER]);
+	// tile_set_valloc(&tileset[TILE_FONT_LOWER]);
+
+
+	sys_set_ascii_page3(4);
 	/** initialize dynamic tile sets */
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 2, 1);
@@ -433,26 +476,28 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
 
-	/** initialize sprite pattern sets */
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_BAT], SPR_SIZE_16x16, 1, 1, 2, bat);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_RAT], SPR_SIZE_16x16, 1, 2, 2, rat);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SPIDER], SPR_SIZE_16x16, 1, 1, 2, spider);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_MONK], SPR_SIZE_16x32, 1, 2, 3, monk1);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_TEMPLAR], SPR_SIZE_16x32, 1, 2, 2, templar);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WORM], SPR_SIZE_16x16, 1, 2, 2, worm);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SKELETON], SPR_SIZE_16x32, 1, 2, 2, skeleton);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_PALADIN], SPR_SIZE_16x32, 1, 2, 2, paladin);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_GUADANYA], SPR_SIZE_16x16, 1, 1, 4, guadanya);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_GHOST], SPR_SIZE_16x16, 1, 2, 2, ghost);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_DEMON], SPR_SIZE_16x32, 1, 2, 2, demon);
-//	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_DEATH], SPR_SIZE_32x32, 1, 2, 2, death);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_DARKBAT], SPR_SIZE_16x16, 1, 2, 2, darkbat);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FLY], SPR_SIZE_16x16, 1, 2, 2, fly);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_SKELETON_CEILING], SPR_SIZE_16x32, 1, 2, 2, skeleton_ceiling);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FISH], SPR_SIZE_16x16, 1, 1, 2, fish);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_FIREBALL], SPR_SIZE_16x16, 1, 1, 2, fireball);
-	SPR_DEFINE_PATTERN_SET(spr_pattern[PATRN_WATERDROP], SPR_SIZE_16x16, 1, 1, 3, waterdrop);
-	sys_set_bios();
 
-        init_monk();
+	sys_set_ascii_page3(7);
+	/** initialize sprite pattern sets */
+	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);
+	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_step_state, rat);
+	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, bat_state, spider);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1);
+	SPR_DEFINE_PATTERN_SET(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2, two_step_state, templar);
+	SPR_DEFINE_PATTERN_SET(PATRN_WORM, SPR_SIZE_16x16, 1, 2, two_step_state, worm);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton);
+	SPR_DEFINE_PATTERN_SET(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2, two_step_state, paladin);
+	SPR_DEFINE_PATTERN_SET(PATRN_GUADANYA, SPR_SIZE_16x16, 1, 1, single_four_state, guadanya);
+	SPR_DEFINE_PATTERN_SET(PATRN_GHOST, SPR_SIZE_16x16, 1, 2, two_step_state, ghost);
+	SPR_DEFINE_PATTERN_SET(PATRN_DEMON, SPR_SIZE_16x32, 1, 2, two_step_state, demon);
+//	SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, 2, death);
+	SPR_DEFINE_PATTERN_SET(PATRN_DARKBAT, SPR_SIZE_16x16, 1, 2, two_step_state, darkbat);
+	SPR_DEFINE_PATTERN_SET(PATRN_FLY, SPR_SIZE_16x16, 1, 2, two_step_state, fly);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON_CEILING, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton_ceiling);
+	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
+	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
+	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
+
+
+        //init_monk();
 }

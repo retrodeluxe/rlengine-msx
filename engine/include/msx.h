@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define asm__di                 __asm di __endasm
-#define asm__ei                 __asm ei __endasm
-#define wait_vsync()		__asm halt __endasm
+#define sys_irq_disable()                 __asm di __endasm
+#define sys_irq_enable()                 __asm ei __endasm
+#define sys_wait_vsync()		__asm halt __endasm
 #endif				/* _MSX_H_ */

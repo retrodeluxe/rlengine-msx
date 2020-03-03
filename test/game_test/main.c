@@ -25,7 +25,8 @@
 
 #include "gen/intro_tileset_ext.h"
 #include "gen/game_test_tiles_ext.h"
-//#include "gen/map_defs.h"
+#include "gen/map_defs.h"
+#include "gen/map_init.h"
 
 extern const unsigned char intro_map_intro_w;
 extern const unsigned char intro_map_intro_h;
@@ -39,6 +40,8 @@ void animate_all();
 void check_and_change_room();
 void show_score_panel();
 void play_music();
+void load_room(uint8_t room);
+
 
 struct tile_set logo;
 struct tile_set tileset_intro;
@@ -56,6 +59,8 @@ struct list_head *elem,*elem2;
 uint8_t scr_tile_buffer[768];
 extern void sys_set_ascii_page3(char page);
 
+uint8_t current_room;
+
 void main()
 {
 	vdp_set_mode(vdp_grp2);
@@ -64,18 +69,28 @@ void main()
 
 	show_title_screen();
 
-	//init_map_index();
-	//init_resources();
+	init_map_tilelayers();
+	init_map_object_layers();
 
-	//init_animators();
-	//init_game_state();
-	//load_room();
+	log_w("duh\n");
+	init_resources();
+	log_w("nah\n");
+	init_animators();
+	init_game_state();
+
+	current_room = 0;
+	load_room(current_room);
 	show_score_panel();
 	/** game loop **/
 	for(;;) {
-		wait_vsync();
+		sys_irq_enable();
+		sys_wait_vsync();
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
+
+		if (stick == STICK_RIGHT) {
+			load_room(current_room++);
+		}
 
 		//check_and_change_room();
 		//animate_all();
@@ -151,6 +166,9 @@ void show_title_screen()
 	sys_proc_register(play_music);
 
 	do {
-		wait_vsync();
+		sys_wait_vsync();
 	} while (sys_get_key(8) & 1);
+
+	vdp_clear_grp1(0);
+
  }

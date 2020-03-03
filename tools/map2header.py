@@ -344,6 +344,8 @@ class ObjectGroupLayer:
                 else:
                     self.object_properties[_type] = item['properties'].keys()
                 length = len(item['properties'].keys())
+                ## this works for a single layer not the whole thing.
+                ## maybe replace padding with a special scan?
                 if length > self.max_num_properties:
                     self.max_num_properties = length
                 ## Find Properties that require enums
@@ -361,17 +363,24 @@ class ObjectGroupLayer:
 
     def dump_as_c_header_no_data(self, file, basename):
         count = 0
-        print >>file,("extern const unsigned char %s_%s_size;\n" % (basename, self.name))
+        #print >>file,("extern const unsigned char %s_%s_size;\n" % (basename, self.name))
         for item in self.raw_objects:
-            print >>file,("extern const unsigned char %s_%s_obj%s[];\n" % (basename, self.name, count)),
-            count = count + 1
+            print >>file,("extern const unsigned char %s_%s_objs[];\n" % (basename, self.name)),
+            #count = count + 1
 
     def dump_as_c_header(self, file, basename):
+        # Need to dump all the objects in a room in a sequence --
+        # map_room00_objs[] = {<OBJ1>, <OBJ2>, ... <TERMINATION>}
+        # map_room01_objs[] = ...
+
+        # in init just asign each room to a an array item.
+
         count = 0
         total_size = 0
-        print >>file,("const unsigned char %s_%s_size = %s;\n" % (basename, self.name, len(self.raw_objects)))
+        # print >>file,("const unsigned char %s_%s_size = %s;\n" % (basename, self.name, len(self.raw_objects)))
+        print >>file,("const unsigned char %s_%s_objs[] = {" % (basename, self.name)),
         for item in self.raw_objects:
-            print >>file,("const unsigned char %s_%s_obj%s[] = {" % (basename, self.name, count)),
+            #print >>file,("const unsigned char %s_%s_obj%s[] = {" % (basename, self.name, count)),
             _type = item['type']
             if _type == '':
                 _type = item['name']
@@ -397,8 +406,14 @@ class ObjectGroupLayer:
                 else:
                     print >>file,("%s," % value),
             total_size += len(self.object_properties[_type])
-            print >>file,("};")
+            ## add padding if needed (should never be neeeded anymore)
+            ## something else is still wrong over here...
+            padding = self.max_num_properties - len(self.object_properties[_type]) + 2
+            print padding
+            for i in xrange(padding):
+                print >>file,("0,"),
             count = count + 1
+        print >>file,("255};")
         return total_size
 
     def dump_structures(self):
@@ -543,20 +558,17 @@ class TileMapWriter:
             # Object Group layers
             #
             count = 0
-            for layer in self.tilemap.objectgroup_layers:
-                print >>fout,("unsigned char *%s_object_%s[%s];" % (self.basename, layer.name.replace(' ','_'), len(layer.objects)))
+            print >>fout,("unsigned char *%s_object_layer[%s];" % (self.basename, len(self.tilemap.objectgroup_layers)))
             print >>fout,("/*\n * Initialization\n */")
             if count > 0:
                 print >>fout,("unsigned char *%s_object[%s];" % (self.basename, count))
-
             print >>fout,("void init() {\n main();\n}")
             print >>fout,("void init_%s_object_layers() {" % self.basename)
+            layer_count = 0
             for layer in self.tilemap.objectgroup_layers:
-                count = 0
                 name = layer.name.replace(' ','_')
-                for object in layer.objects:
-                    print >>fout,( "\t%s_object_%s[%s] = %s_%s_obj%s; " % (self.basename, name, count, self.basename, name, count))
-                    count = count + 1
+                print >>fout,( "\t%s_object_layer[%s] = %s_%s_objs; " % (self.basename, layer_count, self.basename, name))
+                layer_count = layer_count + 1
             print >>fout,("}")
             for layer in self.tilemap.tile_layers:
                 layer.dump_as_c_header_accessor(fout, self.basename)

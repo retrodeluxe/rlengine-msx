@@ -45,7 +45,7 @@ void check_and_change_room()
 	if (change) {
 		dpo_monk.state = STATE_ONGROUND;
 		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-		load_room();
+		// TODO :: load_room();
 	}
 }
 
