@@ -141,9 +141,11 @@ void load_room(uint8_t room)
 
 	sys_set_ascii_page3(6);
 
+	// there is a mismatch between this two
+
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
-	//
-	// spr_init();
+
+	spr_clear();
 	// phys_init();
 	//free_patterns();
 	// init_tile_collisions();
@@ -394,6 +396,7 @@ void load_room(uint8_t room)
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
 		if (dpo->type == DISP_OBJECT_SPRITE) {
+			log_e("showing sprite\n");
 			spr_show(dpo->spr);
 		} else if (dpo->type == DISP_OBJECT_TILE) {
 			log_e("showing dpo\n");
@@ -506,6 +509,7 @@ void init_resources()
 
 
 	sys_set_ascii_page3(7);
+	spr_init();
 	/** initialize sprite pattern sets */
 	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);
 	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_step_state, rat);

@@ -102,6 +102,7 @@ extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 									spr_pattern[(X)].colors = PATTERNS ## _color
 
 extern void spr_init();
+extern void spr_clear();
 //extern voud spr_define_pattern_set(uint8_t size, uint8_t planes, uint8_t state, uint8_t *steps, )
 extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);

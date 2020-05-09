@@ -126,7 +126,7 @@ void music_isr(void)
 void music_init(uint16_t* song)
 {
     // need to place the player ISR in hook
-    sys_proc_register(music_isr);
+    sys_irq_register(music_isr);
 
     replay_init();
 

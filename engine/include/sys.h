@@ -47,7 +47,8 @@ extern uint8_t sys_get_trigger(uint8_t port);
 extern void sys_memcpy(uint8_t * dst, uint8_t * src, uint16_t size);
 #define     sys_memset __builtin_memset
 
-extern void sys_proc_register(void (*func));
+extern void sys_irq_register(void (*func));
+extern void sys_irq_unregister(void (*func));
 extern void sys_irq_init();
 extern void sys_sleep(unsigned int time_ms);
 extern uint16_t sys_gettime_secs();

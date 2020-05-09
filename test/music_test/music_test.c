@@ -30,7 +30,7 @@ void main()
 	pt3_init(SONG00 ,0);
 
 	sys_irq_init();
-	sys_proc_register(play_music);
+	sys_irq_register(play_music);
 	do {
 		wait_vsync();
 	} while (sys_get_key(8) & 1);

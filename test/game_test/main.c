@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (C) Retro DeLuxe 2017, All rights reserved.
+ * Copyright (C) Retro DeLuxe 2017-2020, All rights reserved.
  *
  */
 
@@ -72,13 +72,11 @@ void main()
 	init_map_tilelayers();
 	init_map_object_layers();
 
-	log_w("duh\n");
 	init_resources();
-	log_w("nah\n");
 	init_animators();
 	init_game_state();
 
-	current_room = 0;
+	current_room = 5;
 	load_room(current_room);
 	show_score_panel();
 	/** game loop **/
@@ -130,14 +128,11 @@ void play_music()
 	pt3_play();
 }
 
-
 void show_logo() {
 	// TODO : add resources
 	do {
 	} while (sys_get_key(8) & 1);
 }
-
-
 
 void show_title_screen()
 {
@@ -163,11 +158,14 @@ void show_title_screen()
 	pt3_init(title_pt3, 0);
 	sys_irq_init();
 	//show_logo();
-	sys_proc_register(play_music);
+	sys_irq_register(play_music);
 
 	do {
 		sys_wait_vsync();
 	} while (sys_get_key(8) & 1);
+
+	sys_irq_unregister(play_music);
+	pt3_mute();
 
 	vdp_clear_grp1(0);
 

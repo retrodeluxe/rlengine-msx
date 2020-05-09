@@ -90,14 +90,30 @@ void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size)
 }
 
 /**
- * sys_proc_register:
+ * sys_irq_register:
  *      register a function to be run from the interrupt handler
  *      any registered caller must run with _interrupts disabled_
  */
-void sys_proc_register(void (*func))
+void sys_irq_register(void (*func))
 {
-    sys_procs.proc[sys_procs.np++].func = func;
+	sys_procs.proc[sys_procs.np++].func = func;
 }
+
+/**
+ * sys_irq_unregister
+ */
+void sys_irq_unregister(void (*func))
+{
+	for (i = 0; i < sys_procs.np; i++) {
+		if(sys_procs.proc[i].func == func)
+			break;
+	}
+	for (;i < sys_procs.np - 1; i++) {
+		sys_procs.proc[i].func = sys_procs.proc[i + 1].func;
+	}
+	sys_procs.np--;
+}
+
 
 /**
  * sys_irq_handler:

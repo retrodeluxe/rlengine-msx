@@ -57,7 +57,7 @@ void phys_init()
 void phys_set_sprite_collision_handler(void (*handler))
 {
 	sprite_colision_cb = handler;
-	sys_proc_register(phys_check_collision_bit);
+	sys_irq_register(phys_check_collision_bit);
 }
 
 

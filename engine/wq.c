@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "msx.h"
 #include "sys.h"
 #include "wq.h"
@@ -72,8 +72,8 @@ void wq_start()
     wq.tail = 0;
     delayed_wq.head = 0;
     delayed_wq.tail = 0;
-    sys_proc_register(wq_run);
-    sys_proc_register(wq_delayed_run);
+    sys_irq_register(wq_run);
+    sys_irq_register(wq_delayed_run);
 }
 
 int queue_work(struct work_struct *work)

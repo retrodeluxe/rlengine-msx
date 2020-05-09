@@ -37,12 +37,16 @@ struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
  */
 void spr_init(void)
 {
+	spr_clear();
+	sys_memset(spr_pattern, 0,  sizeof(struct spr_pattern_set) * SPR_PATRN_MAX);
+}
+
+void spr_clear(void) {
 	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 	// set all atributes out of screen
 	vdp_memset(vdp_base_spatr_grp1, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites, 212);
 	sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
-	sys_memset(spr_pattern, 0,  sizeof(struct spr_pattern_set) * SPR_PATRN_MAX);
 }
 
 void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)
@@ -153,7 +157,9 @@ uint8_t spr_show(struct spr_sprite_def *sp)
 	n = sp->pattern_set->n_planes;
 	if (sp->pattern_set->size == SPR_SIZE_16x32)
 		n = n * 2;
+	log_e("alloc spr target %d\n",n);
 	for (i = 0; i < vdp_hw_max_sprites - 1; i++) {
+		log_e("alloc spr %d\n",f);
 		f = f * spr_attr_valloc[i] + spr_attr_valloc[i];
 		if (f == n) {
 			idx = i - n + 1;
