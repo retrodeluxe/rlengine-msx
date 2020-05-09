@@ -71,7 +71,7 @@ struct tile_object {
 							(SET).n_dirs = D;
 
 extern void tile_init();
-extern void tile_set_valloc(struct tile_set *ts);
+extern bool tile_set_valloc(struct tile_set *ts);
 extern void tile_set_vfree(struct tile_set *ts);
 extern void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t offset);
 extern void tile_set_to_vram(struct tile_set *ts, uint8_t pos);

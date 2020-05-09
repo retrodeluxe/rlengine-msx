@@ -25,8 +25,12 @@ extern void sys_set_ascii_page3(char page);
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
 struct tile_set tileset_map3;
+struct tile_set tileset_map3b;
 struct tile_set tileset_map4;
 struct tile_set tileset_map5;
+struct tile_set tileset_map6;
+struct tile_set tileset_map7;
+
 
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
@@ -71,9 +75,14 @@ static void free_patterns()
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
 	// before Allocating to VRAM tiles
+	bool success;
 
 	sys_set_ascii_page3(4);
-	tile_set_valloc(&tileset[tileidx]);
+	success = tile_set_valloc(&tileset[tileidx]);
+	if (!success) {
+		log_e("could not allocate tileobject\n");
+		return;
+	}
 	sys_set_ascii_page3(7);
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
@@ -117,6 +126,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	dpo->xpos = map_object->x;
 	dpo->ypos = map_object->y;
 	dpo->state = 0;
+	dpo->collision_state = 0;
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
 	INIT_LIST_HEAD(&dpo->animator_list);
@@ -135,10 +145,43 @@ void load_room(uint8_t room)
 	spr_ct = 0, tob_ct = 0;
 
 	vdp_screen_disable();
+	tile_init();
 
-	// that doesn't work anymore because the map is split in blocks,
-	// map_map_segment_dict
+	// fixme move elsewhere
+	if (room == 8) {
+		sys_set_ascii_page3(4);
+		INIT_TILE_SET(tileset_map1, maptiles1);
+		INIT_TILE_SET(tileset_map2, maptiles2);
+		INIT_TILE_SET(tileset_map4, maptiles4);
+		INIT_TILE_SET(tileset_map5, maptiles5);
+		tile_set_valloc(&tileset_map1);
+		tile_set_to_vram(&tileset_map4, 126);
+		tile_set_to_vram(&tileset_map5, 126 + 32);
+		sys_set_ascii_page3(6);
+		INIT_TILE_SET(tileset_map3, maptiles3);
+		tile_set_to_vram(&tileset_map3, 65);
+		sys_set_ascii_page3(8);
+		INIT_TILE_SET(tileset_map6, maptiles6);
+		INIT_TILE_SET(tileset_map7, maptiles7);
+		INIT_TILE_SET(tileset_map3b, maptiles3b);
+		tile_set_to_vram(&tileset_map3b, 97);
+		tile_set_to_vram(&tileset_map6, 126 + 64);
+		tile_set_to_vram(&tileset_map7, 126 + 96);
+	} else {
+		sys_set_ascii_page3(4);
+		INIT_TILE_SET(tileset_map1, maptiles1);
+		INIT_TILE_SET(tileset_map2, maptiles2);
+		INIT_TILE_SET(tileset_map4, maptiles4);
+		INIT_TILE_SET(tileset_map5, maptiles5);
+		tile_set_valloc(&tileset_map1);
+		tile_set_valloc(&tileset_map2);
+		tile_set_to_vram(&tileset_map4, 126);
+		tile_set_to_vram(&tileset_map5, 126 + 32);
+		sys_set_ascii_page3(6);
+		INIT_TILE_SET(tileset_map3, maptiles3);
+		tile_set_valloc(&tileset_map3);
 
+	}
 	sys_set_ascii_page3(6);
 
 	// there is a mismatch between this two
@@ -146,9 +189,8 @@ void load_room(uint8_t room)
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
 
 	spr_clear();
-	// phys_init();
-	//free_patterns();
-	// init_tile_collisions();
+	phys_init();
+	init_tile_collisions();
 
 	// sys_set_rom();
 	// spr_valloc_pattern_set(&spr_pattern[PATRN_MONK]);
@@ -337,7 +379,7 @@ void load_room(uint8_t room)
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_BAT);
-				//add_animator(dpo, ANIM_LEFT_RIGHT);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
 				add_animator(dpo, ANIM_STATIC);
@@ -412,7 +454,7 @@ void load_room(uint8_t room)
 
 
 
-// void init_monk()
+// void init_monk()sys_set_ascii_page3(4);  // PAGE 1 -- it would be good to define this with labels
 // {
 // 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 // 	dpo_monk.xpos = 100;
@@ -428,7 +470,7 @@ void load_room(uint8_t room)
 void init_tile_collisions()
 {
 	uint8_t i;
-	for (i = 1; i < 76; i++)
+	for (i = 1; i < 86; i++)
 		phys_set_colliding_tile(i);
 
 	phys_clear_colliding_tile(16); // step brown
@@ -451,28 +493,7 @@ void init_resources()
 
 
 	tile_init();
-	vdp_clear_grp1(0);
-
-	sys_set_ascii_page3(4);  // PAGE 1 -- it would be good to define this with labels
-
-	/** initialize static tile sets for map data */
-	INIT_TILE_SET(tileset_map1, maptiles1);
-	INIT_TILE_SET(tileset_map2, maptiles2);
-	INIT_TILE_SET(tileset_map4, maptiles4);
-	INIT_TILE_SET(tileset_map5, maptiles5);
-
-	/** allocate static tiles for map */
-	tile_set_valloc(&tileset_map1);
-	tile_set_valloc(&tileset_map2);
-
-	/** fixed index allocations for map consistency **/
-	tile_set_to_vram(&tileset_map4, 126);
-	tile_set_to_vram(&tileset_map5, 126 + 32);
-
-	sys_set_ascii_page3(6);
-	INIT_TILE_SET(tileset_map3, maptiles3);
-	tile_set_valloc(&tileset_map3);
-
+	//tile_set_to_vram(&tileset_map3b, 90);
 
 	/** load font tileset */
 	// INIT_TILE_SET(tileset[TILE_FONT_DIGITS], font_digits);
@@ -481,7 +502,6 @@ void init_resources()
 	// tile_set_valloc(&tileset[TILE_FONT_DIGITS]);
 	// tile_set_valloc(&tileset[TILE_FONT_UPPER]);
 	// tile_set_valloc(&tileset[TILE_FONT_LOWER]);
-
 
 	sys_set_ascii_page3(4);
 	/** initialize dynamic tile sets */
@@ -507,7 +527,6 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
 
-
 	sys_set_ascii_page3(7);
 	spr_init();
 	/** initialize sprite pattern sets */
@@ -529,7 +548,6 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
 	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
 	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
-
 
         //init_monk();
 }

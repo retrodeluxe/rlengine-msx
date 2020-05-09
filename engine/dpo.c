@@ -20,7 +20,8 @@
 #include "dpo.h"
 #include "phys.h"
 #include "sprite.h"
-
+#define DEBUG
+#include "log.h"
  /**
   * Handle sprite animation for simple cases of 2 and 4 states with collision
   */
@@ -28,11 +29,10 @@
  {
  	uint8_t old_dir, x, y;
 	struct spr_sprite_def *sp = dpo->spr;
- 	struct spr_pattern_set *ps = sp->pattern_set;
 
 	x = (sp->planes[0]).x;
 	y = (sp->planes[0]).y;
-	
+
 	if (dpo-> type == DISP_OBJECT_SPRITE) {
 		spr_animate(sp, dx, dy);
 

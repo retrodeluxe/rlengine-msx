@@ -16,8 +16,11 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
+#define DEBUG
+
 #include "bitmap.h"
+#include "log.h"
 
 inline static uint8_t get(uint8_t a, uint8_t pos) {
     return (a >> pos) & 1;
@@ -47,14 +50,28 @@ void bitmap_reset(uint8_t *bitmap, uint8_t pos) {
  * bitmap_find_gap:
  *      find a sequence of n 1s in the bitmap
  */
-uint8_t bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size)
+bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size,
+	uint8_t *pos)
 {
 	uint8_t i, nfree = 0;
 	for(i = 0, bitmap_size *= 8; i < bitmap_size; i++) {
 		nfree = nfree * bitmap_get(bitmap,i) + bitmap_get(bitmap,i);
-		if (nfree == gap_size)
-			return i - gap_size + 1;
+		if (nfree == gap_size) {
+			*pos = i - gap_size + 1;
+			return true;
+		}
 	}
-	// TOOD: use errno
-	return 255;
+	return false;
+}
+
+
+
+void bitmap_dump(uint8_t *bitmap, uint8_t bitmap_size)
+{
+	uint8_t i;
+	log_e("bitmap dump\n");
+	for(i = 0; i < bitmap_size * 8; i++) {
+	 	log_e("%d - %d\n", i, bitmap_get(bitmap,i));
+	 }
+	 log_e("\n");
 }

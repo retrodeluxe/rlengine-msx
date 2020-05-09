@@ -34,13 +34,15 @@
 
 #define RLE_BUFSIZE 255
 
-uint8_t bitmap_tile_bank[32];
+#define BITMAP_TILEBANK_SIZE 32			/* 32 * 8 tiles */
+
+uint8_t bitmap_tile_bank[BITMAP_TILEBANK_SIZE];
 uint8_t inflate_buffer[RLE_BUFSIZE];
 
 void tile_init()
 {
 	/* initialize bitmap to all ones : free */
-	sys_memset(bitmap_tile_bank, 255, 32);
+	sys_memset(bitmap_tile_bank, 255, BITMAP_TILEBANK_SIZE);
 
 	// first tile is reserved
 	bitmap_reset(bitmap_tile_bank, 0);
@@ -115,20 +117,30 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 }
 
 /**
- * alloc a tileset in all banks
+ * tile_set_valloc
+ *   attemps to allocate vram for a tileset
+ * params:
+ * return: true if success, false if failure
  */
-void tile_set_valloc(struct tile_set *ts)
+bool tile_set_valloc(struct tile_set *ts)
 {
 	uint16_t offset;
 	uint8_t i, pos, size;
+	bool found;
 
 	if (ts->allocated)
-		return;
+		return true;
 
 	size = ts->w * ts->h;
-	pos = bitmap_find_gap(bitmap_tile_bank, size, 31);
 
-	// TODO: check for fail
+	found = bitmap_find_gap(bitmap_tile_bank, size, BITMAP_TILEBANK_SIZE - 1, &pos);
+	if (!found) {
+		log_e("dump\n");
+		bitmap_dump(bitmap_tile_bank, BITMAP_TILEBANK_SIZE -1);
+		log_e("why not?\n");
+		return false;
+	}
+
 	for (i = pos; i < pos + size; i++)
 		bitmap_reset(bitmap_tile_bank, i);
 
@@ -138,7 +150,8 @@ void tile_set_valloc(struct tile_set *ts)
 
 	ts->allocated = true;
 	ts->pidx = pos;
-	//log_e("allocated tile set at pos %d\n", pos);
+	log_e("allocated tile set at pos %d\n", pos);
+	return true;
 }
 
 /**

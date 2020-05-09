@@ -159,12 +159,12 @@ uint8_t spr_show(struct spr_sprite_def *sp)
 		n = n * 2;
 	log_e("alloc spr target %d\n",n);
 	for (i = 0; i < vdp_hw_max_sprites - 1; i++) {
-		log_e("alloc spr %d\n",f);
 		f = f * spr_attr_valloc[i] + spr_attr_valloc[i];
 		if (f == n) {
 			idx = i - n + 1;
 			sys_memset(&spr_attr_valloc[idx], 0, n);
 			sp->aidx = idx;
+			log_e("alloc spr %d\n",idx);
 			spr_update(sp);
 			return true;
 		}
@@ -215,7 +215,9 @@ void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy)
 	old_dir = sp->cur_state;
 
 	/* update state based on direction of movement */
-	if (sp->pattern_set->n_states < 3) {
+	if (sp->pattern_set->n_states < 2) {
+		// keep current state, no changes
+	} else if (sp->pattern_set->n_states < 3) {
 
 		if (dx > 0) {
 			sp->cur_state = SPR_STATE_RIGHT;
@@ -237,7 +239,6 @@ void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy)
 		}
 
 	} else {
-
 		log_e("Only 2 or 4 states supported\n");
 	}
 

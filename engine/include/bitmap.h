@@ -21,10 +21,12 @@
 #define _BITMAP_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 uint8_t bitmap_get  (uint8_t *bitmap, uint8_t index);
 void bitmap_set   (uint8_t *bitmap, uint8_t index);
 void bitmap_reset (uint8_t *bitmap, uint8_t index);
-uint8_t bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size);
+bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size, uint8_t *pos);
+void bitmap_dump(uint8_t *bitmap, uint8_t bitmap_size);
 
 #endif

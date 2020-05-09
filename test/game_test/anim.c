@@ -185,31 +185,27 @@ void anim_cycle_tile(struct displ_object *dpo)
 
 void anim_left_right(struct displ_object *obj)
 {
-	// FIXME: a-posteriory correction should never be necessary
-	if (obj->state == 0 && !is_colliding_right(obj)) {
-		obj->xpos++;
-		spr_animate(obj->spr, 1, 0);
-	} else if (obj->state == 1 && !is_colliding_left(obj)) {
-		obj->xpos--;
-		spr_animate(obj->spr, -1, 0);
+	int8_t dx = 0;
+	struct spr_sprite_def *sp = obj->spr;
+ 	struct spr_pattern_set *ps = sp->pattern_set;
+	switch(obj->state) {
+		case STATE_MOVING_LEFT:
+			dx = -2;
+			if (is_colliding_left(obj)) {
+				obj->state = STATE_MOVING_RIGHT;
+				dx = 2;
+			}
+			break;
+		case STATE_MOVING_RIGHT:
+			dx = 2;
+			if (is_colliding_right(obj)) {
+				obj->state = STATE_MOVING_LEFT;
+				dx = -2;
+			}
+			break;
 	}
-	if (is_colliding_left(obj)) {
-		obj->state = 0;
-	} else if (is_colliding_right(obj)) {
-		obj->state = 1;
-	}
-	if (!is_colliding_down(obj)) {
-		if (obj->state == 0) {
-			obj->state = 1;
-			obj->xpos-=2;
-			spr_animate(obj->spr, -2, 0);
-		} else {
-			obj->xpos+=2;
-			spr_animate(obj->spr, 2, 0);
-			obj->state = 0;
-		}
-		//phys_detect_tile_collisions(obj, map_buf);
-	}
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0);
+	dpo_simple_animate(obj, dx, 0);
 }
 
 void init_animators()

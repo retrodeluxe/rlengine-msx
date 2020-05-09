@@ -20,6 +20,14 @@ enum dpo_state_t {
 	STATE_ONGROUND,
 };
 
+
+enum obj_state {
+	STATE_MOVING_LEFT,
+	STATE_MOVING_RIGHT,
+	STATE_MOVING_DOWN,
+	STATE_MOVING_UP
+};
+
 extern struct animator animators[7];
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx);

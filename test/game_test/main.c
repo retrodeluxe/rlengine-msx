@@ -76,7 +76,7 @@ void main()
 	init_animators();
 	init_game_state();
 
-	current_room = 5;
+	current_room = 8;
 	load_room(current_room);
 	show_score_panel();
 	/** game loop **/
@@ -91,7 +91,7 @@ void main()
 		}
 
 		//check_and_change_room();
-		//animate_all();
+		animate_all();
 
 		/* framerate limiter 25/30fps */
 		fps_stall = true;
@@ -111,15 +111,15 @@ void show_score_panel()
 	// use the graphics and extend the size of the ROM
 }
 
-// void animate_all() {
-// 	list_for_each(elem, &display_list) {
-// 		dpo = list_entry(elem, struct displ_object, list);
-// 		list_for_each(elem2, &dpo->animator_list) {
-// 			anim = list_entry(elem2, struct animator, list);
-// 			anim->run(dpo);
-// 		}
-// 	}
-// }
+void animate_all() {
+	list_for_each(elem, &display_list) {
+		dpo = list_entry(elem, struct displ_object, list);
+		list_for_each(elem2, &dpo->animator_list) {
+			anim = list_entry(elem2, struct animator, list);
+			anim->run(dpo);
+		}
+	}
+}
 
 
 void play_music()
