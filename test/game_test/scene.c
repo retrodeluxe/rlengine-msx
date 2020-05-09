@@ -46,6 +46,7 @@ struct list_head display_list;
 
 struct map_object_item *map_object;
 
+
 uint8_t spr_ct, tob_ct;
 
 
@@ -71,9 +72,9 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 {
 	// before Allocating to VRAM tiles
 
-	sys_set_ascii_page3(5);
+	sys_set_ascii_page3(4);
 	tile_set_valloc(&tileset[tileidx]);
-
+	sys_set_ascii_page3(7);
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
 	tileobject[objidx].cur_dir = 1;
@@ -108,9 +109,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 {
 	sys_set_ascii_page3(7);
 	spr_valloc_pattern_set(pattidx);
-	// this has changed....
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
-	//sys_set_bios();
 	INIT_LIST_HEAD(&dpo->animator_list);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
@@ -126,6 +125,8 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 
 extern unsigned char *map_map_segment_dict[25];
 extern unsigned char *map_map_segment[25];
+
+uint8_t *room_objs;
 
 void load_room(uint8_t room)
 {
@@ -152,21 +153,27 @@ void load_room(uint8_t room)
 	// spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
 	// sys_set_bios();
 
-
 	INIT_LIST_HEAD(&display_list);
 
 	// reading the map layer object requries swap4
 
 	sys_set_ascii_page3(7);
 
-log_e("room : %d\n",room);
-	find_room_data(room);
-	for (dpo = display_object, i = 0; map_object->type != 255 ; i++, dpo++) {
-		log_e("dpo %d type : %d\n", i ,map_object->type);
-			log_e("dpo %d x : %d\n", i ,map_object->x);
-				log_e("dpo %d y : %d\n", i ,map_object->y);
-		if (map_object->type == ACTIONITEM) {
-			if (map_object->object.actionitem.type == TYPE_SCROLL) {
+	log_e("room : %d\n",room);
+	//find_room_data(room);
+
+	type = 0;
+	room_objs = map_object_layer[room];
+	for (dpo = display_object, i = 0; type != 255 ; i++, dpo++) {
+		sys_set_ascii_page3(7);
+		map_object = (struct map_object_item *) room_objs;
+		type = map_object->type;
+		log_e("type %d\n", type);
+		log_e("room_objs %x\n", room_objs);
+		if (type == ACTIONITEM) {
+			uint8_t action_item_type = map_object->object.actionitem.type;
+			log_e("action_item_type %d\n", action_item_type);
+			if (action_item_type == TYPE_SCROLL) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.scroll[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_SCROLL);
@@ -229,13 +236,18 @@ log_e("room : %d\n",room);
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else {
-				map_object++;
+				room_objs = room_objs + sizeof(struct map_object_item)
+							- sizeof(union map_object)
+							+ sizeof(struct map_object_actionitem);
 				continue;
 			}
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_actionitem);
 		} else if (map_object->type == STATIC) {
 			if (map_object->object.static_.type == TYPE_DRAGON) {
-				add_tileobject(dpo, tob_ct, TILE_DRAGON);
+ 				// this is crashing, ignore
+				//add_tileobject(dpo, tob_ct, TILE_DRAGON);
 				// here there is some nice animation to do
 			} else if (map_object->object.static_.type == TYPE_LAVA) {
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
@@ -243,16 +255,23 @@ log_e("room : %d\n",room);
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				add_tileobject(dpo, tob_ct, TILE_SPEAR);
 			} else if (map_object->object.static_.type == TYPE_WATER) {
+				// this one also crashing?
 				add_tileobject(dpo, tob_ct, TILE_WATER);
 				//add_animator(dpo, ANIM_CYCLE_TILE);
 			}
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_static);
 		} else if (map_object->type == GHOST) {
 			add_sprite(dpo, spr_ct, PATRN_GHOST);
 			add_animator(dpo, ANIM_STATIC);
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_ghost);
 		} else if (map_object->type == ROPE) {
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_rope);
 		} else if (map_object->type == DOOR) {
 			type = map_object->object.door.type;
 			id = map_object->object.door.action_id;
@@ -277,7 +296,9 @@ log_e("room : %d\n",room);
 				}
 				phys_set_colliding_tile_object(dpo, false);
 			}
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_door);
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
 				add_sprite(dpo, spr_ct, PATRN_FISH);
@@ -292,16 +313,22 @@ log_e("room : %d\n",room);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
 			}
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
 			add_tileobject(dpo, tob_ct, TILE_CROSS);
 			add_animator(dpo, ANIM_CYCLE_TILE);
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_block);
 		} else if (map_object->type == STEP) {
 			// add special collisions
 
 			// need to see what to do with these ones
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_step);
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
@@ -329,10 +356,10 @@ log_e("room : %d\n",room);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
 				//add_animator(dpo, ANIM_LEFT_RIGHT);
-			} else if (map_object->object.movable.type == TYPE_DEATH) {
-				// this is a big sprite 32x32 not supported yet
-				map_object++;
-				continue;
+			// } else if (map_object->object.movable.type == TYPE_DEATH) {
+			// 	// this is a big sprite 32x32 not supported yet
+			// 	map_object++;
+			// 	continue;
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
 				//add_animator(dpo, ANIM_LEFT_RIGHT);
@@ -348,13 +375,14 @@ log_e("room : %d\n",room);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
 			} else {
-				map_object++;
+				room_objs = room_objs + sizeof(struct map_object_item)
+							- sizeof(union map_object)
+							+ sizeof(struct map_object_movable);
 				continue;
 			}
-			map_object++;
-
-		} else {
-			map_object++;
+			room_objs = room_objs + sizeof(struct map_object_item)
+						- sizeof(union map_object)
+						+ sizeof(struct map_object_movable);
 		}
 	}
 	INIT_LIST_HEAD(&dpo_monk.animator_list);

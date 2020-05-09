@@ -106,8 +106,8 @@ class TileLayer:
 
     def room_split(self, buf_in, w, h):
         buf_out = []
-        for bx in range(0, self.w/w):
-            for by in range(0, self.h/h):
+        for by in range(0, self.h/h):
+            for bx in range(0, self.w/w):
                 offset = bx * w + by * h * self.w
                 block = []
                 for y in range(0, h):
@@ -328,7 +328,7 @@ class ObjectGroupLayer:
         """
         self.object_properties = {}
         self.enum_properties = {}
-        self.max_num_properties = 1;
+        self.max_num_properties = {};
         for item in self.raw_objects:
             # find all types or names
             _type = item['type']
@@ -346,8 +346,8 @@ class ObjectGroupLayer:
                 length = len(item['properties'].keys())
                 ## this works for a single layer not the whole thing.
                 ## maybe replace padding with a special scan?
-                if length > self.max_num_properties:
-                    self.max_num_properties = length
+                #if length > self.max_num_properties[_type]:
+                #    self.max_num_properties[_type] = length
                 ## Find Properties that require enums
                 for _property in item['properties'].keys():
                     value = item['properties'][_property]
@@ -368,7 +368,7 @@ class ObjectGroupLayer:
             print >>file,("extern const unsigned char %s_%s_objs[];\n" % (basename, self.name)),
             #count = count + 1
 
-    def dump_as_c_header(self, file, basename):
+    def dump_as_c_header(self, file, basename, global_properties):
         # Need to dump all the objects in a room in a sequence --
         # map_room00_objs[] = {<OBJ1>, <OBJ2>, ... <TERMINATION>}
         # map_room01_objs[] = ...
@@ -389,7 +389,7 @@ class ObjectGroupLayer:
                 item['x'] % 256,  item['y'] % 176,  item['width'],  \
                 item['height'], 1 if item['visible'] else 0)),
             total_size += 6
-            for _property in self.object_properties[_type]:
+            for _property in global_properties[_type]:
                 if 'properties' in item and _property in item['properties']:
                     value = item['properties'][_property]
                 else:
@@ -408,10 +408,12 @@ class ObjectGroupLayer:
             total_size += len(self.object_properties[_type])
             ## add padding if needed (should never be neeeded anymore)
             ## something else is still wrong over here...
-            padding = self.max_num_properties - len(self.object_properties[_type]) + 2
-            print padding
-            for i in xrange(padding):
-                print >>file,("0,"),
+			## problem is that we need to add padding for each type - to ensure consistency -
+
+            # padding = self.max_num_properties - len(self.object_properties[_type]) + 2
+            # print padding
+            # for i in xrange(padding):
+            #     print >>file,("0,"),
             count = count + 1
         print >>file,("255};")
         return total_size
@@ -504,7 +506,7 @@ class TileMapWriter:
             """
             self.object_properties = {}
             self.enum_properties = {}
-            self.max_num_properties = 1;
+            self.max_num_properties = {};
             for object_layer in self.tilemap.objectgroup_layers:
                 for item in object_layer.raw_objects:
                     # find all types or names
@@ -521,9 +523,6 @@ class TileMapWriter:
                         else:
                             self.object_properties[_type] = item['properties'].keys()
                         length = len(item['properties'].keys())
-                        if length > self.max_num_properties:
-                            self.max_num_properties = length
-                        ## Find Properties that require enums
                         for _property in item['properties'].keys():
                             value = item['properties'][_property]
                             if (not value.isdigit() and not value.replace('.','').isdigit()):
@@ -726,7 +725,7 @@ class TileMapWriter:
 
             size = 0
             for layer in self.tilemap.objectgroup_layers:
-                size += layer.dump_as_c_header(fout, self.basename)
+                size += layer.dump_as_c_header(fout, self.basename, self.object_properties)
             if size > 8192:
                 print ("FATAL: map file bigger than 8k")
                 exit(1)
