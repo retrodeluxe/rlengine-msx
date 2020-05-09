@@ -186,8 +186,6 @@ void anim_cycle_tile(struct displ_object *dpo)
 void anim_left_right(struct displ_object *obj)
 {
 	int8_t dx = 0;
-	struct spr_sprite_def *sp = obj->spr;
- 	struct spr_pattern_set *ps = sp->pattern_set;
 	switch(obj->state) {
 		case STATE_MOVING_LEFT:
 			dx = -2;
@@ -208,9 +206,34 @@ void anim_left_right(struct displ_object *obj)
 	dpo_simple_animate(obj, dx, 0);
 }
 
+void anim_up_down(struct displ_object *obj)
+{
+	int8_t dy = 0;
+	switch(obj->state) {
+		case STATE_MOVING_DOWN:
+			dy = 2;
+			if (is_colliding_down(obj)) {
+				obj->state = STATE_MOVING_UP;
+				dy = -2;
+			}
+			break;
+		case STATE_MOVING_UP:
+			dy = -2;
+			if (is_colliding_up(obj)) {
+				obj->state = STATE_MOVING_DOWN;
+				dy = 2;
+			}
+			break;
+	}
+	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy);
+	dpo_simple_animate(obj, 0, dy);
+}
+
+
 void init_animators()
 {
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
+	animators[ANIM_UP_DOWN].run = anim_up_down;
 	animators[ANIM_GRAVITY].run = anim_gravity;
 	animators[ANIM_STATIC].run = anim_static;
 	// animators[3].run = anim_up_down;

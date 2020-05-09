@@ -382,13 +382,14 @@ void load_room(uint8_t room)
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_UP_DOWN);
+				 dpo->state = STATE_MOVING_DOWN;
 			} else if (map_object->object.movable.type == TYPE_RAT) {
 				add_sprite(dpo, spr_ct, PATRN_RAT);
-				//add_animator(dpo, ANIM_LEFT_RIGHT);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_WORM) {
 				add_sprite(dpo, spr_ct, PATRN_WORM);
-				//add_animator(dpo, ANIM_LEFT_RIGHT);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
@@ -399,7 +400,7 @@ void load_room(uint8_t room)
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
-				//add_animator(dpo, ANIM_LEFT_RIGHT);
+				add_animator(dpo, ANIM_LEFT_RIGHT);
 			// } else if (map_object->object.movable.type == TYPE_DEATH) {
 			// 	// this is a big sprite 32x32 not supported yet
 			// 	map_object++;

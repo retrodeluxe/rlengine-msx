@@ -76,7 +76,7 @@ void main()
 	init_animators();
 	init_game_state();
 
-	current_room = 8;
+	current_room = 2;
 	load_room(current_room);
 	show_score_panel();
 	/** game loop **/
@@ -87,7 +87,7 @@ void main()
 		stick = sys_get_stick(0);
 
 		if (stick == STICK_RIGHT) {
-			load_room(current_room++);
+			load_room(++current_room);
 		}
 
 		//check_and_change_room();
