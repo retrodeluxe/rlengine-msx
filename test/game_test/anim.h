@@ -30,7 +30,9 @@ enum obj_state {
 	STATE_MOVING_UP
 };
 
-extern struct animator animators[7];
+#define MAX_ANIMATORS 9
+
+extern struct animator animators[MAX_ANIMATORS];
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx);
 

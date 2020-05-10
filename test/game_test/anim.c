@@ -14,7 +14,7 @@
 #include "logic.h"
 #include "scene.h"
 
-struct animator animators[7];
+struct animator animators[MAX_ANIMATORS];
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
