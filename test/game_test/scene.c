@@ -10,18 +10,14 @@
 #include "phys.h"
 #include "list.h"
 
-#include "gen/game_test_tiles_ext.h"
-#include "gen/game_test_sprites_ext.h"
-
-#include "gen/map_defs.h"
-
 #include "anim.h"
 #include "logic.h"
 #include "scene.h"
 #include "banks.h"
 
-extern unsigned char *map_object_layer[25];
-extern void sys_set_ascii_page3(char page);
+#include "gen/game_test_tiles_ext.h"
+#include "gen/game_test_sprites_ext.h"
+#include "gen/map_defs.h"
 
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
@@ -31,51 +27,29 @@ struct tile_set tileset_map4;
 struct tile_set tileset_map5;
 struct tile_set tileset_map6;
 struct tile_set tileset_map7;
-
-
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
-
 struct spr_sprite_def enemy_sprites[31];
 struct spr_sprite_def monk_sprite;
-
 struct displ_object display_object[32];
 struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];
 struct displ_object dpo_monk;
-
-extern struct list_head *elem;
-extern struct displ_object *dpo;
-
 struct list_head display_list;
-
 struct map_object_item *map_object;
 
-
 uint8_t spr_ct, tob_ct;
+uint8_t *room_objs;
 
-
-void find_room_data(uint8_t room)
-{
-	map_object = (struct map_object_item *) map_object_layer[room];
-}
-
-
-static void free_patterns()
-{
-	uint8_t i;
-
-	for (i = 0; i < PATRN_MAX; i++)
-		spr_pattern[i].allocated = false;
-
-	for (i = 0; i < TILE_MAX; i++) {
-		tile_set_vfree(&tileset[i]);
-	}
-}
+extern unsigned char *map_map_segment_dict[25];
+extern unsigned char *map_map_segment[25];
+extern struct list_head *elem;
+extern struct displ_object *dpo;
+extern unsigned char *map_object_layer[25];
+extern void sys_set_ascii_page3(char page);
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
-	// before Allocating to VRAM tiles
 	bool success;
 
 	sys_set_ascii_page3(PAGE_DYNTILES);
@@ -93,11 +67,13 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	tileobject[objidx].cur_anim_step = 0;
 	tileobject[objidx].ts = &tileset[tileidx];
 	tileobject[objidx].idx = 0;
+
 	dpo->type = DISP_OBJECT_TILE;
 	dpo->tob = &tileobject[objidx];
 	dpo->xpos = map_object->x;
 	dpo->ypos = map_object->y;
 	dpo->state = 0;
+
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
 	INIT_LIST_HEAD(&dpo->animator_list);
@@ -116,7 +92,6 @@ void update_tileobject(struct displ_object *dpo)
 	tile_object_show(dpo->tob, scr_tile_buffer, true);
 }
 
-
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
 	sys_set_ascii_page3(PAGE_SPRITES);
@@ -126,7 +101,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	INIT_LIST_HEAD(&dpo->animator_list);
 
 	sys_set_ascii_page3(PAGE_MAPOBJECTS);
-	
+
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
@@ -140,59 +115,32 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_ct++;
 }
 
-extern unsigned char *map_map_segment_dict[25];
-extern unsigned char *map_map_segment[25];
+void clear_room() {
+	uint8_t i;
 
-uint8_t *room_objs;
+	/* clear all sprite attributes */
+	spr_clear();
+
+	/* free dynamic tiles */
+	for (i = 0; i < tob_ct; i++) {
+		tile_set_vfree(tileobject[i].ts);
+	}
+
+	spr_ct = 0;
+	tob_ct = 0;
+}
 
 void load_room(uint8_t room)
 {
 	uint8_t i, id, type;
 	bool add_dpo;
 
-	spr_ct = 0, tob_ct = 0;
-
+	clear_room();
 	vdp_screen_disable();
-	tile_init();
-
-	// FIXME: move elsewhere
-	if (room == 8) {
-		sys_set_ascii_page3(PAGE_MAPTILES);
-		INIT_TILE_SET(tileset_map1, maptiles1);
-		INIT_TILE_SET(tileset_map2, maptiles2);
-		INIT_TILE_SET(tileset_map3, maptiles3);
-		INIT_TILE_SET(tileset_map3b, maptiles3b);
-		INIT_TILE_SET(tileset_map4, maptiles4);
-		INIT_TILE_SET(tileset_map5, maptiles5);
-		INIT_TILE_SET(tileset_map6, maptiles6);
-		INIT_TILE_SET(tileset_map7, maptiles7);
-
-		tile_set_valloc(&tileset_map1);
-		tile_set_to_vram(&tileset_map4, 126);
-		tile_set_to_vram(&tileset_map5, 126 + 32);
-		tile_set_to_vram(&tileset_map3, 65);
-		tile_set_to_vram(&tileset_map3b,97);
-		tile_set_to_vram(&tileset_map6, 126 + 64);
-		tile_set_to_vram(&tileset_map7, 126 + 96);
-	} else {
-		sys_set_ascii_page3(PAGE_MAPTILES);
-		INIT_TILE_SET(tileset_map1, maptiles1);
-		INIT_TILE_SET(tileset_map2, maptiles2);
-		INIT_TILE_SET(tileset_map3, maptiles3)
-		INIT_TILE_SET(tileset_map4, maptiles4);
-		INIT_TILE_SET(tileset_map5, maptiles5);
-
-		tile_set_valloc(&tileset_map1);
-		tile_set_valloc(&tileset_map2);
-		tile_set_to_vram(&tileset_map4, 126);
-		tile_set_to_vram(&tileset_map5, 126 + 32);
-		tile_set_valloc(&tileset_map3);
-	}
 
 	sys_set_ascii_page3(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
 
-	spr_clear();
 	phys_init();
 	init_tile_collisions();
 
@@ -200,7 +148,7 @@ void load_room(uint8_t room)
 
 	sys_set_ascii_page3(PAGE_MAPOBJECTS);
 
-	log_e("room : %d\n",room);
+	//log_e("room : %d\n",room);
 
 	type = 0;
 	room_objs = map_object_layer[room];
@@ -208,11 +156,11 @@ void load_room(uint8_t room)
 		sys_set_ascii_page3(PAGE_MAPOBJECTS);
 		map_object = (struct map_object_item *) room_objs;
 		type = map_object->type;
-		log_e("type %d\n", type);
-		log_e("room_objs %x\n", room_objs);
+		// log_e("type %d\n", type);
+		// log_e("room_objs %x\n", room_objs);
 		if (type == ACTIONITEM) {
 			uint8_t action_item_type = map_object->object.actionitem.type;
-			log_e("action_item_type %d\n", action_item_type);
+			// log_e("action_item_type %d\n", action_item_type);
 			if (action_item_type == TYPE_SCROLL) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.scroll[id] == 0) {
@@ -413,10 +361,8 @@ void load_room(uint8_t room)
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
 		if (dpo->type == DISP_OBJECT_SPRITE) {
-			log_e("showing sprite\n");
 			spr_show(dpo->spr);
 		} else if (dpo->type == DISP_OBJECT_TILE) {
-			log_e("showing dpo\n");
 			tile_object_show(dpo->tob, scr_tile_buffer, false);
 		}
 	}
@@ -454,6 +400,46 @@ void init_tile_collisions()
 	phys_set_down_colliding_tile(38);
 }
 
+void init_map_tilesets() {
+	uint8_t room;
+
+	tile_init();
+
+	room = 0;
+	if (room == 8) {
+		sys_set_ascii_page3(PAGE_MAPTILES);
+		INIT_TILE_SET(tileset_map1, maptiles1);
+		INIT_TILE_SET(tileset_map2, maptiles2);
+		INIT_TILE_SET(tileset_map3, maptiles3);
+		INIT_TILE_SET(tileset_map3b, maptiles3b);
+		INIT_TILE_SET(tileset_map4, maptiles4);
+		INIT_TILE_SET(tileset_map5, maptiles5);
+		INIT_TILE_SET(tileset_map6, maptiles6);
+		INIT_TILE_SET(tileset_map7, maptiles7);
+
+		tile_set_valloc(&tileset_map1);
+		tile_set_to_vram(&tileset_map4, 126);
+		tile_set_to_vram(&tileset_map5, 126 + 32);
+		tile_set_to_vram(&tileset_map3, 65);
+		tile_set_to_vram(&tileset_map3b,97);
+		tile_set_to_vram(&tileset_map6, 126 + 64);
+		tile_set_to_vram(&tileset_map7, 126 + 96);
+	} else {
+		sys_set_ascii_page3(PAGE_MAPTILES);
+		INIT_TILE_SET(tileset_map1, maptiles1);
+		INIT_TILE_SET(tileset_map2, maptiles2);
+		INIT_TILE_SET(tileset_map3, maptiles3)
+		INIT_TILE_SET(tileset_map4, maptiles4);
+		INIT_TILE_SET(tileset_map5, maptiles5);
+
+		tile_set_valloc(&tileset_map1);
+		tile_set_valloc(&tileset_map2);
+		tile_set_to_vram(&tileset_map4, 126);
+		tile_set_to_vram(&tileset_map5, 126 + 32);
+		tile_set_valloc(&tileset_map3);
+	}
+}
+
 void init_resources()
 {
 	uint8_t two_step_state[] = {2,2};
@@ -466,20 +452,11 @@ void init_resources()
 	uint8_t spider_state[]={2};
 	uint8_t archer_state[]={2,2};
 
+	init_map_tilesets();
 
-	tile_init();
-
-	/** load font tileset */
-	// INIT_TILE_SET(tileset[TILE_FONT_DIGITS], font_digits);
-	// INIT_TILE_SET(tileset[TILE_FONT_UPPER], font_upper);
-	// INIT_TILE_SET(tileset[TILE_FONT_LOWER], font_lower);
-	// tile_set_valloc(&tileset[TILE_FONT_DIGITS]);
-	// tile_set_valloc(&tileset[TILE_FONT_UPPER]);
-	// tile_set_valloc(&tileset[TILE_FONT_LOWER]);
-
-
-	sys_set_ascii_page3(PAGE_DYNTILES);
 	/** initialize dynamic tile sets */
+	sys_set_ascii_page3(PAGE_DYNTILES);
+
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
@@ -502,9 +479,10 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
 
-	sys_set_ascii_page3(PAGE_SPRITES);
+	/** initialize sprite pattern sets **/
 	spr_init();
-	/** initialize sprite pattern sets */
+	sys_set_ascii_page3(PAGE_SPRITES);
+
 	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);
 	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_step_state, rat);
 	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, bat_state, spider);
@@ -524,5 +502,6 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
 	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
 
-        //init_monk();
+	/* only needed once */
+
 }

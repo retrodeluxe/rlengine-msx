@@ -128,16 +128,16 @@ bool tile_set_valloc(struct tile_set *ts)
 	uint8_t i, pos, size;
 	bool found;
 
-	if (ts->allocated)
+	if (ts->allocated) {
 		return true;
+	}
 
 	size = ts->w * ts->h;
 
 	found = bitmap_find_gap(bitmap_tile_bank, size, BITMAP_TILEBANK_SIZE - 1, &pos);
 	if (!found) {
-		log_e("dump\n");
+		// FIXME: only in DEBUG
 		bitmap_dump(bitmap_tile_bank, BITMAP_TILEBANK_SIZE -1);
-		log_e("why not?\n");
 		return false;
 	}
 
@@ -150,7 +150,6 @@ bool tile_set_valloc(struct tile_set *ts)
 
 	ts->allocated = true;
 	ts->pidx = pos;
-	log_e("allocated tile set at pos %d\n", pos);
 	return true;
 }
 
