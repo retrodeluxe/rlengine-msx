@@ -171,6 +171,15 @@ void clear_room() {
 	tob_ct = 0;
 }
 
+/**
+ * clean room ephemeral state
+ */
+void clean_state()
+{
+	game_state.templar_delay = 0;
+	game_state.templar_ct = 0;
+}
+
 void load_room(uint8_t room)
 {
 	uint8_t i, id, type;
@@ -179,6 +188,7 @@ void load_room(uint8_t room)
 	stop_music();
 
 	clear_room();
+	clean_state();
 	vdp_screen_disable();
 
 	sys_set_ascii_page3(PAGE_MAP);
@@ -344,7 +354,8 @@ void load_room(uint8_t room)
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
-				if (room == ROOM_FOREST) {
+				if (room == ROOM_FOREST ||
+					room == ROOM_GRAVEYARD) {
 					add_animator(dpo, ANIM_CHASE);
 					dpo->state = STATE_OFF_SCREEN;
 					dpo->visible = false;

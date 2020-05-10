@@ -20,6 +20,7 @@ struct game_state_t {
 	bool cross_switch_enable;
 	bool door_trigger;
 	uint8_t templar_ct;
+	uint8_t templar_delay;
 };
 
 extern struct game_state_t game_state;

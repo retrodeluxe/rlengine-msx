@@ -259,9 +259,8 @@ void anim_up_down(struct displ_object *obj)
 void anim_chase(struct displ_object *obj)
 {
 	uint8_t dx;
-	static uint8_t ct = 0;
 
-	ct++;
+	game_state.templar_delay++;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
 			dx = 2;
@@ -276,12 +275,11 @@ void anim_chase(struct displ_object *obj)
 			spr_show(obj->spr);
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (ct > 30) obj->state = STATE_OFF_SCREEN;
+			if (game_state.templar_delay > 30) obj->state = STATE_OFF_SCREEN;
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (ct > 60) {
+			if (game_state.templar_delay > 60) {
 				obj->state = STATE_OFF_SCREEN;
-				ct = 0;
 			}
 			return;
 	}
