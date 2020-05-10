@@ -226,7 +226,7 @@ void anim_left_right_floor(struct displ_object *obj)
 			break;
 	}
 	// FIXME: hanging on detect_tile collisions if dy>0
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 2);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0);
 	dpo_simple_animate(obj, dx, 0);
 }
 
