@@ -76,7 +76,7 @@ void main()
 	init_animators();
 	init_game_state();
 
-	current_room = 2;
+	current_room = 3;
 	load_room(current_room);
 	show_score_panel();
 	/** game loop **/

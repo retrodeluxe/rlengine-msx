@@ -226,7 +226,7 @@ void anim_left_right_floor(struct displ_object *obj)
 			break;
 	}
 	// FIXME: hanging on detect_tile collisions if dy>0
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 4);
 	dpo_simple_animate(obj, dx, 0);
 }
 
@@ -261,8 +261,6 @@ void init_animators()
 	animators[ANIM_UP_DOWN].run = anim_up_down;
 	animators[ANIM_GRAVITY].run = anim_gravity;
 	animators[ANIM_STATIC].run = anim_static;
-	// animators[3].run = anim_up_down;
-	// animators[4].run = anim_drop;
 	animators[ANIM_JOYSTICK].run = anim_joystick;
 	animators[ANIM_JUMP].run = anim_jump;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;

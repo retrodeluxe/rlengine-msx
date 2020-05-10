@@ -364,7 +364,7 @@ void load_room(uint8_t room)
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
 				add_animator(dpo, ANIM_UP_DOWN);
-				 dpo->state = STATE_MOVING_DOWN;
+				dpo->state = STATE_MOVING_DOWN;
 			} else if (map_object->object.movable.type == TYPE_RAT) {
 				add_sprite(dpo, spr_ct, PATRN_RAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
@@ -375,7 +375,8 @@ void load_room(uint8_t room)
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				add_sprite(dpo, spr_ct, PATRN_FLY);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				add_animator(dpo, ANIM_UP_DOWN);
+				dpo->state = STATE_MOVING_DOWN;
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
@@ -407,11 +408,11 @@ void load_room(uint8_t room)
 			room_objs += NEXT_OBJECT(struct map_object_movable);
 		}
 	}
-	INIT_LIST_HEAD(&dpo_monk.animator_list);
-	list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list);
-	list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
-	INIT_LIST_HEAD(&dpo_monk.list);
-	list_add(&dpo_monk.list, &display_list);
+	// INIT_LIST_HEAD(&dpo_monk.animator_list);
+	// list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list);
+	// list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
+	// INIT_LIST_HEAD(&dpo_monk.list);
+	// list_add(&dpo_monk.list, &display_list);
 	// show all elements
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
