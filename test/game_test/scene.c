@@ -280,14 +280,10 @@ void load_room(uint8_t room)
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else {
-				room_objs = room_objs + sizeof(struct map_object_item)
-							- sizeof(union map_object)
-							+ sizeof(struct map_object_actionitem);
+				room_objs += NEXT_OBJECT(struct map_object_actionitem);
 				continue;
 			}
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_actionitem);
+			room_objs += NEXT_OBJECT(struct map_object_actionitem);
 		} else if (map_object->type == STATIC) {
 			if (map_object->object.static_.type == TYPE_DRAGON) {
  				// this is crashing, ignore
@@ -303,19 +299,13 @@ void load_room(uint8_t room)
 				add_tileobject(dpo, tob_ct, TILE_WATER);
 				//add_animator(dpo, ANIM_CYCLE_TILE);
 			}
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_static);
+			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {
 			add_sprite(dpo, spr_ct, PATRN_GHOST);
 			add_animator(dpo, ANIM_STATIC);
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_ghost);
+			room_objs += NEXT_OBJECT(struct map_object_ghost);
 		} else if (map_object->type == ROPE) {
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_rope);
+			room_objs += NEXT_OBJECT(struct map_object_rope);
 		} else if (map_object->type == DOOR) {
 			type = map_object->object.door.type;
 			id = map_object->object.door.action_id;
@@ -340,9 +330,7 @@ void load_room(uint8_t room)
 				}
 				phys_set_colliding_tile_object(dpo, false);
 			}
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_door);
+			room_objs += NEXT_OBJECT(struct map_object_door);
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
 				add_sprite(dpo, spr_ct, PATRN_FISH);
@@ -356,23 +344,16 @@ void load_room(uint8_t room)
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
+
 			}
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_shooter);
+			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
 			add_tileobject(dpo, tob_ct, TILE_CROSS);
 			add_animator(dpo, ANIM_CYCLE_TILE);
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_block);
+			room_objs += NEXT_OBJECT(struct map_object_block);
 		} else if (map_object->type == STEP) {
-			// add special collisions
-
-			// need to see what to do with these ones
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_step);
+			// TODO: Add special collisions
+			room_objs += NEXT_OBJECT(struct map_object_step);
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
@@ -420,14 +401,10 @@ void load_room(uint8_t room)
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
 			} else {
-				room_objs = room_objs + sizeof(struct map_object_item)
-							- sizeof(union map_object)
-							+ sizeof(struct map_object_movable);
+				room_objs += NEXT_OBJECT(struct map_object_movable);
 				continue;
 			}
-			room_objs = room_objs + sizeof(struct map_object_item)
-						- sizeof(union map_object)
-						+ sizeof(struct map_object_movable);
+			room_objs += NEXT_OBJECT(struct map_object_movable);
 		}
 	}
 	INIT_LIST_HEAD(&dpo_monk.animator_list);
