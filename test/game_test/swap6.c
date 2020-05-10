@@ -1,2 +1,2 @@
-// PAGE_MUSIC
-#include "gen/title_song.h"
+// PAGE_SPRITES
+#include "gen/game_test_sprites.h"

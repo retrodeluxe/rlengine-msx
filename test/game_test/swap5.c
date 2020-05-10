@@ -1,3 +1,3 @@
-#include "gen/maptiles6.h"
-#include "gen/maptiles7.h"
-#include "gen/maptiles3b.h"
+// PAGE_MAPOBJECTS
+#include "gen/map_defs.h"
+#include "gen/map_layer_objects.h"

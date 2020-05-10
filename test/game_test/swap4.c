@@ -1,4 +1,9 @@
-// page 7
-#include "gen/map_defs.h"
-#include "gen/map_layer_objects.h"
-#include "gen/game_test_sprites.h"
+// PAGE_MAPTILES
+#include "gen/maptiles1.h"
+#include "gen/maptiles2.h"
+#include "gen/maptiles3.h"
+#include "gen/maptiles3b.h"
+#include "gen/maptiles4.h"
+#include "gen/maptiles5.h"
+#include "gen/maptiles6.h"
+#include "gen/maptiles7.h"
