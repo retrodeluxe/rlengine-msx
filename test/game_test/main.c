@@ -86,6 +86,8 @@ void main()
 
 		if (stick == STICK_RIGHT) {
 			load_room(++current_room);
+		} else if (stick == STICK_LEFT) {
+			load_room(--current_room);
 		}
 
 		//check_and_change_room();

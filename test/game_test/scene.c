@@ -9,6 +9,7 @@
 #include "dpo.h"
 #include "phys.h"
 #include "list.h"
+#include "pt3.h"
 
 #include "anim.h"
 #include "logic.h"
@@ -47,6 +48,46 @@ extern struct list_head *elem;
 extern struct displ_object *dpo;
 extern unsigned char *map_object_layer[25];
 extern void sys_set_ascii_page3(char page);
+extern const unsigned char huntloop_song_pt3[];
+extern const unsigned char church_song_pt3[];
+extern const unsigned char prayerofhope_song_pt3[];
+
+void play_room_music()
+{
+	pt3_decode();
+	pt3_play();
+}
+
+void stop_music()
+{
+	sys_irq_unregister(play_room_music);
+	pt3_mute();
+}
+
+void start_music(uint8_t room)
+{
+	sys_set_ascii_page3(PAGE_MUSIC);
+
+	switch (room) {
+		case ROOM_FOREST:
+		case ROOM_GRAVEYARD:
+			pt3_init(huntloop_song_pt3, 1); // loop
+			sys_irq_register(play_room_music);
+			break;
+		case ROOM_CHURCH_ENTRANCE:
+		case ROOM_CHURCH:
+		case ROOM_CHURCH_TOWER:
+		case ROOM_CHURCH_UPPER_FLOOR:
+			pt3_init(church_song_pt3, 1);
+			sys_irq_register(play_room_music);
+			break;
+		case ROOM_MOON_SIGHT:
+			pt3_init(prayerofhope_song_pt3, 1);
+			sys_irq_register(play_room_music);
+			break;
+		default:
+	}
+}
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
@@ -134,6 +175,8 @@ void load_room(uint8_t room)
 {
 	uint8_t i, id, type;
 	bool add_dpo;
+
+	stop_music();
 
 	clear_room();
 	vdp_screen_disable();
@@ -381,6 +424,7 @@ void load_room(uint8_t room)
 
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 	vdp_screen_enable();
+	start_music(room);
 }
 
 
@@ -397,6 +441,7 @@ void load_room(uint8_t room)
 // 	dpo_monk.collision_state = 0;
 // 	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
 // }
+
 
 void init_tile_collisions()
 {

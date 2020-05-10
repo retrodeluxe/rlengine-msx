@@ -266,7 +266,7 @@ void anim_chase(struct displ_object *obj)
 		case STATE_MOVING_RIGHT:
 			dx = 2;
 			break;
-		case STATE_JUMPING:
+		case STATE_HOPPING_RIGHT:
 			// need to handle obstacles or pits
 			// with a jump
 			break;

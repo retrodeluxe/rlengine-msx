@@ -99,6 +99,14 @@ void sys_irq_register(void (*func))
 	sys_procs.proc[sys_procs.np++].func = func;
 }
 
+static void sys_remove_callback(uint8_t index)
+{
+	for (i = index;i < sys_procs.np - 1; i++) {
+		sys_procs.proc[i].func = sys_procs.proc[i + 1].func;
+	}
+	sys_procs.np--;
+}
+
 /**
  * sys_irq_unregister
  */
@@ -106,12 +114,9 @@ void sys_irq_unregister(void (*func))
 {
 	for (i = 0; i < sys_procs.np; i++) {
 		if(sys_procs.proc[i].func == func)
-			break;
+			sys_remove_callback(i);
 	}
-	for (;i < sys_procs.np - 1; i++) {
-		sys_procs.proc[i].func = sys_procs.proc[i + 1].func;
-	}
-	sys_procs.np--;
+	/* ignore if not found */
 }
 
 
