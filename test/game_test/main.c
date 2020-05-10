@@ -73,7 +73,7 @@ void main()
 	init_animators();
 	init_game_state();
 
-	current_room = 11;
+	current_room = 5;
 	load_room(current_room);
 	show_score_panel();
 

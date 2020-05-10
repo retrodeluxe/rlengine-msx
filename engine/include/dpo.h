@@ -41,6 +41,7 @@ struct displ_object {
 	int8_t min;	/*<  min coordinate */
 	int8_t speed;	/*<  speed */
 	int8_t color;
+	bool visible;
 
 	/* dynamic animation data */
 	uint8_t state;

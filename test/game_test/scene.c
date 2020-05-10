@@ -301,7 +301,18 @@ void load_room(uint8_t room)
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				if (room == ROOM_FOREST) {
+					add_animator(dpo, ANIM_CHASE);
+					dpo->state = STATE_OFF_SCREEN;
+					dpo->visible = false;
+					dpo->spr->cur_state = SPR_STATE_RIGHT;
+					if (game_state.templar_ct == 1) {
+						dpo->state = STATE_OFF_SCREEN_DELAY_1S;
+					} else if (game_state.templar_ct == 2) {
+						dpo->state = STATE_OFF_SCREEN_DELAY_2S;
+					}
+					game_state.templar_ct++;
+				}
 			} else if (map_object->object.movable.type == TYPE_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_BAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT);
@@ -360,7 +371,7 @@ void load_room(uint8_t room)
 	// show all elements
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
-		if (dpo->type == DISP_OBJECT_SPRITE) {
+		if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
 			spr_show(dpo->spr);
 		} else if (dpo->type == DISP_OBJECT_TILE) {
 			tile_object_show(dpo->tob, scr_tile_buffer, false);
@@ -369,7 +380,6 @@ void load_room(uint8_t room)
 
 
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
-
 	vdp_screen_enable();
 }
 

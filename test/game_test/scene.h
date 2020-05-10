@@ -55,6 +55,18 @@ enum spr_patterns_t {
 	PATRN_MAX,
 };
 
+enum rooms_t {
+	ROOM_EVIL_CHAMBER,
+	ROOM_MOON_SIGHT,
+	ROOM_CHURCH_TOWER,
+	ROOM_CHURCH_UPPER_FLOOR,
+	ROOM_BONFIRE,
+	ROOM_FOREST,
+	ROOM_GRAVEYARD,
+	ROOM_CHURCH_ENTRANCE,
+	ROOM_CHURCH,
+};
+
 extern struct list_head display_list;
 extern struct spr_sprite_def monk_sprite;
 extern struct displ_object dpo_monk;

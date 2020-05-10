@@ -253,6 +253,40 @@ void anim_up_down(struct displ_object *obj)
 	dpo_simple_animate(obj, 0, dy);
 }
 
+/**
+ * Animation for a Templar chasing Jean in different screens
+ */
+void anim_chase(struct displ_object *obj)
+{
+	uint8_t dx;
+	static uint8_t ct = 0;
+
+	ct++;
+	switch(obj->state) {
+		case STATE_MOVING_RIGHT:
+			dx = 2;
+			break;
+		case STATE_JUMPING:
+			// need to handle obstacles or pits
+			// with a jump
+			break;
+		case STATE_OFF_SCREEN:
+			obj->state = STATE_MOVING_RIGHT;
+			obj->visible = true;
+			spr_show(obj->spr);
+			return;
+		case STATE_OFF_SCREEN_DELAY_1S:
+			if (ct > 30) obj->state = STATE_OFF_SCREEN;
+			return;
+		case STATE_OFF_SCREEN_DELAY_2S:
+			if (ct > 60) {
+				obj->state = STATE_OFF_SCREEN;
+				ct = 0;
+			}
+			return;
+	}
+	dpo_simple_animate(obj, dx, 0);
+}
 
 void init_animators()
 {
@@ -264,4 +298,5 @@ void init_animators()
 	animators[ANIM_JOYSTICK].run = anim_joystick;
 	animators[ANIM_JUMP].run = anim_jump;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
+	animators[ANIM_CHASE].run = anim_chase;
 }
