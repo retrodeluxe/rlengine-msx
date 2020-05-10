@@ -16,24 +16,21 @@
 #include "phys.h"
 #include "list.h"
 #include "font.h"
+#include "pt3.h"
+#include "pt3_nt2.h"
 
 #include "anim.h"
 #include "scene.h"
 #include "logic.h"
-#include "pt3.h"
-#include "pt3_nt2.h"
+#include "banks.h"
 
 #include "gen/intro_tileset_ext.h"
 #include "gen/game_test_tiles_ext.h"
 #include "gen/map_defs.h"
 #include "gen/map_init.h"
 
-extern const unsigned char intro_map_intro_w;
-extern const unsigned char intro_map_intro_h;
-extern const unsigned char intro_map_intro[];
-extern const unsigned char title_pt3[];
-
 #include <stdlib.h>
+
 void show_logo();
 void show_title_screen();
 void animate_all();
@@ -42,24 +39,24 @@ void show_score_panel();
 void play_music();
 void load_room(uint8_t room);
 
-
 struct tile_set logo;
 struct tile_set tileset_intro;
 struct font font;
-
-uint8_t stick;
-uint16_t reftick;
-
-bool fps_stall;
-
 struct animator *anim;
 struct displ_object *dpo;
 struct list_head *elem,*elem2;
 
-uint8_t scr_tile_buffer[768];
-extern void sys_set_ascii_page3(char page);
-
+uint8_t stick;
 uint8_t current_room;
+uint8_t scr_tile_buffer[768];
+uint16_t reftick;
+bool fps_stall;
+
+extern void sys_set_ascii_page3(char page);
+extern const unsigned char intro_map_intro_w;
+extern const unsigned char intro_map_intro_h;
+extern const unsigned char intro_map_intro[];
+extern const unsigned char title_song_pt3[];
 
 void main()
 {
@@ -76,9 +73,10 @@ void main()
 	init_animators();
 	init_game_state();
 
-	current_room = 3;
+	current_room = 11;
 	load_room(current_room);
 	show_score_panel();
+
 	/** game loop **/
 	for(;;) {
 		sys_irq_enable();
@@ -105,10 +103,7 @@ void main()
 
 void show_score_panel()
 {
-	// TODO: For this need to figure out how to solve the problem with the font
-	//       the font will also be useful for other elements in the game.
-	// best option is to use an MSX font instead of the original 16pixel one, either that or just
-	// use the graphics and extend the size of the ROM
+	//
 }
 
 void animate_all() {
@@ -120,7 +115,6 @@ void animate_all() {
 		}
 	}
 }
-
 
 void play_music()
 {
@@ -139,25 +133,30 @@ void show_title_screen()
 	uint8_t i;
 	vdp_screen_disable();
 
+	/** title screen **/
+	sys_set_ascii_page3(PAGE_INTRO);
+
 	tile_init();
 
-	sys_set_ascii_page3(5);
-
 	INIT_TILE_SET(tileset_intro, intro_tileset);
+	INIT_FONT(font, font_upper);
+
 	tile_set_to_vram(&tileset_intro, 1);
+	font_to_vram_bank(&font, 2, 1);
+
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
-
-	INIT_FONT(font, font_upper);
-	font_to_vram_bank(&font, 2, 1);
 	font_vprint(&font, 7, 22, "PRESS SPACE KEY~");
 
 	vdp_screen_enable();
-	sys_set_ascii_page3(6);
+
+	/** title music **/
+	sys_set_ascii_page3(PAGE_MUSIC);
+
 	pt3_init_notes(NT);
-	pt3_init(title_pt3, 0);
+	pt3_init(title_song_pt3, 0);
+
 	sys_irq_init();
-	//show_logo();
 	sys_irq_register(play_music);
 
 	do {
@@ -168,5 +167,4 @@ void show_title_screen()
 	pt3_mute();
 
 	vdp_clear_grp1(0);
-
  }
