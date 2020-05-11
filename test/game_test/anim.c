@@ -65,8 +65,6 @@ void anim_jean(struct displ_object *obj)
 	x = (sp->planes[0]).x;
 	y = (sp->planes[0]).y;
 
-	log_e("collision state: %d\n", obj->collision_state);
-
 	if (obj->state == STATE_JUMPING) {
 		jump_ct++;
 		if (is_colliding_down(obj)) {
@@ -86,16 +84,6 @@ void anim_jean(struct displ_object *obj)
 			}
 		}
 	}
-	// else if (!is_colliding_down(obj)) {
-	// 	obj->state = STATE_FALLING;
-	// 	if (sp->cur_state == JANE_STATE_RIGHT
-	// 		|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
-	// 		sp->cur_state = JANE_STATE_RIGHT_JUMP;
-	// 	} else if (sp->cur_state == JANE_STATE_LEFT
-	// 		|| sp->cur_state == JANE_STATE_LEFT_CROUCH) {
-	// 		sp->cur_state = JANE_STATE_LEFT_JUMP;
-	// 	}
-	// }
 
 	if (stick == STICK_LEFT) {
 		dx = -2;
@@ -113,7 +101,6 @@ void anim_jean(struct displ_object *obj)
 			obj->state = STATE_MOVING_RIGHT;
 			sp->cur_state = JANE_STATE_RIGHT;
 		}
-		// if we are jumping, use right jump
 	} else if (stick == STICK_DOWN && obj->state != STATE_JUMPING) {
 		dx = 0;
 		if (sp->cur_state == JANE_STATE_RIGHT) {
@@ -157,7 +144,21 @@ void anim_jean(struct displ_object *obj)
 		obj->state = STATE_JUMPING;
 	}
 
-	// NOTE: ordering is important ;)
+	/** handle fall **/
+
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy + 4);
+
+	if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
+		obj->state = STATE_FALLING;
+		if (sp->cur_state == JANE_STATE_RIGHT
+			|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
+			sp->cur_state = JANE_STATE_RIGHT_JUMP;
+		} else if (sp->cur_state == JANE_STATE_LEFT
+			|| sp->cur_state == JANE_STATE_LEFT_CROUCH) {
+			sp->cur_state = JANE_STATE_LEFT_JUMP;
+		}
+	}
+
 	if (obj->state == STATE_FALLING) {
 		if (is_colliding_down(obj)) {
 			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
@@ -172,6 +173,10 @@ void anim_jean(struct displ_object *obj)
 		}
 	}
 
+	/** handle collisions and update sprite **/
+
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
+
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
 		if (sp->anim_ctr > sp->anim_ctr_treshold) {
@@ -181,8 +186,6 @@ void anim_jean(struct displ_object *obj)
 		if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
 			sp->cur_anim_step = 0;
 	}
-
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
 
 	if (!is_colliding_x(obj)) {
     		obj->xpos += dx;
@@ -194,9 +197,10 @@ void anim_jean(struct displ_object *obj)
 	}
 
 	if (obj->state == STATE_CROUCHING) {
+		/* crouching requires temporary offset to jean sprite */
 		spr_set_pos(sp, x, y + CROUCH_OFFSET);
 		spr_update(sp);
-		// restore
+		/* restore pos */
 		spr_set_pos(sp, x, y);
 	} else {
 		spr_set_pos(sp, x, y);
