@@ -16,37 +16,41 @@
 
 struct animator animators[MAX_ANIMATORS];
 
+extern struct displ_object dpo_jean;
+
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
 	list_add(&animators[animidx].list, &dpo->animator_list);
 }
 
-void check_and_change_room()
+bool change_room()
 {
-// 	bool change = false;
-// 	if (dpo_monk.xpos > 240) {
-// 		dpo_monk.xpos = 0;
-// 		game_state.map_x+=32;
-// 		change = true;
-// 	} else if (dpo_monk.xpos == 0) {
-// 		dpo_monk.xpos = 240;
-// 		game_state.map_x-=32;
-// 		change = true;
-// 	}
-// 	if (dpo_monk.ypos > 192 - 32) {
-// 		dpo_monk.ypos = 0;
-// 		game_state.map_y+=22;
-// 		change = true;
-// 	} else if (dpo_monk.ypos < - 32) {
-// 		dpo_monk.ypos = 192 - 32 - 32;
-// 		game_state.map_y-=22;
-// 		change = true;
-// 	}
-// 	if (change) {
-// 		dpo_monk.state = STATE_ONGROUND;
-// 		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-// 		// TODO :: load_room();
-// 	}
+	bool change = false;
+
+	game_state.jean_x = dpo_jean.xpos;
+	game_state.jean_y = dpo_jean.ypos;
+
+	if (dpo_jean.xpos > 240) {
+		game_state.jean_x = 0;
+		game_state.room += 1;
+		change = true;
+
+	} else if (dpo_jean.xpos == 0) {
+		game_state.jean_x = 240;
+		game_state.room -= 1;
+		change = true;
+	}
+	if (dpo_jean.ypos > 192 - 32) {
+		game_state.jean_y = 0;
+		game_state.room += 5;
+		change = true;
+
+	} else if (dpo_jean.ypos < - 32) {
+		game_state.jean_y = 192 - 64;
+		game_state.room -= 5;
+		change = true;
+	}
+	return change;
 }
 
 void anim_jean_death(struct displ_object *obj)
@@ -344,17 +348,19 @@ void anim_chase(struct displ_object *obj)
 			// with a jump
 			break;
 		case STATE_OFF_SCREEN:
-			obj->state = STATE_MOVING_RIGHT;
-			obj->visible = true;
-			spr_show(obj->spr);
+			if (game_state.templar_delay > 40) {
+				obj->state = STATE_MOVING_RIGHT;
+				obj->visible = true;
+				spr_show(obj->spr);
+			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (game_state.templar_delay > 30) {
+			if (game_state.templar_delay > 80) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (game_state.templar_delay > 60) {
+			if (game_state.templar_delay > 120) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;

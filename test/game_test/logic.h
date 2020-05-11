@@ -3,8 +3,15 @@
 
 
 struct game_state_t {
-	uint8_t map_x;	// position on the map in tile coordinates
-	uint8_t map_y;
+
+	/* current room */
+	uint8_t room;
+
+	/* jean position when swithing rooms */
+	uint8_t jean_x;
+	uint8_t jean_y;
+
+	/* cross and live count for state panel */
 	uint8_t cross_cnt;
 	uint8_t live_cnt;
 

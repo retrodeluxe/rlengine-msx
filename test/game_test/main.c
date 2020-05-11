@@ -48,7 +48,6 @@ struct list_head *elem,*elem2;
 
 uint8_t stick;
 uint8_t trigger;
-uint8_t current_room;
 uint8_t scr_tile_buffer[768];
 uint16_t reftick;
 bool fps_stall;
@@ -75,8 +74,7 @@ start:
 	init_animators();
 	init_game_state();
 
-	current_room = 5;
-	load_room(current_room);
+	load_room(game_state.room);
 	show_score_panel();
 
 	/** game loop **/
@@ -86,13 +84,11 @@ start:
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0) | sys_get_stick(1);
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
-		// if (stick == STICK_RIGHT) {
-		// 	load_room(++current_room);
-		// } else if (stick == STICK_LEFT) {
-		// 	load_room(--current_room);
-		// }
 
-		//check_and_change_room();
+		if (change_room()) {
+			load_room(game_state.room);
+		}
+
 		animate_all();
 
 		/* framerate limiter 25/30fps */
@@ -104,7 +100,7 @@ start:
 			log_w("fps stall!\n");
 
 		if (game_state.death) {
-			// TODO: show Game Over screen and de-initialize stuff 
+			// TODO: show Game Over Screen and go back to start_y
 			goto start;
 		}
 	}

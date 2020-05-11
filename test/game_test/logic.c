@@ -19,12 +19,11 @@ void init_game_state()
 {
         sys_memset(&game_state, 0, sizeof(game_state));
 
+	game_state.jean_x = 100;
+	game_state.jean_y = 192 - 64;
+	game_state.room = ROOM_FOREST;
 	game_state.templar_ct = 0;
 	game_state.death = false;
-
-	// room 3
-	game_state.map_x = 64;
-	game_state.map_y = 22;
 }
 
 

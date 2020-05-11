@@ -164,10 +164,10 @@ void add_jean()
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
 
 	// FIXME: initial position will depend on how jean enters the room
-	dpo_jean.xpos = 100;
-	dpo_jean.ypos = 192 - 64;
+	dpo_jean.xpos = game_state.jean_x;
+	dpo_jean.ypos = game_state.jean_y;
 	dpo_jean.type = DISP_OBJECT_SPRITE;
-	dpo_jean.state = 0;
+	dpo_jean.state = STATE_IDLE;
 	dpo_jean.spr = &jean_sprite;
 	dpo_jean.collision_state = 0;
 	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
