@@ -77,11 +77,7 @@ void anim_jean(struct displ_object *obj)
 				obj->state = STATE_MOVING_LEFT;
 			}
 		} else {
-			if (jump_ct < 10) {
-				dy = -4;
-			} else {
-				dy = 4;
-			}
+			dy = jump_ct < 10 ? -4 : 4;
 		}
 	}
 
