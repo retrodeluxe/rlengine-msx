@@ -121,7 +121,6 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	tob_ct++;
 }
 
-
 void remove_tileobject(struct displ_object *dpo)
 {
 	list_del(&dpo->list);
@@ -176,6 +175,11 @@ void add_jean()
 	list_add(&dpo_jean.list, &display_list);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
 	add_animator(&dpo_jean, ANIM_JEAN);
+}
+
+void jean_collision_handler()
+{
+	dpo_jean.state = STATE_COLLISION;
 }
 
 
@@ -442,6 +446,7 @@ void load_room(uint8_t room)
 	}
 
 	add_jean();
+	phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements
 	list_for_each(elem, &display_list) {

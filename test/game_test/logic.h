@@ -21,6 +21,7 @@ struct game_state_t {
 	bool door_trigger;
 	uint8_t templar_ct;
 	uint8_t templar_delay;
+	bool death;
 };
 
 extern struct game_state_t game_state;

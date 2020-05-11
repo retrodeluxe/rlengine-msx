@@ -53,13 +53,12 @@ void phys_init()
 	n_cgroups = 0;
 }
 
-
+/* note that this runs in interrupt context */
 void phys_set_sprite_collision_handler(void (*handler))
 {
 	sprite_colision_cb = handler;
 	sys_irq_register(phys_check_collision_bit);
 }
-
 
 /**
  * set callbacks for specific tiles

@@ -65,6 +65,7 @@ void main()
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
 
+start:
 	show_title_screen();
 
 	init_map_tilelayers();
@@ -101,7 +102,11 @@ void main()
 		}
 		if (fps_stall)
 			log_w("fps stall!\n");
-		// vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
+
+		if (game_state.death) {
+			// TODO: show Game Over screen and de-initialize stuff 
+			goto start;
+		}
 	}
 }
 

@@ -49,9 +49,28 @@ void check_and_change_room()
 // 	}
 }
 
+void anim_jean_death(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	struct spr_pattern_set *ps = sp->pattern_set;
+
+	sp->cur_state = JANE_STATE_DEATH;
+	sp->anim_ctr++;
+	if (sp->anim_ctr > sp->anim_ctr_treshold) {
+		sp->cur_anim_step++;
+		sp->anim_ctr = 0;
+	}
+	if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
+		sp->cur_anim_step = 0;
+
+	// FIXME: Need to update plane colors when updating the sprite as well
+	spr_update(sp);
+}
+
 void anim_jean(struct displ_object *obj)
 {
 	static uint8_t jump_ct = 0;
+	static uint8_t death_ct = 0;
 	int8_t dx, dy, x, y;
 
 	#define CROUCH_OFFSET 8
@@ -64,6 +83,20 @@ void anim_jean(struct displ_object *obj)
 
 	x = (sp->planes[0]).x;
 	y = (sp->planes[0]).y;
+
+	if (obj->state == STATE_COLLISION) {
+		obj->state = STATE_DEATH;
+	}
+
+	if (obj->state == STATE_DEATH) {
+		death_ct++;
+		if (death_ct < 10) {
+			anim_jean_death(obj);
+			return;
+		}
+		game_state.death = true;
+		return;
+	}
 
 	if (obj->state == STATE_JUMPING) {
 		jump_ct++;
