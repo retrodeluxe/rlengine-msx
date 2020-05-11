@@ -161,7 +161,6 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
         uint8_t *map, int8_t dx, int8_t dy)
 {
-
 	uint8_t x, y, c;
 	uint8_t *base_tl, *base_bl, *base_tr, *base_br;
 	uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
@@ -188,10 +187,10 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	tile[7] = *(base_mb);
 
 	obj->collision_state = 0;
-	if (dx < 0 && is_coliding_tile_pair(tile[0], tile[1])) {
+	if (dx < 0 && is_coliding_tile_triplet(tile[0], tile[1], tile[2])) {
 		obj->collision_state |= COLLISION_LEFT;
 	}
-	if (dx > 0 && is_coliding_tile_pair(tile[3], tile[4])) {
+	if (dx > 0 && is_coliding_tile_triplet(tile[3], tile[4], tile[5])) {
 		obj->collision_state |= COLLISION_RIGHT;
 	}
 	if (dy < 0 && is_coliding_tile_triplet(tile[0], tile[3], tile[6])) {

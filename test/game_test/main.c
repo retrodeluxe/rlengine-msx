@@ -101,6 +101,7 @@ void main()
 		}
 		if (fps_stall)
 			log_w("fps stall!\n");
+		// vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 	}
 }
 
