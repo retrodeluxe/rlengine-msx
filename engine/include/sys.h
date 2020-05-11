@@ -31,13 +31,14 @@ struct sys_proc {
     void  (*func)();
 };
 
-#define STICK_UP 			1
+#define STICK_CENTER		0
+#define STICK_UP 		1
 #define STICK_UP_RIGHT 		2
 #define STICK_RIGHT 		3
 #define STICK_DOWN_RIGHT  	4
-#define STICK_DOWN 			5
+#define STICK_DOWN 		5
 #define STICK_DOWN_LEFT		6
-#define STICK_LEFT 			7
+#define STICK_LEFT 		7
 #define STICK_UP_LEFT		8
 
 extern void sys_reboot();

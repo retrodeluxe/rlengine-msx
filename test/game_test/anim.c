@@ -23,141 +23,184 @@ void add_animator(struct displ_object *dpo, enum anim_t animidx)
 
 void check_and_change_room()
 {
-	bool change = false;
-	if (dpo_monk.xpos > 240) {
-		dpo_monk.xpos = 0;
-		game_state.map_x+=32;
-		change = true;
-	} else if (dpo_monk.xpos == 0) {
-		dpo_monk.xpos = 240;
-		game_state.map_x-=32;
-		change = true;
-	}
-	if (dpo_monk.ypos > 192 - 32) {
-		dpo_monk.ypos = 0;
-		game_state.map_y+=22;
-		change = true;
-	} else if (dpo_monk.ypos < - 32) {
-		dpo_monk.ypos = 192 - 32 - 32;
-		game_state.map_y-=22;
-		change = true;
-	}
-	if (change) {
-		dpo_monk.state = STATE_ONGROUND;
-		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-		// TODO :: load_room();
-	}
+// 	bool change = false;
+// 	if (dpo_monk.xpos > 240) {
+// 		dpo_monk.xpos = 0;
+// 		game_state.map_x+=32;
+// 		change = true;
+// 	} else if (dpo_monk.xpos == 0) {
+// 		dpo_monk.xpos = 240;
+// 		game_state.map_x-=32;
+// 		change = true;
+// 	}
+// 	if (dpo_monk.ypos > 192 - 32) {
+// 		dpo_monk.ypos = 0;
+// 		game_state.map_y+=22;
+// 		change = true;
+// 	} else if (dpo_monk.ypos < - 32) {
+// 		dpo_monk.ypos = 192 - 32 - 32;
+// 		game_state.map_y-=22;
+// 		change = true;
+// 	}
+// 	if (change) {
+// 		dpo_monk.state = STATE_ONGROUND;
+// 		spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
+// 		// TODO :: load_room();
+// 	}
 }
 
-/**
- * dpo animate handles collisions prior to animation.
- *   state transitions must be handled by animators.
- */
-void dpo_animate(struct displ_object *dpo, int8_t dx, int8_t dy)
+void anim_jean(struct displ_object *obj)
 {
-	int8_t cdx, cdy;
-	int16_t xpos, ypos;
-	cdx = dx;
-	cdy = dy;
+	static uint8_t jump_ct = 0;
+	int8_t dx, dy, x, y;
 
-	if (dx != 0 || dy != 0) {
-		dpo->xpos += dx;
-		dpo->ypos += dy;
-		phys_detect_tile_collisions(dpo, scr_tile_buffer, dx, dy);
-		// corrections on deltas to account for
-		// fixed point physics and 8x8 tile collisions
-		if (is_colliding_down(dpo)) {
-			ypos = (dpo->ypos / 8) * 8;
-			cdy = ypos - dpo->ypos + dy; /* ensure there is collision with ground always */
-			dpo->ypos = ypos;
-		}
-		if (dy < 0 && dpo->ypos > 0  &&
-			is_colliding_up(dpo)) {
-			ypos = (dpo->ypos / 8) * 8 + 6;
-		 	cdy = ypos - dpo->ypos + dy;
-		 	dpo->ypos = ypos;
-		}
+	#define CROUCH_OFFSET 8
 
-		if (!is_colliding_up(dpo) &&
-			(is_colliding_left(dpo) || is_colliding_right(dpo))) {
-			dpo->xpos -= dx;
-			cdx = 0;
-		}
-		if (cdx != 0 || cdy != 0) {
-			spr_animate(dpo->spr, cdx, cdy);
-		}
-		//log_e("B ypos %d state %d colision %d\n", dpo->ypos, dpo->state, dpo->collision_state);
-	}
-}
+	struct spr_sprite_def *sp = obj->spr;
+	struct spr_pattern_set *ps = sp->pattern_set;
 
-void anim_joystick(struct displ_object *dpo)
-{
-	if (stick == STICK_LEFT || stick == STICK_UP_LEFT ||
-		stick == STICK_DOWN_LEFT) {
-			dpo_animate(dpo, -2, 0);
-	}
-	if (stick == STICK_RIGHT || stick == STICK_UP_RIGHT ||
-		stick == STICK_DOWN_RIGHT) {
-			dpo_animate(dpo, 2, 0);
-	}
-	if (stick == STICK_UP || stick == STICK_UP_RIGHT ||
-		stick == STICK_UP_LEFT) {
-		if (dpo->state == STATE_ONGROUND) {
-			dpo_animate(dpo, 0, -1);
-			list_add(&animators[ANIM_JUMP].list, &dpo_monk.animator_list);
-			dpo->state = STATE_JUMPING;
-		}
-	}
-	if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
-		stick == STICK_DOWN_RIGHT) {
-	}
-	// if (stick)
-	//  	log_e("state : %d colisi %d\n", dpo->state, dpo->collision_state);
-}
+	dx = 0;
+	dy = 0;
 
-/**
- * jump animation is enabled from joystick and disables itself
- */
-void anim_jump(struct displ_object *dpo)
-{
-	static uint8_t jmp_ct;
+	x = (sp->planes[0]).x;
+	y = (sp->planes[0]).y;
 
-	if (dpo->state == STATE_JUMPING) {
-		dpo->state = STATE_ONAIR;
-		dpo->vy = - 7;
-		jmp_ct = 5;
-	} else if (dpo->state == STATE_ONAIR) {
-		dpo_animate(dpo, 0, dpo->vy);
-		if (is_colliding_up(dpo) || dpo->vy >= 0) {
-			dpo->state = STATE_ONCEILING;
-			dpo->vy = 0;
+	log_e("collision state: %d\n", obj->collision_state);
+
+	if (obj->state == STATE_JUMPING) {
+		jump_ct++;
+		if (is_colliding_down(obj)) {
+			jump_ct = 0;
+			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
+				sp->cur_state = JANE_STATE_RIGHT;
+				obj->state = STATE_MOVING_RIGHT;
+			} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
+				sp->cur_state = JANE_STATE_LEFT;
+				obj->state = STATE_MOVING_LEFT;
+			}
 		} else {
-			dpo->vy++;
+			if (jump_ct < 10) {
+				dy = -4;
+			} else {
+				dy = 4;
+			}
 		}
-	} else if (dpo->state == STATE_ONCEILING) {
-		dpo->vy = 0;
-		dpo_animate(dpo, 0, dpo->vy);
-		if (--jmp_ct == 0) {
-			dpo->state = STATE_FALLING;
-		}
-	} else if (dpo->state == STATE_FALLING) {
-		dpo_animate(dpo, 0, dpo->vy);
-		if (is_colliding_down(dpo)) {
-			dpo->state = STATE_LANDING;
-		}
-	} else if (dpo->state == STATE_LANDING) {
-		list_del(&animators[ANIM_JUMP].list);
-		dpo->state = STATE_ONGROUND;
 	}
-	//log_e("jump collision %d state %d\n", dpo->collision_state, dpo->state);
-}
+	// else if (!is_colliding_down(obj)) {
+	// 	obj->state = STATE_FALLING;
+	// 	if (sp->cur_state == JANE_STATE_RIGHT
+	// 		|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
+	// 		sp->cur_state = JANE_STATE_RIGHT_JUMP;
+	// 	} else if (sp->cur_state == JANE_STATE_LEFT
+	// 		|| sp->cur_state == JANE_STATE_LEFT_CROUCH) {
+	// 		sp->cur_state = JANE_STATE_LEFT_JUMP;
+	// 	}
+	// }
 
-void anim_gravity(struct displ_object *dpo)
-{
-	if (!is_colliding_down(dpo)) {
-		dpo_animate(dpo, 0, dpo->vy);
-		if(dpo->vy++ > 2)
-			dpo->vy = 2;
+	if (stick == STICK_LEFT) {
+		dx = -2;
+		if (obj->state == STATE_JUMPING) {
+			sp->cur_state = JANE_STATE_LEFT_JUMP;
+		} else {
+			obj->state = STATE_MOVING_LEFT;
+			sp->cur_state = JANE_STATE_LEFT;
+		}
+	} else if (stick == STICK_RIGHT) {
+		dx = 2;
+		if (obj->state == STATE_JUMPING) {
+			sp->cur_state = JANE_STATE_RIGHT_JUMP;
+		} else {
+			obj->state = STATE_MOVING_RIGHT;
+			sp->cur_state = JANE_STATE_RIGHT;
+		}
+		// if we are jumping, use right jump
+	} else if (stick == STICK_DOWN && obj->state != STATE_JUMPING) {
+		dx = 0;
+		if (sp->cur_state == JANE_STATE_RIGHT) {
+			sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+		} else if (sp->cur_state == JANE_STATE_LEFT) {
+			sp->cur_state = JANE_STATE_LEFT_CROUCH;
+		}
+		obj->state = STATE_CROUCHING;
+	} else if (stick == STICK_DOWN_LEFT && obj->state != STATE_JUMPING) {
+		dx = -2;
+		sp->cur_state = JANE_STATE_LEFT_CROUCH;
+		obj->state = STATE_CROUCHING;
+	} else if (stick == STICK_DOWN_RIGHT && obj->state != STATE_JUMPING) {
+		dx = 2;
+		sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+		obj->state = STATE_CROUCHING;
+
+	} else if (stick == STICK_CENTER) {
+		if (sp->cur_state == JANE_STATE_LEFT_CROUCH) {
+			sp->cur_state = JANE_STATE_LEFT;
+		} else if (sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
+			sp->cur_state = JANE_STATE_RIGHT;
+		}
+		if (obj->state == STATE_CROUCHING) {
+			obj->state = STATE_IDLE;
+		} else if (obj->state == STATE_JUMPING) {
+			// no changes
+		} else if (obj->state == STATE_FALLING) {
+			// no changes
+		} else {
+			obj->state = STATE_IDLE;
+		}
+	}
+
+	if (trigger && obj->state != STATE_CROUCHING) {
+		if (sp->cur_state == JANE_STATE_RIGHT) {
+			sp->cur_state = JANE_STATE_RIGHT_JUMP;
+		} else if (sp->cur_state == JANE_STATE_LEFT) {
+			sp->cur_state = JANE_STATE_LEFT_JUMP;
+		}
+		obj->state = STATE_JUMPING;
+	}
+
+	// NOTE: ordering is important ;)
+	if (obj->state == STATE_FALLING) {
+		if (is_colliding_down(obj)) {
+			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
+				sp->cur_state = JANE_STATE_RIGHT;
+				obj->state = STATE_MOVING_RIGHT;
+			} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
+				sp->cur_state = JANE_STATE_LEFT;
+				obj->state = STATE_MOVING_LEFT;
+			}
+		} else {
+			dy = 4;
+		}
+	}
+
+	if (obj->state != STATE_IDLE) {
+		sp->anim_ctr++;
+		if (sp->anim_ctr > sp->anim_ctr_treshold) {
+			sp->cur_anim_step++;
+			sp->anim_ctr = 0;
+		}
+		if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
+			sp->cur_anim_step = 0;
+	}
+
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
+
+	if (!is_colliding_x(obj)) {
+    		obj->xpos += dx;
+		x += dx;
+	}
+	if (!is_colliding_y(obj)) {
+		obj->ypos += dy;
+		y += dy;
+	}
+
+	if (obj->state == STATE_CROUCHING) {
+		spr_set_pos(sp, x, y + CROUCH_OFFSET);
+		spr_update(sp);
+		// restore
+		spr_set_pos(sp, x, y);
+	} else {
+		spr_set_pos(sp, x, y);
+		spr_update(sp);
 	}
 }
 
@@ -275,7 +318,9 @@ void anim_chase(struct displ_object *obj)
 			spr_show(obj->spr);
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (game_state.templar_delay > 30) obj->state = STATE_OFF_SCREEN;
+			if (game_state.templar_delay > 30) {
+				obj->state = STATE_OFF_SCREEN;
+			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
 			if (game_state.templar_delay > 60) {
@@ -291,10 +336,8 @@ void init_animators()
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
 	animators[ANIM_LEFT_RIGHT_FLOOR].run = anim_left_right_floor;
 	animators[ANIM_UP_DOWN].run = anim_up_down;
-	animators[ANIM_GRAVITY].run = anim_gravity;
 	animators[ANIM_STATIC].run = anim_static;
-	animators[ANIM_JOYSTICK].run = anim_joystick;
-	animators[ANIM_JUMP].run = anim_jump;
+	animators[ANIM_JEAN].run = anim_jean;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 	animators[ANIM_CHASE].run = anim_chase;
 }

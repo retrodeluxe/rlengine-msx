@@ -47,6 +47,7 @@ struct displ_object *dpo;
 struct list_head *elem,*elem2;
 
 uint8_t stick;
+uint8_t trigger;
 uint8_t current_room;
 uint8_t scr_tile_buffer[768];
 uint16_t reftick;
@@ -82,13 +83,13 @@ void main()
 		sys_irq_enable();
 		sys_wait_vsync();
 		reftick = sys_get_ticks();
-		stick = sys_get_stick(0);
-
-		if (stick == STICK_RIGHT) {
-			load_room(++current_room);
-		} else if (stick == STICK_LEFT) {
-			load_room(--current_room);
-		}
+		stick = sys_get_stick(0) | sys_get_stick(1);
+		trigger = sys_get_trigger(0) | sys_get_trigger(1);
+		// if (stick == STICK_RIGHT) {
+		// 	load_room(++current_room);
+		// } else if (stick == STICK_LEFT) {
+		// 	load_room(--current_room);
+		// }
 
 		//check_and_change_room();
 		animate_all();

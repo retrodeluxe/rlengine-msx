@@ -38,7 +38,7 @@ enum spr_patterns_t {
 	PATRN_RAT,
 	PATRN_SPIDER,
 	PATRN_TEMPLAR,
-	PATRN_MONK,
+	PATRN_JEAN,
 	PATRN_WORM,
 	PATRN_SKELETON,
 	PATRN_PALADIN,
@@ -68,11 +68,12 @@ enum rooms_t {
 };
 
 extern struct list_head display_list;
-extern struct spr_sprite_def monk_sprite;
+extern struct spr_sprite_def jean_sprite;
 extern struct displ_object dpo_monk;
 
 extern uint8_t scr_tile_buffer[768];
 extern uint8_t stick;
+extern uint8_t trigger;
 
 extern void remove_tileobject(struct displ_object *dpo);
 extern void update_tileobject(struct displ_object *dpo);

@@ -161,65 +161,47 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
         uint8_t *map, int8_t dx, int8_t dy)
 {
-	int16_t x,y;
-	uint8_t *base;
-        uint16_t base_vdp;
-        uint8_t i;
 
-	x = obj->xpos + 4;
-	y = obj->ypos + 6;
+	uint8_t x, y, c;
+	uint8_t *base_tl, *base_bl, *base_tr, *base_br;
+	uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
 
-	base = map + x / 8 + y / 8 * TILE_WIDTH;
-        base_vdp = vdp_base_names_grp1 + x / 8 + y / 8 * TILE_WIDTH;
+	x = obj->xpos + dx;
+	y = obj->ypos + dy;
 
-	tile[0] = *(base);
-	tile[1] = *(base + 1);
-        // ignore the above ones
-	tile[2] = *(base + TILE_WIDTH);
-	tile[3] = *(base + TILE_WIDTH * 2);
-	tile[4] = *(base + TILE_WIDTH * 3);
-	tile[5] = *(base + TILE_WIDTH + 1);
-	tile[6] = *(base + TILE_WIDTH * 2 + 1);
-	tile[7] = *(base + TILE_WIDTH * 3 + 1);
+	base_tl = map + x / 8 + y / 8 * TILE_WIDTH;
+	base_bl = map + x / 8 + (y + 31) / 8 * TILE_WIDTH;
+	base_ml = map + x / 8 + (y + 15) / 8 * TILE_WIDTH;
+	base_tr = map + (x + 15) / 8 + y / 8 * TILE_WIDTH;
+	base_br = map + (x + 15) / 8 + (y + 31) / 8 * TILE_WIDTH;
+	base_mr = map + (x + 15) / 8 + (y + 15) / 8 * TILE_WIDTH;
+	base_mt = map + (x + 7) / 8 + y / 8 * TILE_WIDTH;
+	base_mb = map + (x + 7) / 8 + (y + 31) / 8 * TILE_WIDTH;
 
-	// check for special tiles
-	// TODO do this only if there is any collision??
-	for (i = 2; i < 8; i++) {
-		phys_tile_collision_notify(tile[i]);
+	tile[0] = *(base_tl);
+	tile[1] = *(base_ml);
+	tile[2] = *(base_bl);
+	tile[3] = *(base_tr);
+	tile[4] = *(base_mr);
+	tile[5] = *(base_br);
+	tile[6] = *(base_mt);
+	tile[7] = *(base_mb);
+
+	obj->collision_state = 0;
+	if (dx < 0 && is_coliding_tile_pair(tile[0], tile[1])) {
+		obj->collision_state |= COLLISION_LEFT;
 	}
-
-        if (dx < 0) {
-		if (is_coliding_tile_pair(tile[2], tile[3])) {
-			obj->collision_state |= COLLISION_LEFT;
-			obj->collision_state &= ~COLLISION_RIGHT;
-		} else {
-			obj->collision_state &= ~COLLISION_LEFT;
-			obj->collision_state &= ~COLLISION_RIGHT;
-		}
+	if (dx > 0 && is_coliding_tile_pair(tile[3], tile[4])) {
+		obj->collision_state |= COLLISION_RIGHT;
 	}
-        if (dx > 0) {
-		if (is_coliding_tile_pair(tile[5], tile[6])) {
-			obj->collision_state |= COLLISION_RIGHT;
-			obj->collision_state &= ~COLLISION_LEFT;
-		} else {
-			obj->collision_state &= ~COLLISION_RIGHT;
-			obj->collision_state &= ~COLLISION_LEFT;
-		}
+	if (dy < 0 && is_coliding_tile_triplet(tile[0], tile[3], tile[6])) {
+		obj->collision_state |= COLLISION_UP;
 	}
-	if (dy < 0) {
-		if (is_coliding_tile_pair(tile[2], tile[5])) {
-			obj->collision_state |= COLLISION_UP;
-		} else {
-			obj->collision_state &= ~COLLISION_UP;
-		}
+	if (dy > 0) {
+		if ((dx >= 0 && is_coliding_tile_pair(tile[5], tile[7]))
+			|| (dx < 0 && is_coliding_tile_pair(tile[2], tile[5])))
+			obj->collision_state |= COLLISION_DOWN;
 	}
-	if (is_coliding_down_tile_pair(tile[4], tile[7])) {
-		obj->collision_state |= COLLISION_DOWN;
-		obj->collision_state &= ~COLLISION_UP;
-	}  else {
-		obj->collision_state &= ~COLLISION_DOWN;
-	}
-
 }
 
 /**

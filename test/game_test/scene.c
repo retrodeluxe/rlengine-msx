@@ -31,11 +31,11 @@ struct tile_set tileset_map7;
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
 struct spr_sprite_def enemy_sprites[31];
-struct spr_sprite_def monk_sprite;
+struct spr_sprite_def jean_sprite;
 struct displ_object display_object[32];
 struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];
-struct displ_object dpo_monk;
+struct displ_object dpo_jean;
 struct list_head display_list;
 struct map_object_item *map_object;
 
@@ -155,6 +155,29 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	INIT_LIST_HEAD(&dpo->animator_list);
 	spr_ct++;
 }
+
+void add_jean()
+{
+	sys_set_ascii_page3(PAGE_SPRITES);
+	spr_valloc_pattern_set(PATRN_JEAN);
+
+	spr_init_sprite(&jean_sprite, PATRN_JEAN);
+	INIT_LIST_HEAD(&dpo_jean.animator_list);
+
+	// FIXME: initial position will depend on how jean enters the room
+	dpo_jean.xpos = 100;
+	dpo_jean.ypos = 192 - 64;
+	dpo_jean.type = DISP_OBJECT_SPRITE;
+	dpo_jean.state = 0;
+	dpo_jean.spr = &jean_sprite;
+	dpo_jean.collision_state = 0;
+	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
+	INIT_LIST_HEAD(&dpo_jean.list);
+	list_add(&dpo_jean.list, &display_list);
+	INIT_LIST_HEAD(&dpo_jean.animator_list);
+	add_animator(&dpo_jean, ANIM_JEAN);
+}
+
 
 void clear_room() {
 	uint8_t i;
@@ -417,11 +440,9 @@ void load_room(uint8_t room)
 			room_objs += NEXT_OBJECT(struct map_object_movable);
 		}
 	}
-	// INIT_LIST_HEAD(&dpo_monk.animator_list);
-	// list_add(&animators[ANIM_JOYSTICK].list, &dpo_monk.animator_list);
-	// list_add(&animators[ANIM_GRAVITY].list, &dpo_monk.animator_list);
-	// INIT_LIST_HEAD(&dpo_monk.list);
-	// list_add(&dpo_monk.list, &display_list);
+
+	add_jean();
+
 	// show all elements
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
@@ -437,22 +458,6 @@ void load_room(uint8_t room)
 	vdp_screen_enable();
 	start_music(room);
 }
-
-
-
-// void init_monk()sys_set_ascii_page3(4);  // PAGE 1 -- it would be good to define this with labels
-// {
-// 	spr_init_sprite(&monk_sprite, &spr_pattern[PATRN_MONK]);
-// 	dpo_monk.xpos = 100;
-// 	dpo_monk.ypos = 192 - 64;
-// 	dpo_monk.vy = 0;
-// 	dpo_monk.type = DISP_OBJECT_SPRITE;
-// 	dpo_monk.state = STATE_ONGROUND;
-// 	dpo_monk.spr = &monk_sprite;
-// 	dpo_monk.collision_state = 0;
-// 	spr_set_pos(&monk_sprite, dpo_monk.xpos, dpo_monk.ypos);
-// }
-
 
 void init_tile_collisions()
 {
@@ -515,8 +520,9 @@ void init_resources()
 	uint8_t bat_state[] = {2};
 	uint8_t waterdrop_state[] = {3};
 	uint8_t single_four_state[] = {4};
-	uint8_t spider_state[]={2};
-	uint8_t archer_state[]={2,2};
+	uint8_t spider_state[]= {2};
+	uint8_t archer_state[]= {2,2};
+	uint8_t jean_state[] = {2,1,2,2,1,2,2};
 
 	init_map_tilesets();
 
@@ -552,7 +558,7 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);
 	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_step_state, rat);
 	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, bat_state, spider);
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1);
+	SPR_DEFINE_PATTERN_SET(PATRN_JEAN, SPR_SIZE_16x32, 1, 7, jean_state, monk1);
 	SPR_DEFINE_PATTERN_SET(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2, two_step_state, templar);
 	SPR_DEFINE_PATTERN_SET(PATRN_WORM, SPR_SIZE_16x16, 1, 2, two_step_state, worm);
 	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton);
@@ -567,7 +573,4 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
 	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
 	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
-
-	/* only needed once */
-
 }
