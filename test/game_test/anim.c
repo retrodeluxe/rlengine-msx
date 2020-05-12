@@ -75,7 +75,9 @@ void anim_jean(struct displ_object *obj)
 {
 	static uint8_t jump_ct = 0;
 	static uint8_t death_ct = 0;
-	int8_t dx, dy, x, y;
+	static int8_t dy_8 = 0;
+	int8_t dx, dy;
+	uint8_t x, y;
 
 	#define CROUCH_OFFSET 8
 
@@ -114,7 +116,15 @@ void anim_jean(struct displ_object *obj)
 				obj->state = STATE_MOVING_LEFT;
 			}
 		} else {
-			dy = jump_ct < 10 ? -4 : 4;
+			if (jump_ct < 5) {
+				dy = -4;
+				dy += dy_8 / 2;
+				dy_8 = 0;
+			} else if (jump_ct < 10) {
+				dy = 0;
+			} else {
+				dy = 6;
+			}
 		}
 	}
 
@@ -175,6 +185,10 @@ void anim_jean(struct displ_object *obj)
 			sp->cur_state = JANE_STATE_LEFT_JUMP;
 		}
 		obj->state = STATE_JUMPING;
+		/* jump sensitivity */
+		if (jump_ct < 5) {
+			dy_8 = -8;
+		}
 	}
 
 	/** handle fall **/

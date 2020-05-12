@@ -9,7 +9,7 @@
 
 ## Tests / Samples
 - game_test:
-  - optimize jump
+  - tweak jump
 
 # Map2Header - Tiled Map compiler
 - Support multiple tile layers?

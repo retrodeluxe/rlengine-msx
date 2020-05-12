@@ -167,13 +167,15 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	x = obj->xpos + dx;
 	y = obj->ypos + dy;
 
-	base_tl = map + x / 8 + y / 8 * TILE_WIDTH;
+	// XXX: ignoring for now top tiles as the sprites are actually 16x24
+	// interestingly it seems we could do just with the 16x16 bottom...
+	base_tl = map + x / 8 + (y + 15) / 8 * TILE_WIDTH;
 	base_bl = map + x / 8 + (y + 31) / 8 * TILE_WIDTH;
 	base_ml = map + x / 8 + (y + 15) / 8 * TILE_WIDTH;
-	base_tr = map + (x + 15) / 8 + y / 8 * TILE_WIDTH;
+	base_tr = map + (x + 15) / 8 + (y + 15) / 8 * TILE_WIDTH;
 	base_br = map + (x + 15) / 8 + (y + 31) / 8 * TILE_WIDTH;
 	base_mr = map + (x + 15) / 8 + (y + 15) / 8 * TILE_WIDTH;
-	base_mt = map + (x + 7) / 8 + y / 8 * TILE_WIDTH;
+	base_mt = map + (x + 7) / 8 + (y + 15) / 8 * TILE_WIDTH;
 	base_mb = map + (x + 7) / 8 + (y + 31) / 8 * TILE_WIDTH;
 
 	tile[0] = *(base_tl);
