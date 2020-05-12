@@ -30,7 +30,7 @@ bool change_room()
 	game_state.jean_x = dpo_jean.xpos;
 	game_state.jean_y = dpo_jean.ypos;
 
-	if (dpo_jean.xpos > 240) {
+	if (dpo_jean.xpos > 239) {
 		game_state.jean_x = 0;
 		game_state.room += 1;
 		change = true;

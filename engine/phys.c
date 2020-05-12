@@ -188,12 +188,21 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	obj->collision_state = 0;
 	if (dx < 0 && is_coliding_tile_triplet(tile[0], tile[1], tile[2])) {
 		obj->collision_state |= COLLISION_LEFT;
+		phys_tile_collision_notify(tile[0]);
+		phys_tile_collision_notify(tile[1]);
+		phys_tile_collision_notify(tile[2]);
 	}
 	if (dx > 0 && is_coliding_tile_triplet(tile[3], tile[4], tile[5])) {
 		obj->collision_state |= COLLISION_RIGHT;
+		phys_tile_collision_notify(tile[3]);
+		phys_tile_collision_notify(tile[4]);
+		phys_tile_collision_notify(tile[5]);
 	}
 	if (dy < 0 && is_coliding_tile_triplet(tile[0], tile[3], tile[6])) {
 		obj->collision_state |= COLLISION_UP;
+		phys_tile_collision_notify(tile[0]);
+		phys_tile_collision_notify(tile[3]);
+		phys_tile_collision_notify(tile[6]);
 	}
 	if (dy > 0) {
 		if ((dx >= 0 && is_coliding_tile_pair(tile[5], tile[7]))
@@ -249,17 +258,28 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
 	obj->collision_state = 0;
 	if (dx < 0 && is_coliding_tile_pair(tile[0], tile[1])) {
 		obj->collision_state |= COLLISION_LEFT;
+		phys_tile_collision_notify(tile[0]);
+		phys_tile_collision_notify(tile[1]);
 	}
 	if (dx > 0 && is_coliding_tile_pair(tile[3], tile[4])) {
 		obj->collision_state |= COLLISION_RIGHT;
+		phys_tile_collision_notify(tile[3]);
+		phys_tile_collision_notify(tile[4]);
 	}
 	if (dy < 0 && is_coliding_tile_triplet(tile[0], tile[3], tile[6])) {
 		obj->collision_state |= COLLISION_UP;
+		phys_tile_collision_notify(tile[0]);
+		phys_tile_collision_notify(tile[3]);
+		phys_tile_collision_notify(tile[6]);
 	}
 	if (dy > 0) {
 		if ((dx >= 0 && is_coliding_tile_pair(tile[5], tile[7]))
 			|| (dx < 0 && is_coliding_tile_pair(tile[2], tile[5])))
 			obj->collision_state |= COLLISION_DOWN;
+			// phys_tile_collision_notify(tile[5]);
+			// phys_tile_collision_notify(tile[7]);
+			// phys_tile_collision_notify(tile[2]);
+			// phys_tile_collision_notify(tile[5]);
 	}
 }
 
@@ -267,13 +287,13 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
  * Update collision state of a display object 16x16
  */
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
-	int8_t dx, int8_t dy)
+       int8_t dx, int8_t dy)
 {
        uint8_t size = obj->spr->pattern_set->size;
 
        if (size == SPR_SIZE_16x16) {
-	       phys_detect_tile_collisions_16x16(obj,map, dx, dy);
+              phys_detect_tile_collisions_16x16(obj,map, dx, dy);
        } else if (size = SPR_SIZE_16x32) {
-	       phys_detect_tile_collisions_16x32(obj, map, dx, dy);
+              phys_detect_tile_collisions_16x32(obj, map, dx, dy);
        }
 }
