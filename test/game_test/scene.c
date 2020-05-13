@@ -10,6 +10,7 @@
 #include "phys.h"
 #include "list.h"
 #include "pt3.h"
+#include "font.h"
 
 #include "anim.h"
 #include "logic.h"
@@ -39,6 +40,7 @@ struct displ_object dpo_bullet[2];
 struct displ_object dpo_jean;
 struct list_head display_list;
 struct map_object_item *map_object;
+struct font big_digits;
 
 uint8_t spr_ct, tob_ct;
 uint8_t *room_objs;
@@ -612,4 +614,9 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
 	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
 	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
+
+	// need to work that out how to define a font based on digits only
+	sys_set_ascii_page3(PAGE_INTRO);
+	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
+	font_to_vram_bank(&big_digits, BANK2, 230);
 }

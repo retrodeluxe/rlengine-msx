@@ -141,10 +141,10 @@ void show_title_screen()
 	tile_init();
 
 	INIT_TILE_SET(tileset_intro, intro_tileset);
-	INIT_FONT(font, font_upper);
+	INIT_FONT(font, font_upper, FONT_ALFA_UPPERCASE, 25, 1, 1);
 
 	tile_set_to_vram(&tileset_intro, 1);
-	font_to_vram_bank(&font, 2, 1);
+	font_to_vram_bank(&font, BANK2, 1);
 
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);

@@ -22,20 +22,30 @@
 
 #include "tile.h"
 
-struct font {
-	struct tile_set upper;
-	struct tile_set lower;
-	struct tile_set digit;
-	uint8_t upper_idx;
-	uint8_t lower_idx;
-	uint8_t digit_idx;
+enum font_type {
+	FONT_ALFA_UPPERCASE,
+	FONT_ALFA_LOWERCASE,
+	FONT_NUMERIC,
 };
 
-#define INIT_FONT(FONT, UPPER)	(FONT).upper.w = UPPER ## _tile_w;\
-				(FONT).upper.h = UPPER ## _tile_h;\
-				(FONT).upper.pattern = UPPER ## _tile;\
-				(FONT).upper.color = UPPER ## _tile_color; \
-				(FONT).upper.allocated = false;
+struct font {
+	struct tile_set tiles;
+	uint8_t type;
+	uint8_t num_glyphs;
+	uint8_t glyph_w;
+	uint8_t glyph_h;
+	uint8_t idx;
+};
+
+#define INIT_FONT(FONT, TILES, TYPE, GLYPHS, W, H)		(FONT).tiles.w = TILES ## _tile_w;\
+							(FONT).tiles.h = TILES ## _tile_h;\
+							(FONT).tiles.pattern = TILES ## _tile;\
+							(FONT).tiles.color = TILES ## _tile_color; \
+							(FONT).tiles.allocated = false; \
+							(FONT).type = (TYPE); \
+							(FONT).num_glyphs = (GLYPHS); \
+							(FONT).glyph_w = (W); \
+							(FONT).glyph_h = (H);
 
 void font_to_vram(struct font *f, uint8_t pos);
 void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos);

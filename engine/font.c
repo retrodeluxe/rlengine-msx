@@ -28,9 +28,9 @@
  */
 void font_to_vram(struct font *f, uint8_t pos)
 {
-	if (&f->upper != NULL) {
-		tile_set_to_vram(&f->upper, pos);
-		f->upper_idx = f->upper.pidx;
+	if (&f->tiles != NULL) {
+		tile_set_to_vram(&f->tiles, pos);
+		f->idx = f->tiles.pidx;
 	}
 }
 
@@ -39,9 +39,9 @@ void font_to_vram(struct font *f, uint8_t pos)
  */
 void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos)
 {
-	if (&f->upper != NULL) {
-		tile_set_to_vram_bank(&f->upper, bank, pos);
-		f->upper_idx = f->upper.pidx;
+	if (&f->tiles != NULL) {
+		tile_set_to_vram_bank(&f->tiles, bank, pos);
+		f->idx = f->tiles.pidx;
 	}
 }
 
@@ -54,17 +54,19 @@ void font_vprint(struct font *f, uint8_t x, uint8_t y, char *text)
 	uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
 
 	while ((c = *text++ ) != '~'') {
-		// char translation based on font indexes
+
 		if (c == 32) {
 			addr++;
 		 	continue;
 		}
-		// upper case font
-		if (c > 64 && c < 91) {
-			tc = c - 65;
-			log_e("printing %d %d\n", base, tc);
-			base = f->upper.pidx;
-			vdp_poke(addr++, base + tc);
+
+		if (f->type == FONT_ALFA_UPPERCASE) {
+			if (c > 64 && c < 91) {
+				tc = c - 65;
+				base = f->tiles.pidx;
+				if (f->glyph_w == 1 && f->glyph_h == 1)
+					vdp_poke(addr++, base + tc);
+			}
 		}
 	}
 
