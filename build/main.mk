@@ -24,7 +24,7 @@ export MAKEFLAGS :=
 # warning 196: pointer target lost const qualifier
 #             we need to store ROM data as const, but is is assigned as non const
 #
-export ENGINE_LDFLAGS := --no-std-crt0 --use-stdout
+export ENGINE_LDFLAGS := -rc
 export ENGINE_ASFLAGS := -plosff
 
 export ARCH := $(shell uname)
@@ -37,6 +37,7 @@ endif
 export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
 export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
 export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
+export CROSS_AR := $(SDCC_ROOT)/bin/sdar
 export CROSS_LD_BANKED := $(SDCC_ROOT)/bin/sdldgb
 export SDCC_LIB := $(SDCC_ROOT)/share/lib/z80
 export SDCC_INCLUDE := $(SDCC_ROOT)/share/include

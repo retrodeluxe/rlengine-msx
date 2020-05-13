@@ -67,7 +67,7 @@ $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 
 ## Everything needs to be linked together; all mapped pages overlap over 0xA000 - 0xBFFF
 ##
-$(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LOCAL_PAGES_SRC_FILES)
+$(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LOCAL_PAGES_SRC_FILES) | $(BUILT_ENGINE_LIB)
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
@@ -76,9 +76,10 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_AS
 	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(CROSS_LD_BANKED) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	$(CROSS_LD_BANKED) -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
