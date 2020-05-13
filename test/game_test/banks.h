@@ -2,6 +2,7 @@
 /*
  * Definitions to identify banks
  */
+#define PAGE_CODE       3
 #define PAGE_INTRO      4	/* swap1 */
 #define PAGE_DYNTILES   5 	/* swap2 */
 #define PAGE_MAP        6       /* swap3 */

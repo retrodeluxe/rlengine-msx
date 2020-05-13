@@ -75,7 +75,6 @@ start:
 	init_game_state();
 
 	load_room(game_state.room);
-	show_score_panel();
 
 	/** game loop **/
 	for(;;) {
@@ -91,24 +90,22 @@ start:
 
 		animate_all();
 
-		/* framerate limiter 25/30fps */
+		/* framerate limiter 30/60fps */
 		fps_stall = true;
-		while (sys_get_ticks() - reftick < 2) {
+		while (sys_get_ticks() - reftick < 1) {
 			fps_stall = false;
 		}
 		if (fps_stall)
 			log_w("fps stall!\n");
 
 		if (game_state.death) {
-			// TODO: show Game Over Screen and go back to start_y
-			goto start;
+			if(--game_state.live_cnt == 0) {
+				goto start;
+			}
+			game_state.death = false;
+			load_room(game_state.room);
 		}
 	}
-}
-
-void show_score_panel()
-{
-	//
 }
 
 void animate_all() {

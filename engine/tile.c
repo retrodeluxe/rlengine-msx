@@ -24,11 +24,6 @@
 #include "log.h"
 #include "bitmap.h"
 
-#define BANK0 0
-#define BANK1 1
-#define BANK2 2
-#define ALLBANKS 3
-
 #define BANK1_OFFSET 256 * 8
 #define BANK2_OFFSET BANK1_OFFSET * 2
 

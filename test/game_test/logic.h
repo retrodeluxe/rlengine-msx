@@ -13,6 +13,8 @@ struct game_state_t {
 
 	/* cross and live count for state panel */
 	uint8_t cross_cnt;
+
+	#define GAME_MAX_LIVES 9
 	uint8_t live_cnt;
 
 	/* action item status */

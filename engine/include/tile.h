@@ -23,6 +23,11 @@
 #define gfx_screen_tile_w       32
 #define gfx_screen_tile_h       24
 
+#define BANK0 0
+#define BANK1 1
+#define BANK2 2
+#define ALLBANKS 3
+
 struct tile_set {
 	uint8_t w;
 	uint8_t h;

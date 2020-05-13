@@ -30,6 +30,7 @@ struct tile_set tileset_map6;
 struct tile_set tileset_map7;
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
+struct tile_object score;
 struct spr_sprite_def enemy_sprites[31];
 struct spr_sprite_def jean_sprite;
 struct displ_object display_object[32];
@@ -220,6 +221,8 @@ void load_room(uint8_t room)
 
 	sys_set_ascii_page3(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
+
+	show_score_panel();
 
 	phys_init();
 	init_tile_collisions();
@@ -516,6 +519,35 @@ void init_map_tilesets() {
 	}
 }
 
+void show_score_panel()
+{
+	uint8_t i;
+	sys_set_ascii_page3(PAGE_DYNTILES);
+
+	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
+	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
+	// also need the freaking font
+
+	score.y = 192 - 16;
+	score.x = 0;
+	score.cur_dir = 1;
+	score.cur_anim_step = 0;
+	score.ts = &tileset[TILE_HEART_STATUS];
+	score.idx = 0;
+
+	tile_object_show(&score, scr_tile_buffer, true);
+
+	score.x = 32;
+	score.y = 192 - 16;
+	score.cur_dir = 1;
+	score.cur_anim_step = 0;
+	score.ts = &tileset[TILE_CROSS_STATUS];
+	score.idx = 0;
+
+	tile_object_show(&score, scr_tile_buffer, true);
+
+}
+
 void init_resources()
 {
 	uint8_t two_step_state[] = {2,2};
@@ -555,6 +587,8 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DOOR], door, 1, 4, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS_STATUS], cross_status, 2, 2, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
 
 	/** initialize sprite pattern sets **/
 	spr_init();
