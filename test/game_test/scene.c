@@ -21,6 +21,8 @@
 #include "gen/game_test_sprites_ext.h"
 #include "gen/map_defs.h"
 
+#include <stdlib.h>
+
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
 struct tile_set tileset_map3;
@@ -524,6 +526,7 @@ void init_map_tilesets() {
 void show_score_panel()
 {
 	uint8_t i;
+	char snum[3];
 	sys_set_ascii_page3(PAGE_DYNTILES);
 
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
@@ -548,6 +551,13 @@ void show_score_panel()
 
 	tile_object_show(&score, scr_tile_buffer, true);
 
+	_itoa(game_state.live_cnt, snum, 10);
+	snum[2] = '~';
+
+	font_vprint(&big_digits, 2, 22, snum);
+	_itoa(game_state.cross_cnt, snum, 10);
+	snum[2] = '~';
+	font_vprint(&big_digits, 6, 22, snum);
 }
 
 void init_resources()
@@ -618,5 +628,5 @@ void init_resources()
 	// need to work that out how to define a font based on digits only
 	sys_set_ascii_page3(PAGE_INTRO);
 	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
-	font_to_vram_bank(&big_digits, BANK2, 230);
+	font_to_vram_bank(&big_digits, BANK2, 220);
 }

@@ -67,6 +67,16 @@ void font_vprint(struct font *f, uint8_t x, uint8_t y, char *text)
 				if (f->glyph_w == 1 && f->glyph_h == 1)
 					vdp_poke(addr++, base + tc);
 			}
+		} else if (f->type == FONT_NUMERIC) {
+			if (c > 47 && c < 58) {
+				tc = c - 48;
+				base = f->tiles.pidx;
+				if (f->glyph_w == 1 && f->glyph_h == 2) {
+					vdp_poke(addr, base + tc);
+					vdp_poke(addr + 32, base + f->tiles.w + tc);
+					addr++;
+				}
+			}
 		}
 	}
 
