@@ -57,6 +57,15 @@ enum spr_patterns_t {
 	PATRN_MAX,
 };
 
+enum sound_effects {
+	SFX_DOOR,
+	SFX_PICKUP_ITEM,
+	SFX_JUMP,
+	SFX_DEATH,
+	SFX_SHOOT,
+	SFX_SLASH,
+};
+
 enum rooms_t {
 	ROOM_EVIL_CHAMBER,
 	ROOM_PRAYER_OF_HOPE,

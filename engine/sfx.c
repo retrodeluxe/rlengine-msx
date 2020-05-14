@@ -58,7 +58,7 @@ void sfx_init(uint8_t effect, uint8_t priority)
 	jr	z, check_priority
 	ld	a,b
 	cp	(hl)
-	ld	a,2
+	ld	a,#2
 	jr	nc, init_end
 check_priority:
 	ld	a,b
@@ -73,7 +73,7 @@ check_priority:
 	ld	de,(#_sfx_bank)
 	inc	de
 	ld	l,b
-	ld	h,0
+	ld	h,#0
 	add	hl,hl
 	add	hl,de
 	ld	e,(hl)
@@ -94,7 +94,7 @@ void sfx_play(void) __naked
 	or	a
 	ret	m
 	ld	a,(#_sfx_mode)
-	and	1
+	and	#1
 	jr	z, get_control_byte
 	ld	hl, #_sfx_channel
 	dec	(hl)
@@ -138,7 +138,7 @@ set_masks:
 	ret	z
 	rrca
 	rrca
-	ld	d,0xDB
+	ld	d,#0xDB
 	ld	hl, #_sfx_channel
 	ld	b,(hl)
 	djnz	check2

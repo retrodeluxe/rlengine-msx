@@ -9,6 +9,7 @@
 
 ## Tests / Samples
 - game_test:
+  - sound effects
   - tweak jump (x velocity)
   - fine tune collision
   - game over screen

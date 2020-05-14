@@ -80,13 +80,13 @@ void start_music(uint8_t room)
 			sys_irq_register(play_room_music);
 			break;
 		case ROOM_CHURCH_ENTRANCE:
-		case ROOM_CHURCH:
+		case ROOM_CHURCH_ALTAR:
 		case ROOM_CHURCH_TOWER:
-		case ROOM_CHURCH_UPPER_FLOOR:
+		case ROOM_CHURCH_WINE_SUPPLIES:
 			pt3_init(church_song_pt3, 1);
 			sys_irq_register(play_room_music);
 			break;
-		case ROOM_MOON_SIGHT:
+		case ROOM_PRAYER_OF_HOPE:
 			pt3_init(prayerofhope_song_pt3, 1);
 			sys_irq_register(play_room_music);
 			break;
@@ -557,7 +557,7 @@ void show_score_panel()
 
 	_itoa(game_state.cross_cnt, snum, 10);
 	snum[2] = '~';
-	
+
 	font_vprint(&big_digits, 6, 22, snum);
 }
 
