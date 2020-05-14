@@ -9,7 +9,16 @@
 
 ## Tests / Samples
 - game_test:
-  - tweak jump
+  - tweak jump (x velocity)
+  - fine tune collision
+  - game over screen
+  - checkpoints
+  - fix broken animations
+  - but with sprite allocation when changing screens
+  - show room titles in status bar?
+  - show parchments
+  - room by room fit and finish
+
 
 # Map2Header - Tiled Map compiler
 - Support multiple tile layers?

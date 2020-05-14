@@ -531,7 +531,6 @@ void show_score_panel()
 
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
 	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
-	// also need the freaking font
 
 	score.y = 192 - 16;
 	score.x = 0;
@@ -555,8 +554,10 @@ void show_score_panel()
 	snum[2] = '~';
 
 	font_vprint(&big_digits, 2, 22, snum);
+
 	_itoa(game_state.cross_cnt, snum, 10);
 	snum[2] = '~';
+	
 	font_vprint(&big_digits, 6, 22, snum);
 }
 
@@ -625,8 +626,8 @@ void init_resources()
 	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
 	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
 
-	// need to work that out how to define a font based on digits only
 	sys_set_ascii_page3(PAGE_INTRO);
+
 	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 220);
 }

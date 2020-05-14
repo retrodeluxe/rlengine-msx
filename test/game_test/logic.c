@@ -23,7 +23,7 @@ void init_game_state()
 	game_state.jean_y = 192 - 64;
 	game_state.room = ROOM_CHURCH_ENTRANCE;
 	game_state.live_cnt = GAME_MAX_LIVES;
-	game_state.cross_cnt = 12;
+	game_state.cross_cnt = 0;
 	game_state.templar_ct = 0;
 	game_state.death = false;
 }
@@ -43,6 +43,7 @@ void pickup_scroll(struct displ_object *dpo, uint8_t data)
         remove_tileobject(dpo);
         // TODO: show scroll contents
 }
+
 void pickup_cross(struct displ_object *dpo, uint8_t data)
 {
         game_state.cross[data] = 1;
