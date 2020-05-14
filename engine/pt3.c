@@ -32,7 +32,7 @@ char Ns_Base;
 char AddToNs;
 
 //AYREGS::
-//char VT_[14];
+char VT_[14];
 char AYREGS[14];
 unsigned int EnvBase;
 char VAR0END[240];

@@ -11,6 +11,7 @@
 #include "list.h"
 #include "pt3.h"
 #include "font.h"
+#include "sfx.h"
 
 #include "anim.h"
 #include "logic.h"
@@ -56,10 +57,12 @@ extern void sys_set_ascii_page3(char page);
 extern const unsigned char huntloop_song_pt3[];
 extern const unsigned char church_song_pt3[];
 extern const unsigned char prayerofhope_song_pt3[];
+extern const char abbaye_sfx_afb[];
 
 void play_room_music()
 {
 	pt3_decode();
+	sfx_play();
 	pt3_play();
 }
 
@@ -92,6 +95,9 @@ void start_music(uint8_t room)
 			break;
 		default:
 	}
+
+	sfx_setup(abbaye_sfx_afb);
+	// here need to enable the effect to play
 }
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)

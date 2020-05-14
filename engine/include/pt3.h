@@ -70,6 +70,7 @@ extern unsigned int CurESld;
 extern char CurEDel;
 extern char Ns_Base;
 extern char AddToNs;
+extern char VT_[14];
 extern char AYREGS[14];
 extern unsigned int EnvBase;
 extern char VAR0END[240];

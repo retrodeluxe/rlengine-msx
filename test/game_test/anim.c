@@ -9,10 +9,12 @@
 #include "dpo.h"
 #include "phys.h"
 #include "list.h"
+#include "sfx.h"
 
 #include "anim.h"
 #include "logic.h"
 #include "scene.h"
+
 
 struct animator animators[MAX_ANIMATORS];
 
@@ -92,11 +94,12 @@ void anim_jean(struct displ_object *obj)
 
 	if (obj->state == STATE_COLLISION) {
 		obj->state = STATE_DEATH;
+		sfx_play_effect(SFX_DEATH, 0);
 	}
 
 	if (obj->state == STATE_DEATH) {
 		death_ct++;
-		if (death_ct < 10) {
+		if (death_ct < 20) {
 			anim_jean_death(obj);
 			return;
 		}
@@ -189,6 +192,7 @@ void anim_jean(struct displ_object *obj)
 		if (jump_ct < 5) {
 			dy_8 = -8;
 		}
+		sfx_play_effect(SFX_JUMP, 0);
 	}
 
 	/** handle fall **/

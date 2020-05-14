@@ -9,6 +9,7 @@
 #include "dpo.h"
 #include "phys.h"
 #include "list.h"
+#include "sfx.h"
 
 #include "logic.h"
 #include "scene.h"
@@ -28,19 +29,19 @@ void init_game_state()
 	game_state.death = false;
 }
 
-
 void pickup_heart(struct displ_object *dpo, uint8_t data)
 {
         game_state.hearth[data] = 1;
         game_state.live_cnt++;
         remove_tileobject(dpo);
+	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
-
 
 void pickup_scroll(struct displ_object *dpo, uint8_t data)
 {
         game_state.scroll[data] = 1;
         remove_tileobject(dpo);
+	sfx_play_effect(SFX_PICKUP_ITEM, 0);
         // TODO: show scroll contents
 }
 
@@ -49,6 +50,7 @@ void pickup_cross(struct displ_object *dpo, uint8_t data)
         game_state.cross[data] = 1;
         game_state.cross_cnt++;
         remove_tileobject(dpo);
+	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
 
 void checkpoint_handler(struct displ_object *dpo, uint8_t data)
@@ -56,6 +58,7 @@ void checkpoint_handler(struct displ_object *dpo, uint8_t data)
         game_state.checkpoint[data] = 1;
         dpo->tob->cur_anim_step = 1;
         update_tileobject(dpo);
+	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
 
 

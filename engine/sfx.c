@@ -35,6 +35,7 @@ uint8_t sfx_noise;
 uint8_t sfx_volume;
 uint8_t sfx_channel;
 uint16_t sfx_tone;
+uint8_t *sfx_volume_table;
 
 void sfx_setup(uint8_t *bank)
 {
@@ -44,7 +45,7 @@ void sfx_setup(uint8_t *bank)
 	sfx_priority = 255;
 }
 
-void sfx_init(uint8_t effect, uint8_t priority)
+void sfx_play_effect(uint8_t effect, uint8_t priority)
 {
 	effect;
 	priority;
@@ -70,6 +71,21 @@ check_priority:
 	and	#0x0F
 	ld	(#_sfx_priority), a
 
+	// set relative volume mode
+	ld	c,a
+	ld	a,#15
+	sub	c
+	jr	z,init_nosound
+	add	a,a
+	add	a,a
+	add	a,a
+	add	a,a
+	ld	e,a
+	ld	d,#0
+	ld	hl,#_VT_
+	add	hl,de
+	ld	(#_sfx_volume_table),hl
+
 	ld	de,(#_sfx_bank)
 	inc	de
 	ld	l,b
@@ -83,7 +99,11 @@ check_priority:
 	ld	(#_sfx_pointer), hl
 	xor	a
 init_end:
-	ret
+	jp	end
+init_nosound:
+	ld	a,#255
+	ld	(#_sfx_priority),a
+end:
 	__endasm;
 }
 
@@ -123,6 +143,16 @@ set_pointer:
 	ld	(#_sfx_pointer),hl
 	ld	a,c
 	and 	#0x0F
+
+	// relative vol
+	ld	hl,(#_sfx_volume_table)
+	ld	e,a
+	ld	d,#0
+	add	hl,de
+	ld	a,(hl)
+	or	a
+
+	// fix this to max for Now
 	ld	(#_sfx_volume),a
 	ret	z
 
