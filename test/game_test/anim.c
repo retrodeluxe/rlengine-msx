@@ -135,6 +135,7 @@ void anim_jean(struct displ_object *obj)
 		dx = -2;
 		if (obj->state == STATE_JUMPING) {
 			sp->cur_state = JANE_STATE_LEFT_JUMP;
+			dx = -3;
 		} else {
 			obj->state = STATE_MOVING_LEFT;
 			sp->cur_state = JANE_STATE_LEFT;
@@ -143,6 +144,7 @@ void anim_jean(struct displ_object *obj)
 		dx = 2;
 		if (obj->state == STATE_JUMPING) {
 			sp->cur_state = JANE_STATE_RIGHT_JUMP;
+			dx = 3;
 		} else {
 			obj->state = STATE_MOVING_RIGHT;
 			sp->cur_state = JANE_STATE_RIGHT;
@@ -204,6 +206,7 @@ void anim_jean(struct displ_object *obj)
 		if (sp->cur_state == JANE_STATE_RIGHT
 			|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
 			sp->cur_state = JANE_STATE_RIGHT_JUMP;
+
 		} else if (sp->cur_state == JANE_STATE_LEFT
 			|| sp->cur_state == JANE_STATE_LEFT_CROUCH) {
 			sp->cur_state = JANE_STATE_LEFT_JUMP;
