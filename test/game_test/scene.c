@@ -57,7 +57,11 @@ extern void sys_set_ascii_page3(char page);
 extern const unsigned char huntloop_song_pt3[];
 extern const unsigned char church_song_pt3[];
 extern const unsigned char prayerofhope_song_pt3[];
+extern const unsigned int huntloop_song_pt3_len;
+extern const unsigned int church_song_pt3_len;
+extern const unsigned int prayerofhope_song_pt3_len;
 extern const char abbaye_sfx_afb[];
+extern const unsigned int abbaye_sfx_afb_len;
 
 void play_room_music()
 {
@@ -79,25 +83,23 @@ void start_music(uint8_t room)
 	switch (room) {
 		case ROOM_FOREST:
 		case ROOM_GRAVEYARD:
-			pt3_init(huntloop_song_pt3, 1); // loop
-			sys_irq_register(play_room_music);
+			sys_memcpy(music_buffer, huntloop_song_pt3, huntloop_song_pt3_len);
 			break;
 		case ROOM_CHURCH_ENTRANCE:
 		case ROOM_CHURCH_ALTAR:
 		case ROOM_CHURCH_TOWER:
 		case ROOM_CHURCH_WINE_SUPPLIES:
-			pt3_init(church_song_pt3, 1);
-			sys_irq_register(play_room_music);
+			sys_memcpy(music_buffer, church_song_pt3, church_song_pt3_len);
 			break;
 		case ROOM_PRAYER_OF_HOPE:
-			pt3_init(prayerofhope_song_pt3, 1);
-			sys_irq_register(play_room_music);
+			sys_memcpy(music_buffer, prayerofhope_song_pt3, prayerofhope_song_pt3_len);
 			break;
 		default:
 	}
+	sys_set_ascii_page3(PAGE_CODE);
 
-	sfx_setup(abbaye_sfx_afb);
-	// here need to enable the effect to play
+	pt3_init(music_buffer, 1);
+	sys_irq_register(play_room_music);
 }
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
@@ -125,6 +127,8 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	dpo->xpos = map_object->x;
 	dpo->ypos = map_object->y;
 	dpo->state = 0;
+
+	sys_set_ascii_page3(PAGE_CODE);
 
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
@@ -160,6 +164,9 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	dpo->ypos = map_object->y;
 	dpo->state = 0;
 	dpo->collision_state = 0;
+
+	sys_set_ascii_page3(PAGE_CODE);
+
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
 	INIT_LIST_HEAD(&dpo->animator_list);
@@ -173,6 +180,8 @@ void add_jean()
 
 	spr_init_sprite(&jean_sprite, PATRN_JEAN);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
+
+	sys_set_ascii_page3(PAGE_CODE);
 
 	// FIXME: initial position will depend on how jean enters the room
 	dpo_jean.xpos = game_state.jean_x;
@@ -458,6 +467,8 @@ void load_room(uint8_t room)
 		}
 	}
 
+	sys_set_ascii_page3(PAGE_CODE);
+
 	add_jean();
 	phys_set_sprite_collision_handler(jean_collision_handler);
 
@@ -493,10 +504,10 @@ void init_map_tilesets() {
 	uint8_t room;
 
 	tile_init();
+	sys_set_ascii_page3(PAGE_MAPTILES);
 
 	room = 0;
 	if (room == 8) {
-		sys_set_ascii_page3(PAGE_MAPTILES);
 		INIT_TILE_SET(tileset_map1, maptiles1);
 		INIT_TILE_SET(tileset_map2, maptiles2);
 		INIT_TILE_SET(tileset_map3, maptiles3);
@@ -514,7 +525,6 @@ void init_map_tilesets() {
 		tile_set_to_vram(&tileset_map6, 126 + 64);
 		tile_set_to_vram(&tileset_map7, 126 + 96);
 	} else {
-		sys_set_ascii_page3(PAGE_MAPTILES);
 		INIT_TILE_SET(tileset_map1, maptiles1);
 		INIT_TILE_SET(tileset_map2, maptiles2);
 		INIT_TILE_SET(tileset_map3, maptiles3)
@@ -527,6 +537,8 @@ void init_map_tilesets() {
 		tile_set_to_vram(&tileset_map5, 126 + 32);
 		tile_set_valloc(&tileset_map3);
 	}
+
+	sys_set_ascii_page3(PAGE_CODE);
 }
 
 void show_score_panel()
@@ -537,6 +549,8 @@ void show_score_panel()
 
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
 	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
+
+	sys_set_ascii_page3(PAGE_CODE);
 
 	score.y = 192 - 16;
 	score.x = 0;
@@ -636,4 +650,11 @@ void init_resources()
 
 	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 220);
+
+	sys_set_ascii_page3(PAGE_MUSIC);
+
+	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
+	sfx_setup(sfx_buffer);
+
+	sys_set_ascii_page3(PAGE_CODE);
 }

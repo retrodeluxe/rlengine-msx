@@ -48,7 +48,12 @@ struct list_head *elem,*elem2;
 
 uint8_t stick;
 uint8_t trigger;
+
+/* buffers for graphics and audio */
 uint8_t scr_tile_buffer[768];
+uint8_t music_buffer[2100];
+uint8_t sfx_buffer[432];
+
 uint16_t reftick;
 bool fps_stall;
 
@@ -57,6 +62,7 @@ extern const unsigned char intro_map_intro_w;
 extern const unsigned char intro_map_intro_h;
 extern const unsigned char intro_map_intro[];
 extern const unsigned char title_song_pt3[];
+extern const unsigned int title_song_pt3_len;
 
 void main()
 {
@@ -154,9 +160,11 @@ void show_title_screen()
 
 	/** title music **/
 	sys_set_ascii_page3(PAGE_MUSIC);
+	sys_memcpy(music_buffer, title_song_pt3, title_song_pt3_len);
+	sys_set_ascii_page3(PAGE_CODE);
 
 	pt3_init_notes(NT);
-	pt3_init(title_song_pt3, 0);
+	pt3_init(music_buffer, 0);
 
 	sys_irq_init();
 	sys_irq_register(play_music);
