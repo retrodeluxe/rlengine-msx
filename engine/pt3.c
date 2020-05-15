@@ -265,13 +265,6 @@ LOUT:
 	INC  A
 	CP   #13
 	JR   NZ,LOUT
-	OUT  (C),A
-	LD   A,(HL)
-	AND  A
-	RET  M
-	INC  C
-	OUT  (C),A
-
 	RET
 
 __endasm;
