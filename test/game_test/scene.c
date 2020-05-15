@@ -206,10 +206,11 @@ void jean_collision_handler()
 void clear_room() {
 	uint8_t i;
 
-	/* clear all sprite attributes */
+	/* clear all sprite attributes and patterns from VRAM but
+	   _not_ sprite definitions in RAM */
 	spr_clear();
 
-	/* free dynamic tiles */
+	/* free dynamic tiles, but do not clear patterns from VRAM */
 	for (i = 0; i < tob_ct; i++) {
 		tile_set_vfree(tileobject[i].ts);
 	}
