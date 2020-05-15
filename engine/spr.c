@@ -42,11 +42,17 @@ void spr_init(void)
 }
 
 void spr_clear(void) {
+	uint8_t i;
+
 	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 	// set all atributes out of screen
 	vdp_memset(vdp_base_spatr_grp1, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites, 212);
 	sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
+
+	// free pattern sets
+	for(i = 0; i < SPR_PATRN_MAX; i++)
+		spr_vfree_pattern_set(i);
 }
 
 void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)
