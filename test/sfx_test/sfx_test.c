@@ -21,13 +21,14 @@ void play_music();
 
 void main()
 {
-	uint8_t effect;
+	uint8_t effect, key;
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
 
-	vdp_print_grp1(0, 0, "gfx test");
+	vdp_print_grp1(0, 0, "sfx test");
+	vdp_print_grp1(0, 1, "press zero to seven");
 
 	pt3_init_notes(NT);
 	pt3_init(prayerofhope_song_pt3,1);
@@ -40,12 +41,14 @@ void main()
 
 	effect = 0;
 	for (;;) {
-		do {
-			sys_wait_vsync();
-		} while (!sys_get_trigger(0));
-		sfx_play_effect(effect++ ,0);
-		if (effect > 7) {
-			effect = 0;
+		sys_wait_vsync();
+
+		key = sys_get_char();
+
+		if (key > '/' && key <= '8') {
+			effect = key - 48;
+			sfx_play_effect(effect ,0);
+			log_e("playing effect %d\n", effect);
 		}
 	}
 	pt3_mute();

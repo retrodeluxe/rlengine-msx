@@ -43,6 +43,7 @@ struct sys_proc {
 
 extern void sys_reboot();
 extern uint8_t sys_get_key(uint8_t line);
+extern uint8_t sys_get_char(void);
 extern uint8_t sys_get_stick(uint8_t port);
 extern uint8_t sys_get_trigger(uint8_t port);
 extern void sys_memcpy(uint8_t * dst, uint8_t * src, uint16_t size);

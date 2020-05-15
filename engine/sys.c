@@ -50,6 +50,15 @@ uint8_t sys_get_key(uint8_t line)
         __endasm;
 }
 
+uint8_t sys_get_char(void)
+{
+        __asm
+        call 0x009f
+        ld h,#0x00
+        ld l,a
+        __endasm;
+}
+
 uint8_t sys_get_trigger(uint8_t port)
 {
         port;
