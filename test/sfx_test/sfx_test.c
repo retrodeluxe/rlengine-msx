@@ -27,7 +27,6 @@ void main()
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
 
-
 	vdp_print_grp1(0, 0, "gfx test");
 
 	pt3_init_notes(NT);
@@ -44,7 +43,7 @@ void main()
 		do {
 			sys_wait_vsync();
 		} while (!sys_get_trigger(0));
-		sfx_play_effect(effect ,0);
+		sfx_play_effect(effect++ ,0);
 		if (effect > 7) {
 			effect = 0;
 		}
@@ -55,7 +54,7 @@ void main()
 
 void play_music()
 {
+	pt3_play();
 	pt3_decode();
 	sfx_play();
-	pt3_play();
 }
