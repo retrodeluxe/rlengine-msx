@@ -23,6 +23,7 @@
 #include "song.h"
 
 #include "gen/phys_test.h"
+#include "gen/map_init.h"
 
 enum spr_patterns_t {
 	PATRN_SMILEY,
@@ -76,6 +77,7 @@ struct displ_object *dpo;
 
 uint8_t stick;
 uint8_t music_ready;
+struct map_object_item *room_objs;
 
 void play_music();
 void anim_up_down(struct displ_object *obj);
@@ -190,8 +192,9 @@ void main()
 	init_monk();
 	INIT_LIST_HEAD(&dpo_monk.animator_list);
 
-	for (dpo = display_object, i = 0; i < map_objects_size; i++, dpo++) {
-        map_object = (struct map_object_item *) map_object_objects[i];
+	room_objs = (struct map_object_item *) map_object_layer[0];
+	for (dpo = display_object, i = 0; map_object->type != 255; i++, dpo++) {
+        map_object = (struct map_object_item *) room_objs;
         if (map_object->type == SPRITE) {
             spr_type = map_object->object.sprite.type;
             x = map_object->x; y = map_object->y;
@@ -222,6 +225,7 @@ void main()
                 default:
                     continue;
             }
+	    room_objs++; /* we have a single type, so this works */
         }
     }
 
@@ -253,7 +257,7 @@ void main()
 	sys_irq_init();
 	phys_init();
 	music_ready = 0;
-	sys_proc_register(play_music);
+	sys_irq_register(play_music);
 
 	phys_set_colliding_tile(1);
 	phys_set_colliding_tile(2);
@@ -262,7 +266,7 @@ void main()
 
 	/* game loop */
 	for(;;) {
-		wait_vsync();
+		sys_wait_vsync();
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
 		animate_all();
