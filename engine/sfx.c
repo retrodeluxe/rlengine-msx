@@ -25,6 +25,35 @@
 
  /* This module has a dependency on PT3 player */
 
+/* ayFX afb file format
+	+0 - number of effects in the file
+	+1 - effects table
+	     - 2 byte pointer to effect within the file
+
+	each effect contains N frames of variable length
+	+0 - Flags
+	     bits 0..3 Volume
+	     bit  4    Disable Tone
+	     bit  5    Change Tone
+	     bit  6    Change Noise
+	     bit  7    Disable Noise
+
+	if bit 6 = 1
+	+ 1-2 : Tone period
+
+	if bit 5 = 1
+	+ 1 : Noise period
+
+	if bit 6 =1 and bit 5 =1
+	+ 1-2 : Tone period
+	+ 3   : Noise period
+
+	bit 4 and bit 7 are used to clear Tone and Noise
+
+	End of effect is marked as 0xD0 0x20
+*/
+
+
 #include "pt3.h"
 
 uint8_t *sfx_bank;
@@ -41,7 +70,7 @@ void sfx_setup(uint8_t *bank)
 {
 	sfx_bank = bank;
 	sfx_mode = 0;
-	sfx_channel = 1;
+	sfx_channel = 3;
 	sfx_priority = 255;
 }
 
@@ -70,21 +99,6 @@ check_priority:
 	ld	a,c
 	and	#0x0F
 	ld	(#_sfx_priority), a
-
-	// set relative volume mode
-	ld	c,a
-	ld	a,#15
-	sub	c
-	jr	z,init_nosound
-	add	a,a
-	add	a,a
-	add	a,a
-	add	a,a
-	ld	e,a
-	ld	d,#0
-	ld	hl,#_VT_
-	add	hl,de
-	ld	(#_sfx_volume_table),hl
 
 	ld	de,(#_sfx_bank)
 	inc	de
@@ -144,15 +158,6 @@ set_pointer:
 	ld	a,c
 	and 	#0x0F
 
-	// relative vol
-	ld	hl,(#_sfx_volume_table)
-	ld	e,a
-	ld	d,#0
-	add	hl,de
-	ld	a,(hl)
-	or	a
-
-	// fix this to max for Now
 	ld	(#_sfx_volume),a
 	ret	z
 
@@ -177,7 +182,7 @@ play_c:
 	ld	(#_AYREGS + 10), a
 	bit	2,c
 	ret	nz
-	ld	(#_AYREGS + 4), a
+	ld	(#_AYREGS + 4), hl
 	ret
 check2:
 	rrc	d
@@ -188,7 +193,7 @@ play_b:
 	ld	(#_AYREGS + 9), a
 	bit	1,c
 	ret	nz
-	ld	(#_AYREGS + 2), a
+	ld	(#_AYREGS + 2), hl
 	ret
 check3:
 	rrc	d
@@ -198,7 +203,7 @@ play_a:
 	ld	(#_AYREGS + 8), a
 	bit	0,c
 	ret	nz
-	ld	(#_AYREGS + 0), a
+	ld	(#_AYREGS + 0), hl
 	ret
 set_mixer:
 	ld	c,a
@@ -212,6 +217,19 @@ set_mixer:
 sfx_end:
 	ld	a,#255
 	ld	(#_sfx_priority), a
+
+	// mute effect
+	ld 	hl,#_AYREGS
+	ld 	a,(#_sfx_channel)
+	inc 	a
+	and 	#3
+	add 	a,#8
+	add 	a,l
+	ld 	l,a
+	adc 	a,h
+	sub 	l
+	ld 	h,a
+	ld 	(hl),#0
 	ret
 	__endasm;
 }
