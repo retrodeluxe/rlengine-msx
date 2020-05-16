@@ -90,20 +90,10 @@ struct spr_delta_pos {
 
 extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 
-/**
- * helper macros for sprite definition from generated data
- */
-#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, STATES, STEPS, PATTERNS) 	spr_pattern[(X)].size = (SIZE);\
-									spr_pattern[(X)].n_planes = (PLANES);\
-									sys_memcpy(spr_pattern[(X)].state_steps, (STEPS), (STATES));\
-									spr_pattern[(X)].n_states = (STATES); \
-									spr_pattern[(X)].allocated = false; \
-									spr_pattern[(X)].patterns = (PATTERNS); \
-									spr_pattern[(X)].colors = PATTERNS ## _color
-
 extern void spr_init();
 extern void spr_clear();
-//extern voud spr_define_pattern_set(uint8_t size, uint8_t planes, uint8_t state, uint8_t *steps, )
+extern void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
+	uint8_t num_states, uint8_t *state_steps, uint8_t *patterns, uint8_t *colors);
 extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
 extern void spr_vfree_pattern_set(uint8_t patrn_idx);

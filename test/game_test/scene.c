@@ -23,7 +23,6 @@
 #include "gen/map_defs.h"
 
 #include <stdlib.h>
-
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
 struct tile_set tileset_map3;
@@ -62,6 +61,21 @@ extern const unsigned int church_song_pt3_len;
 extern const unsigned int prayerofhope_song_pt3_len;
 extern const char abbaye_sfx_afb[];
 extern const unsigned int abbaye_sfx_afb_len;
+
+// sprite definitions data
+const uint8_t two_step_state[] = {2,2};
+const uint8_t single_step_state[] = {1,1};
+const uint8_t three_step_state[] = {3,3};
+const uint8_t bullet_state[] = {1,1};
+const uint8_t bat_state[] = {2};
+const uint8_t waterdrop_state[] = {3};
+const uint8_t single_four_state[] = {4};
+const uint8_t spider_state[]= {2};
+const uint8_t archer_state[]= {2,2};
+const uint8_t jean_state[] = {2,1,2,2,1,2,2};
+
+
+void define_sprite(uint8_t pattidx);
 
 void play_room_music()
 {
@@ -147,10 +161,12 @@ void update_tileobject(struct displ_object *dpo)
 	tile_object_show(dpo->tob, scr_tile_buffer, true);
 }
 
+
+
+
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
-	sys_set_ascii_page3(PAGE_SPRITES);
-
+	define_sprite(pattidx);
 	spr_valloc_pattern_set(pattidx);
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
 	INIT_LIST_HEAD(&dpo->animator_list);
@@ -175,13 +191,11 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 
 void add_jean()
 {
-	sys_set_ascii_page3(PAGE_SPRITES);
+	define_sprite(PATRN_JEAN);
 	spr_valloc_pattern_set(PATRN_JEAN);
 
 	spr_init_sprite(&jean_sprite, PATRN_JEAN);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
-
-	sys_set_ascii_page3(PAGE_CODE);
 
 	// FIXME: initial position will depend on how jean enters the room
 	dpo_jean.xpos = game_state.jean_x;
@@ -584,21 +598,10 @@ void show_score_panel()
 
 void init_resources()
 {
-	uint8_t two_step_state[] = {2,2};
-	uint8_t single_step_state[] = {1,1};
-	uint8_t three_step_state[] = {3,3};
-	uint8_t bullet_state[] = {1,1};
-	uint8_t bat_state[] = {2};
-	uint8_t waterdrop_state[] = {3};
-	uint8_t single_four_state[] = {4};
-	uint8_t spider_state[]= {2};
-	uint8_t archer_state[]= {2,2};
-	uint8_t jean_state[] = {2,1,2,2,1,2,2};
-
 	init_map_tilesets();
 	spr_init();
 
-	/** initialize dynamic tile sets */
+	/** initialize dynamic tile sets **/
 	sys_set_ascii_page3(PAGE_DYNTILES);
 
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
@@ -625,38 +628,92 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS_STATUS], cross_status, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
 
-	/** initialize sprite pattern sets **/
-
-	sys_set_ascii_page3(PAGE_SPRITES);
-
-	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);
-	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_step_state, rat);
-	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, bat_state, spider);
-	SPR_DEFINE_PATTERN_SET(PATRN_JEAN, SPR_SIZE_16x32, 1, 7, jean_state, monk1);
-	SPR_DEFINE_PATTERN_SET(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2, two_step_state, templar);
-	SPR_DEFINE_PATTERN_SET(PATRN_WORM, SPR_SIZE_16x16, 1, 2, two_step_state, worm);
-	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton);
-	SPR_DEFINE_PATTERN_SET(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2, two_step_state, paladin);
-	SPR_DEFINE_PATTERN_SET(PATRN_GUADANYA, SPR_SIZE_16x16, 1, 1, single_four_state, guadanya);
-	SPR_DEFINE_PATTERN_SET(PATRN_GHOST, SPR_SIZE_16x16, 1, 2, two_step_state, ghost);
-	SPR_DEFINE_PATTERN_SET(PATRN_DEMON, SPR_SIZE_16x32, 1, 2, two_step_state, demon);
-//	SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, 2, death);
-	SPR_DEFINE_PATTERN_SET(PATRN_DARKBAT, SPR_SIZE_16x16, 1, 2, two_step_state, darkbat);
-	SPR_DEFINE_PATTERN_SET(PATRN_FLY, SPR_SIZE_16x16, 1, 2, two_step_state, fly);
-	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON_CEILING, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton_ceiling);
-	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
-	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
-	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
-
+	/** copy numeric font to vram **/
 	sys_set_ascii_page3(PAGE_INTRO);
-
 	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 220);
 
+	/** copy over music to ram **/
 	sys_set_ascii_page3(PAGE_MUSIC);
-
 	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
 	sfx_setup(sfx_buffer);
+	sys_set_ascii_page3(PAGE_CODE);
+}
+
+void define_sprite(uint8_t pattidx)
+{
+	sys_set_ascii_page3(PAGE_SPRITES);
+
+	switch(pattidx) {
+		case PATRN_BAT:
+			spr_define_pattern_set(PATRN_BAT, SPR_SIZE_16x16, 1, 1,
+				bat_state, bat, bat_color);
+			break;
+		case PATRN_RAT:
+			spr_define_pattern_set(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
+				two_step_state, rat, rat_color);
+			break;
+		case PATRN_SPIDER:
+			spr_define_pattern_set(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1,
+				bat_state, spider, spider_color);
+			break;
+		case PATRN_JEAN:
+			spr_define_pattern_set(PATRN_JEAN, SPR_SIZE_16x32, 1, 7,
+				jean_state, monk1, monk1_color);
+			break;
+		case PATRN_TEMPLAR:
+			spr_define_pattern_set(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2,
+				two_step_state, templar, templar_color);
+			break;
+		case PATRN_WORM:
+			spr_define_pattern_set(PATRN_WORM, SPR_SIZE_16x16, 1, 2,
+				two_step_state, worm, worm_color);
+			break;
+		case PATRN_SKELETON:
+			spr_define_pattern_set(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2,
+				two_step_state, skeleton, skeleton_color);
+			break;
+		case PATRN_PALADIN:
+			spr_define_pattern_set(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2,
+				two_step_state, paladin, paladin_color);
+			break;
+		case PATRN_GUADANYA:
+			spr_define_pattern_set(PATRN_GUADANYA, SPR_SIZE_16x16, 1, 1,
+				single_four_state, guadanya, guadanya_color);
+			break;
+		case PATRN_GHOST:
+			spr_define_pattern_set(PATRN_GHOST, SPR_SIZE_16x16, 1, 2,
+				two_step_state, ghost, ghost_color);
+			break;
+		case PATRN_DEMON:
+			spr_define_pattern_set(PATRN_DEMON, SPR_SIZE_16x32, 1, 2,
+				two_step_state, demon, demon_color);
+			break;
+		case PATRN_DARKBAT:
+			spr_define_pattern_set(PATRN_DARKBAT, SPR_SIZE_16x16, 1, 2,
+				two_step_state, darkbat, darkbat_color);
+			break;
+		case PATRN_FLY:
+			spr_define_pattern_set(PATRN_FLY, SPR_SIZE_16x16, 1, 2,
+				two_step_state, fly, fly_color);
+			break;
+		case PATRN_SKELETON_CEILING:
+			spr_define_pattern_set(PATRN_SKELETON_CEILING, SPR_SIZE_16x32, 1, 2,
+				two_step_state, skeleton_ceiling, skeleton_ceiling_color);
+			break;
+		case PATRN_FISH:
+			spr_define_pattern_set(PATRN_FISH, SPR_SIZE_16x16, 1, 1,
+				bat_state, fish, fish_color);
+			break;
+		case PATRN_FIREBALL:
+			spr_define_pattern_set(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1,
+				bat_state, fireball, fireball_color);
+			break;
+		case PATRN_WATERDROP:
+			spr_define_pattern_set(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1,
+				waterdrop_state, waterdrop, waterdrop_color);
+			break;
+	}
 
 	sys_set_ascii_page3(PAGE_CODE);
 }

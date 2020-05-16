@@ -47,7 +47,8 @@ extern uint8_t sys_get_char(void);
 extern uint8_t sys_get_stick(uint8_t port);
 extern uint8_t sys_get_trigger(uint8_t port);
 extern void sys_memcpy(uint8_t *dst, uint8_t * src, uint16_t size);
-extern void sys_memset(void *dst, uint8_t c, uint16_t size);
+#define sys_memset __builtin_memset
+//extern void sys_memset(void *dst, uint8_t c, uint16_t size);
 
 extern void sys_irq_register(void (*func));
 extern void sys_irq_unregister(void (*func));

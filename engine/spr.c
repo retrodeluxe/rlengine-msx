@@ -23,12 +23,19 @@
 #include "sprite.h"
 #include "log.h"
 
-// sprite attribute allocation table
+// vram sprite attribute allocation table
 uint8_t spr_attr_valloc[vdp_hw_max_sprites];
 
-// sprite pattern allocation table
+// vram sprite pattern allocation table
 uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 
+// ram copy for current patterns
+uint8_t spr_patterns[2046];
+uint8_t spr_colors[256];
+uint16_t spr_patterns_idx;
+uint8_t spr_colors_idx;
+
+// unfortunate name.. change
 // spr pattern sets
 struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 
@@ -39,6 +46,7 @@ void spr_init(void)
 {
 	spr_clear();
 	sys_memset(spr_pattern, 0,  sizeof(struct spr_pattern_set) * SPR_PATRN_MAX);
+
 }
 
 void spr_clear(void) {
@@ -53,6 +61,36 @@ void spr_clear(void) {
 	// free pattern sets
 	for(i = 0; i < SPR_PATRN_MAX; i++)
 		spr_vfree_pattern_set(i);
+
+	spr_patterns_idx = 0;
+	spr_colors_idx = 0;
+}
+extern void sys_set_ascii_page3(char page);
+
+void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
+	uint8_t num_states, uint8_t *state_steps, uint8_t *patterns, uint8_t *colors)
+{
+	uint16_t pattern_size;
+	uint8_t i, total_steps = 0;
+
+	for (i = 0; i < num_states; i++) {
+		total_steps += state_steps[i];
+	}
+
+	pattern_size = size * planes * total_steps * 8;
+	sys_memcpy(&spr_patterns[spr_patterns_idx], patterns, pattern_size);
+	sys_memcpy(&spr_colors[spr_colors_idx], colors, planes * total_steps);
+
+	spr_pattern[index].size = size;
+	spr_pattern[index].n_planes = planes;
+	sys_memcpy(spr_pattern[index].state_steps, state_steps, num_states);
+	spr_pattern[index].n_states = num_states;
+	spr_pattern[index].allocated = false;
+	spr_pattern[index].patterns = &spr_patterns[spr_patterns_idx];
+	spr_pattern[index].colors = &spr_colors[spr_colors_idx];
+
+	spr_patterns_idx += pattern_size;
+	spr_colors_idx += planes * total_steps;
 }
 
 void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)

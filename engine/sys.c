@@ -98,25 +98,25 @@ void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size)
         __endasm;
 }
 
-void sys_memset (void *dst, uint8_t c, uint16_t size)
-{
-	dst;
-	c;
-	size;
-
-	__asm
-	ld l,4(ix)
-        ld h,5(ix)
-        ld e,l
-        ld d,h
-	inc de
-	ld a,6(ix)
-	ld (hl),a
-        ld c,7(ix)
-        ld b,8(ix)
-        ldir
-	__endasm;
-}
+// void sys_memset (void *dst, uint8_t c, uint16_t size)
+// {
+// 	dst;
+// 	c;
+// 	size;
+//
+// 	__asm
+// 	ld l,4(ix)
+//         ld h,5(ix)
+//         ld e,l
+//         ld d,h
+// 	inc de
+// 	ld a,6(ix)
+// 	ld (hl),a
+//         ld c,7(ix)
+//         ld b,8(ix)
+//         ldir
+// 	__endasm;
+// }
 
 
 /**
