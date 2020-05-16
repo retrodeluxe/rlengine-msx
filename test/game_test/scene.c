@@ -596,6 +596,7 @@ void init_resources()
 	uint8_t jean_state[] = {2,1,2,2,1,2,2};
 
 	init_map_tilesets();
+	spr_init();
 
 	/** initialize dynamic tile sets */
 	sys_set_ascii_page3(PAGE_DYNTILES);
@@ -625,7 +626,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
 
 	/** initialize sprite pattern sets **/
-	spr_init();
+
 	sys_set_ascii_page3(PAGE_SPRITES);
 
 	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);

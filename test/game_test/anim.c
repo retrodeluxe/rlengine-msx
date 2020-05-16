@@ -109,25 +109,14 @@ void anim_jean(struct displ_object *obj)
 
 	if (obj->state == STATE_JUMPING) {
 		jump_ct++;
-		if (is_colliding_down(obj)) {
-			jump_ct = 0;
-			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
-				sp->cur_state = JANE_STATE_RIGHT;
-				obj->state = STATE_MOVING_RIGHT;
-			} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
-				sp->cur_state = JANE_STATE_LEFT;
-				obj->state = STATE_MOVING_LEFT;
-			}
+		if (jump_ct < 5) {
+			dy = -4;
+			dy += dy_8 / 2;
+			dy_8 = 0;
+		} else if (jump_ct < 10) {
+			dy = 0;
 		} else {
-			if (jump_ct < 5) {
-				dy = -4;
-				dy += dy_8 / 2;
-				dy_8 = 0;
-			} else if (jump_ct < 10) {
-				dy = 0;
-			} else {
-				dy = 6;
-			}
+			dy = 6;
 		}
 	}
 
@@ -197,12 +186,8 @@ void anim_jean(struct displ_object *obj)
 		sfx_play_effect(SFX_JUMP, 0);
 	}
 
-	/** handle fall **/
-
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy + 1);
-
-	if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
-		obj->state = STATE_FALLING;
+	if (obj->state == STATE_FALLING) {
+		dy = 4;
 		if (sp->cur_state == JANE_STATE_RIGHT
 			|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
 			sp->cur_state = JANE_STATE_RIGHT_JUMP;
@@ -212,6 +197,29 @@ void anim_jean(struct displ_object *obj)
 			sp->cur_state = JANE_STATE_LEFT_JUMP;
 		}
 	}
+
+	/** handle collisions and update sprite **/
+	if (obj->state == STATE_CROUCHING) {
+		obj->ypos = obj->ypos + CROUCH_OFFSET;
+		phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
+		obj->ypos = obj->ypos - CROUCH_OFFSET;
+	} else {
+		phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
+	}
+
+	if (obj->state == STATE_JUMPING) {
+		if (is_colliding_down(obj)) {
+			jump_ct = 0;
+			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
+				sp->cur_state = JANE_STATE_RIGHT;
+				obj->state = STATE_MOVING_RIGHT;
+			} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
+				sp->cur_state = JANE_STATE_LEFT;
+				obj->state = STATE_MOVING_LEFT;
+			}
+		}
+	}
+
 	if (obj->state == STATE_FALLING) {
 		if (is_colliding_down(obj)) {
 			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
@@ -221,22 +229,20 @@ void anim_jean(struct displ_object *obj)
 				sp->cur_state = JANE_STATE_LEFT;
 				obj->state = STATE_MOVING_LEFT;
 			}
-		} else {
-			dy = 4;
 		}
 	}
-	/** handle collisions and update sprite **/
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
+	if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
+		obj->state = STATE_FALLING;
+	}
 
-	if (!is_colliding_x(obj)) {
-    		obj->xpos += dx;
-		x += dx;
-	}
-	if (!is_colliding_y(obj)) {
-		obj->ypos += dy;
-		y += dy;
-	}
+	//if (!is_colliding_x(obj)) {
+    		//obj->xpos += dx;
+	//}
+	//if (!is_colliding_y(obj)) {
+	//	obj->ypos += dy;
+	//	y += dy;
+	//}
 
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
@@ -250,12 +256,13 @@ void anim_jean(struct displ_object *obj)
 
 	if (obj->state == STATE_CROUCHING) {
 		/* crouching requires temporary offset to jean sprite */
-		spr_set_pos(sp, x, y + CROUCH_OFFSET);
+		spr_set_pos(sp, obj->xpos, obj->ypos + CROUCH_OFFSET);
 		spr_update(sp);
 		/* restore pos */
-		spr_set_pos(sp, x, y);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
 	} else {
-		spr_set_pos(sp, x, y);
+		//log_e("set pos x %d, y %d\n", obj->xpos, obj->ypos);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
 		spr_update(sp);
 	}
 }

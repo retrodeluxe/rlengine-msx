@@ -111,6 +111,7 @@ start:
 			game_state.death = false;
 			load_room(game_state.room);
 		}
+		//sys_sleep(100);
 	}
 }
 
