@@ -186,6 +186,10 @@ void anim_jean(struct displ_object *obj)
 		sfx_play_effect(SFX_JUMP, 0);
 	}
 
+	if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
+		obj->state = STATE_FALLING;
+	}
+
 	if (obj->state == STATE_FALLING) {
 		dy = 4;
 		if (sp->cur_state == JANE_STATE_RIGHT
@@ -206,6 +210,10 @@ void anim_jean(struct displ_object *obj)
 	} else {
 		phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
 	}
+
+	//if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
+//		obj->state = STATE_FALLING;
+//	}
 
 	if (obj->state == STATE_JUMPING) {
 		if (is_colliding_down(obj)) {
@@ -230,10 +238,6 @@ void anim_jean(struct displ_object *obj)
 				obj->state = STATE_MOVING_LEFT;
 			}
 		}
-	}
-
-	if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
-		obj->state = STATE_FALLING;
 	}
 
 	if (obj->state != STATE_IDLE) {
