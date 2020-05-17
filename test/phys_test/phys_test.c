@@ -107,15 +107,15 @@ void init_patterns()
 	uint8_t spider_state[]={2};
 	uint8_t archer_state[]={2,2};
 
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1);
-	SPR_DEFINE_PATTERN_SET(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, two_step_state, smiley);
-	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, bullet_state, bullet);
-	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, archer_state, archer_skeleton);
-	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow);
-	SPR_DEFINE_PATTERN_SET(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, plant_state, plant);
-	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
-	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, spider_state, spider);
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, two_step_state, monk_death);
+	spr_define_pattern_set(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1, monk1_color);
+	spr_define_pattern_set(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, two_step_state, smiley, smiley_color);
+	spr_define_pattern_set(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, bullet_state, bullet, bullet_color);
+	spr_define_pattern_set(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, archer_state, archer_skeleton, archer_skeleton_color);
+	spr_define_pattern_set(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow, arrow_color);
+	spr_define_pattern_set(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, plant_state, plant, plant_color);
+	spr_define_pattern_set(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop, waterdrop_color);
+	spr_define_pattern_set(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, spider_state, spider, spider_color );
+	spr_define_pattern_set(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, two_step_state, monk_death, monk_death_color);
 }
 
 void init_animators()
