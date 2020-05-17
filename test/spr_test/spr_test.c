@@ -38,6 +38,9 @@ struct spr_sprite_def rats[10];
 const uint8_t control_patt[8] = {255,255,255,255,255,255,255,255};
 const uint8_t control_colors [1] = {6};
 
+uint8_t xpos[10], ypos[10];
+uint8_t xpos2[10], ypos2[10];
+
 void main()
 {
 	unsigned int count = 0;
@@ -54,30 +57,24 @@ void main()
 	/**
 	 * Composite sprites
 	 */
-	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, monk_states, monk1);
+	spr_define_pattern_set(PATRN_MONK, SPR_SIZE_16x32, 1, 2,
+		monk_states, monk1, monk1_color);
 	spr_valloc_pattern_set(PATRN_MONK);
 
-	// for (int i = 0; i< 32; i++) {
-	// 	bee_hw.y = 0 + i * 8;
-	// 	bee_hw.x = 100;
-	// 	bee_hw.pattern = i * 4;
-	// 	bee_hw.color = 10;
-	// 	vdp_set_hw_sprite(&bee_hw, i);
-	// }
-	//
-	// do {
-	// } while (sys_get_key(8) & 1);
-
+	xpos[0] = 100; ypos [0] = 100;
 	spr_init_sprite(&monk, PATRN_MONK);
-	spr_set_pos(&monk, 100, 100);
+	spr_set_pos(&monk, xpos[0], ypos[0]);
 	spr_show(&monk);
 
+	sys_irq_init();
+
 	do {
-		do {
-			// delay a few ms
-		} while (count++ < 0x01ff);
-		count=0;
+		sys_wait_vsync();
+		sys_sleep(100);
 		spr_animate(&monk,-1,0);
+		xpos[0]--;
+		spr_set_pos(&monk, xpos[0], ypos[0]);
+		spr_update(&monk);
 	} while (sys_get_key(8) & 1);
 
 	spr_init();
@@ -99,9 +96,12 @@ void main()
 	 * Single layer sprites with animation in two directions
 	 */
 
-	SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2, two_states, bee1);
-	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_states, rat);
-	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3, four_states, eggerland);
+	spr_define_pattern_set(PATRN_BEE, SPR_SIZE_16x16, 1, 2,
+		two_states, bee1, bee1_color);
+	spr_define_pattern_set(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
+		two_states, rat, rat_color);
+	spr_define_pattern_set(PATRN_EGG, SPR_SIZE_16x16, 2, 3,
+		four_states, eggerland, eggerland_color);
 
 	spr_valloc_pattern_set(PATRN_BEE);
 	spr_valloc_pattern_set(PATRN_RAT);
@@ -110,9 +110,10 @@ void main()
 	for (i = 0; i< 10; i++) {
 		spr_init_sprite(&bee[i], PATRN_BEE);
 		spr_init_sprite(&rats[i], PATRN_RAT);
-		// set in random initial positions
-		spr_set_pos(&bee[i], i * 20, i * 20);
-		spr_set_pos(&rats[i], 16 + i * 20, 16 + i * 20);
+		xpos[i] = i * 20; ypos[i] = i * 20;
+		xpos2[i] = 16 + i * 20; ypos2[i] = 16 + i * 20;
+		spr_set_pos(&bee[i], xpos[i], ypos[i]);
+		spr_set_pos(&rats[i], xpos2[i], ypos2[i]);
 		spr_show(&bee[i]);
 		spr_show(&rats[i]);
 	}
@@ -122,13 +123,14 @@ void main()
 	spr_show(&eggspr);
 
 	do {
-		do {
-			// delay a few ms
-		} while (count++ < 0x01ff);
-		count=0;
+		sys_wait_vsync();
 		for (i = 0; i< 10; i++) {
 			spr_animate(&bee[i],1,-1);
 			spr_animate(&rats[i],-1,1);
+			spr_set_pos(&bee[i], ++xpos[i], --ypos[i]);
+			spr_set_pos(&rats[i], --xpos2[i], ++ypos2[i]);
+			spr_update(&bee[i]);
+			spr_update(&rats[i]);
 		}
 	} while (sys_get_key(8) & 1);
 
