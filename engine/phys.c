@@ -161,62 +161,63 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
         uint8_t *map, int8_t *dx, int8_t *dy)
 {
 	uint8_t x, y, c;
-	uint8_t *base_tl, *base_bl, *base_tr, *base_br;
-	uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
+	uint8_t *base_ceiling_l, *base_ceiling_r, *base_left_t, *base_left_b;
+	uint8_t *base_right_t, *base_right_b, *base_floor_l, *base_floor_r;
 
-	x = obj->xpos + *dx;
-	y = obj->ypos + *dy;
+	x = obj->xpos;
+	y = obj->ypos;
 
-	base_tl = map + x / 8 + (y + 8) / 8 * TILE_WIDTH;
-	base_bl = map + x / 8 + (y + 31) / 8 * TILE_WIDTH;
-	base_ml = map + x / 8 + (y + 16) / 8 * TILE_WIDTH;
-	base_tr = map + (x + 15) / 8 + (y + 8) / 8 * TILE_WIDTH;
-	base_br = map + (x + 15) / 8 + (y + 31) / 8 * TILE_WIDTH;
-	base_mr = map + (x + 15) / 8 + (y + 16) / 8 * TILE_WIDTH;
-	base_mt = map + (x + 7) / 8 + (y + 15) / 8 * TILE_WIDTH;
-	base_mb = map + (x + 7) / 8 + (y + 31) / 8 * TILE_WIDTH;
+	base_ceiling_l = map + x / 8 + (y + 7) / 8 * TILE_WIDTH;
+	base_ceiling_r = map + (x + 8) / 8 + (y + 7) / 8 * TILE_WIDTH;
 
-	tile[0] = *(base_tl);
-	tile[1] = *(base_ml);
-	tile[2] = *(base_bl);
-	tile[3] = *(base_tr);
-	tile[4] = *(base_mr);
-	tile[5] = *(base_br);
-	//tile[6] = *(base_mt);
-	//tile[7] = *(base_mb);
+	base_left_t = map + (x - 1) / 8 + (y + 15) / 8 * TILE_WIDTH;
+	base_left_b = map + (x - 1) / 8 + (y + 24) / 8 * TILE_WIDTH;
+
+	base_right_t = map + (x + 15) / 8 + (y + 15) / 8 * TILE_WIDTH;
+	base_right_b = map + (x + 15) / 8 + (y + 24) / 8 * TILE_WIDTH;
+
+	// collision down does not depend on dy
+	base_floor_l = map + x / 8 + (y + 32) / 8 * TILE_WIDTH;
+	base_floor_r = map + (x + 8) / 8 + (y + 32) / 8 * TILE_WIDTH;
+
+	tile[0] = *(base_ceiling_l);
+	tile[1] = *(base_ceiling_r);
+	tile[2] = *(base_left_t);
+	tile[3] = *(base_left_b);
+	tile[4] = *(base_right_t);
+	tile[5] = *(base_right_b);
+	tile[6] = *(base_floor_l);
+	tile[7] = *(base_floor_r);
 
 	obj->collision_state = 0;
-	obj->ypos = y;
-	obj->xpos = x;
 
-	if (*dx < 0 && is_coliding_tile_triplet(tile[0], tile[1], tile[2])) {
+
+	if (is_coliding_tile_pair(tile[2], tile[3])) {
 		obj->collision_state |= COLLISION_LEFT;
-		phys_tile_collision_notify(tile[0]);
-		phys_tile_collision_notify(tile[1]);
-		phys_tile_collision_notify(tile[2]);
-		if (*dy == 0) {
-			obj->xpos = (x / 8  + 1) * 8;
-		}
+		// phys_tile_collision_notify(tile[0]);
+		// phys_tile_collision_notify(tile[1]);
+		// phys_tile_collision_notify(tile[2]);
+		//obj->xpos++;//((x + 7) / 8) * 8; // thi seems fine now?
 	}
-	if (*dx > 0 && is_coliding_tile_triplet(tile[3], tile[4], tile[5])) {
+	if (is_coliding_tile_pair(tile[4], tile[5])) {
 		obj->collision_state |= COLLISION_RIGHT;
-		phys_tile_collision_notify(tile[3]);
-		phys_tile_collision_notify(tile[4]);
-		phys_tile_collision_notify(tile[5]);
-		if (*dy == 0)
-			obj->xpos = (x / 8) * 8 ;
+		// phys_tile_collision_notify(tile[3]);
+		// phys_tile_collision_notify(tile[4]);
+		// phys_tile_collision_notify(tile[5]);
+		//obj->xpos--;// = (x / 8) * 8;
 	}
-	if (*dy < 0 && is_coliding_tile_pair(tile[0], tile[3])) {
+	if (is_coliding_tile_pair(tile[0], tile[1])) {
 		obj->collision_state |= COLLISION_UP;
-		phys_tile_collision_notify(tile[0]);
-		phys_tile_collision_notify(tile[3]);
-		obj->ypos = (y / 8 + 1) * 8;
+		// phys_tile_collision_notify(tile[0]);
+		// phys_tile_collision_notify(tile[3]);
+		// obj->ypos++;// = ((y + 7) / 8) * 8;
 	}
-	if (*dy > 0 && is_coliding_tile_pair(tile[2], tile[5])) {
+
+	if (is_coliding_tile_pair(tile[6], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN;
-		phys_tile_collision_notify(tile[2]);
-		phys_tile_collision_notify(tile[5]);
-		obj->ypos = (y / 8) * 8;
+		// phys_tile_collision_notify(tile[6]);
+		// phys_tile_collision_notify(tile[7]);
+		//obj->ypos = (y / 8) * 8;
 	}
 }
 
@@ -227,6 +228,7 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
         uint8_t *map, int8_t *dx, int8_t *dy)
 {
+
 
 	uint8_t x,y, c;
 	uint8_t *base_tl, *base_bl, *base_tr, *base_br;

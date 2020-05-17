@@ -75,7 +75,7 @@ void anim_jean_death(struct displ_object *obj)
 
 void anim_jean(struct displ_object *obj)
 {
-	static uint8_t jump_ct = 0;
+	static uint8_t jump_ct = 0, fall_ct = 0;
 	static uint8_t death_ct = 0;
 	static int8_t dy_8 = 0;
 	int8_t dx, dy;
@@ -92,114 +92,162 @@ void anim_jean(struct displ_object *obj)
 	x = (sp->planes[0]).x;
 	y = (sp->planes[0]).y;
 
-	if (obj->state == STATE_COLLISION) {
-		obj->state = STATE_DEATH;
-		sfx_play_effect(SFX_DEATH, 0);
-	}
-
-	if (obj->state == STATE_DEATH) {
-		death_ct++;
-		if (death_ct < 20) {
-			anim_jean_death(obj);
+	switch(obj->state) {
+		case STATE_COLLISION:
+			obj->state = STATE_DEATH;
+			sfx_play_effect(SFX_DEATH, 0);
+			break;
+		case STATE_DEATH:
+			death_ct++;
+			if (death_ct < 20) {
+				anim_jean_death(obj);
+				return;
+			}
+			game_state.death = true;
 			return;
-		}
-		game_state.death = true;
-		return;
-	}
-
-	if (obj->state == STATE_JUMPING) {
-		jump_ct++;
-		if (jump_ct < 5) {
-			dy = -4;
-			dy += dy_8 / 2;
-			dy_8 = 0;
-		} else if (jump_ct < 10) {
-			dy = 0;
-		} else {
-			dy = 6;
-		}
-	}
-
-	if (stick == STICK_LEFT) {
-		dx = -2;
-		if (obj->state == STATE_JUMPING) {
-			sp->cur_state = JANE_STATE_LEFT_JUMP;
-			dx = -3;
-		} else {
-			obj->state = STATE_MOVING_LEFT;
+		case STATE_JUMPING:
+			jump_ct++;
+			if (jump_ct < 5) {
+				dy = -4;
+				dy += dy_8 / 2;
+				dy_8 = 0;
+			} else if (jump_ct < 10) {
+				dy = 0;
+			} else {
+				jump_ct = 0;
+				obj->state = STATE_FALLING;
+			}
+			if (stick == STICK_LEFT) {
+				sp->cur_state = JANE_STATE_LEFT_JUMP;
+				dx = -3;
+			} else if (stick == STICK_RIGHT) {
+				sp->cur_state = JANE_STATE_RIGHT_JUMP;
+				dx = 3;
+			}
+			// handle trigger again for extended
+			if (trigger) {
+				if (jump_ct < 5) {
+					dy_8 = -8;
+				}
+			}
+			break;
+		case STATE_MOVING_LEFT:
 			sp->cur_state = JANE_STATE_LEFT;
-		}
-	} else if (stick == STICK_RIGHT) {
-		dx = 2;
-		if (obj->state == STATE_JUMPING) {
-			sp->cur_state = JANE_STATE_RIGHT_JUMP;
-			dx = 3;
-		} else {
-			obj->state = STATE_MOVING_RIGHT;
+			if (stick == STICK_LEFT) {
+				dx = -2;
+			} else if (stick == STICK_RIGHT) {
+				obj->state = STATE_MOVING_RIGHT;
+			} else if (stick == STICK_DOWN
+				|| stick == STICK_DOWN_LEFT) {
+				obj->state = STATE_CROUCHING;
+				sp->cur_state = JANE_STATE_LEFT_CROUCH;
+			} else if (stick == STICK_CENTER) {
+				obj->state = STATE_IDLE;
+			}
+			if (trigger) {
+				sp->cur_state = JANE_STATE_LEFT_JUMP;
+				obj->state = STATE_JUMPING;
+				sfx_play_effect(SFX_JUMP, 0);
+			}
+			if (!is_colliding_down(obj))
+				obj->state = STATE_FALLING;
+			break;
+		case STATE_MOVING_RIGHT:
 			sp->cur_state = JANE_STATE_RIGHT;
-		}
-	} else if (stick == STICK_DOWN && obj->state != STATE_JUMPING) {
-		dx = 0;
-		if (sp->cur_state == JANE_STATE_RIGHT) {
-			sp->cur_state = JANE_STATE_RIGHT_CROUCH;
-		} else if (sp->cur_state == JANE_STATE_LEFT) {
-			sp->cur_state = JANE_STATE_LEFT_CROUCH;
-		}
-		obj->state = STATE_CROUCHING;
-	} else if (stick == STICK_DOWN_LEFT && obj->state != STATE_JUMPING) {
-		dx = -2;
-		sp->cur_state = JANE_STATE_LEFT_CROUCH;
-		obj->state = STATE_CROUCHING;
-	} else if (stick == STICK_DOWN_RIGHT && obj->state != STATE_JUMPING) {
-		dx = 2;
-		sp->cur_state = JANE_STATE_RIGHT_CROUCH;
-		obj->state = STATE_CROUCHING;
-
-	} else if (stick == STICK_CENTER) {
-		if (sp->cur_state == JANE_STATE_LEFT_CROUCH) {
-			sp->cur_state = JANE_STATE_LEFT;
-		} else if (sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
-			sp->cur_state = JANE_STATE_RIGHT;
-		}
-		if (obj->state == STATE_CROUCHING) {
-			obj->state = STATE_IDLE;
-		} else if (obj->state == STATE_JUMPING) {
-			// no changes
-		} else if (obj->state == STATE_FALLING) {
-			// no changes
-		} else {
-			obj->state = STATE_IDLE;
-		}
-	}
-
-	if (trigger && obj->state != STATE_CROUCHING) {
-		if (sp->cur_state == JANE_STATE_RIGHT) {
-			sp->cur_state = JANE_STATE_RIGHT_JUMP;
-		} else if (sp->cur_state == JANE_STATE_LEFT) {
-			sp->cur_state = JANE_STATE_LEFT_JUMP;
-		}
-		obj->state = STATE_JUMPING;
-		/* jump sensitivity */
-		if (jump_ct < 5) {
-			dy_8 = -8;
-		}
-		sfx_play_effect(SFX_JUMP, 0);
-	}
-
-	if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
-		obj->state = STATE_FALLING;
-	}
-
-	if (obj->state == STATE_FALLING) {
-		dy = 4;
-		if (sp->cur_state == JANE_STATE_RIGHT
-			|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
-			sp->cur_state = JANE_STATE_RIGHT_JUMP;
-
-		} else if (sp->cur_state == JANE_STATE_LEFT
-			|| sp->cur_state == JANE_STATE_LEFT_CROUCH) {
-			sp->cur_state = JANE_STATE_LEFT_JUMP;
-		}
+			if (stick == STICK_RIGHT) {
+				dx = 2;
+			} else if (stick == STICK_LEFT) {
+				obj->state = STATE_MOVING_LEFT;
+			} else if (stick == STICK_DOWN
+				|| stick == STICK_DOWN_RIGHT) {
+				obj->state = STATE_CROUCHING;
+				sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+			} else if (stick == STICK_CENTER) {
+				sp->cur_state = JANE_STATE_RIGHT;
+				obj->state = STATE_IDLE;
+			} else if (stick == STICK_CENTER) {
+				obj->state = STATE_IDLE;
+			}
+			if (trigger) {
+				sp->cur_state = JANE_STATE_RIGHT_JUMP;
+				obj->state = STATE_JUMPING;
+				sfx_play_effect(SFX_JUMP, 0);
+			}
+			if (!is_colliding_down(obj))
+				obj->state = STATE_FALLING;
+			break;
+		case STATE_CROUCHING:
+			if (stick == STICK_DOWN ) {
+				// stay here
+			} else if (stick == STICK_DOWN_LEFT) {
+				dx = -2;
+				sp->cur_state = JANE_STATE_LEFT_CROUCH;
+			} else if (stick == STICK_DOWN_RIGHT) {
+				dx = 2;
+				sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+			} else if (stick == STICK_CENTER) {
+				if (sp->cur_state == JANE_STATE_LEFT_CROUCH)
+					sp->cur_state = JANE_STATE_LEFT;
+				else if (sp->cur_state == JANE_STATE_RIGHT_CROUCH)
+					sp->cur_state = JANE_STATE_RIGHT;
+				obj->state = STATE_IDLE;
+			} else if (stick == STICK_LEFT) {
+				obj->state = STATE_MOVING_LEFT;
+				sp->cur_state = JANE_STATE_LEFT;
+			} else if (stick == STICK_RIGHT) {
+				obj->state = STATE_MOVING_RIGHT;
+				sp->cur_state = JANE_STATE_RIGHT;
+			}
+			if (!is_colliding_down(obj))
+				obj->state = STATE_FALLING;
+			break;
+		case STATE_IDLE:
+			if (stick == STICK_LEFT) {
+				obj->state = STATE_MOVING_LEFT;
+			} else if (stick == STICK_RIGHT) {
+				obj->state = STATE_MOVING_RIGHT;
+			} else if (stick == STICK_DOWN
+				|| stick == STICK_DOWN_LEFT
+				|| stick == STICK_DOWN_RIGHT) {
+				obj->state = STATE_CROUCHING;
+				if (sp->cur_state == JANE_STATE_LEFT)
+					sp->cur_state = JANE_STATE_LEFT_CROUCH;
+				else if (sp->cur_state == JANE_STATE_RIGHT)
+					sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+			}
+			if (trigger) {
+				obj->state = STATE_JUMPING;
+				sfx_play_effect(SFX_JUMP, 0);
+			}
+			if (!is_colliding_down(obj))
+				obj->state = STATE_FALLING;
+			break;
+		case STATE_FALLING:
+			dy = 4;
+			if (sp->cur_state == JANE_STATE_RIGHT
+				|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
+					sp->cur_state = JANE_STATE_RIGHT_JUMP;
+			} else if (sp->cur_state == JANE_STATE_LEFT
+				|| sp->cur_state == JANE_STATE_LEFT_CROUCH) {
+					sp->cur_state = JANE_STATE_LEFT_JUMP;
+			}
+			if (stick == STICK_LEFT) {
+				sp->cur_state = JANE_STATE_LEFT_JUMP;
+				dx = -3;
+			} else if (stick == STICK_RIGHT) {
+				sp->cur_state = JANE_STATE_RIGHT_JUMP;
+				dx = 3;
+			}
+			if (is_colliding_down(obj)) {
+				if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
+					sp->cur_state = JANE_STATE_RIGHT;
+				} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
+					sp->cur_state = JANE_STATE_LEFT;
+				}
+				obj->state = STATE_IDLE;
+				fall_ct = 0;
+			}
+			break;
 	}
 
 	/** handle collisions and update sprite **/
@@ -211,35 +259,6 @@ void anim_jean(struct displ_object *obj)
 		phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
 	}
 
-	//if (obj->state != STATE_JUMPING && !is_colliding_down(obj)) {
-//		obj->state = STATE_FALLING;
-//	}
-
-	if (obj->state == STATE_JUMPING) {
-		if (is_colliding_down(obj)) {
-			jump_ct = 0;
-			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
-				sp->cur_state = JANE_STATE_RIGHT;
-				obj->state = STATE_MOVING_RIGHT;
-			} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
-				sp->cur_state = JANE_STATE_LEFT;
-				obj->state = STATE_MOVING_LEFT;
-			}
-		}
-	}
-
-	if (obj->state == STATE_FALLING) {
-		if (is_colliding_down(obj)) {
-			if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
-				sp->cur_state = JANE_STATE_RIGHT;
-				obj->state = STATE_MOVING_RIGHT;
-			} else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
-				sp->cur_state = JANE_STATE_LEFT;
-				obj->state = STATE_MOVING_LEFT;
-			}
-		}
-	}
-
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
 		if (sp->anim_ctr > sp->anim_ctr_treshold) {
@@ -248,6 +267,16 @@ void anim_jean(struct displ_object *obj)
 		}
 		if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
 			sp->cur_anim_step = 0;
+	}
+
+
+	if ((dx > 0 && !is_colliding_right(obj))
+		|| (dx < 0 && !is_colliding_left(obj))) {
+    		obj->xpos += dx;
+	}
+	if ((dy > 0 && !is_colliding_down(obj))
+		|| (dy < 0 && !is_colliding_up(obj))) {
+		obj->ypos += dy;
 	}
 
 	if (obj->state == STATE_CROUCHING) {
@@ -261,6 +290,12 @@ void anim_jean(struct displ_object *obj)
 		spr_set_pos(sp, obj->xpos, obj->ypos);
 		spr_update(sp);
 	}
+
+
+	log_e("state %d\n", obj->state);
+	log_e("dx %d dy %d\n", dx, dy);
+	log_e("x %d y %d\n", obj->xpos, obj->ypos);
+	log_e("collision %d\n", obj->collision_state);
 }
 
 void anim_static(struct displ_object *obj)
