@@ -74,6 +74,8 @@ const uint8_t spider_state[]= {2};
 const uint8_t archer_state[]= {2,2};
 const uint8_t jean_state[] = {2,1,2,2,1,2,2};
 
+uint8_t map_buffer[180];
+uint8_t map_buffer_dict[512];
 
 void define_sprite(uint8_t pattidx);
 
@@ -122,11 +124,7 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 
 	sys_set_ascii_page3(PAGE_DYNTILES);
 
-	success = tile_set_valloc(&tileset[tileidx]);
-	if (!success) {
-		log_e("could not allocate tileobject\n");
-		return;
-	}
+	tile_set_valloc(&tileset[tileidx]);
 	sys_set_ascii_page3(PAGE_MAPOBJECTS);
 
 	tileobject[objidx].x = map_object->x;
@@ -254,7 +252,11 @@ void load_room(uint8_t room)
 	vdp_screen_disable();
 
 	sys_set_ascii_page3(PAGE_MAP);
-	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
+	sys_memcpy(map_buffer_dict,map_map_segment_dict[room],512);
+	sys_memcpy(map_buffer,map_map_segment[room],176);
+	sys_set_ascii_page3(PAGE_CODE);
+
+	map_inflate(map_buffer_dict, map_buffer, scr_tile_buffer, 192, 32);
 
 	show_score_panel();
 
