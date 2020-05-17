@@ -194,14 +194,17 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 		phys_tile_collision_notify(tile[0]);
 		phys_tile_collision_notify(tile[1]);
 		phys_tile_collision_notify(tile[2]);
-		obj->xpos = (x / 8  + 1) * 8;
+		if (*dy == 0) {
+			obj->xpos = (x / 8  + 1) * 8;
+		}
 	}
 	if (*dx > 0 && is_coliding_tile_triplet(tile[3], tile[4], tile[5])) {
 		obj->collision_state |= COLLISION_RIGHT;
 		phys_tile_collision_notify(tile[3]);
 		phys_tile_collision_notify(tile[4]);
 		phys_tile_collision_notify(tile[5]);
-		obj->xpos = (x / 8) * 8 ;
+		if (*dy == 0)
+			obj->xpos = (x / 8) * 8 ;
 	}
 	if (*dy < 0 && is_coliding_tile_pair(tile[0], tile[3])) {
 		obj->collision_state |= COLLISION_UP;

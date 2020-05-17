@@ -236,14 +236,6 @@ void anim_jean(struct displ_object *obj)
 		obj->state = STATE_FALLING;
 	}
 
-	//if (!is_colliding_x(obj)) {
-    		//obj->xpos += dx;
-	//}
-	//if (!is_colliding_y(obj)) {
-	//	obj->ypos += dy;
-	//	y += dy;
-	//}
-
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
 		if (sp->anim_ctr > sp->anim_ctr_treshold) {
