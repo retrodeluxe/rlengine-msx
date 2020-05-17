@@ -71,9 +71,9 @@ void main()
 	/**
 	 * Single layer sprites with animation in two directions
 	 */
-	SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2, 2, bee1);
-	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, 2, rat);
-	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3, 4, eggerland);
+	spr_define_pattern_set(PATRN_BEE, SPR_SIZE_16x16, 1, 2, 2, bee1, bee1_color);
+	spr_define_pattern_set(PATRN_RAT, SPR_SIZE_16x16, 1, 2, 2, rat, rat_color);
+	spr_define_pattern_set(PATRN_EGG, SPR_SIZE_16x16, 2, 3, 4, eggerland, eggerland_color);
 
 	spr_valloc_pattern_set(PATRN_BEE);
 	spr_valloc_pattern_set(PATRN_RAT);
