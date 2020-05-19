@@ -428,9 +428,27 @@ void anim_chase(struct displ_object *obj)
  */
 void anim_close_door(struct displ_object *obj)
 {
-	if (game_state.door_trigger && !obj->visible) {
-		obj->visible = true;
-		tile_object_show(obj->tob, scr_tile_buffer, true);
+	if (game_state.door_trigger) {
+		if (!obj->visible) {
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+			obj->visible = true;
+			obj->state = 0;
+			obj->tob->cur_dir = 1;
+			obj->tob->cur_anim_step = 0;
+		}
+		if (obj->state == 20 || obj->state == 21) {
+			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+				obj->tob->cur_anim_step++;
+				if (obj->tob->cur_anim_step > 1)
+					obj->tob->cur_anim_step = 0;
+				tile_object_show(obj->tob, scr_tile_buffer, true);
+				sfx_play_effect(SFX_DOOR, 0);
+			}
+		} else if (obj->state == 22) {
+			obj->tob->cur_anim_step = 0;
+			obj->state = 0;
+		}
+		obj->state++;
 	}
 }
 
