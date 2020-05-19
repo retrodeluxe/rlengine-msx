@@ -251,7 +251,7 @@ void anim_jean(struct displ_object *obj)
 	}
 
 	/** handle collisions and update sprite **/
-	phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
 
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
@@ -389,16 +389,35 @@ void anim_up_down(struct displ_object *obj)
  */
 void anim_chase(struct displ_object *obj)
 {
-	uint8_t dx;
+	int8_t dx = 0, dy = 0;
+	struct spr_sprite_def *sp = obj->spr;
+
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
 
 	game_state.templar_delay++;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
 			dx = 2;
+			if (is_colliding_right(obj) || !is_colliding_down(obj)) {
+				obj->state = STATE_HOPPING_RIGHT;
+				obj->aux = 0;
+			}
 			break;
 		case STATE_HOPPING_RIGHT:
-			// need to handle obstacles or pits
-			// with a jump
+			obj->aux++;
+			if (obj->aux < 5) {
+				dy = -4;
+				dx = 2;
+			} else if (obj->aux < 10) {
+				dy = 0;
+			} else {
+				dy = 4;
+				dx = 2;
+			}
+			if (obj->aux > 10 && is_colliding_down(obj)) {
+				obj->aux = 0;
+				obj->state = STATE_MOVING_RIGHT;
+			}
 			break;
 		case STATE_OFF_SCREEN:
 			if (game_state.templar_delay > 40) {
@@ -418,7 +437,22 @@ void anim_chase(struct displ_object *obj)
 			}
 			return;
 	}
-	dpo_simple_animate(obj, dx, 0);
+
+
+	//log_e("dx %d dy %d\n", dx, dy);
+
+	if ((dx > 0 && !is_colliding_right(obj))
+		|| (dx < 0 && !is_colliding_left(obj))) {
+		obj->xpos += dx;
+	}
+	if ((dy > 0 && !is_colliding_down(obj))
+		|| (dy < 0 && !is_colliding_up(obj))) {
+		obj->ypos += dy;
+	}
+
+	spr_animate(sp, dx, dy);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
 }
 
 
