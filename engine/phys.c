@@ -217,7 +217,7 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 		obj->collision_state |= COLLISION_DOWN;
 		// phys_tile_collision_notify(tile[6]);
 		// phys_tile_collision_notify(tile[7]);
-		//obj->ypos = (y / 8) * 8;
+		obj->ypos = (y / 8) * 8;
 	}
 }
 

@@ -251,13 +251,7 @@ void anim_jean(struct displ_object *obj)
 	}
 
 	/** handle collisions and update sprite **/
-	if (obj->state == STATE_CROUCHING) {
-		obj->ypos = obj->ypos + CROUCH_OFFSET;
-		phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
-		obj->ypos = obj->ypos - CROUCH_OFFSET;
-	} else {
-		phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
-	}
+	phys_detect_tile_collisions(obj, scr_tile_buffer, &dx, &dy);
 
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;

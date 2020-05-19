@@ -101,8 +101,8 @@ start:
 		while (sys_get_ticks() - reftick < 1) {
 			fps_stall = false;
 		}
-		if (fps_stall)
-			log_w("fps stall!\n");
+		// if (fps_stall)
+		// 	log_w("fps stall!\n");
 
 		if (game_state.death) {
 			if(--game_state.live_cnt == 0) {
