@@ -163,9 +163,6 @@ void update_tileobject(struct displ_object *dpo)
 	tile_object_show(dpo->tob, scr_tile_buffer, true);
 }
 
-
-
-
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
 	define_sprite(pattidx);
@@ -349,8 +346,7 @@ void load_room(uint8_t room)
 				// TODO: end game sequence
 				add_tileobject(dpo, tob_ct, TILE_CUP);
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
-				tempx = map_object->x;
-				tempy = map_object->y;
+				id = map_object->object.actionitem.action_id;
 				add_tileobject(dpo, tob_ct, TILE_INVISIBLE_TRIGGER);
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_TRIGGER, trigger_handler, id);
@@ -395,8 +391,11 @@ void load_room(uint8_t room)
 			id = map_object->object.door.action_id;
 			add_dpo = false;
 			if (id == 0) {
-				if (game_state.door_trigger)
-					add_dpo = true;
+				dpo->visible = game_state.door_trigger;
+				add_tileobject(dpo, tob_ct, TILE_DOOR);
+				add_animator(dpo, ANIM_CLOSE_DOOR);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_FULL, null_handler, 0);
 			} else if (id == 1 && game_state.toggle[0] == 0) {
 				add_dpo = true;
 			} else if (id == 2 && !game_state.bell) {
@@ -518,7 +517,7 @@ void load_room(uint8_t room)
 		dpo = list_entry(elem, struct displ_object, list);
 		if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
 			spr_show(dpo->spr);
-		} else if (dpo->type == DISP_OBJECT_TILE) {
+		} else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {
 			tile_object_show(dpo->tob, scr_tile_buffer, false);
 		}
 	}

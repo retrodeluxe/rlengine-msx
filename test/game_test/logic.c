@@ -100,7 +100,7 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data)
 
 void trigger_handler(struct displ_object *dpo, uint8_t data)
 {
-        if(game_state.door_trigger)
-                return;
-        game_state.door_trigger = true;
+	if (data == TRIGGER_ENTRANCE_DOOR) {
+		game_state.door_trigger = true;
+	}
 }

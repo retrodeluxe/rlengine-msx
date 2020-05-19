@@ -33,6 +33,11 @@ struct game_state_t {
 	bool death;
 };
 
+enum trigger_ids {
+	TRIGGER_ENTRANCE_DOOR = 2,
+};
+
+
 extern struct game_state_t game_state;
 
 void null_handler(struct displ_object *dpo, uint8_t data);

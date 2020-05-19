@@ -421,6 +421,19 @@ void anim_chase(struct displ_object *obj)
 	dpo_simple_animate(obj, dx, 0);
 }
 
+
+/**
+ * Animation to show the door closing after jeans enters the church, then the
+ * templars keep banging on it
+ */
+void anim_close_door(struct displ_object *obj)
+{
+	if (game_state.door_trigger && !obj->visible) {
+		obj->visible = true;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	}
+}
+
 void init_animators()
 {
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
@@ -430,4 +443,5 @@ void init_animators()
 	animators[ANIM_JEAN].run = anim_jean;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 	animators[ANIM_CHASE].run = anim_chase;
+	animators[ANIM_CLOSE_DOOR].run = anim_close_door;
 }

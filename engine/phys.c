@@ -164,6 +164,11 @@ static bool is_coliding_tile_triplet(uint8_t tile1, uint8_t tile2, uint8_t tile3
                  (bitmap_get(colliding_tiles, tile3) == 0));
 }
 
+static bool is_coliding_trigger_tile_pair(uint8_t tile1, uint8_t tile2)
+{
+	return ((bitmap_get(colliding_tiles_trigger, tile1) == 0) ||
+                 (bitmap_get(colliding_tiles_trigger, tile2) == 0));
+}
 
 #define TILE_WIDTH 32
 
@@ -205,34 +210,27 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 
 	obj->collision_state = 0;
 
+	/** check non-blocking collisions **/
+	if (is_coliding_trigger_tile_pair(tile[4], tile[5])) {
+		phys_tile_collision_notify(tile[4]);
+		phys_tile_collision_notify(tile[5]);
+	}
 
 	if (is_coliding_tile_pair(tile[2], tile[3])) {
 		obj->collision_state |= COLLISION_LEFT;
-		// phys_tile_collision_notify(tile[0]);
-		// phys_tile_collision_notify(tile[1]);
-		// phys_tile_collision_notify(tile[2]);
-		//obj->xpos++;//((x + 7) / 8) * 8; // thi seems fine now?
 	}
 	if (is_coliding_tile_pair(tile[4], tile[5])) {
 		obj->collision_state |= COLLISION_RIGHT;
-		// phys_tile_collision_notify(tile[3]);
-		// phys_tile_collision_notify(tile[4]);
-		// phys_tile_collision_notify(tile[5]);
-		//obj->xpos--;// = (x / 8) * 8;
 	}
 	if (is_coliding_tile_pair(tile[0], tile[1])) {
 		obj->collision_state |= COLLISION_UP;
-		// phys_tile_collision_notify(tile[0]);
-		// phys_tile_collision_notify(tile[3]);
-		// obj->ypos++;// = ((y + 7) / 8) * 8;
 	}
 
 	if (is_coliding_tile_pair(tile[6], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN;
-		// phys_tile_collision_notify(tile[6]);
-		// phys_tile_collision_notify(tile[7]);
 		obj->ypos = (y / 8) * 8;
 	}
+
 }
 
 /**
