@@ -28,6 +28,8 @@
 
 static uint8_t colliding_tiles[32];
 static uint8_t colliding_tiles_down[32];
+static uint8_t colliding_tiles_trigger[32];
+
 static uint8_t tile[12];
 static void (*sprite_colision_cb)();
 
@@ -50,6 +52,7 @@ void phys_init()
 {
 	sys_memset(colliding_tiles, 255, 32);
 	sys_memset(colliding_tiles_down, 255, 32);
+	sys_memset(colliding_tiles_trigger, 255, 32);
 	n_cgroups = 0;
 }
 
@@ -74,14 +77,14 @@ void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), 
 	cgroup[n_cgroups].handler = handler;
 	cgroup[n_cgroups].data = data;
 	cgroup[n_cgroups].dpo = dpo;
-	//log_e("adding tile colision handler start %d, end %d\n", base_tile, base_tile + num_tiles);
 	n_cgroups++;
 }
 
 /**
  * Sets all the tiles composing an object as coliding tiles
  */
-void phys_set_colliding_tile_object(struct displ_object *dpo, bool down)
+void phys_set_colliding_tile_object(struct displ_object *dpo,
+	enum tile_collision_type type, void (*handler), uint8_t data)
 {
 	uint8_t i;
 	uint8_t base_tile = dpo->tob->ts->pidx;
@@ -89,11 +92,15 @@ void phys_set_colliding_tile_object(struct displ_object *dpo, bool down)
 		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
 
 	for (i = base_tile; i < base_tile + num_tiles; i++) {
-		if (down)
+		if (type == TILE_COLLISION_DOWN)
 			phys_set_down_colliding_tile(i);
+		else if (type == TILE_COLLISION_TRIGGER)
+			phys_set_trigger_colliding_tile(i);
 		else
 			phys_set_colliding_tile(i);
 	}
+
+	phys_set_tile_collision_handler(dpo, handler, data);
 }
 
 /*
@@ -113,8 +120,9 @@ static void phys_tile_collision_notify(uint8_t tile)
  */
 void phys_set_colliding_tile(uint8_t tile)
 {
-        bitmap_reset(colliding_tiles, tile);
-        bitmap_reset(colliding_tiles_down, tile);
+	bitmap_reset(colliding_tiles, tile);
+	bitmap_reset(colliding_tiles_down, tile);
+	bitmap_reset(colliding_tiles_trigger, tile);
 }
 
 /**
@@ -122,13 +130,19 @@ void phys_set_colliding_tile(uint8_t tile)
  */
 void phys_set_down_colliding_tile(uint8_t tile)
 {
-        bitmap_reset(colliding_tiles_down, tile);
+	bitmap_reset(colliding_tiles_down, tile);
+}
+
+void phys_set_trigger_colliding_tile(uint8_t tile)
+{
+	bitmap_reset(colliding_tiles_trigger, tile);
 }
 
 void phys_clear_colliding_tile(uint8_t tile)
 {
-        bitmap_set(colliding_tiles, tile);
-        bitmap_set(colliding_tiles_down, tile);
+	bitmap_set(colliding_tiles, tile);
+	bitmap_set(colliding_tiles_down, tile);
+	bitmap_set(colliding_tiles_trigger, tile);
 }
 
 static bool is_coliding_tile_pair(uint8_t tile1, uint8_t tile2)

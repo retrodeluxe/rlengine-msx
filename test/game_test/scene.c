@@ -295,13 +295,15 @@ void load_room(uint8_t room)
 				id = map_object->object.actionitem.action_id;
 				if (game_state.scroll[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_SCROLL);
-					phys_set_tile_collision_handler(dpo, pickup_scroll, id);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, pickup_scroll, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.toggle[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
-					phys_set_tile_collision_handler(dpo, toggle_handler, id);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, toggle_handler, id);
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
 					dpo->tob->cur_anim_step = 1;
@@ -311,7 +313,8 @@ void load_room(uint8_t room)
 				if (game_state.cross[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_CROSS);
 					add_animator(dpo, ANIM_CYCLE_TILE);
-					phys_set_tile_collision_handler(dpo, pickup_cross, id);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, pickup_cross, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				// TODO: just go to the other one
@@ -321,13 +324,15 @@ void load_room(uint8_t room)
 				if (game_state.hearth[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_HEART);
 					add_animator(dpo, ANIM_CYCLE_TILE);
-					phys_set_tile_collision_handler(dpo, pickup_heart, id);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, pickup_heart, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.checkpoint[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
-					phys_set_tile_collision_handler(dpo, checkpoint_handler, id);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_TRIGGER, checkpoint_handler, id);
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
 					dpo->tob->cur_anim_step = 1;
@@ -335,7 +340,8 @@ void load_room(uint8_t room)
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
 				game_state.cross_switch_enable = true;
 				add_tileobject(dpo, tob_ct, TILE_SWITCH);
-				phys_set_tile_collision_handler(dpo, crosswitch_handler, 0);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_TRIGGER, crosswitch_handler, 0);
 				if(game_state.cross_switch) {
 					dpo->tob->cur_anim_step = 1;
 				}
@@ -343,12 +349,16 @@ void load_room(uint8_t room)
 				// TODO: end game sequence
 				add_tileobject(dpo, tob_ct, TILE_CUP);
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
+				tempx = map_object->x;
+				tempy = map_object->y;
 				add_tileobject(dpo, tob_ct, TILE_INVISIBLE_TRIGGER);
-				phys_set_tile_collision_handler(dpo, trigger_handler, id);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_TRIGGER, trigger_handler, id);
 			} else if (map_object->object.actionitem.type == TYPE_BELL) {
 				if (!game_state.bell) {
 					add_tileobject(dpo, tob_ct, TILE_BELL);
-					phys_set_tile_collision_handler(dpo, bell_handler, id);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_TRIGGER, bell_handler, id);
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_BELL);
 					dpo->tob->cur_anim_step = 1;
@@ -391,7 +401,8 @@ void load_room(uint8_t room)
 				add_dpo = true;
 			} else if (id == 2 && !game_state.bell) {
 				add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
-				phys_set_colliding_tile_object(dpo, true);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_DOWN, null_handler, 0);
 			} else if (id == 3 && game_state.toggle[1] == 0) {
 				add_dpo = true;
 			} else if (id == 4 && game_state.toggle[2] == 0) {
@@ -402,7 +413,8 @@ void load_room(uint8_t room)
 				if (type == 0) {
 					dpo->tob->cur_anim_step = 1;
 				}
-				phys_set_colliding_tile_object(dpo, false);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_FULL, null_handler, 0);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_door);
 		} else if (map_object->type == SHOOTER) {
