@@ -13,6 +13,7 @@
 
 #include "logic.h"
 #include "scene.h"
+#include "anim.h"
 
 struct game_state_t game_state;
 
@@ -99,9 +100,16 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data)
         update_tileobject(dpo);
 }
 
+
 void trigger_handler(struct displ_object *dpo, uint8_t data)
 {
 	if (data == TRIGGER_ENTRANCE_DOOR) {
 		game_state.door_trigger = true;
 	}
+}
+
+void spear_handler(struct displ_object *dpo, uint8_t data)
+{
+	//log_e("spear!!\n");
+	dpo_jean.state = STATE_COLLISION;
 }

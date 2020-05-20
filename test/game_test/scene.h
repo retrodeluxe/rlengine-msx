@@ -97,7 +97,7 @@ enum rooms_t {
 
 extern struct list_head display_list;
 extern struct spr_sprite_def jean_sprite;
-extern struct displ_object dpo_monk;
+extern struct displ_object dpo_jean;
 
 extern uint8_t scr_tile_buffer[768];
 extern uint8_t music_buffer[2100];

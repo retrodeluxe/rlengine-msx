@@ -377,6 +377,8 @@ void load_room(uint8_t room)
 				// also nice animation to do here
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				add_tileobject(dpo, tob_ct, TILE_SPEAR);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, spear_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				// this one also crashing?
 				add_tileobject(dpo, tob_ct, TILE_WATER);
