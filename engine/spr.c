@@ -160,18 +160,20 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 
 static void spr_calc_patterns(struct spr_sprite_def *sp)
 {
-	uint8_t i, base = 0, base2, frame;
+	uint8_t i, color_frame, base = 0, base2, frame;
 
 	struct spr_pattern_set *ps = sp->pattern_set;
 	for (i = 0; i < sp->cur_state; i++) {
 		base += ps->state_steps[i];
 	}
+	color_frame = base;
 
 	switch (ps->size) {
 		case SPR_SIZE_16x16:
 			base *= (ps->size * ps->n_planes);
 			frame = sp->cur_anim_step * (ps->size * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
+				(sp->planes[i]).color = (ps->colors)[color_frame];
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * ps->size;
 			}
 			break;
@@ -180,6 +182,8 @@ static void spr_calc_patterns(struct spr_sprite_def *sp)
 			base2 = base + ps->n_planes * ps->n_steps * SPR_SIZE_16x16;
 			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
+				(sp->planes[i]).color = (ps->colors)[color_frame];
+				(sp->planes[i + 3]).color = (ps->colors)[color_frame];
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
 				(sp->planes[i + 3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
 			}
