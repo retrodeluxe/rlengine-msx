@@ -23,6 +23,22 @@
 #include "vdp.h"
 #include "log.h"
 #include <stdio.h>
+
+
+
+void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8_t tile_w,
+	uint8_t tile_h, enum font_type type, uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h)
+{
+	f->tiles.w = tile_w;
+	f->tiles.h = tile_h;
+	f->tiles.pattern = tile_pattern;
+	f->tiles.color = tile_color;
+	f->tiles.allocated = false;
+	f->type = type;
+	f->num_glyphs = num_glyphs;
+	f->glyph_h = glyph_h;
+	f->glyph_w = glyph_w;
+}
 /**
  *
  */

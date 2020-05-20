@@ -52,11 +52,12 @@ uint8_t trigger;
 /* buffers for graphics and audio */
 uint8_t scr_tile_buffer[768];
 uint8_t music_buffer[2100];
+uint8_t font_buffer[256];
+uint8_t font_color_buffer[256];
 uint8_t sfx_buffer[432];
 
 uint16_t reftick;
 bool fps_stall;
-
 extern void sys_set_ascii_page3(char page);
 extern const unsigned char intro_map_intro_w;
 extern const unsigned char intro_map_intro_h;
@@ -139,22 +140,29 @@ void show_logo() {
 
 void show_title_screen()
 {
-	uint8_t i;
+	uint8_t i, color;
 	vdp_screen_disable();
 
 	/** title screen **/
 	sys_set_ascii_page3(PAGE_INTRO);
 
 	tile_init();
-
 	INIT_TILE_SET(tileset_intro, intro_tileset);
-	INIT_FONT(font, font_upper, FONT_ALFA_UPPERCASE, 25, 1, 1);
-
 	tile_set_to_vram(&tileset_intro, 1);
+
+	sys_memcpy(font_buffer, font_upper_tile, 256);
+	sys_memcpy(font_color_buffer, font_upper_tile_color, 10);
+	sys_set_ascii_page3(PAGE_CODE);
+
+	init_font(&font, font_buffer, font_color_buffer, 26, 1,
+		FONT_ALFA_UPPERCASE, 26, 1, 1);
 	font_to_vram_bank(&font, BANK2, 1);
 
+	sys_set_ascii_page3(PAGE_INTRO);
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
+	sys_set_ascii_page3(PAGE_CODE);
+
 	font_vprint(&font, 7, 22, "PRESS SPACE KEY~");
 
 	vdp_screen_enable();

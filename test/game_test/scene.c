@@ -76,6 +76,9 @@ const uint8_t jean_state[] = {2,1,2,2,1,2,2};
 
 uint8_t map_buffer[180];
 uint8_t map_buffer_dict[512];
+extern uint8_t font_buffer[128];
+extern uint8_t font_color_buffer[128];
+
 
 void define_sprite(uint8_t pattidx);
 
@@ -661,7 +664,12 @@ void init_resources()
 
 	/** copy numeric font to vram **/
 	sys_set_ascii_page3(PAGE_INTRO);
-	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
+	sys_memcpy(font_buffer, font_big_digits_tile, 256);
+	sys_memcpy(font_color_buffer, font_big_digits_tile_color, 256);
+	sys_set_ascii_page3(PAGE_CODE);
+
+	init_font(&big_digits, font_buffer, font_color_buffer, 10, 2,
+		FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 220);
 
 	/** copy over music to ram **/
