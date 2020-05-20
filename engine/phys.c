@@ -63,6 +63,12 @@ void phys_set_sprite_collision_handler(void (*handler))
 	sys_irq_register(phys_check_collision_bit);
 }
 
+void phys_clear_sprite_collision_handler()
+{
+	sys_irq_unregister(phys_check_collision_bit);
+	sprite_colision_cb = NULL;
+}
+
 /**
  * set callbacks for specific tiles
  */

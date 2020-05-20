@@ -108,6 +108,7 @@ void anim_jean(struct displ_object *obj)
 				anim_jean_death(obj);
 				return;
 			}
+			death_ct = 0;
 			game_state.death = true;
 			return;
 		case STATE_JUMPING:

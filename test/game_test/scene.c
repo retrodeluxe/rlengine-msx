@@ -217,10 +217,9 @@ void add_jean()
 
 void jean_collision_handler()
 {
-	// need to make sure other sprites colliding are not causing jeans death
 	dpo_jean.state = STATE_COLLISION;
+	phys_clear_sprite_collision_handler();
 }
-
 
 void clear_room() {
 	uint8_t i;
