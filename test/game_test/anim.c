@@ -33,25 +33,30 @@ bool change_room()
 	game_state.jean_y = dpo_jean.ypos;
 
 	if (dpo_jean.xpos > 239) {
-		game_state.jean_x = 0;
+		game_state.jean_x = 1;
 		game_state.room += 1;
 		change = true;
 
 	} else if (dpo_jean.xpos == 0) {
-		game_state.jean_x = 240;
+		game_state.jean_x = 239;
 		game_state.room -= 1;
 		change = true;
 	}
-	if (dpo_jean.ypos > 192 - 32) {
+	if (dpo_jean.ypos > 192 - 64) {
 		game_state.jean_y = 0;
 		game_state.room += 5;
 		change = true;
 
-	} else if (dpo_jean.ypos < - 32) {
+	} else if (dpo_jean.ypos < 32) {
 		game_state.jean_y = 192 - 64;
 		game_state.room -= 5;
 		change = true;
 	}
+
+	if (change) {
+		log_e("change room %d %d %d\n",game_state.jean_x, game_state.jean_y, game_state.room);
+	}
+
 	return change;
 }
 
