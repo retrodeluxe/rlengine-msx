@@ -394,13 +394,21 @@ void anim_chase(struct displ_object *obj)
 
 	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
 
+	if (game_state.room == ROOM_GRAVEYARD)
+		phys_detect_fall(obj, scr_tile_buffer, dx);
+
 	game_state.templar_delay++;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
 			dx = 2;
-			if (is_colliding_right(obj) || !is_colliding_down(obj)) {
+			if (is_colliding_right(obj)) {
 				obj->state = STATE_HOPPING_RIGHT;
 				obj->aux = 0;
+			} else if (!is_colliding_right(obj) && !is_colliding_down(obj)) {
+				if (game_state.room == ROOM_FOREST)
+					obj->state = STATE_FALLING_RIGHT;
+				else
+					obj->state = STATE_HOPPING_RIGHT;
 			}
 			break;
 		case STATE_HOPPING_RIGHT:
@@ -419,6 +427,13 @@ void anim_chase(struct displ_object *obj)
 				obj->state = STATE_MOVING_RIGHT;
 			}
 			break;
+		case STATE_FALLING_RIGHT:
+			dy = 4;
+			dx = 2;
+			if (is_colliding_down(obj)) {
+				obj->state = STATE_MOVING_RIGHT;
+			}
+			break;
 		case STATE_OFF_SCREEN:
 			if (game_state.templar_delay > 40) {
 				obj->state = STATE_MOVING_RIGHT;
@@ -427,19 +442,20 @@ void anim_chase(struct displ_object *obj)
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (game_state.templar_delay > 80) {
+			if (game_state.templar_delay > 90) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (game_state.templar_delay > 120) {
+			if (game_state.templar_delay > 140) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 	}
 
 
-	//log_e("dx %d dy %d\n", dx, dy);
+
+	//log_e("dx %d dy %d collision \n", dx, dy, obj->collision_state);
 
 	if ((dx > 0 && !is_colliding_right(obj))
 		|| (dx < 0 && !is_colliding_left(obj))) {

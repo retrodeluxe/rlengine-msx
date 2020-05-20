@@ -27,6 +27,7 @@ void init_game_state()
 	game_state.cross_cnt = 0;
 	game_state.templar_ct = 0;
 	game_state.death = false;
+	game_state.templar_delay = 0;
 }
 
 void null_handler(struct displ_object *dpo, uint8_t data)

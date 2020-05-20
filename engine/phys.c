@@ -240,8 +240,6 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
         uint8_t *map, int8_t dx, int8_t dy)
 {
-
-
 	uint8_t x,y, c;
 	uint8_t *base_tl, *base_bl, *base_tr, *base_br;
 	uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
@@ -319,4 +317,37 @@ void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
        } else if (size = SPR_SIZE_16x32) {
               phys_detect_tile_collisions_16x32(obj, map, dx, dy);
        }
+}
+
+void phys_detect_fall(struct displ_object *obj, uint8_t *map, int8_t dx)
+{
+	uint8_t size = obj->spr->pattern_set->size;
+
+	uint8_t x,y;
+	int8_t x_offset, y_offset;
+	uint8_t *base_bl, *base_br;
+
+	x = obj->xpos;
+	y = obj->ypos;
+
+	y_offset = 16;
+	if (size == SPR_SIZE_16x32)
+		y_offset = 32;
+
+	x_offset = 8;
+	if (dx < 0)
+		x_offset = -8;
+
+	base_bl = map + (x + x_offset) / 8 + (y + y_offset) / 8 * TILE_WIDTH;
+	base_br = map + (x + x_offset + 15) / 8 + (y + y_offset) / 8 * TILE_WIDTH;
+
+	tile[0] = *(base_bl);
+	tile[1] = *(base_br);
+	 //
+	 // *(base_bl) = 9;
+	 // *(base_br) = 9;
+
+	obj->collision_state &= ~COLLISION_DOWN;
+	if (is_coliding_tile_pair(tile[0], tile[1]))
+		obj->collision_state |= COLLISION_DOWN;
 }
