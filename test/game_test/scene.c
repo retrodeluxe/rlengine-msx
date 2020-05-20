@@ -218,7 +218,7 @@ void add_jean()
 void jean_collision_handler()
 {
 	// need to make sure other sprites colliding are not causing jeans death
-	//dpo_jean.state = STATE_COLLISION;
+	dpo_jean.state = STATE_COLLISION;
 }
 
 
