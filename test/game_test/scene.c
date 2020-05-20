@@ -682,80 +682,131 @@ void init_resources()
 
 void define_sprite(uint8_t pattidx)
 {
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_SPRITES);
+	uint16_t size;
+	uint8_t frames;
+
+	sys_ascii_restore();
 
 	switch(pattidx) {
 		case PATRN_BAT:
 			spr_define_pattern_set(PATRN_BAT, SPR_SIZE_16x16, 1, 1,
-				bat_state, bat, bat_color);
+				bat_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_BAT, bat, bat_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_RAT:
 			spr_define_pattern_set(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
-				two_step_state, rat, rat_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_RAT, rat, rat_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_SPIDER:
 			spr_define_pattern_set(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1,
-				bat_state, spider, spider_color);
+				bat_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_SPIDER, spider, spider_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_JEAN:
 			spr_define_pattern_set(PATRN_JEAN, SPR_SIZE_16x32, 1, 7,
-				jean_state, monk1, monk1_color);
+				jean_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_JEAN, monk1, monk1_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_TEMPLAR:
 			spr_define_pattern_set(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2,
-				two_step_state, templar, templar_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_TEMPLAR, templar, templar_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_WORM:
 			spr_define_pattern_set(PATRN_WORM, SPR_SIZE_16x16, 1, 2,
-				two_step_state, worm, worm_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_WORM, worm, worm_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_SKELETON:
 			spr_define_pattern_set(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2,
-				two_step_state, skeleton, skeleton_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_SKELETON, skeleton, skeleton_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_PALADIN:
 			spr_define_pattern_set(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2,
-				two_step_state, paladin, paladin_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_PALADIN, paladin, paladin_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_GUADANYA:
 			spr_define_pattern_set(PATRN_GUADANYA, SPR_SIZE_16x16, 1, 1,
-				single_four_state, guadanya, guadanya_color);
+				single_four_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_GUADANYA, guadanya, guadanya_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_GHOST:
 			spr_define_pattern_set(PATRN_GHOST, SPR_SIZE_16x16, 1, 2,
-				two_step_state, ghost, ghost_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_GHOST, ghost, ghost_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_DEMON:
 			spr_define_pattern_set(PATRN_DEMON, SPR_SIZE_16x32, 1, 2,
-				two_step_state, demon, demon_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_DEMON, demon, demon_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_DARKBAT:
 			spr_define_pattern_set(PATRN_DARKBAT, SPR_SIZE_16x16, 1, 2,
-				two_step_state, darkbat, darkbat_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_DARKBAT, darkbat, darkbat_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_FLY:
 			spr_define_pattern_set(PATRN_FLY, SPR_SIZE_16x16, 1, 2,
-				two_step_state, fly, fly_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_FLY, fly, fly_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_SKELETON_CEILING:
 			spr_define_pattern_set(PATRN_SKELETON_CEILING, SPR_SIZE_16x32, 1, 2,
-				two_step_state, skeleton_ceiling, skeleton_ceiling_color);
+				two_step_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_SKELETON_CEILING, skeleton_ceiling, skeleton_ceiling_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_FISH:
 			spr_define_pattern_set(PATRN_FISH, SPR_SIZE_16x16, 1, 1,
-				bat_state, fish, fish_color);
+				bat_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_FISH, fish, fish_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_FIREBALL:
 			spr_define_pattern_set(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1,
-				bat_state, fireball, fireball_color);
+				bat_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_FIREBALL, fireball, fireball_color);
+			sys_ascii_restore();
 			break;
 		case PATRN_WATERDROP:
 			spr_define_pattern_set(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1,
-				waterdrop_state, waterdrop, waterdrop_color);
+				waterdrop_state);
+			sys_ascii_set(PAGE_SPRITES);
+			spr_copy_pattern_set(PATRN_WATERDROP, waterdrop, waterdrop_color);
+			sys_ascii_restore();
 			break;
 	}
 
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
 }

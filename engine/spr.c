@@ -65,10 +65,21 @@ void spr_clear(void) {
 	spr_patterns_idx = 0;
 	spr_colors_idx = 0;
 }
-extern void sys_set_ascii_page3(char page);
+
+void spr_copy_pattern_set(uint8_t index, uint8_t *patterns, uint8_t *colors)
+{
+	uint8_t frames = spr_pattern[index].n_frames;
+	uint16_t pattern_size = spr_pattern[index].pattern_size;
+
+	sys_memcpy(&spr_patterns[spr_patterns_idx], patterns, pattern_size);
+	sys_memcpy(&spr_colors[spr_colors_idx], colors, frames);
+
+	spr_patterns_idx += pattern_size;
+	spr_colors_idx += frames;
+}
 
 void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
-	uint8_t num_states, uint8_t *state_steps, uint8_t *patterns, uint8_t *colors)
+	uint8_t num_states, uint8_t *state_steps)
 {
 	uint16_t pattern_size;
 	uint8_t i, total_steps = 0;
@@ -78,8 +89,6 @@ void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
 	}
 
 	pattern_size = size * planes * total_steps * 8;
-	sys_memcpy(&spr_patterns[spr_patterns_idx], patterns, pattern_size);
-	sys_memcpy(&spr_colors[spr_colors_idx], colors, planes * total_steps);
 
 	spr_pattern[index].size = size;
 	spr_pattern[index].n_planes = planes;
@@ -88,9 +97,8 @@ void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
 	spr_pattern[index].allocated = false;
 	spr_pattern[index].patterns = &spr_patterns[spr_patterns_idx];
 	spr_pattern[index].colors = &spr_colors[spr_colors_idx];
-
-	spr_patterns_idx += pattern_size;
-	spr_colors_idx += planes * total_steps;
+	spr_pattern[index].n_frames = total_steps * planes;
+	spr_pattern[index].pattern_size = pattern_size;
 }
 
 void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)

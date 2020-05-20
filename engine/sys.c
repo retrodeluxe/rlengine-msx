@@ -221,3 +221,23 @@ uint16_t sys_get_ticks()
 {
     return sys_ticks;
 }
+
+
+
+void sys_ascii_set(uint8_t page)
+{
+	__asm
+	di
+	ld      a,4(ix)
+	ld 	(#ASCII8_PAGE3),a
+	__endasm;
+}
+
+void sys_ascii_restore()
+{
+	__asm
+	ld	a,#3
+	ld 	(#ASCII8_PAGE3),a
+	ei
+	__endasm;
+}

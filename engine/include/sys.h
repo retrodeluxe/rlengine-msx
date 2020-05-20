@@ -27,6 +27,10 @@
 
 #define BIOS_INT_HOOK 	0xFD9A
 
+#define ASCII8_PAGE_CODE 3
+
+#define ASCII8_PAGE3 	0x7800
+
 struct sys_proc {
     void  (*func)();
 };
@@ -40,6 +44,7 @@ struct sys_proc {
 #define STICK_DOWN_LEFT		6
 #define STICK_LEFT 		7
 #define STICK_UP_LEFT		8
+
 
 extern void sys_reboot();
 extern uint8_t sys_get_key(uint8_t line);
@@ -57,4 +62,6 @@ extern void sys_sleep(unsigned int time_ms);
 extern uint16_t sys_gettime_secs();
 extern uint16_t sys_gettime_msec();
 extern uint16_t sys_get_ticks();
+extern void sys_ascii_set(uint8_t page);
+extern void sys_ascii_restore();
 #endif

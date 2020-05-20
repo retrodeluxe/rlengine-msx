@@ -65,6 +65,8 @@ struct spr_pattern_set {
 	uint8_t n_steps;
 	uint8_t *patterns;
 	uint8_t *colors;
+	uint8_t n_frames;
+	uint16_t pattern_size;
 };
 
 /**
@@ -92,8 +94,9 @@ extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 
 extern void spr_init();
 extern void spr_clear();
+extern void spr_copy_pattern_set(uint8_t index, uint8_t *patterns, uint8_t *colors);
 extern void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
-	uint8_t num_states, uint8_t *state_steps, uint8_t *patterns, uint8_t *colors);
+	uint8_t num_states, uint8_t *state_steps);
 extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
 extern void spr_vfree_pattern_set(uint8_t patrn_idx);
