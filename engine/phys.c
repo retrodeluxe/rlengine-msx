@@ -71,6 +71,8 @@ void phys_clear_sprite_collision_handler()
 
 /**
  * set callbacks for specific tiles
+ *
+ *  FIXME: the same tile object repeated many times will create repeated cgroups
  */
 void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), uint8_t data)
 {

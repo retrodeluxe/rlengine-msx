@@ -39,7 +39,7 @@
 #define is_colliding_y(x)	(is_colliding_up((x)) || is_colliding_down((x)))
 #define is_colliding(x)		(((x)->collision_state) != 0)
 
-#define MAX_CROUPS 5
+#define MAX_CROUPS 12
 
 struct tile_collision_group {
         uint8_t start;
