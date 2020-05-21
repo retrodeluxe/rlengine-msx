@@ -60,6 +60,7 @@ void phys_set_sprite_collision_handler(void (*handler));
 void phys_clear_sprite_collision_handler();
 void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), uint8_t data);
 void phys_set_colliding_tile_object(struct displ_object *dpo, enum tile_collision_type type, void (*handler), uint8_t data);
+void phys_clear_colliding_tile_object(struct displ_object *dpo);
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
 void phys_set_trigger_colliding_tile(uint8_t tile);

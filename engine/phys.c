@@ -112,6 +112,21 @@ void phys_set_colliding_tile_object(struct displ_object *dpo,
 	phys_set_tile_collision_handler(dpo, handler, data);
 }
 
+void phys_clear_colliding_tile_object(struct displ_object *dpo)
+{
+	uint8_t i;
+	uint8_t base_tile = dpo->tob->ts->pidx;
+	uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
+		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
+
+	for (i = base_tile; i < base_tile + num_tiles; i++) {
+		phys_clear_colliding_tile(i);
+	}
+
+	// TODO: clear the collision group as well
+}
+
+
 /*
  * if the tile has a handler set, notify
  * XXX: this is asking for optimization
