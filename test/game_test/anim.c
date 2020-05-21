@@ -42,7 +42,7 @@ void change_room()
 		game_state.change_room = true;
 	}
 	if (dpo_jean.ypos > (192 - 50)) {
-		game_state.jean_y = 0;
+		game_state.jean_y = 1;
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room += 5;
 		game_state.change_room = true;
