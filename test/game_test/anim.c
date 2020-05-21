@@ -25,39 +25,34 @@ void add_animator(struct displ_object *dpo, enum anim_t animidx)
 	list_add(&animators[animidx].list, &dpo->animator_list);
 }
 
-bool change_room()
+void change_room()
 {
-	bool change = false;
-
-	game_state.jean_x = dpo_jean.xpos;
-	game_state.jean_y = dpo_jean.ypos;
+	game_state.change_room = false;
 
 	if (dpo_jean.xpos > 239) {
 		game_state.jean_x = 5;
+		game_state.jean_y = dpo_jean.ypos;
 		game_state.room += 1;
-		change = true;
+		game_state.change_room = true;
 
 	} else if (dpo_jean.xpos == 0) {
 		game_state.jean_x = 239;
+		game_state.jean_y = dpo_jean.ypos;
 		game_state.room -= 1;
-		change = true;
+		game_state.change_room = true;
 	}
-	if (dpo_jean.ypos > 192 - 50) {
+	if (dpo_jean.ypos > (192 - 50)) {
 		game_state.jean_y = 0;
+		game_state.jean_x = dpo_jean.xpos;
 		game_state.room += 5;
-		change = true;
+		game_state.change_room = true;
 
 	} else if (dpo_jean.ypos == 0) {
 		game_state.jean_y = 192 - 64;
+		game_state.jean_x = dpo_jean.xpos;
 		game_state.room -= 5;
-		change = true;
+		game_state.change_room = true;
 	}
-
-	if (change) {
-		log_e("change room %d %d %d\n",game_state.jean_x, game_state.jean_y, game_state.room);
-	}
-
-	return change;
 }
 
 void anim_jean_death(struct displ_object *obj)
@@ -74,7 +69,6 @@ void anim_jean_death(struct displ_object *obj)
 	if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
 		sp->cur_anim_step = 0;
 
-	// FIXME: Need to update plane colors when updating the sprite as well
 	spr_update(sp);
 }
 

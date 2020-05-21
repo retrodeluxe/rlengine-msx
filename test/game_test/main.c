@@ -91,7 +91,8 @@ start:
 		stick = sys_get_stick(0) | sys_get_stick(1);
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 
-		if (change_room()) {
+		change_room();
+		if (game_state.change_room){
 			load_room(game_state.room);
 		}
 

@@ -6,6 +6,7 @@ struct game_state_t {
 
 	/* current room */
 	uint8_t room;
+	bool change_room;
 
 	/* jean position when swithing rooms */
 	uint8_t jean_x;

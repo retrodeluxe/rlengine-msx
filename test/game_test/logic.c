@@ -24,6 +24,7 @@ void init_game_state()
 	game_state.jean_x = 100;
 	game_state.jean_y = 192 - 64;
 	game_state.room = ROOM_FOREST;
+	game_state.change_room = false;
 	game_state.live_cnt = GAME_MAX_LIVES;
 	game_state.cross_cnt = 0;
 	game_state.templar_ct = 0;
