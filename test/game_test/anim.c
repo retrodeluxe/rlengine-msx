@@ -286,10 +286,10 @@ void anim_jean(struct displ_object *obj)
 	}
 
 
-	log_e("state %d\n", obj->state);
-	log_e("dx %d dy %d\n", dx, dy);
-	log_e("x %d y %d\n", obj->xpos, obj->ypos);
-	log_e("collision %d\n", obj->collision_state);
+	// log_e("state %d\n", obj->state);
+	// log_e("dx %d dy %d\n", dx, dy);
+	// log_e("x %d y %d\n", obj->xpos, obj->ypos);
+	// log_e("collision %d\n", obj->collision_state);
 }
 
 void anim_static(struct displ_object *obj)
@@ -332,6 +332,8 @@ void anim_left_right(struct displ_object *obj)
 				dx = -2;
 			}
 			break;
+		default:
+			obj->state = STATE_MOVING_LEFT;
 	}
 	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0);
 	dpo_simple_animate(obj, dx, 0);
