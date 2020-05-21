@@ -32,6 +32,7 @@
 #include <stdlib.h>
 
 void show_logo();
+void show_game_over();
 void show_title_screen();
 void animate_all();
 void check_and_change_room();
@@ -41,6 +42,7 @@ void load_room(uint8_t room);
 
 struct tile_set logo;
 struct tile_set tileset_intro;
+struct tile_set tileset_gameover;
 struct font font;
 struct animator *anim;
 struct displ_object *dpo;
@@ -107,8 +109,8 @@ start:
 		// 	log_w("fps stall!\n");
 
 		if (game_state.death) {
-			if(--game_state.live_cnt == 0) {
-				// XXX: GAME OVER
+			if(--game_state.live_cnt == 8) {
+				show_game_over();
 				goto start;
 			}
 			handle_death();
@@ -136,6 +138,40 @@ void play_music()
 void show_logo() {
 	// TODO : add resources
 	do {
+	} while (sys_get_key(8) & 1);
+}
+
+
+void show_game_over()
+{
+	uint8_t i,j, ct;
+
+	stop_music();
+	clear_room();
+	clean_state();
+
+	vdp_screen_disable();
+	vdp_clear_grp1(0);
+
+	tile_init();
+	spr_init();
+
+	sys_ascii_set(PAGE_INTRO);
+	INIT_TILE_SET(tileset_gameover, gameover);
+	tile_set_to_vram(&tileset_gameover, 1);
+	sys_ascii_restore();
+
+	for (i = 11, j = 5, ct = 0; ct < 22 * 3; ct++, j++) {
+		if (j > 26) {
+			i++; j = 5;
+		}
+		vdp_poke_names(i * 32 + j, ct);
+	}
+
+	vdp_screen_enable();
+
+	do {
+		sys_wait_vsync();
 	} while (sys_get_key(8) & 1);
 }
 
