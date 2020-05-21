@@ -416,7 +416,7 @@ void load_room(uint8_t room)
 			} else if (id == 2 && !game_state.bell) {
 				add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
 				phys_set_colliding_tile_object(dpo,
-					TILE_COLLISION_DOWN, null_handler, 0);
+					TILE_COLLISION_FULL, null_handler, 0);
 			} else if (id == 3 && game_state.toggle[1] == 0) {
 				add_dpo = true;
 			} else if (id == 4 && game_state.toggle[2] == 0) {
