@@ -111,5 +111,8 @@ void trigger_handler(struct displ_object *dpo, uint8_t data)
 
 void spear_handler(struct displ_object *dpo, uint8_t data)
 {
-	dpo_jean.state = STATE_COLLISION;
+	if (dpo_jean.state != STATE_COLLISION
+		&& dpo_jean.state != STATE_DEATH) {
+			dpo_jean.state = STATE_COLLISION;
+	}
 }

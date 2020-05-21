@@ -217,8 +217,11 @@ void add_jean()
 
 void jean_collision_handler()
 {
-	dpo_jean.state = STATE_COLLISION;
-	phys_clear_sprite_collision_handler();
+	if (dpo_jean.state != STATE_COLLISION
+		&& dpo_jean.state != STATE_DEATH) {
+			dpo_jean.state = STATE_COLLISION;
+			phys_clear_sprite_collision_handler();
+	}
 }
 
 void clear_room() {
