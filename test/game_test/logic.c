@@ -110,6 +110,5 @@ void trigger_handler(struct displ_object *dpo, uint8_t data)
 
 void spear_handler(struct displ_object *dpo, uint8_t data)
 {
-	//log_e("spear!!\n");
 	dpo_jean.state = STATE_COLLISION;
 }

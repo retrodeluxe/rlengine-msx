@@ -283,6 +283,7 @@ void load_room(uint8_t room)
 	type = 0;
 	room_objs = map_object_layer[room];
 	for (dpo = display_object, i = 0; type != 255 ; i++, dpo++) {
+		sys_irq_disable();
 		sys_set_ascii_page3(PAGE_MAPOBJECTS);
 		map_object = (struct map_object_item *) room_objs;
 		type = map_object->type;
@@ -375,6 +376,8 @@ void load_room(uint8_t room)
 			} else if (map_object->object.static_.type == TYPE_LAVA) {
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
 				// also nice animation to do here
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, spear_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				add_tileobject(dpo, tob_ct, TILE_SPEAR);
 				phys_set_colliding_tile_object(dpo,

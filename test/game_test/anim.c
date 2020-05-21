@@ -33,7 +33,7 @@ bool change_room()
 	game_state.jean_y = dpo_jean.ypos;
 
 	if (dpo_jean.xpos > 239) {
-		game_state.jean_x = 1;
+		game_state.jean_x = 5;
 		game_state.room += 1;
 		change = true;
 
@@ -42,12 +42,12 @@ bool change_room()
 		game_state.room -= 1;
 		change = true;
 	}
-	if (dpo_jean.ypos > 192 - 64) {
+	if (dpo_jean.ypos > 192 - 50) {
 		game_state.jean_y = 0;
 		game_state.room += 5;
 		change = true;
 
-	} else if (dpo_jean.ypos < 32) {
+	} else if (dpo_jean.ypos == 0) {
 		game_state.jean_y = 192 - 64;
 		game_state.room -= 5;
 		change = true;
@@ -101,7 +101,7 @@ void anim_jean(struct displ_object *obj)
 		case STATE_COLLISION:
 			obj->state = STATE_DEATH;
 			sfx_play_effect(SFX_DEATH, 0);
-			break;
+			return;
 		case STATE_DEATH:
 			death_ct++;
 			if (death_ct < 20) {

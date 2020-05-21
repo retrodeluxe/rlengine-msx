@@ -113,6 +113,7 @@ void phys_set_colliding_tile_object(struct displ_object *dpo,
 
 /*
  * if the tile has a handler set, notify
+ * XXX: this is asking for optimization
  */
 static void phys_tile_collision_notify(uint8_t tile)
 {
@@ -236,6 +237,9 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 
 	if (is_coliding_tile_pair(tile[6], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN;
+		phys_tile_collision_notify(tile[6]);
+		phys_tile_collision_notify(tile[7]);
+
 		obj->ypos = (y / 8) * 8;
 	}
 
