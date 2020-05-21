@@ -23,13 +23,26 @@ void init_game_state()
 
 	game_state.jean_x = 100;
 	game_state.jean_y = 192 - 64;
-	game_state.room = ROOM_CHURCH_ENTRANCE;
+	game_state.room = ROOM_FOREST;
+
+	game_state.checkpoint_x = game_state.jean_x;
+	game_state.checkpoint_y = game_state.jean_y;
+	game_state.checkpoint_room = game_state.room;
+
 	game_state.change_room = false;
 	game_state.live_cnt = GAME_MAX_LIVES;
 	game_state.cross_cnt = 0;
 	game_state.templar_ct = 0;
 	game_state.death = false;
 	game_state.templar_delay = 0;
+}
+
+void handle_death()
+{
+	game_state.jean_x = game_state.checkpoint_x;
+	game_state.jean_y = game_state.checkpoint_y;
+	game_state.room = game_state.checkpoint_room;
+	game_state.death = false;
 }
 
 void null_handler(struct displ_object *dpo, uint8_t data)
@@ -64,10 +77,13 @@ void pickup_cross(struct displ_object *dpo, uint8_t data)
 
 void checkpoint_handler(struct displ_object *dpo, uint8_t data)
 {
-        game_state.checkpoint[data] = 1;
-        dpo->tob->cur_anim_step = 1;
+	game_state.checkpoint[data] = 1;
+	game_state.checkpoint_x = dpo->xpos;
+	game_state.checkpoint_y = dpo->ypos - 8;
+	game_state.checkpoint_room = game_state.room;
+	dpo->tob->cur_anim_step = 1;
 	phys_clear_colliding_tile_object(dpo);
-        update_tileobject(dpo);
+	update_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
 

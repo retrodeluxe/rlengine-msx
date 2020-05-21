@@ -12,6 +12,11 @@ struct game_state_t {
 	uint8_t jean_x;
 	uint8_t jean_y;
 
+	/* check point saved position */
+	uint8_t checkpoint_x;
+	uint8_t checkpoint_y;
+	uint8_t checkpoint_room;
+
 	/* cross and live count for state panel */
 	uint8_t cross_cnt;
 

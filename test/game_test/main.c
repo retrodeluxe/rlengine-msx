@@ -108,9 +108,10 @@ start:
 
 		if (game_state.death) {
 			if(--game_state.live_cnt == 0) {
+				// XXX: GAME OVER
 				goto start;
 			}
-			game_state.death = false;
+			handle_death();
 			load_room(game_state.room);
 		}
 	}
