@@ -133,6 +133,10 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	tile_set_valloc(&tileset[tileidx]);
 	sys_set_ascii_page3(PAGE_MAPOBJECTS);
 
+	//sys_ascii_restore();
+	//log_e("tileidx %d, allocated? %d at pos %d\n", tileidx, tileset[tileidx].allocated,tileset[tileidx].pidx);
+	//sys_ascii_set(PAGE_MAPOBJECTS);
+
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
 	tileobject[objidx].cur_dir = 1;
@@ -144,6 +148,7 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	dpo->tob = &tileobject[objidx];
 	dpo->xpos = map_object->x;
 	dpo->ypos = map_object->y;
+	dpo->visible = true;
 	dpo->state = 0;
 
 	sys_set_ascii_page3(PAGE_CODE);
@@ -291,8 +296,11 @@ void load_room(uint8_t room)
 		sys_set_ascii_page3(PAGE_MAPOBJECTS);
 		map_object = (struct map_object_item *) room_objs;
 		type = map_object->type;
-		// log_e("type %d\n", type);
-		// log_e("room_objs %x\n", room_objs);
+
+		sys_ascii_restore();
+		log_e("type %d\n", type);
+		log_e("room_objs %x\n", room_objs);
+		sys_ascii_set(PAGE_MAPOBJECTS);
 		if (type == ACTIONITEM) {
 			uint8_t action_item_type = map_object->object.actionitem.type;
 			// log_e("action_item_type %d\n", action_item_type);
@@ -451,6 +459,9 @@ void load_room(uint8_t room)
 		} else if (map_object->type == STEP) {
 			// TODO: Add special collisions
 			room_objs += NEXT_OBJECT(struct map_object_step);
+		} else if (map_object->type == STAINEDGLASS) {
+			add_tileobject(dpo, tob_ct, TILE_STAINED_GLASS);
+			room_objs += NEXT_OBJECT(struct map_object_stainedglass);
 		} else if (map_object->type == MOVABLE) {
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
@@ -586,9 +597,10 @@ void init_map_tilesets() {
 
 		tile_set_valloc(&tileset_map1);
 		tile_set_valloc(&tileset_map2);
+		tile_set_valloc(&tileset_map3);
 		tile_set_to_vram(&tileset_map4, 126);
 		tile_set_to_vram(&tileset_map5, 126 + 32);
-		tile_set_valloc(&tileset_map3);
+
 	}
 
 	sys_set_ascii_page3(PAGE_CODE);
@@ -669,6 +681,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS_STATUS], cross_status, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
 
 	/** copy numeric font to vram **/
 	sys_set_ascii_page3(PAGE_INTRO);
@@ -678,7 +691,8 @@ void init_resources()
 
 	init_font(&big_digits, font_buffer, font_color_buffer, 10, 2,
 		FONT_NUMERIC, 10, 1, 2);
-	font_to_vram_bank(&big_digits, BANK2, 220);
+
+	font_to_vram_bank(&big_digits, BANK2, 224);
 
 	/** copy over music to ram **/
 	sys_set_ascii_page3(PAGE_MUSIC);

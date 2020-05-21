@@ -131,8 +131,8 @@ bool tile_set_valloc(struct tile_set *ts)
 
 	found = bitmap_find_gap(bitmap_tile_bank, size, BITMAP_TILEBANK_SIZE - 1, &pos);
 	if (!found) {
-		// FIXME: only in DEBUG
-		//bitmap_dump(bitmap_tile_bank, BITMAP_TILEBANK_SIZE -1);
+		sys_ascii_restore();
+		bitmap_dump(bitmap_tile_bank, BITMAP_TILEBANK_SIZE -1);
 		return false;
 	}
 
