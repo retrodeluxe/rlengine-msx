@@ -442,12 +442,12 @@ void anim_chase(struct displ_object *obj)
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (game_state.templar_delay > 85) {
+			if (game_state.templar_delay > 90) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (game_state.templar_delay > 130) {
+			if (game_state.templar_delay > 140) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;

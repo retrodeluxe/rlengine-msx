@@ -65,6 +65,7 @@ void phys_set_sprite_collision_handler(void (*handler))
 
 void phys_clear_sprite_collision_handler()
 {
+	// FIXME: unregister is hanging sometimes
 	sys_irq_unregister(phys_check_collision_bit);
 	sprite_colision_cb = NULL;
 }
