@@ -563,45 +563,23 @@ void init_tile_collisions()
 	phys_set_down_colliding_tile(38);
 }
 
-void init_map_tilesets() {
-	uint8_t room;
-
+void init_map_tilesets()
+{
 	tile_init();
 	sys_irq_disable();
 	sys_set_ascii_page3(PAGE_MAPTILES);
 
-	room = 0;
-	if (room == 8) {
-		INIT_TILE_SET(tileset_map1, maptiles1);
-		INIT_TILE_SET(tileset_map2, maptiles2);
-		INIT_TILE_SET(tileset_map3, maptiles3);
-		INIT_TILE_SET(tileset_map3b, maptiles3b);
-		INIT_TILE_SET(tileset_map4, maptiles4);
-		INIT_TILE_SET(tileset_map5, maptiles5);
-		INIT_TILE_SET(tileset_map6, maptiles6);
-		INIT_TILE_SET(tileset_map7, maptiles7);
+	INIT_TILE_SET(tileset_map1, maptiles1);
+	INIT_TILE_SET(tileset_map2, maptiles2);
+	INIT_TILE_SET(tileset_map3, maptiles3)
+	INIT_TILE_SET(tileset_map4, maptiles4);
+	INIT_TILE_SET(tileset_map5, maptiles5);
 
-		tile_set_valloc(&tileset_map1);
-		tile_set_to_vram(&tileset_map4, 126);
-		tile_set_to_vram(&tileset_map5, 126 + 32);
-		tile_set_to_vram(&tileset_map3, 65);
-		tile_set_to_vram(&tileset_map3b,97);
-		tile_set_to_vram(&tileset_map6, 126 + 64);
-		tile_set_to_vram(&tileset_map7, 126 + 96);
-	} else {
-		INIT_TILE_SET(tileset_map1, maptiles1);
-		INIT_TILE_SET(tileset_map2, maptiles2);
-		INIT_TILE_SET(tileset_map3, maptiles3)
-		INIT_TILE_SET(tileset_map4, maptiles4);
-		INIT_TILE_SET(tileset_map5, maptiles5);
-
-		tile_set_valloc(&tileset_map1);
-		tile_set_valloc(&tileset_map2);
-		tile_set_valloc(&tileset_map3);
-		tile_set_to_vram(&tileset_map4, 126);
-		tile_set_to_vram(&tileset_map5, 126 + 32);
-
-	}
+	tile_set_valloc(&tileset_map1);
+	tile_set_valloc(&tileset_map2);
+	tile_set_valloc(&tileset_map3);
+	tile_set_to_vram(&tileset_map4, 126);
+	tile_set_to_vram(&tileset_map5, 126 + 32);
 
 	sys_set_ascii_page3(PAGE_CODE);
 	sys_irq_enable();
