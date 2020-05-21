@@ -296,11 +296,6 @@ void load_room(uint8_t room)
 		sys_set_ascii_page3(PAGE_MAPOBJECTS);
 		map_object = (struct map_object_item *) room_objs;
 		type = map_object->type;
-
-		sys_ascii_restore();
-		log_e("type %d\n", type);
-		log_e("room_objs %x\n", room_objs);
-		sys_ascii_set(PAGE_MAPOBJECTS);
 		if (type == ACTIONITEM) {
 			uint8_t action_item_type = map_object->object.actionitem.type;
 			// log_e("action_item_type %d\n", action_item_type);
@@ -554,7 +549,7 @@ void load_room(uint8_t room)
 void init_tile_collisions()
 {
 	uint8_t i;
-	for (i = 1; i < 86; i++)
+	for (i = 1; i < 76; i++)
 		phys_set_colliding_tile(i);
 
 	phys_clear_colliding_tile(16); // step brown
