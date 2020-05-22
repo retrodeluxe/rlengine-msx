@@ -6,3 +6,6 @@
 #include "gen/cave_song.h"
 #include "gen/prayerofhope_song.h"
 #include "gen/game_test_sfx.h"
+#include "gen/hell_song.h"
+#include "gen/evilfight_song.h"
+#include "gen/introjean_song.h"

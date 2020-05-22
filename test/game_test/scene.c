@@ -61,6 +61,12 @@ extern const unsigned char prayerofhope_song_pt3[];
 extern const unsigned int huntloop_song_pt3_len;
 extern const unsigned int church_song_pt3_len;
 extern const unsigned int prayerofhope_song_pt3_len;
+extern const unsigned int hell_song_pt3[];
+extern const unsigned int hell_song_pt3_len;
+extern const unsigned int cave_song_pt3[];
+extern const unsigned int cave_song_pt3_len;
+extern const unsigned int evilfight_song_pt3[];
+extern const unsigned int evilfight_song_pt3_len;
 extern const char abbaye_sfx_afb[];
 extern const unsigned int abbaye_sfx_afb_len;
 
@@ -111,10 +117,26 @@ void start_music(uint8_t room)
 		case ROOM_CHURCH_ALTAR:
 		case ROOM_CHURCH_TOWER:
 		case ROOM_CHURCH_WINE_SUPPLIES:
+		case ROOM_CATACOMBS:
+		case ROOM_CATACOMBS_FLIES:
+		case ROOM_CATACOMBS_WHEEL:
 			sys_memcpy(music_buffer, church_song_pt3, church_song_pt3_len);
 			break;
 		case ROOM_PRAYER_OF_HOPE:
 			sys_memcpy(music_buffer, prayerofhope_song_pt3, prayerofhope_song_pt3_len);
+			break;
+		case ROOM_CAVE_LAKE:
+		case ROOM_CAVE_DRAGON:
+		case ROOM_CAVE_GHOST:
+		case ROOM_CAVE_TUNNEL:
+		case ROOM_HIDDEN_GARDEN:
+		case ROOM_HIDDEN_RIVER:
+			sys_memcpy(music_buffer, cave_song_pt3, cave_song_pt3_len);
+			break;
+		case ROOM_EVIL_CHURCH:
+		case ROOM_EVIL_CHURCH_2:
+		case ROOM_EVIL_CHURCH_3:
+			sys_memcpy(music_buffer, hell_song_pt3, hell_song_pt3_len);
 			break;
 		default:
 	}
