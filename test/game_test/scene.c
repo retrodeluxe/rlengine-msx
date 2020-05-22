@@ -566,9 +566,9 @@ void init_tile_collisions()
 	for (i = 1; i < 76; i++)
 		phys_set_colliding_tile(i);
 
-	//phys_clear_colliding_tile(17); // step brown
-	//phys_clear_colliding_tile(38); // step white
-	phys_set_down_colliding_tile(17);
+	phys_clear_colliding_tile(16); // step brown
+	phys_clear_colliding_tile(38); // step white
+	phys_set_down_colliding_tile(16);
 	phys_set_down_colliding_tile(38);
 }
 
