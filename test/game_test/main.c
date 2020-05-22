@@ -116,6 +116,11 @@ start:
 			handle_death();
 			load_room(game_state.room);
 		}
+
+		if (game_state.refresh_score) {
+			game_state.refresh_score = false;
+			show_score_panel();
+		}
 	}
 }
 

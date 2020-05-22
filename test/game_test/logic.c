@@ -55,6 +55,7 @@ void pickup_heart(struct displ_object *dpo, uint8_t data)
 {
         game_state.hearth[data] = 1;
         game_state.live_cnt++;
+	game_state.refresh_score = true;
         remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
@@ -71,6 +72,7 @@ void pickup_cross(struct displ_object *dpo, uint8_t data)
 {
         game_state.cross[data] = 1;
         game_state.cross_cnt++;
+	game_state.refresh_score = true;
         remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
