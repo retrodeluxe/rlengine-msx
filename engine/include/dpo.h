@@ -43,6 +43,9 @@ struct displ_object {
 	int8_t color;
 	bool visible;
 
+	/* collision detection flags */
+	bool check_collision;
+
 	/* dynamic animation data */
 	uint8_t state;
 	uint8_t aux;		// per object auxiliary data

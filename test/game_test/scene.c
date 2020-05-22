@@ -51,6 +51,8 @@ extern unsigned char *map_map_segment_dict[25];
 extern unsigned char *map_map_segment[25];
 extern struct list_head *elem;
 extern struct displ_object *dpo;
+struct list_head *coll_elem;
+struct displ_object *coll_dpo;
 extern unsigned char *map_object_layer[25];
 extern void sys_set_ascii_page3(char page);
 extern const unsigned char huntloop_song_pt3[];
@@ -188,6 +190,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	dpo->ypos = map_object->y;
 	dpo->state = 0;
 	dpo->collision_state = 0;
+	dpo->check_collision = true;
 
 	sys_set_ascii_page3(PAGE_CODE);
 	sys_irq_enable();
@@ -212,6 +215,7 @@ void add_jean()
 	dpo_jean.state = STATE_IDLE;
 	dpo_jean.spr = &jean_sprite;
 	dpo_jean.collision_state = 0;
+	dpo_jean.check_collision = false;
 	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
 	INIT_LIST_HEAD(&dpo_jean.list);
 	list_add(&dpo_jean.list, &display_list);
@@ -223,9 +227,20 @@ void jean_collision_handler()
 {
 	if (dpo_jean.state != STATE_COLLISION
 		&& dpo_jean.state != STATE_DEATH) {
-			dpo_jean.state = STATE_COLLISION;
-			// FIXME: this hangs sometimes
-			//phys_clear_sprite_collision_handler();
+		/** calculate box intersection on all active sprites **/
+		list_for_each(coll_elem, &display_list) {
+			coll_dpo = list_entry(coll_elem, struct displ_object, list);
+			if (coll_dpo->type == DISP_OBJECT_SPRITE && coll_dpo->check_collision) {
+				if (coll_dpo->xpos < (dpo_jean.xpos + 16) &&
+					(coll_dpo->xpos + 16) > dpo_jean.xpos) {
+					if (coll_dpo->ypos < (dpo_jean.ypos + 32) &&
+						(coll_dpo->ypos + 16) > dpo_jean.ypos) {
+						dpo_jean.state = STATE_COLLISION;
+						return;
+					}
+				}
+			}
+		}
 	}
 }
 
