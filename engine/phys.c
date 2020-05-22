@@ -251,8 +251,12 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 		obj->collision_state |= COLLISION_UP;
 	}
 
-	if (is_coliding_down_tile_pair(tile[6], tile[7])) {
+	if (is_coliding_tile_pair(tile[6], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN;
+	}
+
+	if (is_coliding_down_tile_pair(tile[6], tile[7])) {
+		obj->collision_state |= COLLISION_DOWN_FT;
 		phys_tile_collision_notify(tile[6]);
 		phys_tile_collision_notify(tile[7]);
 

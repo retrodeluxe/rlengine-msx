@@ -26,14 +26,12 @@
 #define COLLISION_RIGHT	2
 #define COLLISION_UP		4
 #define COLLISION_DOWN		8
-#define COLLISION_UP_LEFT	16
-#define COLLISION_UP_RIGHT	32
-#define COLLISION_DOWN_LEFT	64
-#define COLLISION_DOWN_RIGHT	128
+#define COLLISION_DOWN_FT	16  // fallthrough
 
 #define is_colliding_left(x)	(((x)->collision_state & COLLISION_LEFT) != 0)
 #define is_colliding_right(x)	(((x)->collision_state & COLLISION_RIGHT) != 0)
 #define is_colliding_down(x)	(((x)->collision_state & COLLISION_DOWN) != 0)
+#define is_colliding_down_ft(x) (((x)->collision_state & COLLISION_DOWN_FT) != 0)
 #define is_colliding_up(x)	(((x)->collision_state & COLLISION_UP) != 0)
 #define is_colliding_x(x)	(is_colliding_left((x)) || is_colliding_right((x)))
 #define is_colliding_y(x)	(is_colliding_up((x)) || is_colliding_down((x)))
