@@ -202,7 +202,7 @@ static bool is_coliding_trigger_tile_pair(uint8_t tile1, uint8_t tile2)
  * Update dpo collision_state
  */
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
-        uint8_t *map, int8_t dx, int8_t dy)
+        uint8_t *map, int8_t dx, int8_t dy, bool notify)
 {
 	uint8_t x, y, c;
 	uint8_t *base_ceiling_l, *base_ceiling_r, *base_left_t, *base_left_b;
@@ -236,9 +236,11 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	obj->collision_state = 0;
 
 	/** check non-blocking collisions **/
-	if (is_coliding_trigger_tile_pair(tile[4], tile[5])) {
-		phys_tile_collision_notify(tile[4]);
-		phys_tile_collision_notify(tile[5]);
+	if (notify) {
+		if (is_coliding_trigger_tile_pair(tile[4], tile[5])) {
+			phys_tile_collision_notify(tile[4]);
+			phys_tile_collision_notify(tile[5]);
+		}
 	}
 
 	if (is_coliding_tile_pair(tile[2], tile[3])) {
@@ -257,8 +259,10 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 
 	if (is_coliding_down_tile_pair(tile[6], tile[7])) {
 		obj->collision_state |= COLLISION_DOWN_FT;
-		phys_tile_collision_notify(tile[6]);
-		phys_tile_collision_notify(tile[7]);
+		if (notify) {
+			phys_tile_collision_notify(tile[6]);
+			phys_tile_collision_notify(tile[7]);
+		}
 
 		obj->ypos = (y / 8) * 8;
 	}
@@ -267,10 +271,10 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 
 /**
  * compute tile colision based on future position
- *
+ * XXX: Enemies do not trigger collision callbacks with tob, need a flag.
  */
 static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
-        uint8_t *map, int8_t dx, int8_t dy)
+        uint8_t *map, int8_t dx, int8_t dy, bool notify)
 {
 	uint8_t x,y, c;
 	uint8_t *base_tl, *base_bl, *base_tr, *base_br;
@@ -297,42 +301,20 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
 	tile[6] = *(base_mt);
 	tile[7] = *(base_mb);
 
-	 // *(base_tr) = 0;
-	 // *(base_mr) = 0;
-	 // *(base_br) = 0;
-	 // *(base_bl) = 0;
-	 // *(base_tl) = 0;
-	 // *(base_ml) = 0;
-	 // *(base_mt) = 0;
-	 // *(base_mb) = 0;
-
-	// XXX: Collision logic can be tuned more based on dx, dy
-
 	obj->collision_state = 0;
 	if (dx < 0 && is_coliding_tile_pair(tile[0], tile[1])) {
 		obj->collision_state |= COLLISION_LEFT;
-		phys_tile_collision_notify(tile[0]);
-		phys_tile_collision_notify(tile[1]);
 	}
 	if (dx > 0 && is_coliding_tile_pair(tile[3], tile[4])) {
 		obj->collision_state |= COLLISION_RIGHT;
-		phys_tile_collision_notify(tile[3]);
-		phys_tile_collision_notify(tile[4]);
 	}
 	if (dy < 0 && is_coliding_tile_triplet(tile[0], tile[3], tile[6])) {
 		obj->collision_state |= COLLISION_UP;
-		phys_tile_collision_notify(tile[0]);
-		phys_tile_collision_notify(tile[3]);
-		phys_tile_collision_notify(tile[6]);
 	}
 	if (dy > 0) {
 		if ((dx >= 0 && is_coliding_tile_pair(tile[5], tile[7]))
 			|| (dx < 0 && is_coliding_tile_pair(tile[2], tile[5])))
 			obj->collision_state |= COLLISION_DOWN;
-			// phys_tile_collision_notify(tile[5]);
-			// phys_tile_collision_notify(tile[7]);
-			// phys_tile_collision_notify(tile[2]);
-			// phys_tile_collision_notify(tile[5]);
 	}
 }
 
@@ -340,14 +322,14 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
  * Update collision state of a display object 16x16
  */
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
-       int8_t dx, int8_t dy)
+       int8_t dx, int8_t dy, bool notify)
 {
        uint8_t size = obj->spr->pattern_set->size;
 
        if (size == SPR_SIZE_16x16) {
-              phys_detect_tile_collisions_16x16(obj,map, dx, dy);
+              phys_detect_tile_collisions_16x16(obj,map, dx, dy, notify);
        } else if (size = SPR_SIZE_16x32) {
-              phys_detect_tile_collisions_16x32(obj, map, dx, dy);
+              phys_detect_tile_collisions_16x32(obj, map, dx, dy, notify);
        }
 }
 

@@ -255,7 +255,7 @@ void anim_jean(struct displ_object *obj)
 	}
 
 	/** handle collisions and update sprite **/
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, true);
 
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
@@ -275,6 +275,7 @@ void anim_jean(struct displ_object *obj)
 		|| (dy < 0 && !is_colliding_up(obj))) {
 		obj->ypos += dy;
 	}
+
 	if (fallthrough && is_colliding_down_ft(obj)) {
 		obj->ypos += dy;
 		fallthrough = 0;
@@ -342,17 +343,20 @@ void anim_left_right(struct displ_object *obj)
 		default:
 			obj->state = STATE_MOVING_LEFT;
 	}
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false);
 	dpo_simple_animate(obj, dx, 0);
 }
 
 void anim_left_right_floor(struct displ_object *obj)
 {
+	struct spr_sprite_def *sp = obj->spr;
 	int8_t dx = 0;
 	switch(obj->state) {
 		case STATE_MOVING_LEFT:
 			dx = -2;
-			if (is_colliding_left(obj) || !is_colliding_down(obj)) {
+			if (is_colliding_left(obj)
+				|| !is_colliding_down(obj)
+				|| obj->xpos < 3) {
 				obj->state = STATE_MOVING_RIGHT;
 				dx = 2;
 			}
@@ -367,8 +371,17 @@ void anim_left_right_floor(struct displ_object *obj)
 		default:
 			obj->state = STATE_MOVING_LEFT;
 	}
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 4);
-	dpo_simple_animate(obj, dx, 0);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false);
+	phys_detect_fall(obj, scr_tile_buffer, dx);
+
+	if ((dx > 0 && !is_colliding_right(obj))
+		|| (dx < 0 && !is_colliding_left(obj))) {
+		obj->xpos += dx;
+	}
+
+	spr_animate(sp, dx, 0);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
 }
 
 void anim_up_down(struct displ_object *obj)
@@ -390,7 +403,7 @@ void anim_up_down(struct displ_object *obj)
 			}
 			break;
 	}
-	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy, false);
 	dpo_simple_animate(obj, 0, dy);
 }
 
@@ -402,7 +415,7 @@ void anim_chase(struct displ_object *obj)
 	int8_t dx = 0, dy = 0;
 	struct spr_sprite_def *sp = obj->spr;
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false);
 
 	if (game_state.room == ROOM_GRAVEYARD)
 		phys_detect_fall(obj, scr_tile_buffer, dx);
