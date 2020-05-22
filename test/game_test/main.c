@@ -141,10 +141,9 @@ void show_logo() {
 	} while (sys_get_key(8) & 1);
 }
 
-
 void show_game_over()
 {
-	uint8_t i,j, ct;
+	uint8_t x, y, ct, size;
 
 	stop_music();
 	clear_room();
@@ -159,17 +158,18 @@ void show_game_over()
 	sys_ascii_set(PAGE_INTRO);
 	INIT_TILE_SET(tileset_gameover, gameover);
 	tile_set_to_vram(&tileset_gameover, 1);
+
+	size = gameover_tile_w * gameover_tile_h;
 	sys_ascii_restore();
 
-	for (i = 11, j = 5, ct = 0; ct < 22 * 3; ct++, j++) {
-		if (j > 26) {
-			i++; j = 5;
+	y = 11; x = 5;
+	for (ct = 0; ct < size; ct++, x++) {
+		if (x > 26) {
+			y++; x = 5;
 		}
-		vdp_poke_names(i * 32 + j, ct);
+		vdp_poke_names(y * 32 + x, ct);
 	}
-
 	vdp_screen_enable();
-
 	sys_sleep(3);
 }
 
