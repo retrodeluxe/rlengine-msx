@@ -127,10 +127,12 @@
                  "name":"door",
                  "properties":
                     {
+                     "action_id":"5",
                      "type":"3"
                     },
                  "propertytypes":
                     {
+                     "action_id":"string",
                      "type":"string"
                     },
                  "rotation":0,
