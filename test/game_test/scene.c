@@ -435,6 +435,9 @@ void load_room(uint8_t room)
 				add_dpo = true;
 			} else if (id == 4 && game_state.toggle[2] == 0) {
 				add_dpo = true;
+			} else if (id == 5) {
+				// church tower door
+				add_dpo = true;
 			}
 			if (add_dpo) {
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
@@ -566,8 +569,6 @@ void init_tile_collisions()
 	uint8_t i;
 	for (i = 1; i < 76; i++)
 		phys_set_colliding_tile(i);
-
-	phys_set_colliding_tile(127); // door at church tower
 
 	phys_clear_colliding_tile(16); // step brown
 	phys_clear_colliding_tile(38); // step white
