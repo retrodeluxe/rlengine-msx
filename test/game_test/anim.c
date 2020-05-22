@@ -357,8 +357,9 @@ void anim_left_right_floor(struct displ_object *obj)
 				dx = -2;
 			}
 			break;
+		default:
+			obj->state = STATE_MOVING_LEFT;	
 	}
-	// FIXME: hanging on detect_tile collisions if dy>0
 	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 4);
 	dpo_simple_animate(obj, dx, 0);
 }
