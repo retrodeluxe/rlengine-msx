@@ -196,14 +196,20 @@ void sys_irq_init()
 
 
 /**
- * sys_sleep:
- *      just wait in the "main thread". During this time only interrupt driven execution
- *      will happen.
+ * sys_sleep_ms
+ *   FIXME: currently can sleep a max of 1000ms
  */
-void sys_sleep(unsigned int time_ms)
+void sys_sleep_ms(uint16_t msecs)
 {
     uint16_t start_ms = sys_msec;
-    while (sys_msec - start_ms < time_ms) {
+    while (sys_msec - start_ms < msecs) {
+    };
+}
+
+void sys_sleep(uint16_t secs)
+{
+    uint16_t start_secs = sys_secs;
+    while (sys_secs - start_secs < secs) {
     };
 }
 

@@ -170,18 +170,15 @@ void show_game_over()
 
 	vdp_screen_enable();
 
-	do {
-		sys_wait_vsync();
-	} while (sys_get_key(8) & 1);
+	sys_sleep(3);
 }
 
 void show_title_screen()
 {
 	uint8_t i, color;
-	vdp_screen_disable();
 
-	/** title screen **/
-	sys_set_ascii_page3(PAGE_INTRO);
+	vdp_screen_disable();
+	sys_ascii_set(PAGE_INTRO);
 
 	tile_init();
 	INIT_TILE_SET(tileset_intro, intro_tileset);
@@ -189,7 +186,7 @@ void show_title_screen()
 
 	sys_memcpy(font_buffer, font_upper_tile, 256);
 	sys_memcpy(font_color_buffer, font_upper_tile_color, 10);
-	sys_set_ascii_page3(PAGE_CODE);
+	sys_ascii_restore();
 
 	init_font(&font, font_buffer, font_color_buffer, 26, 1,
 		FONT_ALFA_UPPERCASE, 26, 1, 1);
