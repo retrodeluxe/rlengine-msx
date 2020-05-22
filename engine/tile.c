@@ -181,6 +181,7 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 	uint8_t tile = to->ts->pidx + to->idx;
 	uint8_t x,y;
 
+	// FIXME: this doesn't seem to be correct
 	if (to->ts->n_frames > 1)
 		tile += to->ts->frame_w * to->cur_anim_step * to->cur_dir;
 

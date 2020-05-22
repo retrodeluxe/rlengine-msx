@@ -438,7 +438,8 @@ void load_room(uint8_t room)
 			}
 			if (add_dpo) {
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
-				if (type == 0) {
+				if (type == 1) {
+					dpo->tob->cur_dir = 2;
 					dpo->tob->cur_anim_step = 1;
 				}
 				phys_set_colliding_tile_object(dpo,
