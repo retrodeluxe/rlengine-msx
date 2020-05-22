@@ -109,7 +109,7 @@ start:
 		// 	log_w("fps stall!\n");
 
 		if (game_state.death) {
-			if(--game_state.live_cnt == 8) {
+			if(--game_state.live_cnt == 0) {
 				show_game_over();
 				goto start;
 			}
