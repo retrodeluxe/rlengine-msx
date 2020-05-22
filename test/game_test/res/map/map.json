@@ -1580,7 +1580,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"11",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -1745,7 +1745,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"1",
+                     "action_id":"5",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -1950,7 +1950,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"3",
                      "type":"checkpoint"
                     },
                  "propertytypes":
@@ -2158,7 +2158,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"2",
                      "type":"checkpoint"
                     },
                  "propertytypes":
@@ -2483,7 +2483,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"1",
+                     "action_id":"2",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -2642,7 +2642,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"1",
+                     "action_id":"3",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -2711,7 +2711,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"1",
                      "type":"checkpoint"
                     },
                  "propertytypes":
@@ -3014,7 +3014,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"4",
                      "type":"checkpoint"
                     },
                  "propertytypes":
@@ -3035,7 +3035,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"6",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -3646,7 +3646,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"1",
+                     "action_id":"7",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -3839,7 +3839,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"12",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -4146,7 +4146,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"8",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -4576,7 +4576,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"5",
                      "type":"checkpoint"
                     },
                  "propertytypes":
@@ -4643,7 +4643,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"1",
+                     "action_id":"9",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -4958,7 +4958,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"6",
                      "type":"checkpoint"
                     },
                  "propertytypes":
@@ -5270,7 +5270,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"10",
                      "type":"cross"
                     },
                  "propertytypes":
@@ -5887,7 +5887,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"7",
                      "type":"checkpoint"
                     },
                  "propertytypes":
