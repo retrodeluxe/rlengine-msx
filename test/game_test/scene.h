@@ -46,7 +46,7 @@ enum map_tile_sets {
 };
 
 #define MAP_TILESET_4_POS     126
-#define MAP_TILESET_5_POS     157
+#define MAP_TILESET_5_POS     158
 
 enum spr_patterns_t {
 	PATRN_BAT,
