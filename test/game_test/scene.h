@@ -3,8 +3,8 @@
 
 #define NEXT_OBJECT(X)	sizeof(struct map_object_item) - sizeof(union map_object) + sizeof(X)
 
-// NOTE: whenever you add something here remember to  initialize the pattern,
-//       because free_patterns() assumes that is the case
+#define SCENE_MAX_DPO	31
+
 enum tile_sets_t {
 	TILE_SCROLL,
 	TILE_CHECKPOINT,

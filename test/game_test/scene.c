@@ -31,12 +31,15 @@ struct tile_set tileset_map[MAP_TILESET_MAX];
 struct tile_set tileset[TILE_MAX];
 
 /** scene primitives **/
-struct tile_object tileobject[31];
-struct spr_sprite_def enemy_sprites[31];
+struct tile_object tileobject[SCENE_MAX_DPO];
+struct spr_sprite_def enemy_sprites[SCENE_MAX_DPO];
 struct spr_sprite_def jean_sprite;
 
+// FIXME: there appears to be a buffer overrun in one of this structures,
+//        because rearranging them in the wrong order leads to a hang on start 
+
 /** scene display objects **/
-struct displ_object display_object[32];
+struct displ_object display_object[SCENE_MAX_DPO];
 
 /** main character display object **/
 struct displ_object dpo_jean;
@@ -124,6 +127,7 @@ void start_music(uint8_t room)
 			sys_memcpy(data_buffer, hell_song_pt3, hell_song_pt3_len);
 			break;
 		default:
+			break;
 	}
 	sys_ascii_restore();
 
@@ -133,8 +137,6 @@ void start_music(uint8_t room)
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
-	bool success;
-
 	sys_ascii_set(PAGE_DYNTILES);
 	tile_set_valloc(&tileset[tileidx]);
 
