@@ -27,18 +27,28 @@
 /** map tilesets **/
 struct tile_set tileset_map[MAP_TILESET_MAX];
 
+/** object tilesets **/
 struct tile_set tileset[TILE_MAX];
+
+/** scene primitives **/
 struct tile_object tileobject[31];
-struct tile_object score;
 struct spr_sprite_def enemy_sprites[31];
 struct spr_sprite_def jean_sprite;
+
+/** scene display objects **/
 struct displ_object display_object[32];
-struct displ_object dpo_arrow;
-struct displ_object dpo_bullet[2];
+
+/** main character display object **/
 struct displ_object dpo_jean;
+
+/** main display list **/
 struct list_head display_list;
-struct map_object_item *map_object;
+
+/** score panel primitives **/
+struct tile_object score;
 struct font big_digits;
+
+struct map_object_item *map_object;
 struct list_head *coll_elem;
 struct displ_object *coll_dpo;
 
@@ -553,7 +563,7 @@ void init_map_tilesets()
 	tile_init();
 
 	sys_ascii_set(PAGE_MAPTILES);
-	
+
 	INIT_TILE_SET(tileset_map[MAP_TILESET_1], maptiles1);
 	INIT_TILE_SET(tileset_map[MAP_TILESET_2], maptiles2);
 	INIT_TILE_SET(tileset_map[MAP_TILESET_3], maptiles3)
