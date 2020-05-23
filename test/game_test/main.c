@@ -24,6 +24,7 @@
 #include "logic.h"
 #include "banks.h"
 
+#include "gen/intro_map_defs.h"
 #include "gen/intro_tileset_ext.h"
 #include "gen/game_test_tiles_ext.h"
 #include "gen/map_defs.h"
@@ -60,9 +61,6 @@ uint8_t data_buffer2[2048];
 
 uint16_t reftick;
 bool fps_stall;
-extern const unsigned char intro_map_intro_w;
-extern const unsigned char intro_map_intro_h;
-extern const unsigned char intro_map_intro[];
 extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;
 
