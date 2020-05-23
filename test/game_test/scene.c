@@ -165,7 +165,6 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	define_sprite(pattidx);
 	spr_valloc_pattern_set(pattidx);
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
-	INIT_LIST_HEAD(&dpo->animator_list);
 
 	sys_ascii_set(PAGE_MAPOBJECTS);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
@@ -191,7 +190,6 @@ void add_jean()
 	spr_valloc_pattern_set(PATRN_JEAN);
 
 	spr_init_sprite(&jean_sprite, PATRN_JEAN);
-	INIT_LIST_HEAD(&dpo_jean.animator_list);
 
 	dpo_jean.xpos = game_state.jean_x;
 	dpo_jean.ypos = game_state.jean_y;
