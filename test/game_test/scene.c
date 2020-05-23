@@ -48,14 +48,21 @@ struct list_head display_list;
 struct tile_object score;
 struct font big_digits;
 
+/** current map object **/
 struct map_object_item *map_object;
+
+/** iterators to check for sprite collisions **/
 struct list_head *coll_elem;
 struct displ_object *coll_dpo;
 
+/** tile object and sprite counters **/
 uint8_t spr_ct, tob_ct;
+
+/** current room object data **/
 uint8_t *room_objs;
 
 // sprite definitions data
+// XXX: move elsewhere
 const uint8_t two_step_state[] = {2,2};
 const uint8_t single_step_state[] = {1,1};
 const uint8_t three_step_state[] = {3,3};
@@ -210,22 +217,31 @@ void add_jean()
 	add_animator(&dpo_jean, ANIM_JEAN);
 }
 
+inline bool jean_check_collision(struct displ_object *dpo)
+{
+	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
+		if (dpo->xpos < (dpo_jean.xpos + 16) &&
+			(dpo->xpos + 16) > dpo_jean.xpos) {
+			if (dpo->ypos < (dpo_jean.ypos + 32) &&
+				(dpo->ypos + 16) > dpo_jean.ypos) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void jean_collision_handler()
 {
 	if (dpo_jean.state != STATE_COLLISION
 		&& dpo_jean.state != STATE_DEATH) {
 		/** calculate box intersection on all active sprites **/
 		list_for_each(coll_elem, &display_list) {
-			coll_dpo = list_entry(coll_elem, struct displ_object, list);
-			if (coll_dpo->type == DISP_OBJECT_SPRITE && coll_dpo->check_collision) {
-				if (coll_dpo->xpos < (dpo_jean.xpos + 16) &&
-					(coll_dpo->xpos + 16) > dpo_jean.xpos) {
-					if (coll_dpo->ypos < (dpo_jean.ypos + 32) &&
-						(coll_dpo->ypos + 16) > dpo_jean.ypos) {
-						dpo_jean.state = STATE_COLLISION;
-						return;
-					}
-				}
+			coll_dpo = list_entry(coll_elem,
+				struct displ_object, list);
+			if (jean_check_collision(coll_dpo)) {
+				 dpo_jean.state = STATE_COLLISION;
+				 return;
 			}
 		}
 	}
