@@ -82,12 +82,6 @@ const uint8_t spider_state[]= {2};
 const uint8_t archer_state[]= {2,2};
 const uint8_t jean_state[] = {2,1,2,2,1,2,2};
 
-uint8_t map_buffer[180];
-uint8_t map_buffer_dict[512];
-extern uint8_t font_buffer[128];
-extern uint8_t font_color_buffer[128];
-
-
 void define_sprite(uint8_t pattidx);
 
 void play_room_music()
@@ -305,15 +299,17 @@ void load_room(uint8_t room)
 	sys_irq_disable();
 	sys_set_ascii_page3(PAGE_MAP);
 
-	sys_memcpy(map_buffer_dict,map_map_segment_dict[room],512);
-	sys_memcpy(map_buffer,map_map_segment[room],176);
+	sys_memcpy(data_buffer,map_map_segment_dict[room],512);
+	sys_memcpy(data_buffer2,map_map_segment[room],176);
 
 	sys_set_ascii_page3(PAGE_CODE);
 	sys_irq_enable();
 
-	map_inflate(map_buffer_dict, map_buffer, scr_tile_buffer, 192, 32);
+	map_inflate(data_buffer, data_buffer2, scr_tile_buffer, 192, 32);
 
 	show_score_panel();
+
+	init_sfx();
 
 	phys_init();
 	init_tile_collisions();
@@ -698,19 +694,22 @@ void init_resources()
 
 	/** copy numeric font to vram **/
 	sys_set_ascii_page3(PAGE_INTRO);
-	sys_memcpy(font_buffer, font_big_digits_tile, 256);
-	sys_memcpy(font_color_buffer, font_big_digits_tile_color, 256);
+	sys_memcpy(data_buffer, font_big_digits_tile, 256);
+	sys_memcpy(data_buffer2, font_big_digits_tile_color, 256);
 	sys_set_ascii_page3(PAGE_CODE);
 
-	init_font(&big_digits, font_buffer, font_color_buffer, 10, 2,
+	init_font(&big_digits, data_buffer, data_buffer2, 10, 2,
 		FONT_NUMERIC, 10, 1, 2);
 
 	font_to_vram_bank(&big_digits, BANK2, 224);
+}
 
-	/** copy over music to ram **/
+void init_sfx()
+{
+	/** copy over sfx to ram **/
 	sys_set_ascii_page3(PAGE_MUSIC);
-	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
-	sfx_setup(sfx_buffer);
+	sys_memcpy(data_buffer2, abbaye_sfx_afb, abbaye_sfx_afb_len);
+	sfx_setup(data_buffer2);
 	sys_set_ascii_page3(PAGE_CODE);
 	sys_irq_enable();
 }

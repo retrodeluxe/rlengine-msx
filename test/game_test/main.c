@@ -54,12 +54,9 @@ uint8_t trigger;
 /** screen nametable buffer **/
 uint8_t scr_tile_buffer[768];
 
-/** ROM transfer buffer **/
+/** ROM transfer buffers **/
 uint8_t data_buffer[2100];
-
-uint8_t font_buffer[256];
-uint8_t font_color_buffer[256];
-uint8_t sfx_buffer[432];
+uint8_t data_buffer2[2048];
 
 uint16_t reftick;
 bool fps_stall;
@@ -192,11 +189,11 @@ void show_title_screen()
 	INIT_TILE_SET(tileset_intro, intro_tileset);
 	tile_set_to_vram(&tileset_intro, 1);
 
-	sys_memcpy(font_buffer, font_upper_tile, 256);
-	sys_memcpy(font_color_buffer, font_upper_tile_color, 10);
+	sys_memcpy(data_buffer, font_upper_tile, 256);
+	sys_memcpy(data_buffer2, font_upper_tile_color, 10);
 	sys_ascii_restore();
 
-	init_font(&font, font_buffer, font_color_buffer, 26, 1,
+	init_font(&font, data_buffer, data_buffer2, 26, 1,
 		FONT_ALFA_UPPERCASE, 26, 1, 1);
 	font_to_vram_bank(&font, BANK2, 1);
 
