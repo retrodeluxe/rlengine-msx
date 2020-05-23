@@ -60,7 +60,6 @@ uint8_t data_buffer2[2048];
 
 uint16_t reftick;
 bool fps_stall;
-extern void sys_set_ascii_page3(char page);
 extern const unsigned char intro_map_intro_w;
 extern const unsigned char intro_map_intro_h;
 extern const unsigned char intro_map_intro[];
@@ -197,19 +196,19 @@ void show_title_screen()
 		FONT_ALFA_UPPERCASE, 26, 1, 1);
 	font_to_vram_bank(&font, BANK2, 1);
 
-	sys_set_ascii_page3(PAGE_INTRO);
+	sys_ascii_set(PAGE_INTRO);
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
-	sys_set_ascii_page3(PAGE_CODE);
+	sys_ascii_restore();
 
 	font_vprint(&font, 7, 22, "PRESS SPACE KEY~");
 
 	vdp_screen_enable();
 
 	/** title music **/
-	sys_set_ascii_page3(PAGE_MUSIC);
+	sys_ascii_set(PAGE_MUSIC);
 	sys_memcpy(data_buffer, title_song_pt3, title_song_pt3_len);
-	sys_set_ascii_page3(PAGE_CODE);
+	sys_ascii_restore();
 
 	pt3_init_notes(NT);
 	pt3_init(data_buffer, 0);
