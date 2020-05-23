@@ -23,6 +23,7 @@
 #include "gen/map_defs.h"
 
 #include <stdlib.h>
+
 struct tile_set tileset_map1;
 struct tile_set tileset_map2;
 struct tile_set tileset_map3;
@@ -43,32 +44,11 @@ struct displ_object dpo_jean;
 struct list_head display_list;
 struct map_object_item *map_object;
 struct font big_digits;
+struct list_head *coll_elem;
+struct displ_object *coll_dpo;
 
 uint8_t spr_ct, tob_ct;
 uint8_t *room_objs;
-
-extern unsigned char *map_map_segment_dict[25];
-extern unsigned char *map_map_segment[25];
-extern struct list_head *elem;
-extern struct displ_object *dpo;
-struct list_head *coll_elem;
-struct displ_object *coll_dpo;
-extern unsigned char *map_object_layer[25];
-extern void sys_set_ascii_page3(char page);
-extern const unsigned char huntloop_song_pt3[];
-extern const unsigned char church_song_pt3[];
-extern const unsigned char prayerofhope_song_pt3[];
-extern const unsigned int huntloop_song_pt3_len;
-extern const unsigned int church_song_pt3_len;
-extern const unsigned int prayerofhope_song_pt3_len;
-extern const unsigned int hell_song_pt3[];
-extern const unsigned int hell_song_pt3_len;
-extern const unsigned int cave_song_pt3[];
-extern const unsigned int cave_song_pt3_len;
-extern const unsigned int evilfight_song_pt3[];
-extern const unsigned int evilfight_song_pt3_len;
-extern const char abbaye_sfx_afb[];
-extern const unsigned int abbaye_sfx_afb_len;
 
 // sprite definitions data
 const uint8_t two_step_state[] = {2,2};
@@ -99,8 +79,7 @@ void stop_music()
 
 void start_music(uint8_t room)
 {
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_MUSIC);
+	sys_ascii_set(PAGE_MUSIC);
 
 	switch (room) {
 		case ROOM_FOREST:
@@ -134,8 +113,7 @@ void start_music(uint8_t room)
 			break;
 		default:
 	}
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 
 	pt3_init(data_buffer, 1);
 	sys_irq_register(play_room_music);
@@ -145,16 +123,10 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 {
 	bool success;
 
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_DYNTILES);
-
+	sys_ascii_set(PAGE_DYNTILES);
 	tile_set_valloc(&tileset[tileidx]);
-	sys_set_ascii_page3(PAGE_MAPOBJECTS);
 
-	//sys_ascii_restore();
-	//log_e("tileidx %d, allocated? %d at pos %d\n", tileidx, tileset[tileidx].allocated,tileset[tileidx].pidx);
-	//sys_ascii_set(PAGE_MAPOBJECTS);
-
+	sys_ascii_set(PAGE_MAPOBJECTS);
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
 	tileobject[objidx].cur_dir = 1;
@@ -169,8 +141,7 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	dpo->visible = true;
 	dpo->state = 0;
 
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
@@ -196,9 +167,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
 	INIT_LIST_HEAD(&dpo->animator_list);
 
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_MAPOBJECTS);
-
+	sys_ascii_set(PAGE_MAPOBJECTS);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
@@ -208,8 +177,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	dpo->collision_state = 0;
 	dpo->check_collision = true;
 
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
@@ -296,14 +264,10 @@ void load_room(uint8_t room)
 	clean_state();
 	vdp_screen_disable();
 
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_MAP);
-
+	sys_ascii_set(PAGE_MAP);
 	sys_memcpy(data_buffer,map_map_segment_dict[room],512);
 	sys_memcpy(data_buffer2,map_map_segment[room],176);
-
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 
 	map_inflate(data_buffer, data_buffer2, scr_tile_buffer, 192, 32);
 
@@ -316,16 +280,14 @@ void load_room(uint8_t room)
 
 	INIT_LIST_HEAD(&display_list);
 
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_MAPOBJECTS);
+	sys_ascii_set(PAGE_MAPOBJECTS);
 
 	//log_e("room : %d\n",room);
 
 	type = 0;
 	room_objs = map_object_layer[room];
 	for (dpo = display_object, i = 0; type != 255 ; i++, dpo++) {
-		sys_irq_disable();
-		sys_set_ascii_page3(PAGE_MAPOBJECTS);
+		sys_ascii_set(PAGE_MAPOBJECTS);
 		map_object = (struct map_object_item *) room_objs;
 		type = map_object->type;
 		if (type == ACTIONITEM) {
@@ -560,8 +522,7 @@ void load_room(uint8_t room)
 		}
 	}
 
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 
 	add_jean();
 	phys_set_sprite_collision_handler(jean_collision_handler);
@@ -597,9 +558,8 @@ void init_tile_collisions()
 void init_map_tilesets()
 {
 	tile_init();
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_MAPTILES);
 
+	sys_ascii_set(PAGE_MAPTILES);
 	INIT_TILE_SET(tileset_map1, maptiles1);
 	INIT_TILE_SET(tileset_map2, maptiles2);
 	INIT_TILE_SET(tileset_map3, maptiles3)
@@ -612,22 +572,18 @@ void init_map_tilesets()
 	tile_set_to_vram(&tileset_map4, 126);
 	tile_set_to_vram(&tileset_map5, 126 + 32);
 
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 }
 
 void show_score_panel()
 {
 	uint8_t i;
 	char snum[3];
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_DYNTILES);
 
+	sys_ascii_set(PAGE_DYNTILES);
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
 	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
-
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 
 	score.y = 192 - 16;
 	score.x = 0;
@@ -664,8 +620,7 @@ void init_resources()
 	spr_init();
 
 	/** initialize dynamic tile sets **/
-	sys_irq_disable();
-	sys_set_ascii_page3(PAGE_DYNTILES);
+	sys_ascii_set(PAGE_DYNTILES);
 
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 2, 1);
@@ -693,10 +648,10 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
 
 	/** copy numeric font to vram **/
-	sys_set_ascii_page3(PAGE_INTRO);
+	sys_ascii_set(PAGE_INTRO);
 	sys_memcpy(data_buffer, font_big_digits_tile, 256);
 	sys_memcpy(data_buffer2, font_big_digits_tile_color, 256);
-	sys_set_ascii_page3(PAGE_CODE);
+	sys_ascii_restore();
 
 	init_font(&big_digits, data_buffer, data_buffer2, 10, 2,
 		FONT_NUMERIC, 10, 1, 2);
@@ -707,11 +662,10 @@ void init_resources()
 void init_sfx()
 {
 	/** copy over sfx to ram **/
-	sys_set_ascii_page3(PAGE_MUSIC);
+	sys_ascii_set(PAGE_MUSIC);
 	sys_memcpy(data_buffer2, abbaye_sfx_afb, abbaye_sfx_afb_len);
 	sfx_setup(data_buffer2);
-	sys_set_ascii_page3(PAGE_CODE);
-	sys_irq_enable();
+	sys_ascii_restore();
 }
 
 void define_sprite(uint8_t pattidx)

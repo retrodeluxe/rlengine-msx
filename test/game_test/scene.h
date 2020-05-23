@@ -99,12 +99,32 @@ enum rooms_t {
 extern struct list_head display_list;
 extern struct spr_sprite_def jean_sprite;
 extern struct displ_object dpo_jean;
+extern struct list_head *elem;
+extern struct displ_object *dpo;
 
 extern uint8_t scr_tile_buffer[768];
 extern uint8_t data_buffer[2100];
 extern uint8_t data_buffer2[2048];
 extern uint8_t stick;
 extern uint8_t trigger;
+extern unsigned char *map_map_segment_dict[25];
+extern unsigned char *map_map_segment[25];
+extern unsigned char *map_object_layer[25];
+
+extern const unsigned char huntloop_song_pt3[];
+extern const unsigned char church_song_pt3[];
+extern const unsigned char prayerofhope_song_pt3[];
+extern const unsigned int huntloop_song_pt3_len;
+extern const unsigned int church_song_pt3_len;
+extern const unsigned int prayerofhope_song_pt3_len;
+extern const unsigned int hell_song_pt3[];
+extern const unsigned int hell_song_pt3_len;
+extern const unsigned int cave_song_pt3[];
+extern const unsigned int cave_song_pt3_len;
+extern const unsigned int evilfight_song_pt3[];
+extern const unsigned int evilfight_song_pt3_len;
+extern const char abbaye_sfx_afb[];
+extern const unsigned int abbaye_sfx_afb_len;
 
 extern void remove_tileobject(struct displ_object *dpo);
 extern void update_tileobject(struct displ_object *dpo);
