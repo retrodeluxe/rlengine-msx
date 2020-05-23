@@ -24,14 +24,9 @@
 
 #include <stdlib.h>
 
-struct tile_set tileset_map1;
-struct tile_set tileset_map2;
-struct tile_set tileset_map3;
-struct tile_set tileset_map3b;
-struct tile_set tileset_map4;
-struct tile_set tileset_map5;
-struct tile_set tileset_map6;
-struct tile_set tileset_map7;
+/** map tilesets **/
+struct tile_set tileset_map[MAP_TILESET_MAX];
+
 struct tile_set tileset[TILE_MAX];
 struct tile_object tileobject[31];
 struct tile_object score;
@@ -558,17 +553,18 @@ void init_map_tilesets()
 	tile_init();
 
 	sys_ascii_set(PAGE_MAPTILES);
-	INIT_TILE_SET(tileset_map1, maptiles1);
-	INIT_TILE_SET(tileset_map2, maptiles2);
-	INIT_TILE_SET(tileset_map3, maptiles3)
-	INIT_TILE_SET(tileset_map4, maptiles4);
-	INIT_TILE_SET(tileset_map5, maptiles5);
+	
+	INIT_TILE_SET(tileset_map[MAP_TILESET_1], maptiles1);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_2], maptiles2);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_3], maptiles3)
+	INIT_TILE_SET(tileset_map[MAP_TILESET_4], maptiles4);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_5], maptiles5);
 
-	tile_set_valloc(&tileset_map1);
-	tile_set_valloc(&tileset_map2);
-	tile_set_valloc(&tileset_map3);
-	tile_set_to_vram(&tileset_map4, 126);
-	tile_set_to_vram(&tileset_map5, 126 + 32);
+	tile_set_valloc(&tileset_map[MAP_TILESET_1]);
+	tile_set_valloc(&tileset_map[MAP_TILESET_2]);
+	tile_set_valloc(&tileset_map[MAP_TILESET_3]);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_4], MAP_TILESET_4_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_5], MAP_TILESET_5_POS);
 
 	sys_ascii_restore();
 }

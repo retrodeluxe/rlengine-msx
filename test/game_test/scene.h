@@ -36,6 +36,18 @@ enum tile_sets_t {
 	TILE_MAX,
 };
 
+enum map_tile_sets {
+      MAP_TILESET_1,
+      MAP_TILESET_2,
+      MAP_TILESET_3,
+      MAP_TILESET_4,
+      MAP_TILESET_5,
+      MAP_TILESET_MAX,
+};
+
+#define MAP_TILESET_4_POS     126
+#define MAP_TILESET_5_POS     157
+
 enum spr_patterns_t {
 	PATRN_BAT,
 	PATRN_RAT,
