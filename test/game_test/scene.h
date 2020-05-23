@@ -101,7 +101,7 @@ extern struct spr_sprite_def jean_sprite;
 extern struct displ_object dpo_jean;
 
 extern uint8_t scr_tile_buffer[768];
-extern uint8_t music_buffer[2100];
+extern uint8_t data_buffer[2100];
 extern uint8_t sfx_buffer[432];
 extern uint8_t stick;
 extern uint8_t trigger;

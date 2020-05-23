@@ -111,7 +111,7 @@ void start_music(uint8_t room)
 	switch (room) {
 		case ROOM_FOREST:
 		case ROOM_GRAVEYARD:
-			sys_memcpy(music_buffer, huntloop_song_pt3, huntloop_song_pt3_len);
+			sys_memcpy(data_buffer, huntloop_song_pt3, huntloop_song_pt3_len);
 			break;
 		case ROOM_CHURCH_ENTRANCE:
 		case ROOM_CHURCH_ALTAR:
@@ -120,10 +120,10 @@ void start_music(uint8_t room)
 		case ROOM_CATACOMBS:
 		case ROOM_CATACOMBS_FLIES:
 		case ROOM_CATACOMBS_WHEEL:
-			sys_memcpy(music_buffer, church_song_pt3, church_song_pt3_len);
+			sys_memcpy(data_buffer, church_song_pt3, church_song_pt3_len);
 			break;
 		case ROOM_PRAYER_OF_HOPE:
-			sys_memcpy(music_buffer, prayerofhope_song_pt3, prayerofhope_song_pt3_len);
+			sys_memcpy(data_buffer, prayerofhope_song_pt3, prayerofhope_song_pt3_len);
 			break;
 		case ROOM_CAVE_LAKE:
 		case ROOM_CAVE_DRAGON:
@@ -131,19 +131,19 @@ void start_music(uint8_t room)
 		case ROOM_CAVE_TUNNEL:
 		case ROOM_HIDDEN_GARDEN:
 		case ROOM_HIDDEN_RIVER:
-			sys_memcpy(music_buffer, cave_song_pt3, cave_song_pt3_len);
+			sys_memcpy(data_buffer, cave_song_pt3, cave_song_pt3_len);
 			break;
 		case ROOM_EVIL_CHURCH:
 		case ROOM_EVIL_CHURCH_2:
 		case ROOM_EVIL_CHURCH_3:
-			sys_memcpy(music_buffer, hell_song_pt3, hell_song_pt3_len);
+			sys_memcpy(data_buffer, hell_song_pt3, hell_song_pt3_len);
 			break;
 		default:
 	}
 	sys_set_ascii_page3(PAGE_CODE);
 	sys_irq_enable();
 
-	pt3_init(music_buffer, 1);
+	pt3_init(data_buffer, 1);
 	sys_irq_register(play_room_music);
 }
 
