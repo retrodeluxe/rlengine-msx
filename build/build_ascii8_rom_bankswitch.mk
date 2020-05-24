@@ -23,7 +23,7 @@ endef
 define build-ascii8-page
 $$(BUILT_LOCAL_PAGE_$(1)_SRC_FILES): $$(LOCAL_BUILD_OUT_BIN)/%.rel: $$(LOCAL_BUILD_SRC)/%.c
 	@mkdir -p $$(LOCAL_BUILD_OUT_BIN)
-	$$(CROSS_CC) $$(ENGINE_CFLAGS) -bo $(1) -c -o $$@ $$^
+	$$(CROSS_CC) $$(ENGINE_CFLAGS_BANKED) -bo $(1) -c -o $$@ $$^
 endef
 
 define build-rom-page
@@ -42,7 +42,7 @@ define build-rom-ihx-page
 $$(BUILT_ROM_IHX_PAGE_$(1)): $$(BUILT_LOCAL_PAGE_$(1)_SRC_FILES)
 	@echo "-mwxuy" > $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-i $${@}" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
-	@echo "-b _CODE_$(1)=0xA000" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
+	@echo "-b _CODE_$(1)=0x$(1)A000" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-l z80" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo $$^ | tr ' ' '\n' >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-e" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
@@ -63,7 +63,7 @@ BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_S
 
 $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	@mkdir -p $(LOCAL_BUILD_OUT_BIN)
-	$(CROSS_CC) $(ENGINE_CFLAGS) -c -o $@ $^
+	$(CROSS_CC) $(ENGINE_CFLAGS_BANKED) -c -o $@ $^
 
 ## Everything needs to be linked together; all mapped pages overlap over 0xA000 - 0xBFFF
 ##
@@ -72,14 +72,15 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LO
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _CODE=0x406C" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(foreach page,$(ROM_PAGES),echo "-b _CODE_${page}=0xA000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
+	$(foreach page,$(ROM_PAGES),echo "-b _CODE_${page}=0x${page}A000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
 	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	$(CROSS_LD) -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+
+#@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
