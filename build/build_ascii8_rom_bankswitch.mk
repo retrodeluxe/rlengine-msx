@@ -38,12 +38,15 @@ $$(BUILT_ROM_BIN_PAGE_$(1)): $$(BUILT_ROM_IHX_PAGE_$(1)) | $$(HEX2BIN)
 	cd $$(LOCAL_BUILD_OUT_BIN) && $$(HEX2BIN) -e bin $$(notdir $$^)
 endef
 
+# we may have DATA and CODE pages, that are switched at 8000 and A000
+
 define build-rom-ihx-page
 $$(BUILT_ROM_IHX_PAGE_$(1)): $$(BUILT_LOCAL_PAGE_$(1)_SRC_FILES)
 	@echo "-mwxuy" > $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-i $${@}" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
-	@echo "-b _CODE_$(1)=0x$(1)A000" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
+	@echo "-b _CODE_$(1)=0x$(1)8000" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-l z80" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
+	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo $$^ | tr ' ' '\n' >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-e" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	$(CROSS_LD) -k $$(SDCC_LIB) -f $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
@@ -72,15 +75,14 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LO
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _CODE=0x406C" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(foreach page,$(ROM_PAGES),echo "-b _CODE_${page}=0x${page}A000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
-	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	$(foreach page,$(ROM_PAGES),echo "-b _CODE_${page}=0x${page}8000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
+	@echo "-b _HOME=0x6000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	$(CROSS_LD) -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-
-#@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)

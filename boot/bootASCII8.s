@@ -1,4 +1,4 @@
-		.globl _sys_set_ascii_page3
+		.globl __sdcc_banked_call
 
 		.area _BOOT
 
@@ -18,8 +18,9 @@ ASCII8_PAGE3	.equ 0x7800
 		; jumped here; we have the rom bios in bank 0, ram in bank 3, and rom
 		; in bank 1 (this code).
 
-		; utility function to swap ASCII8 rom page in 0xA000-0xBFFF
-_sys_set_ascii_page3:
+		;
+__sdcc_banked_call:
+		; XXX: todo
 		push 	ix
 		ld	ix,#0
 		add	ix, sp
