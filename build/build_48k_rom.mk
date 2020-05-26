@@ -31,7 +31,7 @@ $(BUILT_LOCAL_BANKED_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC
 $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_48K)
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	@echo "-b _CODE_1=0x10000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-b _CODE_PAGE_1=0x10000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _CODE=0x40D8" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk

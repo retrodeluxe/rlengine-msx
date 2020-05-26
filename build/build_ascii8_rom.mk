@@ -42,7 +42,7 @@ define build-rom-ihx-page
 $$(BUILT_ROM_IHX_PAGE_$(1)): $$(BUILT_LOCAL_PAGE_$(1)_SRC_FILES)
 	@echo "-mwxuy" > $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-i $${@}" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
-	@echo "-b _CODE_$(1)=0xA000" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
+	@echo "-b _CODE_PAGE_$(1)=0xA000" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-l z80" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo $$^ | tr ' ' '\n' >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk
 	@echo "-e" >> $$(LOCAL_BUILD_OUT_BIN)/tmp.lnk

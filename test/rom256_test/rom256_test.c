@@ -14,8 +14,6 @@
 extern const char test[];
 extern const char test2[];
 
-extern void sys_set_ascii_page3(char page);
-
 void main()
 {
 
@@ -25,9 +23,9 @@ void main()
 	vdp_clear_grp1(0);
 
 	vdp_print_grp1(10, 10, "Hello MegaROM");
-	sys_set_ascii_page3(4);
+	sys_ascii_set(4);
 	vdp_print_grp1(10, 11, test);
-	sys_set_ascii_page3(5);
+	sys_ascii_set(5);
 	vdp_print_grp1(10, 12, test2);
 
 	do {
