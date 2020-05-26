@@ -65,6 +65,8 @@ __sdcc_banked_ret:
 		; The following code sets bank 2 to the same slot as bank 1 and continues
 		; execution.
 bootstrap:
+		ld	a,#2
+		ld	(cur_page),a
 		ld	hl,#0xf000
 		ld	(banked_sp),hl
 		ld 	sp,#0xf379
