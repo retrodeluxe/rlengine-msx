@@ -18,20 +18,54 @@ ASCII8_PAGE3	.equ 0x7800
 		; jumped here; we have the rom bios in bank 0, ram in bank 3, and rom
 		; in bank 1 (this code).
 
+		; Support for nested banked calls
 		;
 __sdcc_banked_call:
-		; XXX: todo
+		; save caller and current bank
+		pop 	ix
+		ld	a,(cur_page)
+		ld	iy,#0
+		add	iy,sp
+		ld 	sp,(banked_sp)
 		push 	ix
-		ld	ix,#0
-		add	ix, sp
-		ld      a,4(ix)
+		push 	af
+		ld 	(banked_sp), sp
+		ld 	sp,iy
+
+		; push return adrress
+		ld	hl, #__sdcc_banked_ret
+		push 	hl
+
+		; read jump address and target page
+		ld	l,(ix)
+		ld 	h,1(ix)
+		ld	a,2(ix)
+		ld 	(cur_page),a
+
+		; switch bank and perform call
 		ld 	(ASCII8_PAGE3),a
-		pop     ix
+		jp	(hl)
+__sdcc_banked_ret:
+		ld	iy,#0
+		add	iy,sp
+		ld 	sp, (banked_sp)
+		pop 	af
+		pop 	ix
+		ld 	(banked_sp), sp
+		ld 	sp,iy
+
+		; restore bank
+		ld 	(ASCII8_PAGE3),a
+		ld 	(cur_page),a
+
+		push	ix
 		ret
 
 		; The following code sets bank 2 to the same slot as bank 1 and continues
 		; execution.
 bootstrap:
+		ld	hl,#0xf000
+		ld	(banked_sp),hl
 		ld 	sp,#0xf379
 		ld	a,#0xc9
 		ld 	(nopret),a
@@ -76,6 +110,12 @@ done:
 		ld 	a,#3
 		ld 	(ASCII8_PAGE3),a
 
+		; initialize banked call stack
+
+
+
 		.area _DATA
 romslot:	.ds 1
 biosslot:	.ds 1
+cur_page:	.ds 1
+banked_sp:	.ds 2

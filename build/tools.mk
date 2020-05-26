@@ -6,6 +6,7 @@ export HEX2BIN := $(BUILD_OUT_TOOLS)/hex2bin
 export TGA2H := $(BUILD_OUT_TOOLS)/tga2header
 export TMU2H := $(BUILD_OUT_TOOLS)/tmu2header
 export XXD   := $(BUILD_OUT_TOOLS)/xxd
+export HEX2ROM := $(BUILD_OUT_TOOLS)/hex2rom
 
 export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD)
 
@@ -21,4 +22,7 @@ $(TMU2H): $(TOOLS_ROOT)/tmu2header.c
 	$(hide) $(HOSTCC) $^ -o $@
 
 $(XXD): $(TOOLS_ROOT)/xxd.c
+	$(hide) $(HOSTCC) $^ -o $@
+
+$(HEX2ROM): $(TOOLS_ROOT)/hex2rom.c
 	$(hide) $(HOSTCC) $^ -o $@
