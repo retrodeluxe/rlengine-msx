@@ -51,15 +51,17 @@ __sdcc_banked_ret:
 		add	iy,sp
 		ld 	sp, (banked_sp)
 		pop 	af
-		pop 	ix
+		pop 	hl
 		ld 	(banked_sp), sp
 		ld 	sp,iy
 
 		; restore bank
 		ld 	(ASCII8_PAGE2),a
 		ld 	(cur_page),a
-
-		push	ix
+		inc 	hl
+		inc	hl
+		inc	hl
+		push	hl
 		ret
 
 		; The following code sets bank 2 to the same slot as bank 1 and continues
