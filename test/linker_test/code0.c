@@ -1,6 +1,6 @@
 //#include "gen/rom256_test.h"
 
-#pragma bank 1
+#pragma CODE_PAGE 2
 
 int function_in_code0() __banked
 {
@@ -11,5 +11,3 @@ int function_in_code0() __banked
 
 	return a;
 }
-
-const char caca0[] = "test";

@@ -72,7 +72,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LO
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _CODE=0x406C" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(foreach page,$(ROM_PAGES),echo "-b _CODE_${page}=0xA000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
+	$(foreach page,$(ROM_PAGES),echo "-b _CODE_PAGE_${page}=0x${page}A000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
 	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
