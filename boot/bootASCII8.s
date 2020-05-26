@@ -18,7 +18,8 @@ ASCII8_PAGE3	.equ 0x7800
 		; jumped here; we have the rom bios in bank 0, ram in bank 3, and rom
 		; in bank 1 (this code).
 
-		; Support for nested banked calls
+		; Support for nested banked calls on ASCII8_PAGE3
+		;   0x8000-0x9FFF
 		;
 __sdcc_banked_call:
 		; save caller and current bank
@@ -43,7 +44,7 @@ __sdcc_banked_call:
 		ld 	(cur_page),a
 
 		; switch bank and perform call
-		ld 	(ASCII8_PAGE3),a
+		ld 	(ASCII8_PAGE2),a
 		jp	(hl)
 __sdcc_banked_ret:
 		ld	iy,#0
@@ -55,7 +56,7 @@ __sdcc_banked_ret:
 		ld 	sp,iy
 
 		; restore bank
-		ld 	(ASCII8_PAGE3),a
+		ld 	(ASCII8_PAGE2),a
 		ld 	(cur_page),a
 
 		push	ix

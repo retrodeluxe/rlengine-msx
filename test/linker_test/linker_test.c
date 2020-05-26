@@ -22,7 +22,7 @@ void something_else() __nonbanked
 
 void something_else2() __nonbanked
 {
-	vdp_print_grp1(10, 14, "something else 2");
+	vdp_print_grp1(10, 16, "something more");
 }
 
 
@@ -35,9 +35,9 @@ void main()
 
 	vdp_print_grp1(10, 10, "Hello MegaROM");
 
-	//function_in_code0();
+	function_in_code0();
 
-	//function_in_code1();
+	function_in_code1();
 
 	something_else2();
 
