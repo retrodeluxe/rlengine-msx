@@ -24,6 +24,8 @@
 
 #include <stdlib.h>
 
+#pragma CODE_PAGE 4
+
 /** map tilesets **/
 struct tile_set tileset_map[MAP_TILESET_MAX];
 
@@ -36,7 +38,7 @@ struct spr_sprite_def enemy_sprites[SCENE_MAX_DPO];
 struct spr_sprite_def jean_sprite;
 
 // FIXME: there appears to be a buffer overrun in one of this structures,
-//        because rearranging them in the wrong order leads to a hang on start 
+//        because rearranging them in the wrong order leads to a hang on start
 
 /** scene display objects **/
 struct displ_object display_object[SCENE_MAX_DPO];
@@ -64,22 +66,21 @@ uint8_t spr_ct, tob_ct;
 /** current room object data **/
 uint8_t *room_objs;
 
-// sprite definitions data
-// XXX: move elsewhere
-const uint8_t two_step_state[] = {2,2};
-const uint8_t single_step_state[] = {1,1};
-const uint8_t three_step_state[] = {3,3};
-const uint8_t bullet_state[] = {1,1};
-const uint8_t bat_state[] = {2};
-const uint8_t waterdrop_state[] = {3};
-const uint8_t single_four_state[] = {4};
-const uint8_t spider_state[]= {2};
-const uint8_t archer_state[]= {2,2};
-const uint8_t jean_state[] = {2,1,2,2,1,2,2};
+/** sprite definition data */
+extern const uint8_t two_step_state[];
+extern const uint8_t single_step_state[];
+extern const uint8_t three_step_state[];
+extern const uint8_t bullet_state[];
+extern const uint8_t bat_state[];
+extern const uint8_t waterdrop_state[];
+extern const uint8_t single_four_state[];
+extern const uint8_t spider_state[];
+extern const uint8_t archer_state[];
+extern const uint8_t jean_state[];
 
 void define_sprite(uint8_t pattidx);
 
-void play_room_music()
+void play_room_music() __nonbanked
 {
 	pt3_decode();
 	sfx_play();
@@ -219,7 +220,7 @@ void add_jean()
 	add_animator(&dpo_jean, ANIM_JEAN);
 }
 
-inline bool jean_check_collision(struct displ_object *dpo)
+inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
 		if (dpo->xpos < (dpo_jean.xpos + 16) &&
@@ -233,7 +234,7 @@ inline bool jean_check_collision(struct displ_object *dpo)
 	return false;
 }
 
-void jean_collision_handler()
+void jean_collision_handler() __nonbanked
 {
 	if (dpo_jean.state != STATE_COLLISION
 		&& dpo_jean.state != STATE_DEATH) {

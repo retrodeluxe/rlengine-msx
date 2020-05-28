@@ -442,15 +442,17 @@ int main (int argc, char *argv[])
 			  unsigned int page;
 			  unsigned int page_offset;
 
-			  if (Phys_Addr > 0x7FFF) {
+			  if (Phys_Addr > 0xFFFF) {
 
 				  page = (Phys_Addr & 0xFF0000) >> 16;
 				  page_offset = Phys_Addr & 0x001FFF;
 
+				  fprintf(stderr,"address %x --> page: %d offset %x\n", Phys_Addr, page, page_offset);
+
 				  Phys_Addr = 0x4000 + page * 0x2000 + page_offset;
 
-				  // keep track of a list of pages to compare....
-				  fprintf(stderr,"Detected ROM PAGE %d\n", page);
+			  } else {
+				  fprintf(stderr,"address %x\n", Phys_Addr);
 			  }
 
 			  /* Same for the top address. */

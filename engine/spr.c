@@ -23,6 +23,8 @@
 #include "sprite.h"
 #include "log.h"
 
+#pragma CODE_PAGE 2
+
 // vram sprite attribute allocation table
 uint8_t spr_attr_valloc[vdp_hw_max_sprites];
 
@@ -49,7 +51,8 @@ void spr_init(void)
 
 }
 
-void spr_clear(void) {
+void spr_clear(void)
+{
 	uint8_t i;
 
 	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
@@ -158,7 +161,7 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 
-static void spr_calc_patterns(struct spr_sprite_def *sp)
+static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 {
 	uint8_t i, color_frame, base = 0, base2, frame;
 
@@ -191,7 +194,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp)
 	}
 }
 
-void spr_update(struct spr_sprite_def *sp)
+void spr_update(struct spr_sprite_def *sp) __nonbanked
 {
 	uint8_t i;
 	spr_calc_patterns(sp);
@@ -207,7 +210,7 @@ void spr_update(struct spr_sprite_def *sp)
 /**
  * spr_show: finds a gap to allocate the attribute set
  */
-uint8_t spr_show(struct spr_sprite_def *sp)
+uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
 {
 	uint8_t i, idx, n, f = 0;
 	n = sp->pattern_set->n_planes;
@@ -227,14 +230,14 @@ uint8_t spr_show(struct spr_sprite_def *sp)
 	return false;
 }
 
-void spr_hide(struct spr_sprite_def *sp)
+void spr_hide(struct spr_sprite_def *sp) __nonbanked
 {
 	vdp_memset(vdp_base_spatr_grp1 +
 		   sp->aidx * sizeof(struct vdp_hw_sprite),
 		   sizeof(struct vdp_hw_sprite) * sp->pattern_set->n_planes, 0);
 }
 
-void spr_set_pos(struct spr_sprite_def *sp, uint8_t xp, uint8_t yp)
+void spr_set_pos(struct spr_sprite_def *sp, uint8_t xp, uint8_t yp) __nonbanked
 {
 	uint8_t i;
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
@@ -247,7 +250,7 @@ void spr_set_pos(struct spr_sprite_def *sp, uint8_t xp, uint8_t yp)
 	}
 }
 
-void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors)
+void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors) __nonbanked
 {
 	uint8_t i;
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
@@ -261,7 +264,7 @@ void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors)
 /**
  * Handle sprite animation for simple cases of 2 and 4 states with collision
  */
-void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy)
+void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy) __nonbanked
 {
 	uint8_t old_dir, x, y;
 	struct spr_pattern_set *ps = sp->pattern_set;

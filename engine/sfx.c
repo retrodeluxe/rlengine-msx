@@ -56,6 +56,8 @@
 
 #include "pt3.h"
 
+#pragma CODE_PAGE 2
+
 uint8_t *sfx_bank;
 uint8_t *sfx_pointer;
 uint8_t sfx_mode;
@@ -121,7 +123,7 @@ end:
 	__endasm;
 }
 
-void sfx_play(void) __naked
+void sfx_play(void) __naked __nonbanked
 {
 	__asm
 	ld	a,(#_sfx_priority)

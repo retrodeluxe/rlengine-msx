@@ -24,14 +24,24 @@ $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 
 ## Build IHX on a 24bit address space containing all code and data
 ##
+### should not be any code in _CODE, it should be either banked or non-banked
+
+define emit_link_code_page
+echo "-b _CODE_PAGE_${1}=0x$(shell printf '%x' $1)8000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;
+endef
+
+define emit_link_data_page
+echo "-b _DATA_PAGE_${1}=0x$(shell printf '%x' $1)A000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;
+endef
+
 $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LOCAL_PAGES_SRC_FILES) | $(BUILT_ENGINE_LIB)
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	@echo "-b _CODE=0x40B1" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(foreach page,$(CODE_PAGES),echo "-b _CODE_PAGE_${page}=0x${page}8000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
-	$(foreach page,$(DATA_PAGES),echo "-b _DATA_PAGE_${page}=0x${page}A000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk;)
-	@echo "-b _HOME=0x6000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	@echo "-b _CODE=0x7A00" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	$(foreach page,$(CODE_PAGES),$(call emit_link_code_page,$(page)))
+	$(foreach page,$(DATA_PAGES),$(call emit_link_data_page,$(page)))
+	@echo "-b _HOME=0x40B1" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk

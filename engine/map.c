@@ -20,6 +20,8 @@
 #include "msx.h"
 #include "map.h"
 
+#pragma CODE_PAGE 2
+
  /**
  * read a buffer an expand it using a 4x4 tile dictionary
  *  this provides a fixed ratio of 1/4 and decompression buffer

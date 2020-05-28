@@ -20,6 +20,8 @@
 #include "msx.h"
 #include "vdp.h"
 
+#pragma CODE_PAGE 2
+
 static char t_spritesize;
 
 // XXX: some of this calls use bios, which sometimes may not be a good idea
@@ -77,7 +79,7 @@ void vdp_set_color(char ink, char border)
 }
 
 
-void vdp_poke(uint16_t address, uint8_t value)
+void vdp_poke(uint16_t address, uint8_t value) __nonbanked
 {
         address;
         value;
@@ -99,7 +101,7 @@ void vdp_poke(uint16_t address, uint8_t value)
         __endasm;
 }
 
-void vdp_poke_di(uint16_t address, uint8_t value)
+void vdp_poke_di(uint16_t address, uint8_t value) __nonbanked
 {
         address;
         value;
@@ -122,7 +124,7 @@ void vdp_poke_di(uint16_t address, uint8_t value)
 }
 
 
-uint8_t vdp_peek(uint16_t address)
+uint8_t vdp_peek(uint16_t address) __nonbanked
 {
         address;
 
@@ -142,7 +144,7 @@ uint8_t vdp_peek(uint16_t address)
 }
 
 
-void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value)
+void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked
 {
         vaddress;
         size;
@@ -174,7 +176,7 @@ vdp_memset_loop:
 }
 
 
-void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length)
+void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length) __nonbanked
 {
         buffer;
         vaddress;
@@ -205,7 +207,7 @@ vdp__copy_to_vram_loop:
         __endasm;
 }
 
-void vdp_copy_to_vram_di(uint8_t *buffer, uint16_t vaddress, uint16_t length)
+void vdp_copy_to_vram_di(uint8_t *buffer, uint16_t vaddress, uint16_t length) __nonbanked
 {
         buffer;
         vaddress;
@@ -241,7 +243,7 @@ vdp__copy_to_vram_loop_di:
  * Copy 16 uint8_ts from RAM to VRAM
  *  - useful to set a pair of consecutive tiles
  */
-void vdp_fastcopy16(uint8_t *src_ram, uint16_t dst_vram)
+void vdp_fastcopy16(uint8_t *src_ram, uint16_t dst_vram) __nonbanked
 {
         src_ram;
         dst_vram;
@@ -312,12 +314,12 @@ vdp__copy_from_vram_loop:
 }
 
 
-void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi)
+void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi) __nonbanked
 {
         vdp_copy_to_vram((uint8_t*)spr, vdp_base_spatr_grp1+(spi<<2),sizeof(struct vdp_hw_sprite));
 }
 
-void vdp_set_hw_sprite_di(uint8_t *spr, uint16_t spi)
+void vdp_set_hw_sprite_di(uint8_t *spr, uint16_t spi) __nonbanked
 {
         spr;
         spi;
@@ -380,7 +382,7 @@ $2:
         __endasm;
 }
 
-void vdp_fastcopy_nametable(uint8_t *buffer)
+void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked
 {
         buffer;
         __asm
@@ -413,7 +415,7 @@ vdp__fastcopy_nametable_loop:
         __endasm;
 }
 
-void vdp_fastcopy_nametable_di(uint8_t *buffer)
+void vdp_fastcopy_nametable_di(uint8_t *buffer) __nonbanked
 {
         buffer;
 

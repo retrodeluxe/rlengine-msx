@@ -15,6 +15,7 @@
 #include "logic.h"
 #include "scene.h"
 
+#pragma CODE_PAGE 3
 
 struct animator animators[MAX_ANIMATORS];
 
@@ -25,7 +26,7 @@ void add_animator(struct displ_object *dpo, enum anim_t animidx)
 	list_add(&animators[animidx].list, &dpo->animator_list);
 }
 
-void change_room()
+void change_room() __nonbanked
 {
 	game_state.change_room = false;
 
@@ -55,7 +56,7 @@ void change_room()
 	}
 }
 
-void anim_jean_death(struct displ_object *obj)
+void anim_jean_death(struct displ_object *obj) __nonbanked
 {
 	struct spr_sprite_def *sp = obj->spr;
 	struct spr_pattern_set *ps = sp->pattern_set;
@@ -72,7 +73,7 @@ void anim_jean_death(struct displ_object *obj)
 	spr_update(sp);
 }
 
-void anim_jean(struct displ_object *obj)
+void anim_jean(struct displ_object *obj) __nonbanked
 {
 	static uint8_t jump_ct = 0, fall_ct = 0;
 	static uint8_t death_ct = 0;
@@ -108,6 +109,7 @@ void anim_jean(struct displ_object *obj)
 			return;
 		case STATE_JUMPING:
 			jump_ct++;
+
 			if (jump_ct < 5) {
 				dy = -4;
 				dy += dy_8 / 2;
@@ -305,7 +307,7 @@ void anim_static(struct displ_object *obj)
 	// do nothing, just make sure we can display the sprite
 }
 
-void anim_cycle_tile(struct displ_object *dpo)
+void anim_cycle_tile(struct displ_object *dpo) __nonbanked
 {
         // maybe I can just set the objet to gone.
 	if (dpo->state++ == 10) {
@@ -322,7 +324,7 @@ void anim_cycle_tile(struct displ_object *dpo)
         }
 }
 
-void anim_left_right(struct displ_object *obj)
+void anim_left_right(struct displ_object *obj) __nonbanked
 {
 	int8_t dx = 0;
 	switch(obj->state) {
@@ -347,7 +349,7 @@ void anim_left_right(struct displ_object *obj)
 	dpo_simple_animate(obj, dx, 0);
 }
 
-void anim_left_right_floor(struct displ_object *obj)
+void anim_left_right_floor(struct displ_object *obj) __nonbanked
 {
 	struct spr_sprite_def *sp = obj->spr;
 	int8_t dx = 0;
@@ -384,7 +386,7 @@ void anim_left_right_floor(struct displ_object *obj)
 	spr_update(sp);
 }
 
-void anim_up_down(struct displ_object *obj)
+void anim_up_down(struct displ_object *obj) __nonbanked
 {
 	int8_t dy = 0;
 	switch(obj->state) {
@@ -410,7 +412,7 @@ void anim_up_down(struct displ_object *obj)
 /**
  * Animation for a Templar chasing Jean in different screens
  */
-void anim_chase(struct displ_object *obj)
+void anim_chase(struct displ_object *obj) __nonbanked
 {
 	int8_t dx = 0, dy = 0;
 	struct spr_sprite_def *sp = obj->spr;
@@ -499,7 +501,7 @@ void anim_chase(struct displ_object *obj)
  * Animation to show the door closing after jeans enters the church, then the
  * templars keep banging on it
  */
-void anim_close_door(struct displ_object *obj)
+void anim_close_door(struct displ_object *obj) __nonbanked
 {
 	if (game_state.door_trigger) {
 		if (!obj->visible) {

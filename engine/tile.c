@@ -24,6 +24,8 @@
 #include "log.h"
 #include "bitmap.h"
 
+#pragma CODE_PAGE 2
+
 #define BANK1_OFFSET 256 * 8
 #define BANK2_OFFSET BANK1_OFFSET * 2
 
@@ -174,7 +176,7 @@ void tile_set_vfree(struct tile_set *ts)
 /**
  * puts on a screen buffer a set of tiles using an already allocated tileset
  */
-void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram)
+void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram) __nonbanked
 {
 	uint16_t offset = to->x/8 + to->y/8 * 32;
 	uint8_t *ptr = scrbuf + offset;
@@ -200,7 +202,7 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 	//log_e("showing : %d at pos %d dir %d step %d nf %d\n", tile, ptr, to->cur_dir, to->cur_anim_step, to->ts->n_frames);
 }
 
-void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram)
+void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram) __nonbanked
 {
 	uint16_t offset = to->x/8 + to->y/8 * 32;
 	uint8_t *ptr = scrbuf + offset;

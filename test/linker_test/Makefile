@@ -5,6 +5,8 @@ include $(CONFIG_ROM)
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)
 
+
+# I think this can be detected with a tool
 LOCAL_ROM_CODE_START_PAGE := 2
 LOCAL_ROM_CODE_END_PAGE := 3
 LOCAL_ROM_DATA_START_PAGE := 4

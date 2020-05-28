@@ -8,7 +8,7 @@ export BUILT_ENGINE_LIB := $(BUILD_OUT_BIN)/rdl_engine.lib
 
 $(BUILT_ENGINE): $(BUILD_OUT_BIN)/%.rel: $(ENGINE_ROOT)/%.c
 	$(hide) mkdir -p $(BUILD_OUT_BIN)
-	$(hide) $(CROSS_CC) -c -o $@ $^ $(ENGINE_CFLAGS)
+	$(hide) $(CROSS_CC) -c -o $@ $^ $(ENGINE_CFLAGS_BANKED)
 
 $(BUILT_ENGINE_LIB): $(BUILT_ENGINE)
 	$(hide) mkdir -p $(BUILD_OUT_BIN)

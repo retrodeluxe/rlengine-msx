@@ -1,3 +1,5 @@
+#pragma DATA_PAGE 6
+
 // PAGE_DYNTILES
 #include "gen/rope.h"
 #include "gen/hearth.h"

@@ -24,6 +24,7 @@
 #include "log.h"
 #include <stdio.h>
 
+#pragma CODE_PAGE 2
 
 
 void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8_t tile_w,

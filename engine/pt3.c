@@ -19,6 +19,8 @@
 #include "pt3.h"
 #include "sys.h"
 
+#pragma CODE_PAGE 2
+
 char ChanA[29]; //CHNPRM_Size
 char ChanB[29];
 char ChanC[29];
@@ -270,7 +272,7 @@ LOUT:
 __endasm;
 }
 
-void pt3_decode() __naked
+void pt3_decode() __naked __nonbanked
 {
 	__asm
 

@@ -64,7 +64,9 @@ bool fps_stall;
 extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;
 
-void main()
+#pragma CODE_PAGE 3
+
+void main() __nonbanked
 {
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
@@ -121,7 +123,8 @@ start:
 	}
 }
 
-void animate_all() {
+void animate_all() __nonbanked
+{
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
 		list_for_each(elem2, &dpo->animator_list) {
@@ -131,13 +134,14 @@ void animate_all() {
 	}
 }
 
-void play_music()
+void play_music() __nonbanked
 {
 	pt3_decode();
 	pt3_play();
 }
 
-void show_logo() {
+void show_logo()
+{
 	// TODO : add resources
 	do {
 	} while (sys_get_key(8) & 1);

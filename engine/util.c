@@ -16,11 +16,13 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "msx.h"
 #include "sys.h"
 #include "log.h"
 #include <stdarg.h>
+
+#pragma CODE_PAGE 2
 
 #define DEBUG
 #ifdef DEBUG

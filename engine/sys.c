@@ -21,6 +21,8 @@
 #include "sys.h"
 #include "log.h"
 
+#pragma CODE_PAGE 2
+
 static unsigned int sys_secs;
 static unsigned int sys_msec;
 static unsigned int sys_ticks;
@@ -38,7 +40,7 @@ void sys_reboot()
         __endasm;
 }
 
-uint8_t sys_get_key(uint8_t line)
+uint8_t sys_get_key(uint8_t line) __nonbanked
 {
         line;
 
@@ -59,7 +61,7 @@ uint8_t sys_get_char(void)
         __endasm;
 }
 
-uint8_t sys_get_trigger(uint8_t port)
+uint8_t sys_get_trigger(uint8_t port) __nonbanked
 {
         port;
 
@@ -70,7 +72,7 @@ uint8_t sys_get_trigger(uint8_t port)
         __endasm;
 }
 
-uint8_t sys_get_stick(uint8_t port)
+uint8_t sys_get_stick(uint8_t port) __nonbanked
 {
         port;
 
@@ -81,7 +83,7 @@ uint8_t sys_get_stick(uint8_t port)
         __endasm;
 }
 
-void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size)
+void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked
 {
         src;
         dst;
@@ -154,7 +156,7 @@ void sys_irq_unregister(void (*func))
  * sys_irq_handler:
  *      irq handler using
  */
-static void sys_irq_handler(void)
+static void sys_irq_handler(void) __nonbanked
 {
     sys_ticks++;
     sys_msec = sys_msec + MSEC_PER_TICK;
@@ -199,38 +201,36 @@ void sys_irq_init()
  * sys_sleep_ms
  *   FIXME: currently can sleep a max of 1000ms
  */
-void sys_sleep_ms(uint16_t msecs)
+void sys_sleep_ms(uint16_t msecs) __nonbanked
 {
     uint16_t start_ms = sys_msec;
     while (sys_msec - start_ms < msecs) {
     };
 }
 
-void sys_sleep(uint16_t secs)
+void sys_sleep(uint16_t secs) __nonbanked
 {
     uint16_t start_secs = sys_secs;
     while (sys_secs - start_secs < secs) {
     };
 }
 
-uint16_t sys_gettime_secs()
+uint16_t sys_gettime_secs() __nonbanked
 {
     return sys_secs;
 }
 
-uint16_t sys_gettime_msec()
+uint16_t sys_gettime_msec() __nonbanked
 {
     return sys_msec;
 }
 
-uint16_t sys_get_ticks()
+uint16_t sys_get_ticks() __nonbanked
 {
     return sys_ticks;
 }
 
-
-
-void sys_ascii_set(uint8_t page)
+void sys_ascii_set(uint8_t page) __nonbanked
 {
 	__asm
 	di
@@ -239,6 +239,7 @@ void sys_ascii_set(uint8_t page)
 	__endasm;
 }
 
+// XXX: not needed
 void sys_ascii_restore()
 {
 	__asm

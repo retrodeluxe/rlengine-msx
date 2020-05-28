@@ -22,27 +22,33 @@
 #include "bitmap.h"
 #include "log.h"
 
-inline static uint8_t get(uint8_t a, uint8_t pos) {
+inline static uint8_t get(uint8_t a, uint8_t pos) __nonbanked
+{
     return (a >> pos) & 1;
 }
 
-inline static void set(uint8_t *a, uint8_t pos) {
+inline static void set(uint8_t *a, uint8_t pos) __nonbanked
+{
     *a |= 1 << pos;
 }
 
-inline static void reset(uint8_t *a, uint8_t pos) {
+inline static void reset(uint8_t *a, uint8_t pos) __nonbanked
+{
     *a &= ~(1 << pos);
 }
 
-uint8_t bitmap_get(uint8_t *bitmap, uint8_t pos) {
+uint8_t bitmap_get(uint8_t *bitmap, uint8_t pos) __nonbanked
+{
     return get(bitmap[pos/8], pos%8) != 0;
 }
 
-void bitmap_set(uint8_t *bitmap, uint8_t pos) {
+void bitmap_set(uint8_t *bitmap, uint8_t pos) __nonbanked
+{
     set(&bitmap[pos/8], pos%8);
 }
 
-void bitmap_reset(uint8_t *bitmap, uint8_t pos) {
+void bitmap_reset(uint8_t *bitmap, uint8_t pos) __nonbanked
+{
     reset(&bitmap[pos/8], pos%8);
 }
 
@@ -51,7 +57,7 @@ void bitmap_reset(uint8_t *bitmap, uint8_t pos) {
  *      find a sequence of n 1s in the bitmap
  */
 bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size,
-	uint8_t *pos)
+	uint8_t *pos) __nonbanked
 {
 	uint8_t i, nfree = 0;
 	for(i = 0, bitmap_size *= 8; i < bitmap_size; i++) {
@@ -63,8 +69,6 @@ bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size,
 	}
 	return false;
 }
-
-
 
 void bitmap_dump(uint8_t *bitmap, uint8_t bitmap_size)
 {
