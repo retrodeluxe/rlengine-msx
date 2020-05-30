@@ -240,7 +240,7 @@ void sys_ascii_set(uint8_t page) __nonbanked
 }
 
 // XXX: not needed
-void sys_ascii_restore()
+void sys_ascii_restore() __nonbanked
 {
 	__asm
 	ld	a,#3

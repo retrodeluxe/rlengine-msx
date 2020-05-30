@@ -116,7 +116,7 @@ extern struct displ_object *dpo;
 
 extern uint8_t scr_tile_buffer[768];
 extern uint8_t data_buffer[2100];
-extern uint8_t data_buffer2[2048];
+extern uint8_t data_buffer2[100];
 extern uint8_t stick;
 extern uint8_t trigger;
 extern unsigned char *map_map_segment_dict[25];

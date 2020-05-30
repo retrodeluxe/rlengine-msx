@@ -23,24 +23,27 @@ ASCII8_PAGE3	.equ 0x7800
 		;
 __sdcc_banked_call:
 		; save caller and current bank
-		pop 	ix
+		pop 	bc
 		ld	a,(cur_page)
 		ld	iy,#0
 		add	iy,sp
 		ld 	sp,(banked_sp)
-		push 	ix
-		push 	af
+		push	bc
+		push	af
 		ld 	(banked_sp), sp
 		ld 	sp,iy
+
+		ld	iy,#0
+		add	iy,bc
 
 		; push return adrress
 		ld	hl, #__sdcc_banked_ret
 		push 	hl
 
 		; read jump address and target page
-		ld	l,(ix)
-		ld 	h,1(ix)
-		ld	a,2(ix)
+		ld	l,(iy)
+		ld 	h,1(iy)
+		ld	a,2(iy)
 		ld 	(cur_page),a
 
 		; switch bank and perform call

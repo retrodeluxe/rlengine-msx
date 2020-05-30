@@ -57,7 +57,7 @@ uint8_t scr_tile_buffer[768];
 
 /** ROM transfer buffers **/
 uint8_t data_buffer[2100];
-uint8_t data_buffer2[2048];
+uint8_t data_buffer2[100];
 
 uint16_t reftick;
 bool fps_stall;
@@ -186,22 +186,16 @@ void show_title_screen()
 	vdp_screen_disable();
 	sys_ascii_set(PAGE_INTRO);
 
-	tile_init();
+	tile_init();  // crashing here - stack missalignment
 	INIT_TILE_SET(tileset_intro, intro_tileset);
 	tile_set_to_vram(&tileset_intro, 1);
 
-	sys_memcpy(data_buffer, font_upper_tile, 256);
-	sys_memcpy(data_buffer2, font_upper_tile_color, 10);
-	sys_ascii_restore();
-
-	init_font(&font, data_buffer, data_buffer2, 26, 1,
+	init_font(&font, font_upper_tile, font_upper_tile_color, 26, 1,
 		FONT_ALFA_UPPERCASE, 26, 1, 1);
 	font_to_vram_bank(&font, BANK2, 1);
 
-	sys_ascii_set(PAGE_INTRO);
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
-	sys_ascii_restore();
 
 	font_vprint(&font, 7, 22, "PRESS SPACE KEY~");
 
@@ -210,7 +204,6 @@ void show_title_screen()
 	/** title music **/
 	sys_ascii_set(PAGE_MUSIC);
 	sys_memcpy(data_buffer, title_song_pt3, title_song_pt3_len);
-	sys_ascii_restore();
 
 	pt3_init_notes(NT);
 	pt3_init(data_buffer, 0);
