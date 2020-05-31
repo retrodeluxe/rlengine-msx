@@ -21,7 +21,7 @@
 #define _SFX_H
 
 void sfx_setup(uint8_t *bank);
-void sfx_play_effect(uint8_t effect, uint8_t priority);
-void sfx_play(void);
+void sfx_play_effect(uint8_t effect, uint8_t priority) __nonbanked;
+void sfx_play(void) __nonbanked;
 
 #endif

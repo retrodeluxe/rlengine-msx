@@ -212,7 +212,7 @@ void add_jean()
 	INIT_LIST_HEAD(&dpo_jean.list);
 	list_add(&dpo_jean.list, &display_list);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
-	//add_animator(&dpo_jean, ANIM_JEAN);
+	add_animator(&dpo_jean, ANIM_JEAN);
 }
 
 inline bool jean_check_collision(struct displ_object *dpo) __nonbanked

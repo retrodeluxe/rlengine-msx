@@ -101,10 +101,10 @@ extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
 extern void spr_vfree_pattern_set(uint8_t patrn_idx);
 extern void spr_set_pos(struct spr_sprite_def *sp, uint8_t x, uint8_t y);
-extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors);
-extern uint8_t spr_show(struct spr_sprite_def *sp);
-extern void spr_update(struct spr_sprite_def *sp);
-extern void spr_hide(struct spr_sprite_def *sp);
-extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy);
+extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors) __nonbanked;
+extern uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked;
+extern void spr_update(struct spr_sprite_def *sp) __nonbanked;
+extern void spr_hide(struct spr_sprite_def *sp) __nonbanked;
+extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy) __nonbanked;
 
 #endif

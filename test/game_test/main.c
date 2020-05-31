@@ -124,16 +124,16 @@ start:
 
 void animate_all() __nonbanked
 {
-	// this is causing a hang...
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
-			// with function pointers, no way to switch pages...
-			// sys_banked_call()
+			/** XXX: hack for banked function pointers **/
+			//sys_irq_disable();
 			sys_ascii_set_code(3);
 			anim->run(dpo);
 			sys_ascii_restore();
+			//sys_irq_enable();
 		}
 	}
 }
@@ -170,7 +170,6 @@ void show_game_over()
 	tile_set_to_vram(&tileset_gameover, 1);
 
 	size = gameover_tile_w * gameover_tile_h;
-	sys_ascii_restore();
 
 	y = 11; x = 5;
 	for (ct = 0; ct < size; ct++, x++) {

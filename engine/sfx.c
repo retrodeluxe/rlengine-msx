@@ -76,7 +76,7 @@ void sfx_setup(uint8_t *bank)
 	sfx_priority = 255;
 }
 
-void sfx_play_effect(uint8_t effect, uint8_t priority)
+void sfx_play_effect(uint8_t effect, uint8_t priority) __nonbanked
 {
 	effect;
 	priority;

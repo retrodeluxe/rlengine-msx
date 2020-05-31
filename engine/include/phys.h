@@ -54,8 +54,8 @@ enum tile_collision_type {
 };
 
 void phys_init();
-void phys_set_sprite_collision_handler(void (*handler));
-void phys_clear_sprite_collision_handler();
+void phys_set_sprite_collision_handler(void (*handler)) __nonbanked;
+void phys_clear_sprite_collision_handler() __nonbanked;
 void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), uint8_t data);
 void phys_set_colliding_tile_object(struct displ_object *dpo, enum tile_collision_type type, void (*handler), uint8_t data);
 void phys_clear_colliding_tile_object(struct displ_object *dpo);
@@ -63,7 +63,7 @@ void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
 void phys_set_trigger_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);
-void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map, int8_t dx, int8_t dy, bool notify);
-void phys_detect_fall(struct displ_object *obj, uint8_t *map, int8_t dx);
+void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map, int8_t dx, int8_t dy, bool notify) __nonbanked;
+void phys_detect_fall(struct displ_object *obj, uint8_t *map, int8_t dx) __nonbanked;
 
 #endif

@@ -58,6 +58,6 @@ struct displ_object {
 	struct list_head animator_list;
 };
 
-void dpo_simple_animate(struct displ_object *dpo, signed char dx, signed char dy);
+void dpo_simple_animate(struct displ_object *dpo, signed char dx, signed char dy) __nonbanked;
 
 #endif
