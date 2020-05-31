@@ -299,7 +299,7 @@ void load_room(uint8_t room)
 	INIT_LIST_HEAD(&display_list);
 
 	sys_ascii_set(PAGE_INTRO);
-	vdp_screen_enable();
+	//vdp_screen_enable();
 
 	sys_ascii_set(PAGE_MAPOBJECTS);
 
