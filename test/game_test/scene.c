@@ -589,8 +589,6 @@ void init_map_tilesets()
 	tile_set_valloc(&tileset_map[MAP_TILESET_3]);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_4], MAP_TILESET_4_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_5], MAP_TILESET_5_POS);
-
-	sys_ascii_restore();
 }
 
 void show_score_panel()
