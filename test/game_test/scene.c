@@ -298,9 +298,6 @@ void load_room(uint8_t room)
 
 	INIT_LIST_HEAD(&display_list);
 
-	sys_ascii_set(PAGE_INTRO);
-	vdp_screen_enable();
-
 	sys_ascii_set(PAGE_MAPOBJECTS);
 
 	//log_e("room : %d\n",room);
@@ -604,7 +601,6 @@ void show_score_panel()
 	sys_ascii_set(PAGE_DYNTILES);
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
 	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
-	sys_ascii_restore();
 
 	score.y = 192 - 16;
 	score.x = 0;
