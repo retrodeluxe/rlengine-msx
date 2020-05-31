@@ -98,8 +98,8 @@ extern unsigned int PT3_ESldAdd;  //Envelope data (idem)
 extern char NoteTable[192];       //Note table
 
 void pt3_init(uint8_t *song, uint8_t loop);
-void pt3_play();
-void pt3_decode();
+void pt3_play() __nonbanked;
+void pt3_decode() __nonbanked;
 void pt3_mute();
 void pt3_init_notes(uint8_t *note_table);
 

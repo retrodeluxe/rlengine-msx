@@ -47,22 +47,22 @@ struct sys_proc {
 
 
 extern void sys_reboot();
-extern uint8_t sys_get_key(uint8_t line);
+extern uint8_t sys_get_key(uint8_t line) __nonbanked;
 extern uint8_t sys_get_char(void);
-extern uint8_t sys_get_stick(uint8_t port);
-extern uint8_t sys_get_trigger(uint8_t port);
-extern void sys_memcpy(uint8_t *dst, uint8_t * src, uint16_t size);
+extern uint8_t sys_get_stick(uint8_t port) __nonbanked;
+extern uint8_t sys_get_trigger(uint8_t port) __nonbanked;
+extern void sys_memcpy(uint8_t *dst, uint8_t * src, uint16_t size) __nonbanked;
 #define sys_memset __builtin_memset
 //extern void sys_memset(void *dst, uint8_t c, uint16_t size);
 
 extern void sys_irq_register(void (*func));
 extern void sys_irq_unregister(void (*func));
 extern void sys_irq_init();
-extern void sys_sleep_ms(uint16_t msecs);
-extern void sys_sleep(uint16_t secs);
-extern uint16_t sys_gettime_secs();
-extern uint16_t sys_gettime_msec();
-extern uint16_t sys_get_ticks();
-extern void sys_ascii_set(uint8_t page);
-extern void sys_ascii_restore();
+extern void sys_sleep_ms(uint16_t msecs) __nonbanked;
+extern void sys_sleep(uint16_t secs) __nonbanked;
+extern uint16_t sys_gettime_secs() __nonbanked;
+extern uint16_t sys_gettime_msec() __nonbanked;
+extern uint16_t sys_get_ticks() __nonbanked;
+extern void sys_ascii_set(uint8_t page) __nonbanked;
+extern void sys_ascii_restore() __nonbanked;
 #endif

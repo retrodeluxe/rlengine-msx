@@ -239,7 +239,7 @@ void pt3_init_notes(uint8_t *note_table)
 	sys_memcpy(NoteTable, note_table, 96*2);
 }
 
-void pt3_play() __naked
+void pt3_play() __naked __nonbanked
 {
 	__asm
 

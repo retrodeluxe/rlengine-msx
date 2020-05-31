@@ -17,7 +17,6 @@
 #include "list.h"
 #include "font.h"
 #include "pt3.h"
-#include "pt3_nt2.h"
 
 #include "anim.h"
 #include "scene.h"
@@ -38,7 +37,7 @@ void show_title_screen();
 void animate_all();
 void check_and_change_room();
 void show_score_panel();
-void play_music();
+void play_music() __nonbanked;
 void load_room(uint8_t room);
 
 struct tile_set logo;
@@ -63,6 +62,7 @@ uint16_t reftick;
 bool fps_stall;
 extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;
+extern const unsigned int NT[];
 
 #pragma CODE_PAGE 3
 
@@ -179,6 +179,8 @@ void show_game_over()
 	sys_sleep(3);
 }
 
+extern const char str_press_space[];
+
 void show_title_screen()
 {
 	uint8_t i, color;
@@ -186,7 +188,7 @@ void show_title_screen()
 	vdp_screen_disable();
 	sys_ascii_set(PAGE_INTRO);
 
-	tile_init();  // crashing here - stack missalignment
+	tile_init();
 	INIT_TILE_SET(tileset_intro, intro_tileset);
 	tile_set_to_vram(&tileset_intro, 1);
 
@@ -197,16 +199,16 @@ void show_title_screen()
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
 
-	font_vprint(&font, 7, 22, "PRESS SPACE KEY~");
+	font_vprint(&font, 7, 22, str_press_space);
 
 	vdp_screen_enable();
 
 	/** title music **/
-	sys_ascii_set(PAGE_MUSIC);
-	sys_memcpy(data_buffer, title_song_pt3, title_song_pt3_len);
+	pt3_init_notes(NT);  // NT is in PAGE_INTRO
 
-	pt3_init_notes(NT);
-	pt3_init(data_buffer, 0);
+	sys_ascii_set(PAGE_MUSIC);
+
+	pt3_init(title_song_pt3, 0);
 
 	sys_irq_init();
 	sys_irq_register(play_music);

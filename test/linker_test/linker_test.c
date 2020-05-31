@@ -15,18 +15,9 @@
 extern int function_in_code0();
 extern int function_in_code1();
 
-void something_else() __nonbanked
-{
-	vdp_print_grp1(10, 12, "something else");
-}
-
-void something_else2() __nonbanked
-{
-	vdp_print_grp1(10, 16, "something more");
-}
 
 
-void main()
+void main() __nonbanked
 {
 	log_w("we are running");
 	vdp_set_mode(vdp_grp1);
@@ -47,4 +38,14 @@ void main()
 	} while (sys_get_key(8) & 1);
 
 	sys_reboot();
+}
+
+void something_else() __nonbanked
+{
+	vdp_print_grp1(10, 12, "something else");
+}
+
+void something_else2() __nonbanked
+{
+	vdp_print_grp1(10, 16, "something more");
 }

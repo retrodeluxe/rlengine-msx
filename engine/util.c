@@ -30,7 +30,7 @@
 /**
  * send a char to the debug port
  */
-static void putchar(char c)
+static void putchar(char c) __nonbanked
 {
 	c;
 
@@ -45,7 +45,7 @@ static void putchar(char c)
 /*
  * Print an unsigned integer in base b.
  */
-void printn(unsigned int n, char b)
+void printn(unsigned int n, char b) __nonbanked
 {
 	unsigned int a,r;
 
@@ -59,7 +59,7 @@ void printn(unsigned int n, char b)
 
 }
 
-static void vprintk(char *fmt, va_list args)
+static void vprintk(char *fmt, va_list args) __nonbanked
 {
 	register char *s;
 	register char c;

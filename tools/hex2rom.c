@@ -423,9 +423,10 @@ int main (int argc, char *argv[])
 
 		  Address = First_Word;
 
-		  if (Seg_Lin_Select == SEGMENTED_ADDRESS)
+		  if (Seg_Lin_Select == SEGMENTED_ADDRESS) {
 			Phys_Addr = (Segment << 4) + Address;
-		  else
+			fprintf(stderr,"SEGMENTED address segment: %x addr: %x \n", Segment, Phys_Addr);
+		} else
 			/* LINEAR_ADDRESS or NO_ADDRESS_TYPE_SELECTED
 			   Upper_Address = 0 as specified in the Intel spec. until an extended address
 			   record is read. */
@@ -440,16 +441,25 @@ int main (int argc, char *argv[])
 
 
 			  unsigned int page;
-			  unsigned int page_offset;
+			  unsigned int page_offset, base;
 
 			  if (Phys_Addr > 0xFFFF) {
 
-				  page = (Phys_Addr & 0xFF0000) >> 16;
-				  page_offset = Phys_Addr & 0x001FFF;
+				base = Phys_Addr & 0xFFFF;
+				page = (Phys_Addr & 0xFF0000) >> 16;
+				page_offset = Phys_Addr & 0x001FFF;
 
-				  fprintf(stderr,"address %x --> page: %d offset %x\n", Phys_Addr, page, page_offset);
 
-				  Phys_Addr = 0x4000 + page * 0x2000 + page_offset;
+
+				if (base > 0x7FFF && base < 0xBFFF) {
+
+					Phys_Addr = 0x4000 + page * 0x2000 + page_offset;
+					fprintf(stderr,"address %x --> page: %d offset %x\n", Phys_Addr, page, page_offset);
+				} else {
+					// exception here must go to page 0
+					fprintf(stderr,"address %x --> page: %d\n", base, 0);
+					Phys_Addr = base;
+				}
 
 			  } else {
 				  fprintf(stderr,"address %x\n", Phys_Addr);
