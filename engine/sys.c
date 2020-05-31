@@ -233,7 +233,6 @@ uint16_t sys_get_ticks() __nonbanked
 void sys_ascii_set(uint8_t page) __nonbanked
 {
 	__asm
-	di
 	ld      a,4(ix)
 	ld 	(#ASCII8_PAGE3),a
 	__endasm;

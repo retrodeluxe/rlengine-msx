@@ -56,7 +56,6 @@ uint8_t scr_tile_buffer[768];
 
 /** ROM transfer buffers **/
 uint8_t data_buffer[2100];
-uint8_t data_buffer2[100];
 
 uint16_t reftick;
 bool fps_stall;
@@ -65,7 +64,7 @@ extern const unsigned int title_song_pt3_len;
 extern const unsigned int NT[];
 
 #pragma CODE_PAGE 3
-
+extern const char debug1[];
 void main() __nonbanked
 {
 	vdp_set_mode(vdp_grp2);
@@ -88,6 +87,7 @@ start:
 	for(;;) {
 		sys_irq_enable();
 		sys_wait_vsync();
+
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0) | sys_get_stick(1);
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
@@ -97,7 +97,7 @@ start:
 			load_room(game_state.room);
 		}
 
-		animate_all();
+		//animate_all();
 
 		/* framerate limiter 30/60fps */
 		fps_stall = true;
@@ -125,6 +125,7 @@ start:
 
 void animate_all() __nonbanked
 {
+	// this is causing a hang...
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, struct displ_object, list);
 		list_for_each(elem2, &dpo->animator_list) {
