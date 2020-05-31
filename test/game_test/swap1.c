@@ -11,7 +11,7 @@
 
 
 const char str_press_space[]="PRESS SPACE KEY~";
-const char debug1[]="debug 1\n";
+const char debug1[]="room: %d\n";
 const char debug2[]="debug 2\n";
 const char debug3[]="debug 3";
 const char debug4[]="debug 4";

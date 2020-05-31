@@ -130,7 +130,6 @@ void start_music(uint8_t room)
 		default:
 			break;
 	}
-	sys_ascii_restore();
 
 	pt3_init(data_buffer, 1);
 	sys_irq_register(play_room_music);
@@ -155,8 +154,6 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	dpo->ypos = map_object->y;
 	dpo->visible = true;
 	dpo->state = 0;
-
-	sys_ascii_restore();
 
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
@@ -190,8 +187,6 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	dpo->state = 0;
 	dpo->collision_state = 0;
 	dpo->check_collision = true;
-
-	sys_ascii_restore();
 
 	INIT_LIST_HEAD(&dpo->list);
 	list_add(&dpo->list, &display_list);
@@ -275,6 +270,8 @@ void clean_state()
 	game_state.templar_ct = 0;
 }
 
+extern const char debug1[];
+
 void load_room(uint8_t room)
 {
 	uint8_t i, id, type;
@@ -287,13 +284,10 @@ void load_room(uint8_t room)
 	vdp_screen_disable();
 
 	sys_ascii_set(PAGE_MAP);
-	sys_memcpy(data_buffer,map_map_segment_dict[room],512);
-	sys_memcpy(data_buffer2,map_map_segment[room],176);
-	sys_ascii_restore();
-
-	map_inflate(data_buffer, data_buffer2, scr_tile_buffer, 192, 32);
+	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
 
 	show_score_panel();
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 
 	init_sfx();
 
@@ -301,6 +295,10 @@ void load_room(uint8_t room)
 	init_tile_collisions();
 
 	INIT_LIST_HEAD(&display_list);
+
+	sys_ascii_set(PAGE_INTRO);
+	log_e(debug1);
+	vdp_screen_enable();
 
 	sys_ascii_set(PAGE_MAPOBJECTS);
 
@@ -544,7 +542,7 @@ void load_room(uint8_t room)
 		}
 	}
 
-	sys_ascii_restore();
+	log_e("HERE?\n");
 
 	add_jean();
 	phys_set_sprite_collision_handler(jean_collision_handler);
@@ -672,11 +670,7 @@ void init_resources()
 
 	/** copy numeric font to vram **/
 	sys_ascii_set(PAGE_INTRO);
-	sys_memcpy(data_buffer, font_big_digits_tile, 256);
-	sys_memcpy(data_buffer2, font_big_digits_tile_color, 256);
-	sys_ascii_restore();
-
-	init_font(&big_digits, data_buffer, data_buffer2, 10, 2,
+	init_font(&big_digits, font_big_digits_tile, font_big_digits_tile_color, 10, 2,
 		FONT_NUMERIC, 10, 1, 2);
 
 	font_to_vram_bank(&big_digits, BANK2, 224);
@@ -686,9 +680,7 @@ void init_sfx()
 {
 	/** copy over sfx to ram **/
 	sys_ascii_set(PAGE_MUSIC);
-	sys_memcpy(data_buffer2, abbaye_sfx_afb, abbaye_sfx_afb_len);
-	sfx_setup(data_buffer2);
-	sys_ascii_restore();
+	sfx_setup(abbaye_sfx_afb);
 }
 
 void define_sprite(uint8_t pattidx)
