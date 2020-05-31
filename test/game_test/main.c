@@ -34,8 +34,7 @@
 void show_logo();
 void show_game_over();
 void show_title_screen();
-void animate_all();
-void check_and_change_room();
+void animate_all() __nonbanked;
 void show_score_panel();
 void play_music() __nonbanked;
 void load_room(uint8_t room);
@@ -97,7 +96,7 @@ start:
 			load_room(game_state.room);
 		}
 
-		//animate_all();
+		animate_all();
 
 		/* framerate limiter 30/60fps */
 		fps_stall = true;
@@ -130,7 +129,11 @@ void animate_all() __nonbanked
 		dpo = list_entry(elem, struct displ_object, list);
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
+			// with function pointers, no way to switch pages...
+			// sys_banked_call()
+			sys_ascii_set_code(3);
 			anim->run(dpo);
+			sys_ascii_restore();
 		}
 	}
 }

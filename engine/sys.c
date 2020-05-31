@@ -238,12 +238,22 @@ void sys_ascii_set(uint8_t page) __nonbanked
 	__endasm;
 }
 
-// XXX: not needed
+extern uint8_t cur_page;
+
+void sys_ascii_set_code(uint8_t page) __nonbanked
+{
+	__asm
+	ld      a,4(ix)
+	ld 	(#ASCII8_PAGE2),a
+	ld	(cur_page),a
+	__endasm;
+}
+
 void sys_ascii_restore() __nonbanked
 {
 	__asm
-	ld	a,#3
-	ld 	(#ASCII8_PAGE3),a
+	ld	a,#2
+	ld 	(#ASCII8_PAGE2),a
 	ei
 	__endasm;
 }

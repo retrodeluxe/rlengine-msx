@@ -1,4 +1,5 @@
 		.globl __sdcc_banked_call
+		.globl cur_page
 
 		.area _BOOT
 

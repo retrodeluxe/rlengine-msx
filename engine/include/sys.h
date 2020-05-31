@@ -29,6 +29,7 @@
 
 #define ASCII8_PAGE_CODE 3
 
+#define ASCII8_PAGE2	0x7000
 #define ASCII8_PAGE3 	0x7800
 
 struct sys_proc {
@@ -64,5 +65,6 @@ extern uint16_t sys_gettime_secs() __nonbanked;
 extern uint16_t sys_gettime_msec() __nonbanked;
 extern uint16_t sys_get_ticks() __nonbanked;
 extern void sys_ascii_set(uint8_t page) __nonbanked;
+extern void sys_ascii_set_code(uint8_t page) __nonbanked;
 extern void sys_ascii_restore() __nonbanked;
 #endif

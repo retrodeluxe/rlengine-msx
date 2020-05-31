@@ -42,6 +42,7 @@ void change_room() __nonbanked
 		game_state.room -= 1;
 		game_state.change_room = true;
 	}
+
 	if (dpo_jean.ypos > (192 - 50)) {
 		game_state.jean_y = 1;
 		game_state.jean_x = dpo_jean.xpos;
@@ -56,7 +57,7 @@ void change_room() __nonbanked
 	}
 }
 
-void anim_jean_death(struct displ_object *obj) __nonbanked
+void anim_jean_death(struct displ_object *obj)
 {
 	struct spr_sprite_def *sp = obj->spr;
 	struct spr_pattern_set *ps = sp->pattern_set;
@@ -73,7 +74,7 @@ void anim_jean_death(struct displ_object *obj) __nonbanked
 	spr_update(sp);
 }
 
-void anim_jean(struct displ_object *obj) __nonbanked
+void anim_jean(struct displ_object *obj)
 {
 	static uint8_t jump_ct = 0, fall_ct = 0;
 	static uint8_t death_ct = 0;
@@ -307,7 +308,7 @@ void anim_static(struct displ_object *obj)
 	// do nothing, just make sure we can display the sprite
 }
 
-void anim_cycle_tile(struct displ_object *dpo) __nonbanked
+void anim_cycle_tile(struct displ_object *dpo)
 {
         // maybe I can just set the objet to gone.
 	if (dpo->state++ == 10) {
@@ -324,7 +325,7 @@ void anim_cycle_tile(struct displ_object *dpo) __nonbanked
         }
 }
 
-void anim_left_right(struct displ_object *obj) __nonbanked
+void anim_left_right(struct displ_object *obj)
 {
 	int8_t dx = 0;
 	switch(obj->state) {
@@ -345,11 +346,12 @@ void anim_left_right(struct displ_object *obj) __nonbanked
 		default:
 			obj->state = STATE_MOVING_LEFT;
 	}
+
 	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false);
 	dpo_simple_animate(obj, dx, 0);
 }
 
-void anim_left_right_floor(struct displ_object *obj) __nonbanked
+void anim_left_right_floor(struct displ_object *obj)
 {
 	struct spr_sprite_def *sp = obj->spr;
 	int8_t dx = 0;
@@ -386,7 +388,7 @@ void anim_left_right_floor(struct displ_object *obj) __nonbanked
 	spr_update(sp);
 }
 
-void anim_up_down(struct displ_object *obj) __nonbanked
+void anim_up_down(struct displ_object *obj)
 {
 	int8_t dy = 0;
 	switch(obj->state) {
@@ -412,7 +414,7 @@ void anim_up_down(struct displ_object *obj) __nonbanked
 /**
  * Animation for a Templar chasing Jean in different screens
  */
-void anim_chase(struct displ_object *obj) __nonbanked
+void anim_chase(struct displ_object *obj)
 {
 	int8_t dx = 0, dy = 0;
 	struct spr_sprite_def *sp = obj->spr;
@@ -501,7 +503,7 @@ void anim_chase(struct displ_object *obj) __nonbanked
  * Animation to show the door closing after jeans enters the church, then the
  * templars keep banging on it
  */
-void anim_close_door(struct displ_object *obj) __nonbanked
+void anim_close_door(struct displ_object *obj)
 {
 	if (game_state.door_trigger) {
 		if (!obj->visible) {
