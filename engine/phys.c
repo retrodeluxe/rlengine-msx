@@ -59,7 +59,7 @@ void phys_init()
 }
 
 /* note that this runs in interrupt context */
-void phys_set_sprite_collision_handler(void (*handler)) __nonbanked
+void phys_set_sprite_collision_handler(void (*handler))
 {
 	sprite_colision_cb = handler;
 	sys_irq_register(phys_check_collision_bit);

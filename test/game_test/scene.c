@@ -299,7 +299,7 @@ void load_room(uint8_t room)
 	INIT_LIST_HEAD(&display_list);
 
 	sys_ascii_set(PAGE_INTRO);
-	//vdp_screen_enable();
+	vdp_screen_enable();
 
 	sys_ascii_set(PAGE_MAPOBJECTS);
 
@@ -545,7 +545,7 @@ void load_room(uint8_t room)
 	}
 
 	add_jean();
-	//phys_set_sprite_collision_handler(jean_collision_handler);
+	phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements
 	list_for_each(elem, &display_list) {
