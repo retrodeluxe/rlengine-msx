@@ -588,10 +588,8 @@ void anim_plant(struct displ_object *obj)
 void anim_waterdrop(struct displ_object *obj)
 {
 	// here we assume all drops start at the same position
-	static uint8_t start_y;
-
 	if (obj->state == 0) {
-		start_y = obj->ypos;
+		obj->aux2 = obj->ypos;
 		obj->aux = 0;
 		obj->state = 1;
 	}
@@ -618,7 +616,7 @@ void anim_waterdrop(struct displ_object *obj)
 	if (is_colliding_down(obj)) {
 		obj->aux = 0;
 		obj->state = 0;
-		obj->ypos = start_y;
+		obj->ypos = obj->aux2;
 		obj->spr->cur_anim_step = 0;
 		spr_set_pos(obj->spr,obj->xpos, obj->ypos);
 	}
@@ -631,6 +629,21 @@ void anim_waterdrop(struct displ_object *obj)
  */
 void anim_fish_jump(struct displ_object *obj)
 {
+}
+
+/**
+ * 3-frame animation of a splash of water produced by a fish
+ */
+void anim_splash(struct displ_object *obj)
+{
+	if (obj->state++ > obj->aux) {
+		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+			obj->tob->cur_anim_step++;
+		} else {
+			obj->tob->cur_anim_step = 0;
+		}
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	}
 }
 
 
@@ -648,4 +661,5 @@ void init_animators()
 	animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;
 	animators[ANIM_WATERDROP].run = anim_waterdrop;
 	animators[ANIM_FISH_JUMP].run = anim_fish_jump;
+	animators[ANIM_SPLASH].run = anim_splash;
 }

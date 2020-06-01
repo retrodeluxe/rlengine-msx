@@ -49,6 +49,7 @@ struct displ_object {
 	/* dynamic animation data */
 	uint8_t state;
 	uint8_t aux;		// per object auxiliary data
+	uint8_t aux2;
 	int16_t xpos;
 	int16_t ypos;
 	uint8_t collision_state;

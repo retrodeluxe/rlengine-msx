@@ -500,8 +500,10 @@ void load_room(uint8_t room)
 			room_objs += NEXT_OBJECT(struct map_object_door);
 		} else if (map_object->type == SHOOTER) {
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
-				add_sprite(dpo, spr_ct, PATRN_FISH);
-				add_animator(dpo, ANIM_STATIC);
+				delay = map_object->object.shooter.delay;
+				dpo->aux = delay;
+				add_tileobject(dpo, tob_ct, TILE_SPLASH);
+				add_animator(dpo, ANIM_SPLASH);
 			} else if (map_object->object.shooter.type == TYPE_LEAK) {
 				add_sprite(dpo, spr_ct, PATRN_WATERDROP);
 				add_animator(dpo, ANIM_WATERDROP);
@@ -713,6 +715,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS_STATUS], cross_status, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPLASH], splash, 2, 1, 3, 1);
 
 	/** copy numeric font to vram **/
 	ascii8_set_data(PAGE_INTRO);
