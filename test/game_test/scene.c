@@ -504,7 +504,7 @@ void load_room(uint8_t room)
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.shooter.type == TYPE_LEAK) {
 				add_sprite(dpo, spr_ct, PATRN_WATERDROP);
-				add_animator(dpo, ANIM_STATIC);
+				add_animator(dpo, ANIM_WATERDROP);
 			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
 			} else if (map_object->object.shooter.type == TYPE_ARCHER) {

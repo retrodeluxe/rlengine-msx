@@ -582,6 +582,58 @@ void anim_plant(struct displ_object *obj)
 	if (++obj->state > 160) obj->state = 0;
 }
 
+/**
+ * Animation of a water dropping from the ceiling
+ */
+void anim_waterdrop(struct displ_object *obj)
+{
+	// here we assume all drops start at the same position
+	static uint8_t start_y;
+
+	if (obj->state == 0) {
+		start_y = obj->ypos;
+		obj->aux = 0;
+		obj->state = 1;
+	}
+	// state 1 - just count
+	if (obj->state == 1) {
+		obj->spr->cur_anim_step = 0;
+		if (obj->aux++ > 30) {
+			obj->aux = 0;
+			obj->state = 2;
+		}
+	}
+	if (obj->state == 2) {
+		obj->spr->cur_anim_step = 1;
+		if (obj->aux++ > 30) {
+			obj->aux = 0;
+			obj->state = 3;
+		}
+	}
+	if (obj->state == 3 && !is_colliding_down(obj)) {
+		obj->ypos += 4;
+		obj->spr->cur_anim_step = 2;
+		spr_set_pos(obj->spr, obj->xpos, obj->ypos);
+	}
+	if (is_colliding_down(obj)) {
+		obj->aux = 0;
+		obj->state = 0;
+		obj->ypos = start_y;
+		obj->spr->cur_anim_step = 0;
+		spr_set_pos(obj->spr,obj->xpos, obj->ypos);
+	}
+	spr_update(obj->spr);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, 4, false);
+}
+
+/**
+ * Animation of a fish jumping from the water
+ */
+void anim_fish_jump(struct displ_object *obj)
+{
+}
+
+
 void init_animators()
 {
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
@@ -594,4 +646,6 @@ void init_animators()
 	animators[ANIM_CLOSE_DOOR].run = anim_close_door;
 	animators[ANIM_SHOOTER_PLANT].run = anim_plant;
 	animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;
+	animators[ANIM_WATERDROP].run = anim_waterdrop;
+	animators[ANIM_FISH_JUMP].run = anim_fish_jump;
 }
