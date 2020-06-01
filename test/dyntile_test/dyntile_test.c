@@ -59,6 +59,6 @@ void main()
 		tile_object_show(&giant_tobj, scr_buf, true);
 
 		vdp_copy_to_vram(scr_buf, vdp_base_names_grp1, 768);
-		sys_sleep(500);
+		sys_sleep_ms(500);
 	} while(1);
 }
