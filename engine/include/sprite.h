@@ -90,7 +90,16 @@ struct spr_delta_pos {
 	char dy;
 };
 
+
 extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
+
+#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, STATES, STEPS, PATTERNS) 	spr_pattern[(X)].size = (SIZE);\
+									spr_pattern[(X)].n_planes = (PLANES);\
+									sys_memcpy(spr_pattern[(X)].state_steps, (STEPS), (STATES));\
+									spr_pattern[(X)].n_states = (STATES); \
+									spr_pattern[(X)].allocated = false; \
+									spr_pattern[(X)].patterns = (PATTERNS); \
+									spr_pattern[(X)].colors = PATTERNS ## _color
 
 extern void spr_init();
 extern void spr_clear();
