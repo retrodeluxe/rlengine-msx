@@ -341,9 +341,6 @@ void load_room(uint8_t room)
 	ascii8_set_data(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
 
-	show_score_panel();
-	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
-
 	init_sfx();
 
 	phys_init();

@@ -81,6 +81,7 @@ start:
 	init_game_state();
 
 	load_room(game_state.room);
+	show_score_panel();
 
 	/** game loop **/
 	for(;;) {
