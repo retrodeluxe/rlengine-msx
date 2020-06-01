@@ -456,9 +456,8 @@ void load_room(uint8_t room)
 				phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, spear_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_WATER) {
-				// this one also crashing?
 				add_tileobject(dpo, tob_ct, TILE_WATER);
-				//add_animator(dpo, ANIM_CYCLE_TILE);
+				add_animator(dpo, ANIM_CYCLE_TILE);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {
@@ -484,6 +483,7 @@ void load_room(uint8_t room)
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_FULL, null_handler, 0);
 			} else if (id == 3 && game_state.toggle[1] == 0) {
+				// cave lake door
 				add_dpo = true;
 			} else if (id == 4 && game_state.toggle[2] == 0) {
 				add_dpo = true;
@@ -704,7 +704,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_LAVA], lava, 1, 1, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 2, 1, 1, 16);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 1, 1, 8, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 6, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
