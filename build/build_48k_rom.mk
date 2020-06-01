@@ -24,22 +24,24 @@ BUILT_LOCAL_BANKED_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(
 
 $(BUILT_LOCAL_BANKED_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	$(hide) @mkdir -p $(LOCAL_BUILD_OUT_BIN)
-	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -bo 1 -c -o $@ $^
+	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -ba 1 -c -o $@ $^
 
 # Link with Engine and 48k bootstrap
 #
-$(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_48K)
+$(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BUILT_BOOTSTRAP_48K) | $(BUILT_ENGINE_LIB)
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	@echo "-b _CODE_PAGE_1=0x10000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-b _DATA_PAGE_1=0x10000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _CODE=0x40D8" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	@echo "-b _HOME=0xB000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-b _CODE_PAGE_2=0x8000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-b _HOME=0x6000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	$(CROSS_LD) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	$(CROSS_LD) -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)

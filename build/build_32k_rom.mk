@@ -21,7 +21,7 @@ $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 
 # Link with Engine and 32k bootstrap
 #
-$(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_32K)
+$(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_32K) | $(BUILT_ENGINE_LIB)
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
@@ -29,9 +29,10 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_ENGINE) $(BUILT_BOOTSTRAP_32
 	@echo "-b _HOME=0x6000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
+	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
-	$(hide) $(CROSS_LD) -k $(SDCC_LIB) -f $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
+	$(hide) $(CROSS_LD) -k $(SDCC_LIB) -k $(BUILD_OUT_BIN)  -f $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
