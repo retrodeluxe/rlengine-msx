@@ -21,9 +21,8 @@ int function_in_code1() __banked
 
 	// this is the right way to do it
 
-	sys_ascii_set(4);
+	ascii8_set_data(4);
 	vdp_print_grp1(10, 18, caca1);
-	sys_ascii_restore();
 
 	return b;
 }

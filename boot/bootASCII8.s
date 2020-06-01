@@ -1,5 +1,8 @@
 		.globl __sdcc_banked_call
 		.globl cur_page
+		.globl _ascii8_set_data
+		.globl _ascii8_set_code
+		.globl _ascii8_restore
 
 		.area _BOOT
 
@@ -19,8 +22,33 @@ ASCII8_PAGE3	.equ 0x7800
 		; jumped here; we have the rom bios in bank 0, ram in bank 3, and rom
 		; in bank 1 (this code).
 
-		; Support for nested banked calls on ASCII8_PAGE3
-		;   0x8000-0x9FFF
+		; Mapper page switching helpers
+		;
+_ascii8_set_code:
+		push 	ix
+		ld	ix,#0
+		add 	ix,sp
+		ld	a,4(ix)
+		ld 	(ASCII8_PAGE2),a
+		ld	(cur_page),a
+		pop 	ix
+		ret
+_ascii8_set_data:
+		push 	ix
+		ld	ix,#0
+		add 	ix,sp
+		ld	a,4(ix)
+		ld 	(ASCII8_PAGE3),a
+		pop 	ix
+		ret
+_ascii8_restore:
+		push 	ix
+		ld	a,#2
+		ld	(ASCII8_PAGE2),a
+		pop	ix
+		ret
+		;
+		; Support for SDCC baked calls
 		;
 __sdcc_banked_call:
 		; save caller and current bank

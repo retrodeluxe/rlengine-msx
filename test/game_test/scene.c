@@ -95,7 +95,7 @@ void stop_music()
 
 void start_music(uint8_t room)
 {
-	sys_ascii_set(PAGE_MUSIC);
+	ascii8_set_data(PAGE_MUSIC);
 
 	switch (room) {
 		case ROOM_FOREST:
@@ -137,10 +137,10 @@ void start_music(uint8_t room)
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
-	sys_ascii_set(PAGE_DYNTILES);
+	ascii8_set_data(PAGE_DYNTILES);
 	tile_set_valloc(&tileset[tileidx]);
 
-	sys_ascii_set(PAGE_MAPOBJECTS);
+	ascii8_set_data(PAGE_MAPOBJECTS);
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
 	tileobject[objidx].cur_dir = 1;
@@ -178,7 +178,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_valloc_pattern_set(pattidx);
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
 
-	sys_ascii_set(PAGE_MAPOBJECTS);
+	ascii8_set_data(PAGE_MAPOBJECTS);
 	spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
@@ -285,7 +285,7 @@ void load_room(uint8_t room)
 	clean_state();
 	vdp_screen_disable();
 
-	sys_ascii_set(PAGE_MAP);
+	ascii8_set_data(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
 
 	show_score_panel();
@@ -298,7 +298,7 @@ void load_room(uint8_t room)
 
 	INIT_LIST_HEAD(&display_list);
 
-	sys_ascii_set(PAGE_MAPOBJECTS);
+	ascii8_set_data(PAGE_MAPOBJECTS);
 
 	//log_e("room : %d\n",room);
 
@@ -306,7 +306,7 @@ void load_room(uint8_t room)
 	room_objs = map_object_layer[room];
 
 	for (dpo = display_object, i = 0; type != 255 ; i++, dpo++) {
-		sys_ascii_set(PAGE_MAPOBJECTS);
+		ascii8_set_data(PAGE_MAPOBJECTS);
 		map_object = (struct map_object_item *) room_objs;
 		type = map_object->type;
 		if (type == ACTIONITEM) {
@@ -576,7 +576,7 @@ void init_map_tilesets()
 {
 	tile_init();
 
-	sys_ascii_set(PAGE_MAPTILES);
+	ascii8_set_data(PAGE_MAPTILES);
 
 	INIT_TILE_SET(tileset_map[MAP_TILESET_1], maptiles1);
 	INIT_TILE_SET(tileset_map[MAP_TILESET_2], maptiles2);
@@ -596,7 +596,7 @@ void show_score_panel()
 	uint8_t i;
 	char snum[3];
 
-	sys_ascii_set(PAGE_DYNTILES);
+	ascii8_set_data(PAGE_DYNTILES);
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
 	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
 
@@ -635,7 +635,7 @@ void init_resources()
 	spr_init();
 
 	/** initialize dynamic tile sets **/
-	sys_ascii_set(PAGE_DYNTILES);
+	ascii8_set_data(PAGE_DYNTILES);
 
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 2, 1);
@@ -663,7 +663,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
 
 	/** copy numeric font to vram **/
-	sys_ascii_set(PAGE_INTRO);
+	ascii8_set_data(PAGE_INTRO);
 	init_font(&big_digits, font_big_digits_tile, font_big_digits_tile_color, 10, 2,
 		FONT_NUMERIC, 10, 1, 2);
 
@@ -673,7 +673,7 @@ void init_resources()
 void init_sfx()
 {
 	/** copy over sfx to ram **/
-	sys_ascii_set(PAGE_MUSIC);
+	ascii8_set_data(PAGE_MUSIC);
 	sfx_setup(abbaye_sfx_afb);
 }
 
@@ -682,7 +682,7 @@ void define_sprite(uint8_t pattidx)
 	uint16_t size;
 	uint8_t frames;
 
-	sys_ascii_set(PAGE_SPRITES);
+	ascii8_set_data(PAGE_SPRITES);
 	switch(pattidx) {
 		case PATRN_BAT:
 			spr_define_pattern_set(PATRN_BAT, SPR_SIZE_16x16, 1, 1,

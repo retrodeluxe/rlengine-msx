@@ -129,11 +129,9 @@ void animate_all() __nonbanked
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
 			/** XXX: hack for banked function pointers **/
-			//sys_irq_disable();
-			sys_ascii_set_code(3);
+			ascii8_set_code(3);
 			anim->run(dpo);
-			sys_ascii_restore();
-			//sys_irq_enable();
+			ascii8_restore();
 		}
 	}
 }
@@ -165,7 +163,7 @@ void show_game_over()
 	tile_init();
 	spr_init();
 
-	sys_ascii_set(PAGE_INTRO);
+	ascii8_set_data(PAGE_INTRO);
 	INIT_TILE_SET(tileset_gameover, gameover);
 	tile_set_to_vram(&tileset_gameover, 1);
 
@@ -189,7 +187,7 @@ void show_title_screen()
 	uint8_t i, color;
 
 	vdp_screen_disable();
-	sys_ascii_set(PAGE_INTRO);
+	ascii8_set_data(PAGE_INTRO);
 
 	tile_init();
 	INIT_TILE_SET(tileset_intro, intro_tileset);
@@ -209,7 +207,7 @@ void show_title_screen()
 	/** title music **/
 	pt3_init_notes(NT);  // NT is in PAGE_INTRO
 
-	sys_ascii_set(PAGE_MUSIC);
+	ascii8_set_data(PAGE_MUSIC);
 
 	pt3_init(title_song_pt3, 0);
 

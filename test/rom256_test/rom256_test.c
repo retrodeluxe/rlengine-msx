@@ -23,9 +23,9 @@ void main()
 	vdp_clear_grp1(0);
 
 	vdp_print_grp1(10, 10, "Hello MegaROM");
-	sys_ascii_set(4);
+	ascii8_set_data(4);
 	vdp_print_grp1(10, 11, test);
-	sys_ascii_set(5);
+	ascii8_set_data(5);
 	vdp_print_grp1(10, 12, test2);
 
 	do {
