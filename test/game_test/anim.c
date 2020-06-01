@@ -20,6 +20,7 @@
 struct animator animators[MAX_ANIMATORS];
 
 extern struct displ_object dpo_jean;
+extern void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -529,6 +530,58 @@ void anim_close_door(struct displ_object *obj)
 	}
 }
 
+/**
+ * Animation for bullets thrown up and to one side,
+ *      following an inverted parabolic trajectory
+ */
+void anim_falling_bullets(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dx = 0, dy = 0;
+
+	if (obj->state == 1) {
+		dx = 2;
+	} else if (obj->state == 0) {
+		dx = -2;
+	}
+
+	// inverted parabola with slope derivative = -1
+	dy = obj->aux++;
+
+	obj->xpos += dx;
+	obj->ypos += dy;
+
+	if (obj->ypos > 160 || obj->xpos > 250) {
+		spr_hide(obj->spr);
+		list_del(&obj->list);
+		obj->state = 255;
+	} else {
+		spr_animate(sp, dx, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
+}
+
+/**
+ * Animation of plants throwing bullets
+ */
+void anim_plant(struct displ_object *obj)
+{
+	// obj->aux contains delay in cycles, state rolls over at 200
+	if (obj->state == obj->aux) {
+		// open
+		obj->tob->cur_anim_step = 1;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+		add_plant_bullet(obj->xpos, obj->ypos, 0);
+		add_plant_bullet(obj->xpos, obj->ypos, 1);
+	} else if (obj->state == obj->aux + 10) {
+		// close
+		obj->tob->cur_anim_step = 0;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	}
+	if (++obj->state > 160) obj->state = 0;
+}
+
 void init_animators()
 {
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
@@ -539,4 +592,6 @@ void init_animators()
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 	animators[ANIM_CHASE].run = anim_chase;
 	animators[ANIM_CLOSE_DOOR].run = anim_close_door;
+	animators[ANIM_SHOOTER_PLANT].run = anim_plant;
+	animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;
 }

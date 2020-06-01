@@ -7,7 +7,7 @@
 const uint8_t two_step_state[] = {2,2};
 const uint8_t single_step_state[] = {1,1};
 const uint8_t three_step_state[] = {3,3};
-const uint8_t bullet_state[] = {1,1};
+const uint8_t bullet_state[] = {1,1,1,1};
 const uint8_t bat_state[] = {2};
 const uint8_t waterdrop_state[] = {3};
 const uint8_t single_four_state[] = {4};

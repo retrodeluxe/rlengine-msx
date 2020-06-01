@@ -35,6 +35,7 @@ struct tile_set tileset[TILE_MAX];
 /** scene primitives **/
 struct tile_object tileobject[SCENE_MAX_DPO];
 struct spr_sprite_def enemy_sprites[SCENE_MAX_DPO];
+struct spr_sprite_def bullet_sprites[SCENE_MAX_BULLET];
 struct spr_sprite_def jean_sprite;
 
 // FIXME: there appears to be a buffer overrun in one of this structures,
@@ -42,6 +43,7 @@ struct spr_sprite_def jean_sprite;
 
 /** scene display objects **/
 struct displ_object display_object[SCENE_MAX_DPO];
+struct displ_object dpo_bullet[SCENE_MAX_BULLET];
 
 /** main character display object **/
 struct displ_object dpo_jean;
@@ -61,7 +63,10 @@ struct list_head *coll_elem;
 struct displ_object *coll_dpo;
 
 /** tile object and sprite counters **/
-uint8_t spr_ct, tob_ct;
+uint8_t spr_ct, tob_ct, bullet_ct;
+
+/** misc flags **/
+bool init_bullets;
 
 /** current room object data **/
 uint8_t *room_objs;
@@ -215,6 +220,48 @@ void add_jean()
 	add_animator(&dpo_jean, ANIM_JEAN);
 }
 
+/**
+ * throws a plant bullet to either left (dir = 0) or right (dir = 1)
+ */
+void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir)
+{
+	uint8_t idx;
+
+	if (init_bullets) {
+		define_sprite(PATRN_BULLET);
+		spr_valloc_pattern_set(PATRN_BULLET);
+		init_bullets = false;
+	}
+
+	idx = 0;
+	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
+		if (dpo_bullet[idx].state == 255)
+			break;
+	}
+
+	if (idx == SCENE_MAX_BULLET)
+		return;
+
+	spr_init_sprite(&bullet_sprites[idx], PATRN_BULLET);
+	bullet_sprites[idx].cur_anim_step = 0;
+	spr_set_pos(&bullet_sprites[idx], xpos + 8 * dir, ypos - 8);
+
+	dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
+	dpo_bullet[idx].spr = &bullet_sprites[idx];
+	dpo_bullet[idx].xpos = xpos + 8 * dir;
+	dpo_bullet[idx].ypos = ypos - 8;
+	dpo_bullet[idx].state = dir;
+	dpo_bullet[idx].collision_state = 0;
+	dpo_bullet[idx].aux = -4;
+
+	INIT_LIST_HEAD(&dpo_bullet[idx].list);
+	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
+	add_animator(&dpo_bullet[idx], ANIM_FALLING_BULLETS);
+	list_add(&dpo_bullet[idx].list, &display_list);
+	spr_show(dpo_bullet[idx].spr);
+
+}
+
 inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
@@ -259,6 +306,12 @@ void clear_room() {
 
 	spr_ct = 0;
 	tob_ct = 0;
+	bullet_ct = 0;
+	init_bullets = true;
+
+	for (i = 0; i < SCENE_MAX_BULLET; i++) {
+		dpo_bullet[i].state = 255;
+	}
 }
 
 /**
@@ -274,7 +327,7 @@ void clean_state()
 
 void load_room(uint8_t room)
 {
-	uint8_t i, id, type;
+	uint8_t i, id, type, delay;
 	bool add_dpo;
 
 	sys_irq_disable();
@@ -460,8 +513,10 @@ void load_room(uint8_t room)
 			} else if (map_object->object.shooter.type == TYPE_ARCHER) {
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
+				delay = map_object->object.shooter.delay;
+				dpo->aux = delay;
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
-
+				add_animator(dpo, ANIM_SHOOTER_PLANT);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
@@ -542,7 +597,7 @@ void load_room(uint8_t room)
 	}
 
 	add_jean();
-	phys_set_sprite_collision_handler(jean_collision_handler);
+	// phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements
 	list_for_each(elem, &display_list) {
@@ -653,7 +708,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 6, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 3, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DOOR], door, 1, 4, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
@@ -768,6 +823,11 @@ void define_sprite(uint8_t pattidx)
 			spr_define_pattern_set(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1,
 				waterdrop_state);
 			spr_copy_pattern_set(PATRN_WATERDROP, waterdrop, waterdrop_color);
+			break;
+		case PATRN_BULLET:
+			spr_define_pattern_set(PATRN_BULLET, SPR_SIZE_16x16, 1, 4,
+				bullet_state);
+			spr_copy_pattern_set(PATRN_BULLET, bullet, bullet_color);
 			break;
 	}
 

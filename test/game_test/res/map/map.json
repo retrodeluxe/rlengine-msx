@@ -2759,7 +2759,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"0",
+                     "delay":"50",
                      "type":"plant"
                     },
                  "propertytypes":
@@ -2780,7 +2780,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"0.5",
+                     "delay":"100",
                      "type":"plant"
                     },
                  "propertytypes":
@@ -2801,7 +2801,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"1",
+                     "delay":"150",
                      "type":"plant"
                     },
                  "propertytypes":
