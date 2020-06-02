@@ -3550,7 +3550,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"0",
+                     "delay":"50",
                      "min":"80",
                      "type":"flush"
                     },
@@ -3573,7 +3573,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"0.5",
+                     "delay":"90",
                      "min":"80",
                      "type":"flush"
                     },
@@ -3596,7 +3596,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"1",
+                     "delay":"70",
                      "min":"80",
                      "type":"flush"
                     },
@@ -4597,7 +4597,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"0",
+                     "delay":"60",
                      "min":"77",
                      "type":"flush"
                     },

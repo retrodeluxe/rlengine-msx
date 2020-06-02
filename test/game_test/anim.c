@@ -21,6 +21,7 @@ struct animator animators[MAX_ANIMATORS];
 
 extern struct displ_object dpo_jean;
 extern void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir);
+extern void add_fish_bullet(uint8_t xpos, uint8_t ypos);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -629,6 +630,30 @@ void anim_waterdrop(struct displ_object *obj)
  */
 void anim_fish_jump(struct displ_object *obj)
 {
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dx = 0, dy = 0;
+
+	// inverted parabola with slope derivative = -0.33
+	dy = obj->aux;
+	obj->ypos += dy;
+	if (obj->aux2 == 2) {
+		obj->aux++;
+		obj->aux2 = 0;
+	} else {
+		obj->aux2++;
+	}
+
+	if (obj->ypos > 160) {
+		spr_hide(obj->spr);
+		list_del(&obj->list);
+		obj->state = 255;
+		// TODO: need to show the splash down...
+		// which means add a mechanism to notify the parent object
+	} else {
+		spr_animate(sp, 0, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
 }
 
 /**
@@ -636,13 +661,20 @@ void anim_fish_jump(struct displ_object *obj)
  */
 void anim_splash(struct displ_object *obj)
 {
-	if (obj->state++ > obj->aux) {
-		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
-			obj->tob->cur_anim_step++;
-		} else {
-			obj->tob->cur_anim_step = 0;
-		}
+	obj->state++;
+	if (obj->state == obj->aux) {
+		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
+		add_fish_bullet(obj->xpos, obj->ypos);
+	} else if (obj->state == obj->aux + 2) {
+		obj->tob->cur_anim_step = 1;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	} else if (obj->state == obj->aux + 5) {
+		obj->tob->cur_anim_step = 2;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	} else if (obj->state > obj->aux + 10) {
+		obj->state = 0;
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
 	}
 }
 
