@@ -354,7 +354,7 @@ void clean_state()
 
 void load_room(uint8_t room)
 {
-	uint8_t i, id, type, delay, speed;
+	uint8_t i, id, type, delay, speed, offset;
 	bool add_dpo;
 
 	sys_irq_disable();
@@ -471,8 +471,10 @@ void load_room(uint8_t room)
 				//add_tileobject(dpo, tob_ct, TILE_DRAGON);
 				// here there is some nice animation to do
 			} else if (map_object->object.static_.type == TYPE_LAVA) {
+				offset = map_object->object.static_.offset;
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
-				// also nice animation to do here
+				dpo->tob->cur_anim_step = offset;
+				add_animator(dpo, ANIM_CYCLE_TILE);
 				phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, spear_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
@@ -615,8 +617,11 @@ void load_room(uint8_t room)
 				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_LAVA) {
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_FIREBALL);
-				add_animator(dpo, ANIM_STATIC);
+				dpo->speed = speed;
+				dpo->state = STATE_MOVING_UP;
+				add_animator(dpo, ANIM_FIREBALL);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
 			} else {

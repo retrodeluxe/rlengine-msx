@@ -392,25 +392,35 @@ void anim_left_right_floor(struct displ_object *obj)
 
 void anim_up_down(struct displ_object *obj)
 {
+	struct spr_sprite_def *sp = obj->spr;
 	int8_t dy = 0;
+
+	dy = obj->speed;
 	switch(obj->state) {
 		case STATE_MOVING_DOWN:
-			dy = obj->speed;
 			if (is_colliding_down(obj)) {
 				obj->state = STATE_MOVING_UP;
-				dy = obj->speed * -1;;
+				dy *= -1;;
 			}
 			break;
 		case STATE_MOVING_UP:
-			dy = obj->speed * -1;
+			dy *= -1;
 			if (is_colliding_up(obj)) {
 				obj->state = STATE_MOVING_DOWN;
-				dy = obj->speed;
+				dy *= -1;
 			}
 			break;
 	}
+
 	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy, false);
-	dpo_simple_animate(obj, 0, dy);
+
+	if ((dy > 0 && !is_colliding_down(obj))
+		|| (dy < 0 && !is_colliding_up(obj))) {
+		obj->ypos += dy;
+	}
+	spr_animate(sp, 0, dy);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
 }
 
 /**
@@ -703,12 +713,11 @@ void anim_ghost(struct displ_object *obj)
 		|| (dy < 0 && !is_colliding_up(obj))) {
 		obj->ypos += dy;
 	}
-	
+
 	spr_animate(sp, dx, dy);
 	spr_set_pos(sp, obj->xpos, obj->ypos);
 	spr_update(sp);
 }
-
 
 void init_animators()
 {
@@ -726,4 +735,5 @@ void init_animators()
 	animators[ANIM_FISH_JUMP].run = anim_fish_jump;
 	animators[ANIM_SPLASH].run = anim_splash;
 	animators[ANIM_GHOST].run = anim_ghost;
+	animators[ANIM_FIREBALL].run = anim_up_down;
 }

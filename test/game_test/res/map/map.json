@@ -5340,7 +5340,7 @@
                      "dir":"3",
                      "max":"112",
                      "min":"95",
-                     "speed":"2",
+                     "speed":"3",
                      "type":"lava"
                     },
                  "propertytypes":
@@ -5421,7 +5421,7 @@
                      "dir":"3",
                      "max":"112",
                      "min":"95",
-                     "speed":"2",
+                     "speed":"3",
                      "type":"lava"
                     },
                  "propertytypes":
@@ -5448,7 +5448,7 @@
                      "dir":"3",
                      "max":"112",
                      "min":"101",
-                     "speed":"2",
+                     "speed":"3",
                      "type":"lava"
                     },
                  "propertytypes":
