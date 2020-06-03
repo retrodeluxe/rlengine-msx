@@ -2011,7 +2011,7 @@
                  "name":"ghost",
                  "properties":
                     {
-                     "speed":"0.5"
+                     "speed":"1"
                     },
                  "propertytypes":
                     {

@@ -678,6 +678,37 @@ void anim_splash(struct displ_object *obj)
 	}
 }
 
+/**
+ * The Ghost moves slowly towards jean, taking into account collisions
+ */
+void anim_ghost(struct displ_object *obj)
+{
+	int8_t dx, dy;
+	struct spr_sprite_def *sp = obj->spr;
+
+	dx = obj->speed;
+	dy = obj->speed;
+	if (obj->xpos > dpo_jean.xpos) {
+		dx *= -1;
+	}
+	if (obj->ypos > dpo_jean.ypos) {
+		dy *= -1;
+	}
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false);
+	if ((dx > 0 && !is_colliding_right(obj))
+		|| (dx < 0 && !is_colliding_left(obj))) {
+		obj->xpos += dx;
+	}
+	if ((dy > 0 && !is_colliding_down(obj))
+		|| (dy < 0 && !is_colliding_up(obj))) {
+		obj->ypos += dy;
+	}
+	
+	spr_animate(sp, dx, dy);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+}
+
 
 void init_animators()
 {
@@ -694,4 +725,5 @@ void init_animators()
 	animators[ANIM_WATERDROP].run = anim_waterdrop;
 	animators[ANIM_FISH_JUMP].run = anim_fish_jump;
 	animators[ANIM_SPLASH].run = anim_splash;
+	animators[ANIM_GHOST].run = anim_ghost;
 }

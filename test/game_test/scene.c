@@ -500,8 +500,10 @@ void load_room(uint8_t room)
 			}
 			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {
+			speed = map_object->object.ghost.speed;
 			add_sprite(dpo, spr_ct, PATRN_GHOST);
-			add_animator(dpo, ANIM_STATIC);
+			dpo->speed = speed;
+			add_animator(dpo, ANIM_GHOST);
 			room_objs += NEXT_OBJECT(struct map_object_ghost);
 		} else if (map_object->type == ROPE) {
 			room_objs += NEXT_OBJECT(struct map_object_rope);
