@@ -395,17 +395,17 @@ void anim_up_down(struct displ_object *obj)
 	int8_t dy = 0;
 	switch(obj->state) {
 		case STATE_MOVING_DOWN:
-			dy = 2;
+			dy = obj->speed;
 			if (is_colliding_down(obj)) {
 				obj->state = STATE_MOVING_UP;
-				dy = -2;
+				dy = obj->speed * -1;;
 			}
 			break;
 		case STATE_MOVING_UP:
-			dy = -2;
+			dy = obj->speed * -1;
 			if (is_colliding_up(obj)) {
 				obj->state = STATE_MOVING_DOWN;
-				dy = 2;
+				dy = obj->speed;
 			}
 			break;
 	}

@@ -369,7 +369,7 @@ void clean_state()
 
 void load_room(uint8_t room)
 {
-	uint8_t i, id, type, delay;
+	uint8_t i, id, type, delay, speed;
 	bool add_dpo;
 
 	sys_irq_disable();
@@ -603,9 +603,11 @@ void load_room(uint8_t room)
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_FLY);
 				add_animator(dpo, ANIM_UP_DOWN);
 				dpo->state = STATE_MOVING_DOWN;
+				dpo->speed = speed;
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);

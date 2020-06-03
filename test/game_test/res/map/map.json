@@ -2225,7 +2225,7 @@
                      "dir":"2",
                      "max":"62",
                      "min":"49",
-                     "speed":"2",
+                     "speed":"3",
                      "type":"fly"
                     },
                  "propertytypes":
@@ -2254,7 +2254,7 @@
                      "dir":"2",
                      "max":"52",
                      "min":"45",
-                     "speed":"0.75",
+                     "speed":"1",
                      "type":"fly"
                     },
                  "propertytypes":
@@ -2283,7 +2283,7 @@
                      "dir":"2",
                      "max":"62",
                      "min":"58",
-                     "speed":"0.75",
+                     "speed":"1",
                      "type":"fly"
                     },
                  "propertytypes":
@@ -2312,7 +2312,7 @@
                      "dir":"2",
                      "max":"62",
                      "min":"45",
-                     "speed":"2",
+                     "speed":"3",
                      "type":"fly"
                     },
                  "propertytypes":
@@ -2341,7 +2341,7 @@
                      "dir":"2",
                      "max":"62",
                      "min":"45",
-                     "speed":"1.5",
+                     "speed":"2",
                      "type":"fly"
                     },
                  "propertytypes":
