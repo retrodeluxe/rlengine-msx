@@ -1,4 +1,4 @@
-#pragma DATA_PAGE 8
+#pragma DATA_PAGE 9
 
 // PAGE_MAPTILES
 #include "gen/maptiles1.h"

@@ -1,4 +1,4 @@
-#pragma DATA_PAGE 10
+#pragma DATA_PAGE 11
 
 // PAGE_SPRITES
 #include "gen/game_test_sprites.h"
