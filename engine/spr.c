@@ -161,6 +161,12 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 
+bool spr_is_allocated(uint8_t patrn_idx)
+{
+	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
+	return (ps->allocated == true);
+}
+
 static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 {
 	uint8_t i, color_frame, base = 0, base2, frame;

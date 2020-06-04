@@ -70,6 +70,7 @@ enum spr_patterns_t {
 	PATRN_FIREBALL,
 	PATRN_WATERDROP,
 	PATRN_BULLET,
+	PATRN_ARROW,
 	PATRN_MAX,
 };
 

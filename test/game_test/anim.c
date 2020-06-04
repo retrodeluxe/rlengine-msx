@@ -22,6 +22,8 @@ struct animator animators[MAX_ANIMATORS];
 extern struct displ_object dpo_jean;
 extern void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir);
 extern void add_fish_bullet(uint8_t xpos, uint8_t ypos);
+extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
+	uint8_t dir, uint8_t speed);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -384,7 +386,6 @@ void anim_left_right_floor(struct displ_object *obj)
 		|| (dx < 0 && !is_colliding_left(obj))) {
 		obj->xpos += dx;
 	}
-
 	spr_animate(sp, dx, 0);
 	spr_set_pos(sp, obj->xpos, obj->ypos);
 	spr_update(sp);
@@ -719,6 +720,65 @@ void anim_ghost(struct displ_object *obj)
 	spr_update(sp);
 }
 
+/**
+ * Archer skeleton throws arrows and switches direction based on jean's position
+ */
+void anim_archer_skeleton(struct displ_object *obj)
+{
+	uint8_t arrow_xpos;
+
+	if (dpo_jean.xpos > (obj->xpos + 16)) {
+		obj->tob->cur_dir = 1;
+		arrow_xpos = obj->xpos + 16;
+	} else if (dpo_jean.xpos < (obj->xpos - 16)) {
+		obj->tob->cur_dir = 0;
+		arrow_xpos = obj->xpos - 4;
+	}
+
+	if (obj->state == obj->aux) {
+		obj->tob->cur_anim_step = 1;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+		add_bullet(obj->xpos,
+			obj->ypos + 4,
+			PATRN_ARROW,
+			ANIM_HORIZONTAL_PROJECTILE,
+			obj->tob->cur_dir, 8);
+	} else if (obj->state == obj->aux + 10) {
+		obj->tob->cur_anim_step = 0;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	} else if (obj->state == 0) {
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	}
+	if (++obj->state > 60) obj->state = 1;
+}
+
+/**
+ * animation for arrows and other horizontal projectiles
+ */
+void anim_horizontal_projectile(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dx = 0, dy = 0;
+
+	if (obj->aux == 0) {
+		obj->xpos -= obj->aux2;
+	} else {
+		obj->xpos += obj->aux2;
+	}
+
+	if (obj->xpos < 4 || obj->xpos > 235) {
+		spr_hide(obj->spr);
+		list_del(&obj->list);
+		obj->state = 255;
+	} else {
+		spr_animate(sp, dx, 0);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
+
+}
+
+
 void init_animators()
 {
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
@@ -736,4 +796,6 @@ void init_animators()
 	animators[ANIM_SPLASH].run = anim_splash;
 	animators[ANIM_GHOST].run = anim_ghost;
 	animators[ANIM_FIREBALL].run = anim_up_down;
+	animators[ANIM_ARCHER_SKELETON].run = anim_archer_skeleton;
+	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
 }

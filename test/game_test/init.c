@@ -77,7 +77,7 @@ void show_score_panel()
 
 	score.y = 192 - 16;
 	score.x = 0;
-	score.cur_dir = 1;
+	score.cur_dir = 0;
 	score.cur_anim_step = 0;
 	score.ts = &tileset[TILE_HEART_STATUS];
 	score.idx = 0;
@@ -86,7 +86,7 @@ void show_score_panel()
 
 	score.x = 32;
 	score.y = 192 - 16;
-	score.cur_dir = 1;
+	score.cur_dir = 0;
 	score.cur_anim_step = 0;
 	score.ts = &tileset[TILE_CROSS_STATUS];
 	score.idx = 0;
@@ -126,7 +126,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 1, 1, 8, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 6, 1, 2);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 3, 1, 2);
@@ -242,6 +242,11 @@ void define_sprite(uint8_t pattidx)
 			spr_define_pattern_set(PATRN_BULLET, SPR_SIZE_16x16, 1, 4,
 				bullet_state);
 			spr_copy_pattern_set(PATRN_BULLET, bullet, bullet_color);
+			break;
+		case PATRN_ARROW:
+			spr_define_pattern_set(PATRN_ARROW, SPR_SIZE_16x16, 1, 2,
+				single_step_state);
+			spr_copy_pattern_set(PATRN_ARROW, arrow, arrow_color);
 			break;
 	}
 

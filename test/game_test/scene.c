@@ -134,7 +134,7 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_s
 	ascii8_set_data(PAGE_MAPOBJECTS);
 	tileobject[objidx].x = map_object->x;
 	tileobject[objidx].y = map_object->y;
-	tileobject[objidx].cur_dir = 1;
+	tileobject[objidx].cur_dir = 0;
 	tileobject[objidx].cur_anim_step = 0;
 	tileobject[objidx].ts = &tileset[tileidx];
 	tileobject[objidx].idx = 0;
@@ -283,6 +283,49 @@ void add_fish_bullet(uint8_t xpos, uint8_t ypos)
 	INIT_LIST_HEAD(&dpo_bullet[idx].list);
 	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
 	add_animator(&dpo_bullet[idx], ANIM_FISH_JUMP);
+	list_add(&dpo_bullet[idx].list, &display_list);
+	spr_show(dpo_bullet[idx].spr);
+}
+
+/**
+ * Add bullet generic
+ */
+void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
+	uint8_t dir, uint8_t speed)
+{
+	uint8_t idx;
+
+	//if(!spr_is_allocated(patrn_id)) {
+		define_sprite(patrn_id);
+		spr_valloc_pattern_set(patrn_id);
+	//}
+
+	idx = 0;
+	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
+		if (dpo_bullet[idx].state == 255)
+			break;
+	}
+
+	if (idx == SCENE_MAX_BULLET)
+		return;
+
+	spr_init_sprite(&bullet_sprites[idx], patrn_id);
+	bullet_sprites[idx].cur_state = dir;
+	bullet_sprites[idx].cur_anim_step = 0;
+	spr_set_pos(&bullet_sprites[idx], xpos, ypos);
+
+	dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
+	dpo_bullet[idx].spr = &bullet_sprites[idx];
+	dpo_bullet[idx].xpos = xpos;
+	dpo_bullet[idx].ypos = ypos;
+	dpo_bullet[idx].state = 0;
+	dpo_bullet[idx].collision_state = 0;
+	dpo_bullet[idx].aux = dir;
+	dpo_bullet[idx].aux2 = speed;
+
+	INIT_LIST_HEAD(&dpo_bullet[idx].list);
+	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
+	add_animator(&dpo_bullet[idx], anim_id);
 	list_add(&dpo_bullet[idx].list, &display_list);
 	spr_show(dpo_bullet[idx].spr);
 }
@@ -543,6 +586,8 @@ void load_room(uint8_t room)
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
 			} else if (map_object->object.shooter.type == TYPE_ARCHER) {
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
+				dpo->aux = 30;
+				add_animator(dpo, ANIM_ARCHER_SKELETON);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
 				delay = map_object->object.shooter.delay;
 				dpo->aux = delay;
