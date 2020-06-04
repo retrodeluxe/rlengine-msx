@@ -80,6 +80,7 @@ void phys_clear_sprite_collision_handler() __nonbanked
 void phys_set_tile_collision_handler(struct displ_object *dpo,
 	void (*handler), uint8_t data)
 {
+	// FIXME: check for overrun and report error.
 	uint8_t base_tile = dpo->tob->ts->pidx;
 	uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
 		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;

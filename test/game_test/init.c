@@ -138,6 +138,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPLASH], splash, 2, 1, 3, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_BLOCK_CROSS], cross_small, 1, 1, 4, 1);
 
 	/** copy numeric font to vram **/
 	ascii8_set_data(PAGE_INTRO);

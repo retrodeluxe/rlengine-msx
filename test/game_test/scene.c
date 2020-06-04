@@ -598,8 +598,13 @@ void load_room(uint8_t room)
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
-			add_tileobject(dpo, tob_ct, TILE_CROSS);
+			id = map_object->object.block.index;
+			add_tileobject(dpo, tob_ct, TILE_BLOCK_CROSS);
 			add_animator(dpo, ANIM_CYCLE_TILE);
+			if (id == 1) {
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_DOWN, null_handler, 0);
+			}
 			room_objs += NEXT_OBJECT(struct map_object_block);
 		} else if (map_object->type == STEP) {
 			// TODO: Add special collisions

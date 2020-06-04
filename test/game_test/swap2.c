@@ -29,3 +29,4 @@
 #include "gen/dragon.h"
 #include "gen/checkpoint.h"
 #include "gen/stainedglass.h"
+#include "gen/cross_small.h"
