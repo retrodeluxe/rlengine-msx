@@ -565,8 +565,8 @@ void load_room(uint8_t room)
 			if (add_dpo) {
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
 				if (type == 1) {
-					dpo->tob->cur_dir = 2;
-					dpo->tob->cur_anim_step = 1;
+					dpo->tob->cur_dir = 1;
+					dpo->tob->cur_anim_step = 0;
 				}
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_FULL, null_handler, 0);
@@ -584,6 +584,8 @@ void load_room(uint8_t room)
 				add_animator(dpo, ANIM_WATERDROP);
 			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
+				dpo->aux = 30;
+				add_animator(dpo, ANIM_GARGOLYNE);
 			} else if (map_object->object.shooter.type == TYPE_ARCHER) {
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
 				dpo->aux = 30;

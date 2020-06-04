@@ -14,3 +14,4 @@ const uint8_t single_four_state[] = {4};
 const uint8_t spider_state[]= {2};
 const uint8_t archer_state[]= {2,2};
 const uint8_t jean_state[] = {2,1,2,2,1,2,2};
+const uint8_t spit_state[] = {1};

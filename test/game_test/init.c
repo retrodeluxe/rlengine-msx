@@ -40,6 +40,7 @@ extern const uint8_t single_four_state[];
 extern const uint8_t spider_state[];
 extern const uint8_t archer_state[];
 extern const uint8_t jean_state[];
+extern const uint8_t spit_state[];
 
 /** score panel primitives **/
 struct tile_object score;
@@ -247,6 +248,11 @@ void define_sprite(uint8_t pattidx)
 			spr_define_pattern_set(PATRN_ARROW, SPR_SIZE_16x16, 1, 2,
 				single_step_state);
 			spr_copy_pattern_set(PATRN_ARROW, arrow, arrow_color);
+			break;
+		case PATRN_SPIT:
+			spr_define_pattern_set(PATRN_SPIT, SPR_SIZE_16x16, 1, 1,
+				spit_state);
+			spr_copy_pattern_set(PATRN_SPIT, spit, spit_color);
 			break;
 	}
 

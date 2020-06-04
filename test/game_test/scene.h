@@ -71,6 +71,7 @@ enum spr_patterns_t {
 	PATRN_WATERDROP,
 	PATRN_BULLET,
 	PATRN_ARROW,
+	PATRN_SPIT,
 	PATRN_MAX,
 };
 

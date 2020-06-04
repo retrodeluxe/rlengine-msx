@@ -25,6 +25,8 @@ extern void add_fish_bullet(uint8_t xpos, uint8_t ypos);
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	uint8_t dir, uint8_t speed);
 
+extern void anim_gargolyne(struct displ_object *obj);
+
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
 	list_add(&animators[animidx].list, &dpo->animator_list);
@@ -778,6 +780,28 @@ void anim_horizontal_projectile(struct displ_object *obj)
 
 }
 
+/**
+ * Animation of wall mounted gargolyne that spits a fireball
+ */
+void anim_gargolyne(struct displ_object *obj)
+{
+	uint8_t spit_xpos;
+
+	if (obj->state == obj->aux) {
+		obj->tob->cur_anim_step = 1;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+		add_bullet(obj->xpos,
+			obj->ypos + 4,
+			PATRN_SPIT,
+			ANIM_HORIZONTAL_PROJECTILE, 0, 8);
+	} else if (obj->state == obj->aux + 10) {
+		obj->tob->cur_anim_step = 0;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	} else if (obj->state == 0) {
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	}
+	if (++obj->state > 60) obj->state = 1;
+}
 
 void init_animators()
 {
@@ -798,4 +822,5 @@ void init_animators()
 	animators[ANIM_FIREBALL].run = anim_up_down;
 	animators[ANIM_ARCHER_SKELETON].run = anim_archer_skeleton;
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
+	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
 }
