@@ -1,4 +1,4 @@
-#pragma DATA_PAGE 12
+#pragma DATA_PAGE 13
 // PAGE_MUSIC
 // note not all music fits in 8K
 #include "gen/title_song.h"

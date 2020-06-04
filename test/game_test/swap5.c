@@ -1,4 +1,4 @@
-#pragma DATA_PAGE 10
+#pragma DATA_PAGE 11
 
 // PAGE_MAPOBJECTS
 #include "gen/map_defs.h"

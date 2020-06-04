@@ -1,4 +1,4 @@
-#pragma DATA_PAGE 7
+#pragma DATA_PAGE 8
 
 // PAGE_DYNTILES
 #include "gen/rope.h"

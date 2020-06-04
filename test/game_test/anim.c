@@ -15,7 +15,7 @@
 #include "logic.h"
 #include "scene.h"
 
-#pragma CODE_PAGE 3
+#pragma CODE_PAGE 6
 
 struct animator animators[MAX_ANIMATORS];
 
