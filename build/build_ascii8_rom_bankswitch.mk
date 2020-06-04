@@ -41,7 +41,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LO
 	@echo "-b _CODE=0x7A00" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	$(foreach page,$(CODE_PAGES),$(call emit_link_code_page,$(page)))
 	$(foreach page,$(DATA_PAGES),$(call emit_link_data_page,$(page)))
-	@echo "-b _HOME=0x40E4" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	@echo "-b _HOME=0x40F0" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk

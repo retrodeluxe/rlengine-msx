@@ -28,6 +28,8 @@ _ascii8_set_code:
 		push 	ix
 		ld	ix,#0
 		add 	ix,sp
+		ld	a,(cur_page)
+		ld	(cur_page2),a
 		ld	a,4(ix)
 		ld 	(ASCII8_PAGE2),a
 		ld	(cur_page),a
@@ -43,7 +45,7 @@ _ascii8_set_data:
 		ret
 _ascii8_restore:
 		push 	ix
-		ld	a,#2
+		ld	a,(cur_page2)
 		ld	(ASCII8_PAGE2),a
 		pop	ix
 		ret
@@ -155,4 +157,5 @@ done:
 romslot:	.ds 1
 biosslot:	.ds 1
 cur_page:	.ds 1
+cur_page2:	.ds 1
 banked_sp:	.ds 2

@@ -139,7 +139,10 @@ static void phys_tile_collision_notify(uint8_t tile) __nonbanked
 	uint8_t i;
 	for (i = 0; i < n_cgroups; i++) {
 		if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
+			// FIXME: huge hack for function pointers
+			ascii8_set_code(3);
 			cgroup[i].handler(cgroup[i].dpo, cgroup[i].data);
+			ascii8_set_code(6);
 		}
 	}
 }
