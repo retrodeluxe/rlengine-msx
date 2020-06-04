@@ -627,9 +627,11 @@ void load_room(uint8_t room)
 				add_sprite(dpo, spr_ct, PATRN_BAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
 				add_animator(dpo, ANIM_UP_DOWN);
 				dpo->state = STATE_MOVING_DOWN;
+				dpo->speed = speed;
 			} else if (map_object->object.movable.type == TYPE_RAT) {
 				add_sprite(dpo, spr_ct, PATRN_RAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);

@@ -364,7 +364,7 @@
                      "dir":"3",
                      "max":"18",
                      "min":"13",
-                     "speed":"1.25",
+                     "speed":"2",
                      "type":"spider"
                     },
                  "propertytypes":
@@ -422,7 +422,7 @@
                      "dir":"2",
                      "max":"18",
                      "min":"15",
-                     "speed":"1.25",
+                     "speed":"2",
                      "type":"spider"
                     },
                  "propertytypes":
@@ -2735,7 +2735,7 @@
                      "dir":"3",
                      "max":"51",
                      "min":"45",
-                     "speed":"1",
+                     "speed":"2",
                      "type":"spider"
                     },
                  "propertytypes":
