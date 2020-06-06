@@ -70,6 +70,7 @@ uint8_t *room_objs;
 
 extern void define_sprite(uint8_t pattidx);
 extern void init_resources();
+extern void init_room_tilesets(uint8_t room);
 
 void play_room_music() __nonbanked
 {
@@ -408,6 +409,8 @@ void load_room(uint8_t room)
 	clean_state();
 	vdp_screen_disable();
 
+	init_room_tilesets(room);
+
 	ascii8_set_data(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
 
@@ -510,8 +513,7 @@ void load_room(uint8_t room)
 			room_objs += NEXT_OBJECT(struct map_object_actionitem);
 		} else if (map_object->type == STATIC) {
 			if (map_object->object.static_.type == TYPE_DRAGON) {
- 				// this is crashing, ignore
-				//add_tileobject(dpo, tob_ct, TILE_DRAGON);
+				add_tileobject(dpo, tob_ct, TILE_DRAGON);
 				// here there is some nice animation to do
 			} else if (map_object->object.static_.type == TYPE_LAVA) {
 				offset = map_object->object.static_.offset;

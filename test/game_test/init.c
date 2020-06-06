@@ -51,20 +51,73 @@ void init_map_tilesets()
 	tile_init();
 
 	ascii8_set_data(PAGE_MAPTILES);
-	// dragon + fire will take 55+
-	// which means only the necessary static tiles should be loaded.
 
-	INIT_TILE_SET(tileset_map[MAP_TILESET_1], maptiles1);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_2], maptiles2);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_3], maptiles3)
-	INIT_TILE_SET(tileset_map[MAP_TILESET_4], maptiles4);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_5], maptiles5);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_FOREST], map1);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_1], map2);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_2], map3);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_TREES_1], map4);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CAVE_1], map5);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CATACOMBS_1], map6);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_BEAM], map7);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_STONE], map8);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_FLAMES], map9);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_BRICKS], map10);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_BRICKS_2], map11);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_PLANT], map12);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_FOREST_2], map13);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_GRAVES], map14);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_DECO], map15);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_DECO_2], map16);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_X], map17);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_HANGING_PLANT], map18);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_SKULL], map19);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_DEATH_DECO], map20);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_SKULL_2], map21);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_ROPE], map22);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_CAVE_2], map23);
 
-	tile_set_valloc(&tileset_map[MAP_TILESET_1]);
-	tile_set_valloc(&tileset_map[MAP_TILESET_2]);
-	tile_set_valloc(&tileset_map[MAP_TILESET_3]);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_4], MAP_TILESET_4_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_5], MAP_TILESET_5_POS);
+	/** load initial map tiles for zone 1 **/
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_TREES_1], MAP_TILESET_TREES_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST_2], MAP_TILESET_FOREST_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO], MAP_TILESET_CHURCH_DECO_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_GRAVES], MAP_TILESET_GRAVES_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_1], MAP_TILESET_CHURCH_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO_2], MAP_TILESET_CHURCH_DECO_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS);
+}
+
+void clear_map_tilesets()
+{
+	uint8_t i;
+
+	for (i = 0; i < MAP_TILESET_MAX; i++) {
+		tile_set_vfree(&tileset_map[i]);
+	}
+}
+
+void init_room_tilesets(uint8_t room)
+{
+	static uint8_t prev_room = ROOM_FOREST;
+
+
+	ascii8_set_data(PAGE_MAPTILES);
+
+	/** transition to map zone 2 **/
+	if (prev_room == ROOM_CHURCH_ALTAR && room == ROOM_CATACOMBS) {
+		clear_map_tilesets();
+		/** load catacombs tilesets **/
+		tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
+		tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
+		tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_1], MAP_TILESET_CAVE_1_POS);
+		tile_set_to_vram(&tileset_map[MAP_TILESET_CATACOMBS_1], MAP_TILESET_CATACOMBS_1_POS);
+		tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
+		tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
+		tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
+	}
+
+	prev_room = room;
 }
 
 void show_score_panel()

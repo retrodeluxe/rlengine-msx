@@ -157,6 +157,9 @@ bool tile_set_valloc(struct tile_set *ts)
  */
 void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 {
+	if (ts->allocated)
+		return;
+		
 	tile_set_to_vram_bank(ts, ALLBANKS, pos);
 }
 
