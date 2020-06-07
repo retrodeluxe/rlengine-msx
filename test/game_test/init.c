@@ -25,8 +25,9 @@
 #include "gen/map_defs.h"
 
 #include "gen/title_escape_ext.h"
-#include "gen/title_death_is_close.h"
-#include "gen/title_abandoned_church.h"
+#include "gen/title_death_is_close_ext.h"
+#include "gen/title_abandoned_church_ext.h"
+#include "gen/title_pestilent_beast_ext.h"
 
 #include <stdlib.h>
 
@@ -232,6 +233,7 @@ void init_room_titles()
 	INIT_TILE_SET(tileset_room_title[ROOM_FOREST], title_escape);
 	INIT_TILE_SET(tileset_room_title[ROOM_GRAVEYARD], title_death_is_close);
 	INIT_TILE_SET(tileset_room_title[ROOM_CHURCH_ENTRANCE], title_abandoned_church);
+	INIT_TILE_SET(tileset_room_title[ROOM_CAVE_DRAGON], title_pestilent_beast);
 }
 
 void show_room_title(uint8_t room)
@@ -240,7 +242,8 @@ void show_room_title(uint8_t room)
 	uint16_t offset;
 
 	ascii8_set_data(PAGE_ROOM_TITLES);
-	if (room == ROOM_FOREST || room == ROOM_GRAVEYARD || room == ROOM_CHURCH_ENTRANCE) {
+	if (room == ROOM_FOREST || room == ROOM_GRAVEYARD || room == ROOM_CHURCH_ENTRANCE
+		|| room == ROOM_CAVE_DRAGON) {
 		w = tileset_room_title[room].w;
 		offset = 32 - w + 22 * 32;
 		tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
