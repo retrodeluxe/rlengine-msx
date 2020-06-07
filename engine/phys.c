@@ -130,6 +130,20 @@ void phys_clear_colliding_tile_object(struct displ_object *dpo)
 	// TODO: clear the collision group as well
 }
 
+/**
+ * registers tiles from a plain tile_set as colliding
+ */
+void phys_set_colliding_tile_set(struct tile_set *ts)
+{
+	uint8_t i;
+	uint8_t base_tile = ts->pidx;
+	uint8_t num_tiles = ts->w * ts->h;
+
+	for (i = base_tile; i < base_tile + num_tiles; i++) {
+		phys_set_colliding_tile(i);
+	}
+}
+
 
 /*
  * if the tile has a handler set, notify

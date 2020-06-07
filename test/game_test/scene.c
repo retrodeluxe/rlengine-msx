@@ -416,8 +416,8 @@ void load_room(uint8_t room)
 
 	init_sfx();
 
-	phys_init();
-	init_tile_collisions();
+	//phys_init();
+	// init_tile_collisions();
 
 	INIT_LIST_HEAD(&display_list);
 

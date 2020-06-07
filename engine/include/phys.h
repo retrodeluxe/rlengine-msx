@@ -21,6 +21,7 @@
 #define _MSX_H_PHYS
 
 #include "dpo.h"
+#include "tile.h"
 
 #define COLLISION_LEFT 	1
 #define COLLISION_RIGHT	2
@@ -65,5 +66,5 @@ void phys_set_trigger_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map, int8_t dx, int8_t dy, bool notify) __nonbanked;
 void phys_detect_fall(struct displ_object *obj, uint8_t *map, int8_t dx) __nonbanked;
-
+void phys_set_colliding_tile_set(struct tile_set *ts);
 #endif
