@@ -10,3 +10,4 @@
 #define PAGE_MAPOBJECTS 11
 #define PAGE_SPRITES    12
 #define PAGE_MUSIC	13       /* swap 7 */
+#define PAGE_ROOM_TITLES 14

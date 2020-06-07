@@ -157,6 +157,7 @@ enum rooms_t {
 	ROOM_EVIL_CHURCH_2,
 	ROOM_EVIL_CHURCH_3,
 	ROOM_SATAN,
+	ROOM_MAX,
 };
 
 extern struct list_head display_list;

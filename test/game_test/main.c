@@ -38,6 +38,8 @@ void animate_all() __nonbanked;
 void show_score_panel();
 void play_music() __nonbanked;
 void load_room(uint8_t room);
+void init_room_titles();
+void show_room_title(uint8_t room);
 
 struct tile_set logo;
 struct tile_set tileset_intro;
@@ -75,6 +77,7 @@ start:
 
 	init_map_tilelayers();
 	init_map_object_layers();
+	init_room_titles();
 
 	init_resources();
 	init_animators();

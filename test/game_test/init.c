@@ -24,10 +24,15 @@
 #include "gen/game_test_sprites_ext.h"
 #include "gen/map_defs.h"
 
+#include "gen/title_escape_ext.h"
+#include "gen/title_death_is_close.h"
+#include "gen/title_abandoned_church.h"
+
 #include <stdlib.h>
 
 extern struct tile_set tileset[TILE_MAX];
 extern struct tile_set tileset_map[MAP_TILESET_MAX];
+extern struct tile_set tileset_room_title[ROOM_MAX];
 
 /** sprite definition data */
 extern const uint8_t two_step_state[];
@@ -220,6 +225,34 @@ void init_room_tilesets(uint8_t room)
 
 	prev_room = room;
 }
+
+void init_room_titles()
+{
+	ascii8_set_data(PAGE_ROOM_TITLES);
+	INIT_TILE_SET(tileset_room_title[ROOM_FOREST], title_escape);
+	INIT_TILE_SET(tileset_room_title[ROOM_GRAVEYARD], title_death_is_close);
+	INIT_TILE_SET(tileset_room_title[ROOM_CHURCH_ENTRANCE], title_abandoned_church);
+}
+
+void show_room_title(uint8_t room)
+{
+	uint8_t i, tile, w;
+	uint16_t offset;
+
+	ascii8_set_data(PAGE_ROOM_TITLES);
+	if (room == ROOM_FOREST || room == ROOM_GRAVEYARD || room == ROOM_CHURCH_ENTRANCE) {
+		w = tileset_room_title[room].w;
+		offset = 32 - w + 22 * 32;
+		tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
+
+		tile = 180;
+		for (i = 0; i < w; i++) {
+			vdp_poke(vdp_base_names_grp1 + offset + i, tile + i);
+			vdp_poke(vdp_base_names_grp1 + offset + i + 32, tile + i + w);
+		}
+	}
+}
+
 
 void show_score_panel()
 {

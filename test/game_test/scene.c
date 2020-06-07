@@ -29,6 +29,9 @@
 /** map tilesets **/
 struct tile_set tileset_map[MAP_TILESET_MAX];
 
+/** room title tilesets **/
+struct tile_set tileset_room_title[ROOM_MAX];
+
 /** object tilesets **/
 struct tile_set tileset[TILE_MAX];
 
@@ -71,6 +74,7 @@ uint8_t *room_objs;
 extern void define_sprite(uint8_t pattidx);
 extern void init_resources();
 extern void init_room_tilesets(uint8_t room);
+extern void show_room_title(uint8_t room);
 
 void play_room_music() __nonbanked
 {
@@ -701,7 +705,7 @@ void load_room(uint8_t room)
 		}
 	}
 
-
+	show_room_title(game_state.room);
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
 	vdp_screen_enable();
 	start_music(room);
