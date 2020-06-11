@@ -28,6 +28,26 @@
 #include "gen/title_death_is_close_ext.h"
 #include "gen/title_abandoned_church_ext.h"
 #include "gen/title_pestilent_beast_ext.h"
+#include "gen/title_cave_of_illusions_ext.h"
+#include "gen/title_hangman_tree_ext.h"
+#include "gen/title_prayerofhope_ext.h"
+#include "gen/title_underground_river_ext.h"
+#include "gen/title_hidden_garden_ext.h"
+#include "gen/title_satan_ext.h"
+#include "gen/title_underground_river_ext.h"
+#include "gen/title_unexpected_gate_ext.h"
+#include "gen/title_lake_of_despair_ext.h"
+#include "gen/title_ashes_to_ashes_ext.h"
+#include "gen/title_the_altar_ext.h"
+#include "gen/title_wheel_of_faith_ext.h"
+#include "gen/title_banquet_of_death_ext.h"
+#include "gen/title_evil_church_ext.h"
+#include "gen/title_tortured_souls_ext.h"
+#include "gen/title_wine_supplies_ext.h"
+#include "gen/title_gloomy_tunnels_ext.h"
+#include "gen/title_catacombs_ext.h"
+#include "gen/title_plagued_ruins_ext.h"
+#include "gen/title_tower_of_the_bell_ext.h"
 
 #include <stdlib.h>
 
@@ -230,10 +250,29 @@ void init_room_tilesets(uint8_t room)
 void init_room_titles()
 {
 	ascii8_set_data(PAGE_ROOM_TITLES);
+	INIT_TILE_SET(tileset_room_title[ROOM_PRAYER_OF_HOPE], title_prayerofhope);
+	INIT_TILE_SET(tileset_room_title[ROOM_CHURCH_TOWER], title_tower_of_the_bell);
+	INIT_TILE_SET(tileset_room_title[ROOM_CHURCH_WINE_SUPPLIES], title_wine_supplies);
 	INIT_TILE_SET(tileset_room_title[ROOM_FOREST], title_escape);
 	INIT_TILE_SET(tileset_room_title[ROOM_GRAVEYARD], title_death_is_close);
 	INIT_TILE_SET(tileset_room_title[ROOM_CHURCH_ENTRANCE], title_abandoned_church);
+	INIT_TILE_SET(tileset_room_title[ROOM_CHURCH_ALTAR], title_the_altar);
+	INIT_TILE_SET(tileset_room_title[ROOM_HAGMAN_TREE], title_hangman_tree);
 	INIT_TILE_SET(tileset_room_title[ROOM_CAVE_DRAGON], title_pestilent_beast);
+	INIT_TILE_SET(tileset_room_title[ROOM_CAVE_GHOST], title_cave_of_illusions);
+	INIT_TILE_SET(tileset_room_title[ROOM_CATACOMBS_FLIES], title_plagued_ruins);
+	INIT_TILE_SET(tileset_room_title[ROOM_CATACOMBS], title_catacombs);
+	INIT_TILE_SET(tileset_room_title[ROOM_HIDDEN_GARDEN], title_hidden_garden);
+	INIT_TILE_SET(tileset_room_title[ROOM_CAVE_TUNNEL], title_gloomy_tunnels);
+	INIT_TILE_SET(tileset_room_title[ROOM_CAVE_LAKE], title_lake_of_despair);
+	INIT_TILE_SET(tileset_room_title[ROOM_CATACOMBS_WHEEL], title_wheel_of_faith);
+	INIT_TILE_SET(tileset_room_title[ROOM_DEATH], title_banquet_of_death);
+	INIT_TILE_SET(tileset_room_title[ROOM_HIDDEN_RIVER], title_underground_river);
+	INIT_TILE_SET(tileset_room_title[ROOM_CAVE_GATE], title_unexpected_gate);
+	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH], title_evil_church);
+	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH_2], title_tortured_souls);
+	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH_3], title_ashes_to_ashes);
+//	INIT_TILE_SET(tileset_room_title[ROOM_SATAN], title_satan);
 }
 
 void show_room_title(uint8_t room)
@@ -242,17 +281,14 @@ void show_room_title(uint8_t room)
 	uint16_t offset;
 
 	ascii8_set_data(PAGE_ROOM_TITLES);
-	if (room == ROOM_FOREST || room == ROOM_GRAVEYARD || room == ROOM_CHURCH_ENTRANCE
-		|| room == ROOM_CAVE_DRAGON) {
-		w = tileset_room_title[room].w;
-		offset = 32 - w + 22 * 32;
-		tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
+	w = tileset_room_title[room].w;
+	offset = 32 - w + 22 * 32;
+	tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
 
-		tile = 180;
-		for (i = 0; i < w; i++) {
-			vdp_poke(vdp_base_names_grp1 + offset + i, tile + i);
-			vdp_poke(vdp_base_names_grp1 + offset + i + 32, tile + i + w);
-		}
+	tile = 180;
+	for (i = 0; i < w; i++) {
+		vdp_poke(vdp_base_names_grp1 + offset + i, tile + i);
+		vdp_poke(vdp_base_names_grp1 + offset + i + 32, tile + i + w);
 	}
 }
 
