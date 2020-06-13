@@ -23,9 +23,10 @@
 #include "tile.h"
 
 enum font_type {
-	FONT_ALFA_UPPERCASE,
-	FONT_ALFA_LOWERCASE,
+	FONT_UPPERCASE,
+	FONT_LOWERCASE,
 	FONT_NUMERIC,
+	FONT_SYMBOLS,
 };
 
 struct font {
@@ -36,6 +37,30 @@ struct font {
 	uint8_t glyph_h;
 	uint8_t idx;
 };
+
+/**
+ * A font set may contain four fonths each providing different types of glyphs
+ *  symbols: ascii range 33 to 47
+ *  numeric: ascii range 48 to 57
+ *  upper:   ascii range 65 to 90
+ *  lower:   ascii range 97 to 122
+ */
+struct font_set {
+	struct font *upper;
+	struct font *lower;
+	struct font *numeric;
+	struct font *symbols;
+};
+
+#define CHR_SPC 32
+#define CHR_0 48
+#define CHR_9 57
+#define CHR_A 65
+#define CHR_Z 90
+#define CHR_a 97
+#define CHR_z 122
+#define CHR_EXCL 33
+#define CHR_SLASH 47
 
 #define INIT_FONT(FONT, TILES, TYPE, GLYPHS, W, H)	(FONT).tiles.w = TILES ## _tile_w;\
 							(FONT).tiles.h = TILES ## _tile_h;\
@@ -53,5 +78,6 @@ void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color,
 void font_to_vram(struct font *f, uint8_t pos);
 void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos);
 void font_vprint(struct font *f, uint8_t x, uint8_t y, char *text);
+void font_printf(struct font_set *fs, uint8_t x, uint8_t y, uint8_t *buffer, char *text);
 
 #endif
