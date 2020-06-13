@@ -196,8 +196,7 @@ void show_title_screen()
 	INIT_TILE_SET(tileset_intro, intro_tileset);
 	tile_set_to_vram(&tileset_intro, 1);
 
-	init_font(&font, font_upper_tile, font_upper_tile_color, 26, 1,
-		FONT_ALFA_UPPERCASE, 26, 1, 1);
+	INIT_FONT(font, font_upper, FONT_ALFA_UPPERCASE, 26, 1, 1);
 	font_to_vram_bank(&font, BANK2, 1);
 
 	vdp_clear_grp1(0);

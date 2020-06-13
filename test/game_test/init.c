@@ -377,9 +377,7 @@ void init_resources()
 
 	/** copy numeric font to vram **/
 	ascii8_set_data(PAGE_INTRO);
-	init_font(&big_digits, font_big_digits_tile, font_big_digits_tile_color, 10, 2,
-		FONT_NUMERIC, 10, 1, 2);
-
+	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 224);
 }
 

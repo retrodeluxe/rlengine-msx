@@ -37,6 +37,16 @@ struct font {
 	uint8_t idx;
 };
 
+#define INIT_FONT(FONT, TILES, TYPE, GLYPHS, W, H)	(FONT).tiles.w = TILES ## _tile_w;\
+							(FONT).tiles.h = TILES ## _tile_h;\
+							(FONT).tiles.pattern = TILES ## _tile;\
+							(FONT).tiles.color = TILES ## _tile_color; \
+							(FONT).tiles.allocated = false; \
+							(FONT).type = (TYPE); \
+							(FONT).num_glyphs = (GLYPHS); \
+							(FONT).glyph_w = (W); \
+							(FONT).glyph_h = (H);
+
 void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color,
 	uint8_t tile_w, uint8_t tile_h, enum font_type type,
 	uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h);
