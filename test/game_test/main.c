@@ -42,9 +42,11 @@ void show_title_screen();
 void show_intro_animation();
 void animate_all() __nonbanked;
 void show_score_panel();
+
 void play_music() __nonbanked;
 void load_room(uint8_t room);
 void init_room_titles();
+void load_intro_scene();
 
 struct tile_set logo;
 struct tile_set tileset_intro;
@@ -72,6 +74,8 @@ bool fps_stall;
 
 extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;
+extern const unsigned char introjean_song_pt3[];
+extern const unsigned int introjean_song_pt3_len;
 extern const unsigned int NT[];
 
 extern const char str_intro_1[];
@@ -90,6 +94,8 @@ void main() __nonbanked
 
 start:
 	show_title_screen();
+
+	init_animators();
 	show_intro_animation();
 
 	init_map_tilelayers();
@@ -97,7 +103,6 @@ start:
 	init_room_titles();
 
 	init_resources();
-	init_animators();
 	init_game_state();
 
 	load_room(game_state.room);
@@ -187,7 +192,6 @@ void show_game_over()
 	ascii8_set_data(PAGE_INTRO);
 	INIT_TILE_SET(tileset_gameover, gameover);
 	tile_set_to_vram(&tileset_gameover, 1);
-
 	size = gameover_tile_w * gameover_tile_h;
 
 	y = 11; x = 5;
@@ -248,9 +252,9 @@ void show_title_screen()
  *  Animation of Jean being chased by templars, showing introductory text and
  *  music.
  */
-void show_intro_animation()
+void show_intro_animation() __nonbanked
 {
-	uint8_t i, color;
+	uint8_t i;
 
 	tile_init();
 	vdp_screen_disable();
@@ -281,12 +285,31 @@ void show_intro_animation()
 	font_printf(&intro_font_set, 1, 22, scr_tile_buffer, str_intro_5);
 
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+
+	load_intro_scene();
 	vdp_screen_enable();
 
-	// TODO: add small animation scene
+	ascii8_set_data(PAGE_MUSIC);
+
+	pt3_init(introjean_song_pt3, 0);
+
+	sys_irq_init();
+	sys_irq_register(play_music);
+
+	reftick = sys_get_ticks();
 
 	do {
+		sys_irq_enable();
 		sys_wait_vsync();
-	} while (sys_get_key(8) & 1);
 
+		animate_all();
+		trigger = sys_get_trigger(0) | sys_get_trigger(1);
+
+	} while (!trigger);
+
+	sys_irq_unregister(play_music);
+	pt3_mute();
+
+	vdp_screen_disable();
+	vdp_clear_grp1(0);
 }

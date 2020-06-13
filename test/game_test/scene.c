@@ -398,6 +398,58 @@ void clean_state()
 	game_state.templar_ct = 0;
 }
 
+void load_intro_scene()
+{
+	uint8_t i;
+	struct map_object_item tmp_obj;
+	map_object = &tmp_obj;
+
+	clear_room();
+
+	INIT_LIST_HEAD(&display_list);
+
+	for (i = 0; i < 3; i++) {
+		dpo = &display_object[i];
+		tmp_obj.x = 0;
+		tmp_obj.y = 80;
+		add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
+		add_animator(dpo, ANIM_INTRO_CHASE);
+		dpo->state = STATE_OFF_SCREEN;
+		dpo->visible = false;
+		dpo->spr->cur_state = SPR_STATE_RIGHT;
+		if (i == 1) {
+			dpo->state = STATE_OFF_SCREEN_DELAY_1S;
+		} else if (i == 2) {
+			dpo->state = STATE_OFF_SCREEN_DELAY_2S;
+		}
+	}
+
+	define_sprite(PATRN_JEAN);
+	spr_valloc_pattern_set(PATRN_JEAN);
+	spr_init_sprite(&jean_sprite, PATRN_JEAN);
+
+	jean_sprite.cur_state = JANE_STATE_RIGHT;
+	dpo_jean.xpos = 20;
+	dpo_jean.ypos = 80;
+	dpo_jean.type = DISP_OBJECT_SPRITE;
+	dpo_jean.state = STATE_MOVING_RIGHT;
+	dpo_jean.spr = &jean_sprite;
+	dpo_jean.collision_state = 0;
+	dpo_jean.check_collision = false;
+	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
+	INIT_LIST_HEAD(&dpo_jean.list);
+	list_add(&dpo_jean.list, &display_list);
+	INIT_LIST_HEAD(&dpo_jean.animator_list);
+	add_animator(&dpo_jean, ANIM_INTRO_JEAN);
+
+	list_for_each(elem, &display_list) {
+		dpo = list_entry(elem, struct displ_object, list);
+		if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+			spr_show(dpo->spr);
+		}
+	}
+
+}
 
 
 void load_room(uint8_t room)

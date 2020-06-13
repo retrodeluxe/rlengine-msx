@@ -515,6 +515,77 @@ void anim_chase(struct displ_object *obj)
 
 
 /**
+ * Simplified animation for a Templar chasing Jean in intro screen
+ */
+void anim_intro_chase(struct displ_object *obj)
+{
+	int8_t dx = 0, dy = 0;
+	struct spr_sprite_def *sp = obj->spr;
+
+	game_state.templar_delay++;
+	switch(obj->state) {
+		case STATE_MOVING_RIGHT:
+			dx = 1;
+			break;
+		case STATE_OFF_SCREEN:
+			if (game_state.templar_delay > 40) {
+				obj->state = STATE_MOVING_RIGHT;
+				obj->visible = true;
+				spr_show(obj->spr);
+			}
+			return;
+		case STATE_OFF_SCREEN_DELAY_1S:
+			if (game_state.templar_delay > 90) {
+				obj->state = STATE_OFF_SCREEN;
+			}
+			return;
+		case STATE_OFF_SCREEN_DELAY_2S:
+			if (game_state.templar_delay > 140) {
+				obj->state = STATE_OFF_SCREEN;
+			}
+			return;
+	}
+
+	obj->xpos += dx;
+
+	spr_animate(sp, dx, dy);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+
+	if (obj->xpos > 254) {
+		spr_hide(sp);
+		list_del(&obj->list);
+	}
+}
+
+/**
+ * Simplified Jean animation for intro screen
+ */
+void anim_intro_jean(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	struct spr_pattern_set *ps = sp->pattern_set;
+
+	obj->xpos += 1;
+	sp->anim_ctr++;
+
+	if (sp->anim_ctr > sp->anim_ctr_treshold) {
+		sp->cur_anim_step++;
+		sp->anim_ctr = 0;
+	}
+	if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
+		sp->cur_anim_step = 0;
+
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+
+	if (obj->xpos > 254) {
+		spr_hide(sp);
+		list_del(&obj->list);
+	}
+}
+
+/**
  * Animation to show the door closing after jeans enters the church, then the
  * templars keep banging on it
  */
@@ -823,4 +894,7 @@ void init_animators()
 	animators[ANIM_ARCHER_SKELETON].run = anim_archer_skeleton;
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
+	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;
+	animators[ANIM_INTRO_JEAN].run = anim_intro_jean;
+
 }
