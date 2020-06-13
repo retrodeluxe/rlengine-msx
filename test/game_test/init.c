@@ -278,21 +278,30 @@ void init_room_titles()
 void show_room_title(uint8_t room)
 {
 	uint8_t i, tile, w;
-	uint16_t offset;
+	uint16_t vram_offset;
+
+	#define MAX_TITLE_LEN 18
+	#define SCR_WIDTH 32
 
 	ascii8_set_data(PAGE_ROOM_TITLES);
+
 	w = tileset_room_title[room].w;
-	offset = 32 - w + 22 * 32;
+	vram_offset = vdp_base_names_grp1 + SCR_WIDTH + 22 * SCR_WIDTH;
+
 	tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
+
+	vdp_memset(vram_offset - MAX_TITLE_LEN, MAX_TITLE_LEN, 0);
+	vdp_memset(vram_offset - MAX_TITLE_LEN + SCR_WIDTH, MAX_TITLE_LEN, 0);
 
 	tile = 180;
 	for (i = 0; i < w; i++) {
-		vdp_poke(vdp_base_names_grp1 + offset + i, tile + i);
-		vdp_poke(vdp_base_names_grp1 + offset + i + 32, tile + i + w);
+		vdp_poke(vram_offset - w + i, tile + i);
+		vdp_poke(vram_offset - w + i + SCR_WIDTH, tile + i + w);
 	}
 }
 
-
+// FIXME: show score panel should operate on RAM and let load_screen update VRAM
+//        _except_ for when we update counters of lives or crosses
 void show_score_panel()
 {
 	uint8_t i;
