@@ -29,11 +29,17 @@
 #include "gen/map_defs.h"
 #include "gen/map_init.h"
 
+#include "gen/big_font_upper_ext.h"
+#include "gen/big_font_lower_ext.h"
+#include "gen/font_big_digits_ext.h"
+#include "gen/big_font_symbols_ext.h"
+
 #include <stdlib.h>
 
 void show_logo();
 void show_game_over();
 void show_title_screen();
+void show_intro_animation();
 void animate_all() __nonbanked;
 void show_score_panel();
 void play_music() __nonbanked;
@@ -43,7 +49,11 @@ void init_room_titles();
 struct tile_set logo;
 struct tile_set tileset_intro;
 struct tile_set tileset_gameover;
-struct font font;
+struct font font_upper;
+struct font font_lower;
+struct font font_digits;
+struct font font_symbols;
+struct font_set intro_font_set;
 struct animator *anim;
 struct displ_object *dpo;
 struct list_head *elem,*elem2;
@@ -59,12 +69,19 @@ uint8_t data_buffer[2100];
 
 uint16_t reftick;
 bool fps_stall;
+
 extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;
 extern const unsigned int NT[];
 
+extern const char str_intro_1[];
+extern const char str_intro_2[];
+extern const char str_intro_3[];
+extern const char str_intro_5[];
+extern const char str_intro_4[];
+
 #pragma CODE_PAGE 3
-extern const char debug1[];
+
 void main() __nonbanked
 {
 	vdp_set_mode(vdp_grp2);
@@ -73,6 +90,7 @@ void main() __nonbanked
 
 start:
 	show_title_screen();
+	show_intro_animation();
 
 	init_map_tilelayers();
 	init_map_object_layers();
@@ -196,13 +214,13 @@ void show_title_screen()
 	INIT_TILE_SET(tileset_intro, intro_tileset);
 	tile_set_to_vram(&tileset_intro, 1);
 
-	INIT_FONT(font, font_upper, FONT_ALFA_UPPERCASE, 26, 1, 1);
-	font_to_vram_bank(&font, BANK2, 1);
+	INIT_FONT(font_upper, font_upper, FONT_UPPERCASE, 26, 1, 1);
+	font_to_vram_bank(&font_upper, BANK2, 1);
 
 	vdp_clear_grp1(0);
 	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
 
-	font_vprint(&font, 7, 22, str_press_space);
+	font_vprint(&font_upper, 7, 22, str_press_space);
 
 	vdp_screen_enable();
 
@@ -224,4 +242,51 @@ void show_title_screen()
 	pt3_mute();
 
 	vdp_clear_grp1(0);
- }
+}
+
+/**
+ *  Animation of Jean being chased by templars, showing introductory text and
+ *  music.
+ */
+void show_intro_animation()
+{
+	uint8_t i, color;
+
+	tile_init();
+	vdp_screen_disable();
+
+	ascii8_set_data(PAGE_MAPTILES);
+
+	INIT_FONT(font_lower, big_font_lower, FONT_LOWERCASE, 29, 1, 2);
+	INIT_FONT(font_upper, big_font_upper, FONT_UPPERCASE, 26, 2, 2);
+	INIT_FONT(font_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
+	INIT_FONT(font_symbols, big_font_symbols, FONT_SYMBOLS, 15, 1, 2);
+
+	font_to_vram(&font_upper, 1);
+	font_to_vram(&font_lower, 128);
+	font_to_vram(&font_symbols, 180);
+	font_to_vram(&font_digits, 224);
+
+	intro_font_set.upper = &font_upper;
+	intro_font_set.lower = &font_lower;
+	intro_font_set.numeric = &font_digits;
+	intro_font_set.symbols = &font_symbols;
+
+	sys_memset(scr_tile_buffer, 0, 768);
+
+	font_printf(&intro_font_set, 1, 1, scr_tile_buffer, str_intro_1);
+	font_printf(&intro_font_set, 1, 3, scr_tile_buffer, str_intro_2);
+	font_printf(&intro_font_set, 1, 5, scr_tile_buffer, str_intro_3);
+	font_printf(&intro_font_set, 4, 20, scr_tile_buffer, str_intro_4);
+	font_printf(&intro_font_set, 1, 22, scr_tile_buffer, str_intro_5);
+
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+	vdp_screen_enable();
+
+	// TODO: add small animation scene
+
+	do {
+		sys_wait_vsync();
+	} while (sys_get_key(8) & 1);
+
+}

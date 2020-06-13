@@ -24,3 +24,16 @@
 #include "gen/map21.h"
 #include "gen/map22.h"
 #include "gen/map23.h"
+
+// font used for parchment and intro
+#include "gen/big_font_upper.h"
+#include "gen/big_font_lower.h"
+#include "gen/font_big_digits.h"
+#include "gen/big_font_symbols.h"
+
+// strings
+const char str_intro_1[]= "13thCentury.TheCatars were";
+const char str_intro_2[]= "being expelled by theCatolic";
+const char str_intro_3[]= "Church out of theLanguedoc.";
+const char str_intro_4[]= "TheCatarJeanRaymond";
+const char str_intro_5[]= "runs to escape the crusaders...";

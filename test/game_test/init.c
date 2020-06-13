@@ -376,7 +376,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_BLOCK_CROSS], cross_small, 1, 1, 4, 1);
 
 	/** copy numeric font to vram **/
-	ascii8_set_data(PAGE_INTRO);
+	ascii8_set_data(PAGE_MAPTILES);
 	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 224);
 }
