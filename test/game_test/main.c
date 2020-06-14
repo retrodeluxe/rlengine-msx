@@ -342,6 +342,9 @@ void show_parchment(uint8_t id)
 	spr_init();
 
 	load_intro_font();
+
+	font_set_color_mask(&intro_font_set, 0xA);
+
 	sys_memset(scr_tile_buffer, 0, 768);
 
 	ascii8_set_data(PAGE_MAPTILES);

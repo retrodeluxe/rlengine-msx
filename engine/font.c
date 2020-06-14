@@ -26,6 +26,8 @@
 
 #pragma CODE_PAGE 2
 
+#define BANK1_OFFSET 256 * 8
+#define BANK2_OFFSET BANK1_OFFSET * 2
 
 void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8_t tile_w,
 	uint8_t tile_h, enum font_type type, uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h)
@@ -60,6 +62,35 @@ void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos)
 		tile_set_to_vram_bank(&f->tiles, bank, pos);
 		f->idx = f->tiles.pidx;
 	}
+}
+
+/**
+ * Applies a color mask to a font already allocated in vram
+ */
+void font_color_mask(struct font *f, uint8_t color)
+{
+	uint16_t offset, size;
+	struct tile_set *ts;
+
+	ts = &f->tiles;
+	if (ts->allocated) {
+		offset = ts->pidx * 8;
+		size = ts->w * ts->h * 8;
+		vdp_memset(vdp_base_color_grp1 + offset, size, color);
+		vdp_memset(vdp_base_color_grp1 + offset + BANK1_OFFSET, size, color);
+		vdp_memset(vdp_base_color_grp1 + offset + BANK2_OFFSET, size, color);
+	}
+}
+
+/**
+ * Apply color mask to a font set already allocated in vram
+ */
+void font_set_color_mask(struct font_set *fs, uint8_t color)
+{
+	font_color_mask(fs->upper, color);
+	font_color_mask(fs->lower, color);
+	font_color_mask(fs->numeric, color);
+	font_color_mask(fs->symbols, color);
 }
 
 
