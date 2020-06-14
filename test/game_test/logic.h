@@ -38,6 +38,7 @@ struct game_state_t {
 	uint8_t templar_delay;
 	bool death;
 	bool refresh_score;
+	uint8_t show_parchment;
 };
 
 enum trigger_ids {

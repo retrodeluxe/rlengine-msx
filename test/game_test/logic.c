@@ -37,6 +37,13 @@ void init_game_state()
 	game_state.templar_ct = 0;
 	game_state.death = false;
 	game_state.templar_delay = 0;
+	game_state.show_parchment = 0;
+
+	// debug helpers
+	game_state.bell = true;
+	game_state.toggle[0] = 1;
+	game_state.toggle[1] = 1;
+	game_state.toggle[2] = 1;
 }
 
 void handle_death()
@@ -64,10 +71,10 @@ void pickup_heart(struct displ_object *dpo, uint8_t data)
 
 void pickup_scroll(struct displ_object *dpo, uint8_t data)
 {
-        game_state.scroll[data] = 1;
-        remove_tileobject(dpo);
+	game_state.scroll[data] = 1;
+	remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
-        // TODO: show scroll contents
+	game_state.show_parchment = data;
 }
 
 void pickup_cross(struct displ_object *dpo, uint8_t data)

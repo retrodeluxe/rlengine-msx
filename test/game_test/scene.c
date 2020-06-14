@@ -73,7 +73,7 @@ uint8_t *room_objs;
 
 extern void define_sprite(uint8_t pattidx);
 extern void init_resources();
-extern void init_room_tilesets(uint8_t room);
+extern void init_room_tilesets(uint8_t room, bool reload);
 extern void show_room_title(uint8_t room);
 
 void play_room_music() __nonbanked
@@ -452,7 +452,7 @@ void load_intro_scene()
 }
 
 
-void load_room(uint8_t room)
+void load_room(uint8_t room, bool reload)
 {
 	uint8_t i, id, type, delay, speed, offset;
 	bool add_dpo;
@@ -465,7 +465,7 @@ void load_room(uint8_t room)
 	clean_state();
 	vdp_screen_disable();
 
-	init_room_tilesets(room);
+	init_room_tilesets(room, reload);
 
 	ascii8_set_data(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);

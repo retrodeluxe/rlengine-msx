@@ -33,6 +33,7 @@
 #include "gen/big_font_lower_ext.h"
 #include "gen/font_big_digits_ext.h"
 #include "gen/big_font_symbols_ext.h"
+#include "gen/parchment_map_defs.h"
 
 #include <stdlib.h>
 
@@ -42,15 +43,17 @@ void show_title_screen();
 void show_intro_animation();
 void animate_all() __nonbanked;
 void show_score_panel();
+void show_parchment(uint8_t id);
 
 void play_music() __nonbanked;
-void load_room(uint8_t room);
+void load_room(uint8_t room, bool reload);
 void init_room_titles();
 void load_intro_scene();
 
 struct tile_set logo;
 struct tile_set tileset_intro;
 struct tile_set tileset_gameover;
+struct tile_set parchment;
 struct font font_upper;
 struct font font_lower;
 struct font font_digits;
@@ -105,7 +108,7 @@ start:
 	init_resources();
 	init_game_state();
 
-	load_room(game_state.room);
+	load_room(game_state.room, false);
 	show_score_panel();
 
 	/** game loop **/
@@ -118,8 +121,12 @@ start:
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 
 		change_room();
-		if (game_state.change_room){
-			load_room(game_state.room);
+		if (game_state.show_parchment) {
+			show_parchment(game_state.show_parchment);
+			load_room(game_state.room, true);
+			game_state.show_parchment = 0;
+		} else if (game_state.change_room) {
+			load_room(game_state.room, false);
 		}
 
 		animate_all();
@@ -138,13 +145,15 @@ start:
 				goto start;
 			}
 			handle_death();
-			load_room(game_state.room);
+			load_room(game_state.room, false);
 		}
 
 		if (game_state.refresh_score) {
 			game_state.refresh_score = false;
 			show_score_panel();
 		}
+
+
 	}
 }
 
@@ -248,6 +257,26 @@ void show_title_screen()
 	vdp_clear_grp1(0);
 }
 
+static void load_intro_font()
+{
+	ascii8_set_data(PAGE_MAPTILES);
+
+	INIT_FONT(font_lower, big_font_lower, FONT_LOWERCASE, 29, 1, 2);
+	INIT_FONT(font_upper, big_font_upper, FONT_UPPERCASE, 26, 2, 2);
+	INIT_FONT(font_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
+	INIT_FONT(font_symbols, big_font_symbols, FONT_SYMBOLS, 15, 1, 2);
+
+	font_to_vram(&font_upper, 20);
+	font_to_vram(&font_lower, 128);
+	font_to_vram(&font_symbols, 180);
+	font_to_vram(&font_digits, 224);
+
+	intro_font_set.upper = &font_upper;
+	intro_font_set.lower = &font_lower;
+	intro_font_set.numeric = &font_digits;
+	intro_font_set.symbols = &font_symbols;
+}
+
 /**
  *  Animation of Jean being chased by templars, showing introductory text and
  *  music.
@@ -258,26 +287,9 @@ void show_intro_animation() __nonbanked
 
 	tile_init();
 	vdp_screen_disable();
-
-	ascii8_set_data(PAGE_MAPTILES);
-
-	INIT_FONT(font_lower, big_font_lower, FONT_LOWERCASE, 29, 1, 2);
-	INIT_FONT(font_upper, big_font_upper, FONT_UPPERCASE, 26, 2, 2);
-	INIT_FONT(font_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
-	INIT_FONT(font_symbols, big_font_symbols, FONT_SYMBOLS, 15, 1, 2);
-
-	font_to_vram(&font_upper, 1);
-	font_to_vram(&font_lower, 128);
-	font_to_vram(&font_symbols, 180);
-	font_to_vram(&font_digits, 224);
-
-	intro_font_set.upper = &font_upper;
-	intro_font_set.lower = &font_lower;
-	intro_font_set.numeric = &font_digits;
-	intro_font_set.symbols = &font_symbols;
+	load_intro_font();
 
 	sys_memset(scr_tile_buffer, 0, 768);
-
 	font_printf(&intro_font_set, 1, 1, scr_tile_buffer, str_intro_1);
 	font_printf(&intro_font_set, 1, 3, scr_tile_buffer, str_intro_2);
 	font_printf(&intro_font_set, 1, 5, scr_tile_buffer, str_intro_3);
@@ -312,4 +324,42 @@ void show_intro_animation() __nonbanked
 
 	vdp_screen_disable();
 	vdp_clear_grp1(0);
+}
+
+extern const char str_parchment_1_1[];
+extern const char str_parchment_1_2[];
+
+void show_parchment(uint8_t id)
+{
+	uint8_t x,y;
+
+	game_state.jean_x = dpo_jean.xpos;
+	game_state.jean_y = dpo_jean.ypos;
+
+	stop_music();
+	vdp_screen_disable();
+	tile_init();
+	spr_init();
+
+	load_intro_font();
+	sys_memset(scr_tile_buffer, 0, 768);
+
+	ascii8_set_data(PAGE_MAPTILES);
+	INIT_TILE_SET(parchment, parchment_yelow);
+	tile_set_to_vram(&parchment, 1);
+
+	sys_memcpy(scr_tile_buffer, parchment_map_parchment, 768);
+
+	font_printf(&intro_font_set, 8, 9, scr_tile_buffer, str_parchment_1_1);
+	font_printf(&intro_font_set, 8, 12, scr_tile_buffer, str_parchment_1_2);
+
+	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+	vdp_screen_enable();
+	do {
+		sys_irq_enable();
+		sys_wait_vsync();
+
+		trigger = sys_get_trigger(0) | sys_get_trigger(1);
+
+	} while (!trigger);
 }

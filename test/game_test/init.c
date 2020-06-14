@@ -165,7 +165,7 @@ static void init_tiles_zone_5()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
 }
 
-void init_room_tilesets(uint8_t room)
+void init_room_tilesets(uint8_t room, bool reload)
 {
 	static uint8_t prev_room = ROOM_SATAN;
 
@@ -174,7 +174,7 @@ void init_room_tilesets(uint8_t room)
 
 	// zone 1: forest and church
 	if (room < ROOM_CAVE_DRAGON) {
-		if (prev_room > ROOM_HAGMAN_TREE) {
+		if (prev_room > ROOM_HAGMAN_TREE || reload) {
 			clear_map_tilesets();
 			init_tiles_zone_1();
 		}
@@ -190,7 +190,8 @@ void init_room_tilesets(uint8_t room)
 	} else if (room == ROOM_CATACOMBS || room == ROOM_CATACOMBS_WHEEL
 		|| room == ROOM_CATACOMBS_FLIES) {
 		if (prev_room == ROOM_CAVE_GHOST || prev_room == ROOM_HIDDEN_GARDEN
-			|| prev_room == ROOM_CAVE_LAKE || prev_room == ROOM_CHURCH_ALTAR) {
+			|| prev_room == ROOM_CAVE_LAKE || prev_room == ROOM_CHURCH_ALTAR
+			|| reload) {
 			clear_map_tilesets();
 			init_tiles_zone_2();
 		}
@@ -207,7 +208,7 @@ void init_room_tilesets(uint8_t room)
 		if (prev_room == ROOM_CATACOMBS_FLIES
 			|| prev_room == ROOM_CAVE_LAKE
 			|| prev_room == ROOM_CATACOMBS
-			|| prev_room == ROOM_CAVE_TUNNEL) {
+			|| prev_room == ROOM_CAVE_TUNNEL || reload) {
 				clear_map_tilesets();
 				init_tiles_zone_3();
 			}
@@ -223,7 +224,7 @@ void init_room_tilesets(uint8_t room)
 		if (prev_room == ROOM_CAVE_DRAGON
 			|| prev_room == ROOM_CATACOMBS_WHEEL
 			|| prev_room == ROOM_CAVE_GHOST
-			|| prev_room == ROOM_EVIL_CHURCH) {
+			|| prev_room == ROOM_EVIL_CHURCH || reload) {
 				clear_map_tilesets();
 				init_tiles_zone_4();
 			}
@@ -235,7 +236,7 @@ void init_room_tilesets(uint8_t room)
 
 	// zone 5: evil church
 	} else if (room > ROOM_CAVE_GATE) {
-		if (prev_room == ROOM_CAVE_GATE) {
+		if (prev_room == ROOM_CAVE_GATE || reload) {
 			clear_map_tilesets();
 			init_tiles_zone_5();
 		}
