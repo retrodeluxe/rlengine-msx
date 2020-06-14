@@ -277,6 +277,20 @@ static void load_intro_font()
 	intro_font_set.symbols = &font_symbols;
 }
 
+static void load_parchment_font()
+{
+	ascii8_set_data(PAGE_MAPTILES);
+
+	INIT_FONT(font_lower, big_font_lower, FONT_LOWERCASE, 29, 1, 2);
+	INIT_FONT(font_upper, big_font_upper, FONT_UPPERCASE, 26, 2, 2);
+
+	font_to_vram(&font_upper, 20);
+	font_to_vram(&font_lower, 128);
+
+	intro_font_set.upper = &font_upper;
+	intro_font_set.lower = &font_lower;
+}
+
 /**
  *  Animation of Jean being chased by templars, showing introductory text and
  *  music.
@@ -328,7 +342,18 @@ void show_intro_animation() __nonbanked
 
 extern const char str_parchment_1_1[];
 extern const char str_parchment_1_2[];
+extern const char str_parchment_2_1[];
+extern const char str_parchment_2_2[];
+extern const char str_parchment_3_1[];
+extern const char str_parchment_3_2[];
+extern const char str_parchment_4_1[];
+extern const char str_parchment_4_2[];
+extern const char str_parchment_5_1[];
+extern const char str_parchment_5_2[];
+extern const char str_parchment_6_1[];
+extern const char str_parchment_6_2[];
 
+// TODO: Optimize font loading time
 void show_parchment(uint8_t id)
 {
 	uint8_t x,y;
@@ -341,11 +366,9 @@ void show_parchment(uint8_t id)
 	tile_init();
 	spr_init();
 
-	load_intro_font();
+	load_parchment_font();
 
 	font_set_color_mask(&intro_font_set, 0xA);
-
-	sys_memset(scr_tile_buffer, 0, 768);
 
 	ascii8_set_data(PAGE_MAPTILES);
 	INIT_TILE_SET(parchment, parchment_yelow);
@@ -353,8 +376,51 @@ void show_parchment(uint8_t id)
 
 	sys_memcpy(scr_tile_buffer, parchment_map_parchment, 768);
 
-	font_printf(&intro_font_set, 8, 9, scr_tile_buffer, str_parchment_1_1);
-	font_printf(&intro_font_set, 8, 12, scr_tile_buffer, str_parchment_1_2);
+	switch (id) {
+		case 2:
+			font_printf(&intro_font_set, 8, 9,
+					scr_tile_buffer, str_parchment_1_1);
+			font_printf(&intro_font_set, 8, 12,
+					scr_tile_buffer, str_parchment_1_2);
+			break;
+		case 1:
+			font_printf(&intro_font_set, 8, 9,
+					scr_tile_buffer, str_parchment_2_1);
+			font_printf(&intro_font_set, 8, 12,
+					scr_tile_buffer, str_parchment_2_2);
+			break;
+		case 4:
+			font_printf(&intro_font_set, 9, 9,
+					scr_tile_buffer, str_parchment_3_1);
+			font_printf(&intro_font_set, 7, 12,
+					scr_tile_buffer, str_parchment_3_2);
+			break;
+		case 3:
+			font_printf(&intro_font_set, 7, 9,
+					scr_tile_buffer, str_parchment_4_1);
+			font_printf(&intro_font_set, 7, 12,
+					scr_tile_buffer, str_parchment_4_2);
+			break;
+		case 6:
+			/** this scroll doesn't appear in the original game
+			    it seems to be a later addition on the PC port **/
+			font_printf(&intro_font_set, 8, 9,
+					scr_tile_buffer, str_parchment_5_1);
+			font_printf(&intro_font_set, 6, 12,
+					scr_tile_buffer, str_parchment_5_2);
+			break;
+		case 5:
+			font_printf(&intro_font_set, 8, 9,
+					scr_tile_buffer, str_parchment_6_1);
+			font_printf(&intro_font_set, 8, 12,
+					scr_tile_buffer, str_parchment_6_2);
+			break;
+		case 7:
+			break;
+		case 8:
+			break;
+	}
+
 
 	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
 	vdp_screen_enable();
