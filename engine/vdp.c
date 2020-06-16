@@ -101,29 +101,6 @@ void vdp_poke(uint16_t address, uint8_t value) __nonbanked
         __endasm;
 }
 
-void vdp_poke_di(uint16_t address, uint8_t value) __nonbanked
-{
-        address;
-        value;
-
-        __asm
-        di
-        ld l,4(ix)
-        ld h,5(ix)
-        ld a,l
-        //di
-        out (0x99),a
-        ld a,h
-        add a,#0x40
-        //ei
-        out (0x99),a
-        ld a,6(ix)
-        out (0x98),a
-        //ei
-        __endasm;
-}
-
-
 uint8_t vdp_peek(uint16_t address) __nonbanked
 {
         address;
@@ -185,13 +162,10 @@ void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length) __non
         __asm
         ld  l,6(ix) ; vaddress
         ld  h,7(ix)
-        in a,(0x99)
-        di
         ld a,l
         out (0x99),a
         ld a,h
         add a,#0x40
-        ei
         out (0x99),a
         ld l,4(ix) ;address
         ld h,5(ix)
@@ -206,38 +180,6 @@ vdp__copy_to_vram_loop:
         jr nz,vdp__copy_to_vram_loop
         __endasm;
 }
-
-void vdp_copy_to_vram_di(uint8_t *buffer, uint16_t vaddress, uint16_t length) __nonbanked
-{
-        buffer;
-        vaddress;
-        length;
-
-        __asm
-        ld  l,6(ix) ; vaddress
-        ld  h,7(ix)
-        in a,(0x99)
-        di
-        ld a,l
-        out (0x99),a
-        ld a,h
-        add a,#0x40
-        //ei
-        out (0x99),a
-        ld l,4(ix) ;address
-        ld h,5(ix)
-        ld e,8(ix) ;length
-        ld d,9(ix)
-        ld c,#0x98
-vdp__copy_to_vram_loop_di:
-        outi
-        dec de
-        ld a,d
-        or e
-        jr nz,vdp__copy_to_vram_loop_di
-        __endasm;
-}
-
 
 /**
  * Copy 16 uint8_ts from RAM to VRAM

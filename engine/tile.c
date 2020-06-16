@@ -48,11 +48,11 @@ void tile_init()
 static void tile_flush_inflate_buffer(uint16_t vram_offset, uint16_t size, uint8_t bank)
 {
 	if (bank == BANK0 || bank == ALLBANKS)
-		vdp_copy_to_vram_di(inflate_buffer, vram_offset, size);
+		vdp_copy_to_vram(inflate_buffer, vram_offset, size);
 	if (bank == BANK1 || bank == ALLBANKS)
-		vdp_copy_to_vram_di(inflate_buffer, vram_offset + BANK1_OFFSET, size);
+		vdp_copy_to_vram(inflate_buffer, vram_offset + BANK1_OFFSET, size);
 	if (bank == BANK2 || bank == ALLBANKS)
-		vdp_copy_to_vram_di(inflate_buffer, vram_offset + BANK2_OFFSET, size);
+		vdp_copy_to_vram(inflate_buffer, vram_offset + BANK2_OFFSET, size);
 }
 
 /**
