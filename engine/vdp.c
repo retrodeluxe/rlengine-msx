@@ -77,7 +77,7 @@ void vdp_set_color(char ink, char border)
 }
 
 
-void vdp_poke(uint16_t address, uint8_t value) __nonbanked
+void vdp_write(uint16_t address, uint8_t value) __nonbanked
 {
 	address;
 	value;
@@ -277,6 +277,6 @@ void vdp_print_grp1(char x, char y, char *msg)
 	register uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
 
 	while ((c = *msg++ ) != '\0') {
-		vdp_poke(addr++, c);
+		vdp_write(addr++, c);
 	}
 }

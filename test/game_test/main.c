@@ -233,7 +233,9 @@ void show_title_screen()
 	vdp_clear_grp1(0);
 	vdp_memcpy(vdp_base_names_grp1, intro_map_intro, 768);
 
-	font_vprint(&font_upper, 7, 22, str_press_space);
+	intro_font_set.upper = &font_upper;
+
+	font_vprintf(&intro_font_set, 7, 22, str_press_space);
 
 	vdp_screen_enable();
 

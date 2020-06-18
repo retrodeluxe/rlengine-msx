@@ -101,7 +101,7 @@ static uint8_t font_emit_glyph(struct font *f, uint8_t *addr, char tc)
 	base_tile = f->tiles.pidx + c;
 
 	if (f->glyph_w == 1 && f->glyph_h == 1) {
-		*addr++ = base_tile;
+		*addr = base_tile;
 		return 1;
 	} else if (f->glyph_w == 1 && f->glyph_h == 2) {
 		*addr = base_tile;
@@ -114,6 +114,31 @@ static uint8_t font_emit_glyph(struct font *f, uint8_t *addr, char tc)
 		*(addr + 1) = base_tile + 1;
 		*(addr + 32) = base_tile + f->tiles.w;
 		*(addr + 33) = base_tile + f->tiles.w + 1;
+		return 2;
+	}
+	return 1;
+}
+
+static uint8_t font_emit_glyph_vram(struct font *f, uint16_t addr, char tc)
+{
+	uint8_t c, base_tile;
+	c = tc * f->glyph_w;
+	base_tile = f->tiles.pidx + c;
+
+	if (f->glyph_w == 1 && f->glyph_h == 1) {
+		vdp_write(addr, base_tile);
+		return 1;
+	} else if (f->glyph_w == 1 && f->glyph_h == 2) {
+		vdp_write(addr, base_tile);
+		vdp_write(addr + 32, base_tile + f->tiles.w);
+		return 1;
+	} else if (f->glyph_w == 2 && f->glyph_h == 2) {
+		if (c > 32) // wide glyphs may overflow in two rows
+			base_tile += 32;
+		vdp_write(addr, base_tile);
+		vdp_write(addr + 1, base_tile + 1);
+		vdp_write(addr + 32, base_tile + f->tiles.w);
+		vdp_write(addr + 33, base_tile + f->tiles.w + 1);
 		return 2;
 	}
 	return 1;
@@ -147,65 +172,32 @@ void font_printf(struct font_set *fs, uint8_t x, uint8_t y, uint8_t *buffer, cha
 		}
 	}
 }
+
+
 /**
- * Prints a string directly to vram
+ * prints a complex string directly to vram
  */
- // it should be possible to print to screen buffer instead of vdp
-void font_vprint(struct font *f, uint8_t x, uint8_t y, char *text)
+void font_vprintf(struct font_set *fs, uint8_t x, uint8_t y, char *text)
 {
 	char c, tc, base;
 	uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
 
 	while ((c = *text++ ) != 0) {
-
-		if (c == 32) {
+		if (c == CHR_SPC) {
 			addr++;
-		 	continue;
-		}
-
-		if (f->type == FONT_UPPERCASE) {
-			if (c > 64 && c < 91) {
-				tc = (c - 65) * f->glyph_w;
-				base = f->tiles.pidx;
-				if (f->glyph_w == 1 && f->glyph_h == 1) {
-					vdp_poke(addr++, base + tc);
-				} else if (f->glyph_w == 1 && f->glyph_h == 2) {
-					vdp_poke(addr, base + tc);
-					vdp_poke(addr + 32, base + f->tiles.w + tc);
-					addr++;
-				} else if (f->glyph_w == 2 && f->glyph_h == 2) {
-					if (tc > 32) // support two lines
-						tc += 32;
-					vdp_poke(addr, base + tc);
-					vdp_poke(addr + 1, base + tc + 1);
-					vdp_poke(addr + 32, base + tc + f->tiles.w);
-					vdp_poke(addr + 33, base + tc + f->tiles.w + 1);
-					addr+=2;
-				}
-			}
-		} else if (f->type == FONT_LOWERCASE) {
-			if (c > 96 && c < 123) {
-				tc = c - 97;
-				base = f->tiles.pidx;
-				if (f->glyph_w == 1 && f->glyph_h == 1) {
-					vdp_poke(addr++, base + tc);
-				} else if (f->glyph_w == 1 && f->glyph_h == 2) {
-					vdp_poke(addr, base + tc);
-					vdp_poke(addr + 32, base + f->tiles.w + tc);
-					addr++;
-				}
-			}
-		} else if (f->type == FONT_NUMERIC) {
-			if (c > 47 && c < 58) {
-				tc = c - 48;
-				base = f->tiles.pidx;
-				if (f->glyph_w == 1 && f->glyph_h == 2) {
-					vdp_poke(addr, base + tc);
-					vdp_poke(addr + 32, base + f->tiles.w + tc);
-					addr++;
-				}
-			}
+			continue;
+		} else if (c >= CHR_0 && c <= CHR_9) {
+			tc = c - CHR_0;
+			addr += font_emit_glyph_vram(fs->numeric, addr, tc);
+		} else if (c >= CHR_A  && c <= CHR_Z) {
+			tc = c - CHR_A;
+			addr += font_emit_glyph_vram(fs->upper, addr, tc);
+		} else if (c >= CHR_a && c <= CHR_z) {
+			tc = c - CHR_a;
+			addr += font_emit_glyph_vram(fs->lower, addr, tc);
+		} else if (c >= CHR_EXCL && c <= CHR_SLASH) {
+			tc = c - CHR_EXCL;
+			addr += font_emit_glyph_vram(fs->symbols, addr, tc);
 		}
 	}
-
 }

@@ -77,7 +77,7 @@ void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color,
 	uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h);
 void font_to_vram(struct font *f, uint8_t pos);
 void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos);
-void font_vprint(struct font *f, uint8_t x, uint8_t y, char *text);
+void font_vprintf(struct font_set *fs, uint8_t x, uint8_t y, char *text);
 void font_printf(struct font_set *fs, uint8_t x, uint8_t y, uint8_t *buffer, char *text);
 void font_color_mask(struct font *f, uint8_t color);
 void font_set_color_mask(struct font_set *fs, uint8_t color);

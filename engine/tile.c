@@ -298,7 +298,7 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 		for (x = 0; x < to->ts->frame_w; x++) {
 			*(ptr + x) = tile;
 			if (refresh_vram) {
-				vdp_poke(vdp_base_names_grp1 + offset + x, tile);
+				vdp_write(vdp_base_names_grp1 + offset + x, tile);
 			}
 			tile++;
 		}
@@ -319,7 +319,7 @@ void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 		for (x = 0; x < to->ts->frame_w; x++) {
 			*(ptr + x) = 0;
 			if (refresh_vram) {
-				vdp_poke(vdp_base_names_grp1 + offset + x, 0);
+				vdp_write(vdp_base_names_grp1 + offset + x, 0);
 			}
 		}
 		ptr += 32;

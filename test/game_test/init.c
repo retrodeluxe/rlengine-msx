@@ -71,6 +71,7 @@ extern const uint8_t spit_state[];
 /** score panel primitives **/
 struct tile_object score;
 struct font big_digits;
+struct font_set score_font_set;
 
 void init_map_tilesets()
 {
@@ -296,8 +297,8 @@ void show_room_title(uint8_t room)
 
 	tile = 180;
 	for (i = 0; i < w; i++) {
-		vdp_poke(vram_offset - w + i, tile + i);
-		vdp_poke(vram_offset - w + i + SCR_WIDTH, tile + i + w);
+		vdp_write(vram_offset - w + i, tile + i);
+		vdp_write(vram_offset - w + i + SCR_WIDTH, tile + i + w);
 	}
 }
 
@@ -333,12 +334,14 @@ void show_score_panel()
 	_itoa(game_state.live_cnt, snum, 10);
 	snum[2] = '~';
 
-	font_vprint(&big_digits, 2, 22, snum);
+	score_font_set.numeric = &big_digits;
+
+	font_vprintf(&score_font_set, 2, 22, snum);
 
 	_itoa(game_state.cross_cnt, snum, 10);
 	snum[2] = '~';
 
-	font_vprint(&big_digits, 6, 22, snum);
+	font_vprintf(&score_font_set, 6, 22, snum);
 }
 
 void init_resources()
