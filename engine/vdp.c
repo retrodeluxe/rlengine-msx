@@ -98,26 +98,6 @@ void vdp_poke(uint16_t address, uint8_t value) __nonbanked
 	__endasm;
 }
 
-uint8_t vdp_peek(uint16_t address) __nonbanked
-{
-	address;
-
-	__asm
-	ld	l,4(ix)
-	ld	h,5(ix)
-	ld	a,l
-	di
-	out	(0x99),a
-	ld	a,h
-	add	a,#0x40
-	ei
-	out	(0x99),a
-	in	a,(0x98)
-	ld	l,a
-	__endasm;
-}
-
-
 void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked
 {
 	vaddress;
