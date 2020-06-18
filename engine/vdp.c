@@ -184,84 +184,34 @@ $2:
 	__endasm;
 }
 
-/**
- * Copy 16 uint8_ts from RAM to VRAM
- *  - useful to set a pair of consecutive tiles
- */
-void vdp_fastcopy16(uint8_t *src_ram, uint16_t dst_vram) __nonbanked
+void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, uint8_t spi) __nonbanked
 {
-	src_ram;
-	dst_vram;
+	spr;
+	spi;
 
 	__asm
-	ld	l,6(ix)
-	ld	h,7(ix)
-	in	a,(0x99)
+	ld	c,6(ix)	;spi
+	sla	c
+	sla	c
+	xor	a
+	ld	b,a
+	ld 	hl,#vdp_base_spatr_grp1
+	add	hl,bc
 	ld	a,l
 	di
 	out	(0x99),a
 	ld	a,h
 	add	a,#0x40
 	out	(0x99),a
-	ld	l,4(ix)
+	ld	l,4(ix) ; buffer address (spr)
 	ld	h,5(ix)
 	ld	c,#0x98
+	ld	b,#4
+$6:
 	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
+	jp	nz,$6
 	ei
 	__endasm;
-}
-
-void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, char spi) __nonbanked
-{
-	vdp_copy_to_vram((uint8_t*)spr, vdp_base_spatr_grp1+(spi<<2),
-			 sizeof(struct vdp_hw_sprite));
-}
-
-void vdp_set_hw_sprite_di(uint8_t *spr, uint16_t spi) __nonbanked
-{
-        spr;
-        spi;
-
-        __asm
-        ld c,6(ix)
-        ld b,7(ix)
-        sla c
-        sla c
-        ld  hl,#vdp_base_spatr_grp1
-        add hl,bc
-        ld a,l
-        out (0x99),a
-        ld a,h
-        add a,#0x40
-        out (0x99),a
-        ld l,4(ix) ; buffer address
-        ld h,5(ix)
-        xor a
-        ld d,a
-        ld e,#4
-        ld c,#0x98
-loop_2:
-        outi
-        dec de
-        ld a,d
-        or e
-        jr nz,loop_2
-        __endasm;
 }
 
 void vdp_init_hw_sprites(char spritesize, char zoom)
