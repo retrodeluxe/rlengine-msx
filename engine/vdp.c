@@ -23,6 +23,8 @@
 #pragma CODE_PAGE 2
 
 static char t_spritesize;
+uint8_t rle_prev;
+uint8_t rle_prev_run;
 
 void vdp_screen_disable(void)
 {
@@ -254,6 +256,101 @@ $5:
 	nop
 	nop
 	jp	nz,$5
+	ei
+	__endasm;
+}
+
+
+/**
+ *
+ */
+static void vdp_write_internal() __naked
+{
+	__asm
+	ex	af,af'
+	ld 	a,e
+	out 	(0x99),a
+	ld	a,d
+	add 	a,#0x40
+	out 	(0x99),a
+	ex	af,af'
+	out 	(0x98),a
+	inc 	de
+	ret
+	__endasm;
+}
+
+void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size)
+{
+	rle_prev = 0;
+	rle_prev_run = 255;
+
+	__asm
+	di
+	ld 	e, 4 (ix)
+	ld 	d, 5 (ix)  		//; target vram address offset
+	ld	c, 8 (ix)
+	ld	b, 9 (ix)  		//; decompressed size
+	ld	l, 6 (ix)
+	ld	h, 7 (ix)  		//; source buffer
+loop1:
+	push 	bc
+	ld	a,(hl)
+	call	_vdp_write_internal
+	ld	a,(#_rle_prev_run)
+	ld	b,(hl)
+	inc 	hl
+	or	a
+	jr	nz, prev_run
+	ld	a,(#_rle_prev)
+	cp 	b
+	jr	z, run_mode
+prev_run:
+	ld	a,#0
+	ld	(#_rle_prev_run),a
+	ld	a,b
+	ld	(#_rle_prev),a
+	pop 	bc
+	dec 	bc
+	ld	a,b
+	or	c
+	jr	nz, loop1
+	jp	end_rle
+run_mode:
+	pop 	bc
+	push 	hl
+	ex	af, af'
+	ld	a,#255
+	ld	(#_rle_prev_run),a
+	ld	a,(hl)
+	or	a
+	jr	z,skip
+	ld	h,b
+	ld	l,c
+	ld	b,a
+	ex	af,af'
+run_loop:
+	call	_vdp_write_internal
+	dec 	hl
+	ex 	af, af'
+	ld	a,h
+	or 	l
+	jr	nz, cont
+	pop 	hl
+	jr	end_rle
+cont:
+	ex	af, af'
+	djnz	run_loop
+	ld	b,h
+	ld	c,l
+skip:
+	dec 	bc
+	pop 	hl
+	inc 	hl
+	ld	a,b
+	or	c
+	jr	nz, loop1
+end_rle:
 	ei
 	__endasm;
 }

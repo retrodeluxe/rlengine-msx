@@ -197,16 +197,16 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 	offset = pos * 8;
 	size = ts->w * ts->h * 8;
 	if (bank == BANK0 || bank == ALLBANKS) {
-		tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);
-		tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset, size);
+		vdp_rle_inflate(vdp_base_chars_grp1 + offset, ts->pattern, size);
+		vdp_rle_inflate(vdp_base_color_grp1 + offset, ts->color, size);
 	}
 	if (bank == BANK1 || bank == ALLBANKS) {
-		tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset + BANK1_OFFSET, size);
-		tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK1_OFFSET, size);
+		vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, size);
+		vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, size);
 	}
 	if (bank == BANK2 || bank == ALLBANKS) {
-		tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset +BANK2_OFFSET, size);
-		tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK2_OFFSET, size);
+		vdp_rle_inflate(vdp_base_chars_grp1 + offset +BANK2_OFFSET, ts->pattern, size);
+		vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, size);
 	}
 	for (i = pos; i < pos + (size / 8); i++)
 		bitmap_reset(bitmap_tile_bank, i);
@@ -244,12 +244,12 @@ bool tile_set_valloc(struct tile_set *ts)
 
 	offset = pos * 8;
 	vsize = size * 8;
-	tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset, vsize);
-	tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset, vsize);
-	tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset + BANK1_OFFSET, vsize);
-	tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK1_OFFSET, vsize);
-	tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset +BANK2_OFFSET, vsize);
-	tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK2_OFFSET, vsize);
+	vdp_rle_inflate(vdp_base_chars_grp1 + offset, ts->pattern, vsize);
+	vdp_rle_inflate(vdp_base_color_grp1 + offset, ts->color, vsize);
+	vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, vsize);
+	vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, vsize);
+	vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, vsize);
+	vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, vsize);
 	ts->allocated = true;
 	ts->pidx = pos;
 	return true;
