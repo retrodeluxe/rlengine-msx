@@ -89,7 +89,7 @@ void vdp_poke(uint16_t address, uint8_t value) __nonbanked
         ld l,4(ix)
         ld h,5(ix)
         ld a,l
-        di
+	di
         out (0x99),a
         ld a,h
         add a,#0x40
@@ -163,9 +163,11 @@ void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length) __non
         ld  l,6(ix) ; vaddress
         ld  h,7(ix)
         ld a,l
+	di
         out (0x99),a
         ld a,h
         add a,#0x40
+	ei
         out (0x99),a
         ld l,4(ix) ;address
         ld h,5(ix)

@@ -55,6 +55,97 @@ static void tile_flush_inflate_buffer(uint16_t vram_offset, uint16_t size, uint8
 		vdp_copy_to_vram(inflate_buffer, vram_offset + BANK2_OFFSET, size);
 }
 
+uint8_t prev;
+uint8_t prev_run;
+
+static void tile_fast_inflate_vram(uint8_t *buffer, uint16_t offset, uint16_t size)
+{
+	prev = 0;
+	prev_run = 255;
+
+	__asm
+	di
+	ld 	e, 6 (ix)
+	ld 	d, 7 (ix)  		//; target vram address offset
+	ld	c, 8 (ix)
+	ld	b, 9 (ix)  		//; decompressed size
+	ld 	l, 4 (ix)
+	ld 	h, 5 (ix)  		//; source buffer
+	jp	loop1
+write_vram:			//; a->(de) (vram)
+	ex	af,af'
+	ld 	a,e
+	out 	(0x99),a
+	ld	a,d
+	add 	a,#0x40
+	out 	(0x99),a
+	ex	af,af'
+	out 	(0x98),a
+	inc 	de
+	ret
+loop1:
+	push 	bc
+	ld	a,(hl)
+	call	write_vram
+	ld	a,(#_prev_run)
+	ld	b,(hl)
+	inc 	hl
+	or	a
+	jr	nz, prev_run
+	ld	a,(#_prev)
+	cp 	b
+	jr	z, run_mode
+prev_run:
+	ld	a,#0
+	ld	(#_prev_run),a
+	ld	a,b
+	ld	(#_prev),a
+	pop 	bc
+	dec 	bc
+	ld	a,b
+	or	c
+	jr	nz, loop1
+	jp	end_rle
+run_mode:
+	pop 	bc
+	push 	hl
+	ex	af, af'
+	ld	a,#255
+	ld	(#_prev_run),a
+	ld	a,(hl)
+	or	a
+	jr	z,skip
+	ld	h,b
+	ld	l,c
+	ld	b,a
+	ex	af,af'
+run_loop:
+	call	write_vram
+	dec 	hl
+	ex 	af, af'
+	ld	a,h
+	or 	l
+	jr	nz, cont
+	pop 	hl
+	jr	end_rle
+cont:
+	ex	af, af'
+	djnz	run_loop
+	ld	b,h
+	ld	c,l
+skip:
+	dec 	bc
+	pop 	hl
+	inc 	hl
+	ld	a,b
+	or	c
+	jr	nz, loop1
+end_rle:
+	ei
+	__endasm;
+}
+
+
 /**
  * Expands (RLE) a buffer all three char banks at the same time
  */
@@ -105,8 +196,18 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 	uint16_t size, offset, i;
 	offset = pos * 8;
 	size = ts->w * ts->h * 8;
-	tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size, bank);
-	tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size, bank);
+	if (bank == BANK0 || bank == ALLBANKS) {
+		tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset, size);
+		tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset, size);
+	}
+	if (bank == BANK1 || bank == ALLBANKS) {
+		tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset + BANK1_OFFSET, size);
+		tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK1_OFFSET, size);
+	}
+	if (bank == BANK2 || bank == ALLBANKS) {
+		tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset +BANK2_OFFSET, size);
+		tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK2_OFFSET, size);
+	}
 	for (i = pos; i < pos + (size / 8); i++)
 		bitmap_reset(bitmap_tile_bank, i);
 	ts->allocated = true;
@@ -121,7 +222,7 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
  */
 bool tile_set_valloc(struct tile_set *ts)
 {
-	uint16_t offset;
+	uint16_t offset, vsize;
 	uint8_t i, pos, size;
 	bool found;
 
@@ -142,9 +243,13 @@ bool tile_set_valloc(struct tile_set *ts)
 		bitmap_reset(bitmap_tile_bank, i);
 
 	offset = pos * 8;
-	tile_inflate_to_vram(ts->pattern, vdp_base_chars_grp1 + offset, size * 8, ALLBANKS);
-	tile_inflate_to_vram(ts->color, vdp_base_color_grp1 + offset, size * 8, ALLBANKS);
-
+	vsize = size * 8;
+	tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset, vsize);
+	tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset, vsize);
+	tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset + BANK1_OFFSET, vsize);
+	tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK1_OFFSET, vsize);
+	tile_fast_inflate_vram(ts->pattern, vdp_base_chars_grp1 + offset +BANK2_OFFSET, vsize);
+	tile_fast_inflate_vram(ts->color, vdp_base_color_grp1 + offset + BANK2_OFFSET, vsize);
 	ts->allocated = true;
 	ts->pidx = pos;
 	return true;
@@ -159,7 +264,7 @@ void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 {
 	if (ts->allocated)
 		return;
-		
+
 	tile_set_to_vram_bank(ts, ALLBANKS, pos);
 }
 
