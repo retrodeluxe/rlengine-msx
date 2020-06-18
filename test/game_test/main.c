@@ -422,7 +422,7 @@ void show_parchment(uint8_t id)
 	}
 
 
-	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+	vdp_fastcopy_nametable(scr_tile_buffer);
 	vdp_screen_enable();
 	do {
 		sys_irq_enable();
