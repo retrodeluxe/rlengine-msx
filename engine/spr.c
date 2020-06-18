@@ -141,7 +141,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 		if (f == npat) {
 			idx = i - npat + 1;
 			sys_memset(&spr_patt_valloc[idx], 0, npat);
-			vdp_copy_to_vram(ps->patterns, vdp_base_sppat_grp1 + idx * 8, npat * 8);
+			vdp_memcpy(vdp_base_sppat_grp1 + idx * 8, ps->patterns, npat * 8);
 			ps->pidx = idx;
 			ps->allocated = true;
 			return true;

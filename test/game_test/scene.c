@@ -758,7 +758,7 @@ void load_room(uint8_t room, bool reload)
 	}
 
 	show_room_title(game_state.room);
-	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 704);
+	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
 	vdp_screen_enable();
 	start_music(room);
 }

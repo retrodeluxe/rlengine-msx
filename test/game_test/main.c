@@ -231,7 +231,7 @@ void show_title_screen()
 	font_to_vram_bank(&font_upper, BANK2, 1);
 
 	vdp_clear_grp1(0);
-	vdp_copy_to_vram(intro_map_intro, vdp_base_names_grp1, 768);
+	vdp_memcpy(vdp_base_names_grp1, intro_map_intro, 768);
 
 	font_vprint(&font_upper, 7, 22, str_press_space);
 
@@ -310,7 +310,7 @@ void show_intro_animation() __nonbanked
 	font_printf(&intro_font_set, 4, 20, scr_tile_buffer, str_intro_4);
 	font_printf(&intro_font_set, 1, 22, scr_tile_buffer, str_intro_5);
 
-	vdp_copy_to_vram(scr_tile_buffer, vdp_base_names_grp1, 768);
+	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
 
 	load_intro_scene();
 	vdp_screen_enable();

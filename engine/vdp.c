@@ -132,23 +132,23 @@ $1:
 /**
  * copy ram buffer to vram
  */
-void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length) __nonbanked
+void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked
 {
 	buffer;
 	vaddress;
-	length;
+	size;
 
 	__asm
-	ld	l,6(ix)
-	ld	h,7(ix)
+	ld	l,4(ix)
+	ld	h,5(ix)
 	ld	a,l
 	di
 	out	(0x99),a
 	ld	a,h
 	add	a,#0x40
 	out	(0x99),a
-	ld	l,4(ix)
-	ld	h,5(ix)
+	ld	l,6(ix)
+	ld	h,7(ix)
 	ld	e,8(ix)
 	ld	d,9(ix)
 	ld	c,#0x98

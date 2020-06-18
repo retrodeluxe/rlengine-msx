@@ -66,7 +66,7 @@ extern void vdp_set_mode(char mode);
 extern void vdp_set_color(char ink, char border);
 extern void vdp_poke(uint16_t address, uint8_t value) __nonbanked;
 extern void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked;
-extern void vdp_copy_to_vram(uint8_t * buffer, uint16_t vaddress, uint16_t length) __nonbanked;
+extern void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked;
 extern void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, uint8_t spi) __nonbanked;
 extern void vdp_init_hw_sprites(char spritesize, char zoom);
 extern void vdp_fastcopy_nametable(uint8_t * buffer) __nonbanked;

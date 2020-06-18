@@ -45,15 +45,15 @@ void tile_init()
 	bitmap_reset(bitmap_tile_bank, 0);
 }
 
-static void tile_flush_inflate_buffer(uint16_t vram_offset, uint16_t size, uint8_t bank)
-{
-	if (bank == BANK0 || bank == ALLBANKS)
-		vdp_copy_to_vram(inflate_buffer, vram_offset, size);
-	if (bank == BANK1 || bank == ALLBANKS)
-		vdp_copy_to_vram(inflate_buffer, vram_offset + BANK1_OFFSET, size);
-	if (bank == BANK2 || bank == ALLBANKS)
-		vdp_copy_to_vram(inflate_buffer, vram_offset + BANK2_OFFSET, size);
-}
+// static void tile_flush_inflate_buffer(uint16_t vram_offset, uint16_t size, uint8_t bank)
+// {
+// 	if (bank == BANK0 || bank == ALLBANKS)
+// 		//vdp_copy_to_vram(inflate_buffer, vram_offset, size);
+// 	if (bank == BANK1 || bank == ALLBANKS)
+// 		//vdp_copy_to_vram(inflate_buffer, vram_offset + BANK1_OFFSET, size);
+// 	if (bank == BANK2 || bank == ALLBANKS)
+// 		vdp_copy_to_vram(inflate_buffer, vram_offset + BANK2_OFFSET, size);
+// }
 
 uint8_t prev;
 uint8_t prev_run;
@@ -149,44 +149,44 @@ end_rle:
 /**
  * Expands (RLE) a buffer all three char banks at the same time
  */
-static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size, uint8_t bank)
-{
-	int16_t count = size;
-	uint8_t buffer_cnt = 0;
-	uint16_t offset_vram = offset;
-	uint8_t run_size;
-	uint8_t *in = buffer;
-	int16_t prev_byte = -1;
-	uint8_t curr_byte;
-
-	while (count > 0) {
-		curr_byte = *in++;
-		inflate_buffer[buffer_cnt++] = curr_byte;
-		offset_vram++;
-		count--;
-		if (buffer_cnt == RLE_BUFSIZE) {
-			tile_flush_inflate_buffer(offset_vram - RLE_BUFSIZE, RLE_BUFSIZE, bank);
-			buffer_cnt = 0;
-		}
-		if (curr_byte == prev_byte) {
-			run_size = *in++;
-			while (run_size > 0 && count > 0) {
-				inflate_buffer[buffer_cnt++] = curr_byte;
-				count--;
-				offset_vram++;
-				run_size--;
-				if (buffer_cnt == RLE_BUFSIZE) {
-					tile_flush_inflate_buffer(offset_vram - RLE_BUFSIZE, RLE_BUFSIZE, bank);
-					buffer_cnt = 0;
-				}
-			}
-			prev_byte = -1;
-		} else {
-			prev_byte = curr_byte;
-		}
-	}
-	tile_flush_inflate_buffer(offset_vram - buffer_cnt, buffer_cnt, bank);
-}
+// static void tile_inflate_to_vram(uint8_t *buffer, uint16_t offset, uint16_t size, uint8_t bank)
+// {
+// 	int16_t count = size;
+// 	uint8_t buffer_cnt = 0;
+// 	uint16_t offset_vram = offset;
+// 	uint8_t run_size;
+// 	uint8_t *in = buffer;
+// 	int16_t prev_byte = -1;
+// 	uint8_t curr_byte;
+//
+// 	while (count > 0) {
+// 		curr_byte = *in++;
+// 		inflate_buffer[buffer_cnt++] = curr_byte;
+// 		offset_vram++;
+// 		count--;
+// 		if (buffer_cnt == RLE_BUFSIZE) {
+// 			tile_flush_inflate_buffer(offset_vram - RLE_BUFSIZE, RLE_BUFSIZE, bank);
+// 			buffer_cnt = 0;
+// 		}
+// 		if (curr_byte == prev_byte) {
+// 			run_size = *in++;
+// 			while (run_size > 0 && count > 0) {
+// 				inflate_buffer[buffer_cnt++] = curr_byte;
+// 				count--;
+// 				offset_vram++;
+// 				run_size--;
+// 				if (buffer_cnt == RLE_BUFSIZE) {
+// 					tile_flush_inflate_buffer(offset_vram - RLE_BUFSIZE, RLE_BUFSIZE, bank);
+// 					buffer_cnt = 0;
+// 				}
+// 			}
+// 			prev_byte = -1;
+// 		} else {
+// 			prev_byte = curr_byte;
+// 		}
+// 	}
+// 	tile_flush_inflate_buffer(offset_vram - buffer_cnt, buffer_cnt, bank);
+// }
 
 /**
  * set a tileset in a fixed position.
