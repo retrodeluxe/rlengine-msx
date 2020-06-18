@@ -31,7 +31,7 @@ void main()
 {
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 	sys_irq_init();
 
 	tile_init();
@@ -58,7 +58,7 @@ void main()
 		giant_tobj.x-=8;
 		tile_object_show(&giant_tobj, scr_buf, true);
 
-		vdp_copy_to_vram(scr_buf, vdp_base_names_grp1, 768);
+		vdp_memcpy(vdp_base_names_grp1, scr_buf, 768);
 		sys_sleep_ms(500);
 	} while(1);
 }

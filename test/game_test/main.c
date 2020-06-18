@@ -93,7 +93,7 @@ void main() __nonbanked
 {
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 start:
 	show_title_screen();
@@ -193,7 +193,7 @@ void show_game_over()
 	clean_state();
 
 	vdp_screen_disable();
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 	tile_init();
 	spr_init();
@@ -230,7 +230,7 @@ void show_title_screen()
 	INIT_FONT(font_upper, font_upper, FONT_UPPERCASE, 26, 1, 1);
 	font_to_vram_bank(&font_upper, BANK2, 1);
 
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 	vdp_memcpy(vdp_base_names_grp1, intro_map_intro, 768);
 
 	intro_font_set.upper = &font_upper;
@@ -256,7 +256,7 @@ void show_title_screen()
 	sys_irq_unregister(play_music);
 	pt3_mute();
 
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 }
 
 static void load_intro_font()
@@ -339,7 +339,7 @@ void show_intro_animation() __nonbanked
 	pt3_mute();
 
 	vdp_screen_disable();
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 }
 
 extern const char str_parchment_1_1[];

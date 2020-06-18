@@ -60,6 +60,8 @@ struct vdp_hw_sprite {
 
 #define vdp_poke_names(OFFSET, PATTERN) 	vdp_write(vdp_base_names_grp1 + (OFFSET), PATTERN)
 
+extern void vdp_clear(uint8_t color);
+extern void vdp_puts(char x, char y, char *msg);
 extern void vdp_screen_disable(void);
 extern void vdp_screen_enable(void);
 extern void vdp_set_mode(char mode);
@@ -70,7 +72,6 @@ extern void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonb
 extern void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, uint8_t spi) __nonbanked;
 extern void vdp_init_hw_sprites(char spritesize, char zoom);
 extern void vdp_fastcopy_nametable(uint8_t * buffer) __nonbanked;
-extern void vdp_clear_grp1(uint8_t color);
-extern void vdp_print_grp1(char x, char y, char *msg);
+
 
 #endif

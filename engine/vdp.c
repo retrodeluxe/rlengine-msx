@@ -258,11 +258,10 @@ $5:
 	__endasm;
 }
 
-/*
- * Set all names to zero, then clear colors of char zero for
- *  all pattern banks
+/**
+ * Fills name table with zeros and define zero char color in all banks
  */
-void vdp_clear_grp1(uint8_t color)
+void vdp_clear(uint8_t color)
 {
 	vdp_memset(vdp_base_names_grp1, 256 * 3, 0);
 	vdp_memset(vdp_base_color_grp1, 8, color);
@@ -270,13 +269,15 @@ void vdp_clear_grp1(uint8_t color)
 	vdp_memset(vdp_base_color_grp1 + 0x1000, 8, color);
 }
 
-
-void vdp_print_grp1(char x, char y, char *msg)
+/**
+ * Writes a string to vram assuming scr2 and default character set is defined
+ */
+void vdp_puts(char x, char y, char *msg)
 {
 	register char c;
 	register uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
 
-	while ((c = *msg++ ) != '\0') {
+	while ((c = *msg++ ) != 0) {
 		vdp_write(addr++, c);
 	}
 }

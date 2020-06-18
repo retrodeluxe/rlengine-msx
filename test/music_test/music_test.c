@@ -21,10 +21,10 @@ void main()
 {
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 
-	vdp_print_grp1(0, 0, "Music Test");
+	vdp_puts(0, 0, "Music Test");
 
 	pt3_init_notes(NT);
 	pt3_init(SONG00 ,0);

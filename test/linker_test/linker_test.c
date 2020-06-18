@@ -22,9 +22,9 @@ void main() __nonbanked
 	log_w("we are running");
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
-	vdp_print_grp1(10, 10, "Hello MegaROM");
+	vdp_puts(10, 10, "Hello MegaROM");
 
 	function_in_code0();
 
@@ -42,10 +42,10 @@ void main() __nonbanked
 
 void something_else() __nonbanked
 {
-	vdp_print_grp1(10, 12, "something else");
+	vdp_puts(10, 12, "something else");
 }
 
 void something_else2() __nonbanked
 {
-	vdp_print_grp1(10, 16, "something more");
+	vdp_puts(10, 16, "something more");
 }

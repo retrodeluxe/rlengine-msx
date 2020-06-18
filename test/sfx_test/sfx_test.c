@@ -25,10 +25,10 @@ void main()
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
-	vdp_print_grp1(0, 0, "sfx test");
-	vdp_print_grp1(0, 1, "press zero to seven");
+	vdp_puts(0, 0, "sfx test");
+	vdp_puts(0, 1, "press zero to seven");
 
 	pt3_init_notes(NT);
 	pt3_init(prayerofhope_song_pt3,1);

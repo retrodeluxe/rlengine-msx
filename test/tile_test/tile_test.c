@@ -28,7 +28,7 @@ void main()
 
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 	/*
 	 * load a tile set and generate a tile map manually

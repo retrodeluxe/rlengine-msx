@@ -20,16 +20,16 @@ void main()
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 	sys_set_rom();
-	vdp_print_grp1(10, 10, "ROM enabled:");
-	vdp_print_grp1(10, 11, &test_string);
+	vdp_puts(10, 10, "ROM enabled:");
+	vdp_puts(10, 11, &test_string);
 	sys_memcpy(local_string, &test_string, 15);
 	sys_set_bios();
 
-	vdp_print_grp1(10, 12, "BIOS enabled:");
-	vdp_print_grp1(10, 13, local_string);
+	vdp_puts(10, 12, "BIOS enabled:");
+	vdp_puts(10, 13, local_string);
 
 	do {
 	} while (sys_get_key(8) & 1);

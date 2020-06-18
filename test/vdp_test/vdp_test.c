@@ -18,7 +18,7 @@ void main()
 
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 	INIT_TILE_SET(tileset_kv, kingsvalley);
 	tile_set_to_vram(&tileset_kv, 1);
@@ -31,11 +31,11 @@ void main()
 
   /* this should show a stable pattern on screen in both msx1 and msx2 */
 	do {
-		  vdp_copy_to_vram(buffer, vdp_base_names_grp1, 768);
+		vdp_memcpy(vdp_base_names_grp1, buffer, 768);
 	} while (sys_get_key(8) & 1);
 
   do {
 		// FIXME: Current implementation is too fast for tms9918
-    vdp_fastcopy_nametable(buffer);
+		vdp_fastcopy_nametable(buffer);
 	} while (sys_get_key(8) & 1);
 }

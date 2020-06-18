@@ -35,7 +35,7 @@ void main()
 
 	vdp_set_mode(vdp_grp2);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 	INIT_TILE_SET(tileset_palette, palette);
 	tile_set_to_vram(&tileset_palette, 0);
