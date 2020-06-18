@@ -149,7 +149,9 @@ $1:
 	__endasm;
 }
 
-
+/**
+ * copy ram buffer to vram
+ */
 void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length) __nonbanked
 {
 	buffer;
@@ -170,11 +172,13 @@ void vdp_copy_to_vram(uint8_t *buffer, uint16_t vaddress, uint16_t length) __non
 	ld	e,8(ix)
 	ld	d,9(ix)
 	ld	c,#0x98
+	ld	b,e
+	dec	de
+	inc	d
 $2:
 	outi
-	dec	de
-	ld	a,d
-	or	e
+	jp	nz,$2
+	dec	d
 	jr	nz,$2
 	ei
 	__endasm;
@@ -319,8 +323,7 @@ $5:
 	outi
 	nop
 	nop
-	nop
-	jr	nz,$5
+	jp	nz,$5
 	ei
 	__endasm;
 }
