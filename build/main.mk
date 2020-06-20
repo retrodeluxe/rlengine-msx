@@ -30,7 +30,7 @@ export ENGINE_ASFLAGS := -plosff
 export ARCH := $(shell uname)
 
 ifeq ($(ARCH), Darwin)
-export SDCC_ROOT := $(TOP)/prebuilts/darwin/sdcc_3.6.5
+export SDCC_ROOT := $(TOP)/prebuilts/darwin/sdcc_3.8.5
 else
 export SDCC_ROOT := $(TOP)/prebuilts/x86_64/sdcc_3.8.5
 endif
