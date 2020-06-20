@@ -522,25 +522,25 @@ void anim_intro_chase(struct displ_object *obj)
 	int8_t dx = 0, dy = 0;
 	struct spr_sprite_def *sp = obj->spr;
 
-	game_state.templar_delay++;
+	obj->aux++;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
 			dx = 1;
 			break;
 		case STATE_OFF_SCREEN:
-			if (game_state.templar_delay > 40) {
+			if (obj->aux > 20) {
 				obj->state = STATE_MOVING_RIGHT;
 				obj->visible = true;
 				spr_show(obj->spr);
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (game_state.templar_delay > 90) {
+			if (obj->aux > 40) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (game_state.templar_delay > 140) {
+			if (obj->aux > 60) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;

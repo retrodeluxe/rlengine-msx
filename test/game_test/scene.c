@@ -416,6 +416,7 @@ void load_intro_scene()
 		add_animator(dpo, ANIM_INTRO_CHASE);
 		dpo->state = STATE_OFF_SCREEN;
 		dpo->visible = false;
+		dpo->aux = 0;
 		dpo->spr->cur_state = SPR_STATE_RIGHT;
 		if (i == 1) {
 			dpo->state = STATE_OFF_SCREEN_DELAY_1S;
