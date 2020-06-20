@@ -80,6 +80,8 @@ extern bool tile_set_valloc(struct tile_set *ts);
 extern void tile_set_vfree(struct tile_set *ts);
 extern void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t offset);
 extern void tile_set_to_vram(struct tile_set *ts, uint8_t pos);
+extern void tile_set_to_vram_bank_raw(struct tile_set *ts, uint8_t bank, uint8_t offset);
+extern void tile_set_to_vram_raw(struct tile_set *ts, uint8_t pos);
 extern void tile_map_clip(struct tile_map *tm, struct gfx_viewport *vp,
 			     uint8_t * scrbuf, struct gfx_map_pos *p);
 

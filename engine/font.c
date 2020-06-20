@@ -48,7 +48,7 @@ void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8
 void font_to_vram(struct font *f, uint8_t pos)
 {
 	if (&f->tiles != NULL) {
-		tile_set_to_vram(&f->tiles, pos);
+		tile_set_to_vram_raw(&f->tiles, pos);
 		f->idx = f->tiles.pidx;
 	}
 }
@@ -59,7 +59,7 @@ void font_to_vram(struct font *f, uint8_t pos)
 void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos)
 {
 	if (&f->tiles != NULL) {
-		tile_set_to_vram_bank(&f->tiles, bank, pos);
+		tile_set_to_vram_bank_raw(&f->tiles, bank, pos);
 		f->idx = f->tiles.pidx;
 	}
 }

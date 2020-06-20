@@ -402,44 +402,33 @@ void show_parchment(uint8_t id)
 
 	sys_memcpy(scr_tile_buffer, parchment_map_parchment, 768);
 
+	vdp_fastcopy_nametable(scr_tile_buffer);
+	vdp_screen_enable();
+
 	switch (id) {
 		case 2:
-			font_printf(&intro_font_set, 8, 9,
-					scr_tile_buffer, str_parchment_1_1);
-			font_printf(&intro_font_set, 8, 12,
-					scr_tile_buffer, str_parchment_1_2);
+			font_vprintf(&intro_font_set, 8, 9, str_parchment_1_1);
+			font_vprintf(&intro_font_set, 8, 12, str_parchment_1_2);
 			break;
 		case 1:
-			font_printf(&intro_font_set, 8, 9,
-					scr_tile_buffer, str_parchment_2_1);
-			font_printf(&intro_font_set, 8, 12,
-					scr_tile_buffer, str_parchment_2_2);
+			font_vprintf(&intro_font_set, 8, 9, str_parchment_2_1);
+			font_vprintf(&intro_font_set, 8, 12, str_parchment_2_2);
 			break;
 		case 4:
-			font_printf(&intro_font_set, 9, 9,
-					scr_tile_buffer, str_parchment_3_1);
-			font_printf(&intro_font_set, 7, 12,
-					scr_tile_buffer, str_parchment_3_2);
+			font_vprintf(&intro_font_set, 9, 9, str_parchment_3_1);
+			font_vprintf(&intro_font_set, 7, 12,str_parchment_3_2);
 			break;
 		case 3:
-			font_printf(&intro_font_set, 7, 9,
-					scr_tile_buffer, str_parchment_4_1);
-			font_printf(&intro_font_set, 7, 12,
-					scr_tile_buffer, str_parchment_4_2);
+			font_vprintf(&intro_font_set, 7, 9, str_parchment_4_1);
+			font_vprintf(&intro_font_set, 7, 12, str_parchment_4_2);
 			break;
 		case 6:
-			/** this scroll doesn't appear in the original game
-			    it seems to be a later addition on the PC port **/
-			font_printf(&intro_font_set, 8, 9,
-					scr_tile_buffer, str_parchment_5_1);
-			font_printf(&intro_font_set, 6, 12,
-					scr_tile_buffer, str_parchment_5_2);
+			font_vprintf(&intro_font_set, 8, 9, str_parchment_5_1);
+			font_vprintf(&intro_font_set, 6, 12, str_parchment_5_2);
 			break;
 		case 5:
-			font_printf(&intro_font_set, 8, 9,
-					scr_tile_buffer, str_parchment_6_1);
-			font_printf(&intro_font_set, 8, 12,
-					scr_tile_buffer, str_parchment_6_2);
+			font_vprintf(&intro_font_set, 8, 9, str_parchment_6_1);
+			font_vprintf(&intro_font_set, 8, 12, str_parchment_6_2);
 			break;
 		case 7:
 			break;
@@ -448,8 +437,7 @@ void show_parchment(uint8_t id)
 	}
 
 
-	vdp_fastcopy_nametable(scr_tile_buffer);
-	vdp_screen_enable();
+
 	do {
 		sys_irq_enable();
 		sys_wait_vsync();

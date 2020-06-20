@@ -71,6 +71,30 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 	ts->pidx = pos;
 }
 
+void tile_set_to_vram_bank_raw(struct tile_set *ts, uint8_t bank, uint8_t pos)
+{
+	uint16_t size, offset, i;
+	offset = pos * 8;
+	size = ts->w * ts->h * 8;
+	if (bank == BANK0 || bank == ALLBANKS) {
+		vdp_memcpy(vdp_base_chars_grp1 + offset, ts->pattern, size);
+		vdp_memcpy(vdp_base_color_grp1 + offset, ts->color, size);
+	}
+	if (bank == BANK1 || bank == ALLBANKS) {
+		vdp_memcpy(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, size);
+		vdp_memcpy(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, size);
+	}
+	if (bank == BANK2 || bank == ALLBANKS) {
+		vdp_memcpy(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, size);
+		vdp_memcpy(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, size);
+	}
+
+	for (i = pos; i < pos + (size / 8); i++)
+		bitmap_reset(bitmap_tile_bank, i);
+	ts->allocated = true;
+	ts->pidx = pos;
+}
+
 /**
  * tile_set_valloc
  *   attemps to allocate vram for a tileset
@@ -123,6 +147,14 @@ void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 		return;
 
 	tile_set_to_vram_bank(ts, ALLBANKS, pos);
+}
+
+void tile_set_to_vram_raw(struct tile_set *ts, uint8_t pos)
+{
+	if (ts->allocated)
+		return;
+
+	tile_set_to_vram_bank_raw(ts, ALLBANKS, pos);
 }
 
 void tile_set_vfree(struct tile_set *ts)

@@ -21,6 +21,7 @@
 #include "banks.h"
 
 #include "gen/game_test_tiles_ext.h"
+#include "gen/game_test_fonts_ext.h"
 #include "gen/game_test_sprites_ext.h"
 #include "gen/map_defs.h"
 
