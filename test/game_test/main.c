@@ -244,7 +244,7 @@ void show_title_screen()
 
 	ascii8_set_data(PAGE_MUSIC);
 
-	pt3_init(title_song_pt3, 0);
+	pt3_init(title_song_pt3, 1);
 
 	sys_irq_init();
 	sys_irq_register(play_music);
@@ -319,7 +319,7 @@ void show_intro_animation() __nonbanked
 
 	ascii8_set_data(PAGE_MUSIC);
 
-	pt3_init(introjean_song_pt3, 0);
+	pt3_init(introjean_song_pt3, 1);
 
 	sys_irq_init();
 	sys_irq_register(play_music);
