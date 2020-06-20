@@ -7,10 +7,11 @@ export TGA2H := $(BUILD_OUT_TOOLS)/tga2header
 export TMU2H := $(BUILD_OUT_TOOLS)/tmu2header
 export XXD   := $(BUILD_OUT_TOOLS)/xxd
 export HEX2ROM := $(BUILD_OUT_TOOLS)/hex2rom
+export GRAPHX := $(BUILD_OUT_TOOLS)/graphx
 
-export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD)
+export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD) $(GRAPHX)
 
-all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD)
+all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD) $(GRAPHX)
 
 $(TGA2H): $(TOOLS_ROOT)/tga2header.c
 	$(hide) $(HOSTCC) $^ -o $@
@@ -26,3 +27,6 @@ $(XXD): $(TOOLS_ROOT)/xxd.c
 
 $(HEX2ROM): $(TOOLS_ROOT)/hex2rom.c
 	$(hide) $(HOSTCC) $^ -o $@
+
+$(GRAPHX): $(TOOLS_ROOT)/graphx.c
+	$(hide) $(HOSTCC) $^ -o $@ -lm -lSDL2
