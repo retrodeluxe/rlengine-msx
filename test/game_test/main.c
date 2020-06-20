@@ -131,8 +131,8 @@ start:
 
 		animate_all();
 
-		/* framerate limiter 30/60fps */
-		fps_stall = true;
+		/* framerate limiter 25/30fps */
+		// fps_stall = true;
 		while (sys_get_ticks() - reftick < 1) {
 			fps_stall = false;
 		}
@@ -216,28 +216,27 @@ void show_game_over()
 
 extern const char str_press_space[];
 
+extern const char intro2_col[];
+extern const char intro2_pat[];
 void show_title_screen()
 {
-	uint8_t i, color;
+	uint16_t i;
+	uint8_t b;
 
 	vdp_screen_disable();
-	ascii8_set_data(PAGE_INTRO);
 
-	tile_init();
-	INIT_TILE_SET(tileset_intro, intro_tileset);
-	tile_set_to_vram(&tileset_intro, 1);
+	ascii8_set_data(PAGE_INTRO2_PAT);
+	vdp_memcpy(vdp_base_chars_grp1, intro2_pat, 6144);
+	ascii8_set_data(PAGE_INTRO2_COL);
+	vdp_memcpy(vdp_base_color_grp1, intro2_col, 6144);
 
-	INIT_FONT(font_upper, font_upper, FONT_UPPERCASE, 26, 1, 1);
-	font_to_vram_bank(&font_upper, BANK2, 1);
-
-	vdp_clear(0);
-	vdp_memcpy(vdp_base_names_grp1, intro_map_intro, 768);
-
-	intro_font_set.upper = &font_upper;
-
-	font_vprintf(&intro_font_set, 7, 22, str_press_space);
+	b =0;
+	for (i = 0; i < 768; i++) {
+		vdp_write(vdp_base_names_grp1 + i, b++);
+	}
 
 	vdp_screen_enable();
+	ascii8_set_data(PAGE_INTRO);
 
 	/** title music **/
 	pt3_init_notes(NT);  // NT is in PAGE_INTRO

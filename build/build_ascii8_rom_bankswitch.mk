@@ -56,5 +56,5 @@ $(built_rom_bin) : $(built_rom_ihx) | $(HEX2ROM)
 ##
 $(built_rom_1Mb) : $(built_rom_bin) | $(BUILT_ROM_PAGES)
 	@mkdir -p $(LOCAL_BUILD_OUT_ROM)
-	tr "\000" "\377" < /dev/zero | dd ibs=1k count=128 of=$@
+	tr "\000" "\377" < /dev/zero | dd ibs=1k count=256 of=$@
 	dd if=$^ of=$@ conv=notrunc

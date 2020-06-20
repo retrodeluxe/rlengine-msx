@@ -11,3 +11,5 @@
 #define PAGE_SPRITES    12
 #define PAGE_MUSIC	13       /* swap 7 */
 #define PAGE_ROOM_TITLES 14
+#define PAGE_INTRO2_PAT	 15
+#define PAGE_INTRO2_COL	 16

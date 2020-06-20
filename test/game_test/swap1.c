@@ -6,7 +6,7 @@
 #include "gen/font_upper.h"
 //#include "gen/font_lower.h
 #include "gen/gameover.h"
-#include "pt3_nt2.h"
+#include "pt3_nt0.h"
 
 
 const char str_press_space[]="PRESS SPACE KEY~";
