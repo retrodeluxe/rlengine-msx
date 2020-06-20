@@ -288,11 +288,11 @@ void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size)
 	__asm
 	di
 	ld 	e, 4 (ix)
-	ld 	d, 5 (ix)  		//; target vram address offset
+	ld 	d, 5 (ix)
 	ld	c, 8 (ix)
-	ld	b, 9 (ix)  		//; decompressed size
+	ld	b, 9 (ix)
 	ld	l, 6 (ix)
-	ld	h, 7 (ix)  		//; source buffer
+	ld	h, 7 (ix)
 loop1:
 	push 	bc
 	ld	a,(hl)
