@@ -328,18 +328,17 @@ run_mode:
 	ld	h,b
 	ld	l,c
 	ld	b,a
-	ex	af,af'
 run_loop:
-	call	_vdp_write_internal
 	dec 	hl
-	ex 	af, af'
 	ld	a,h
 	or 	l
 	jr	nz, cont
 	pop 	hl
 	jr	end_rle
 cont:
-	ex	af, af'
+	ex	af,af'
+	call	_vdp_write_internal
+	ex	af,af'
 	djnz	run_loop
 	ld	b,h
 	ld	c,l
