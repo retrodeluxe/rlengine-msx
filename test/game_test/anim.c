@@ -439,7 +439,7 @@ void anim_chase(struct displ_object *obj)
 	if (game_state.room == ROOM_GRAVEYARD)
 		phys_detect_fall(obj, scr_tile_buffer, dx);
 
-	game_state.templar_delay++;
+	obj->aux2++;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
 			dx = 2;
@@ -477,19 +477,19 @@ void anim_chase(struct displ_object *obj)
 			}
 			break;
 		case STATE_OFF_SCREEN:
-			if (game_state.templar_delay > 40) {
+			if (obj->aux2 > 10) {
 				obj->state = STATE_MOVING_RIGHT;
 				obj->visible = true;
 				spr_show(obj->spr);
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (game_state.templar_delay > 90) {
+			if (obj->aux2 > 19) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (game_state.templar_delay > 140) {
+			if (obj->aux2 > 29) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
@@ -535,12 +535,12 @@ void anim_intro_chase(struct displ_object *obj)
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (obj->aux > 40) {
+			if (obj->aux > 39) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (obj->aux > 60) {
+			if (obj->aux > 59) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;

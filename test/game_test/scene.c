@@ -679,6 +679,8 @@ void load_room(uint8_t room, bool reload)
 					add_animator(dpo, ANIM_CHASE);
 					dpo->state = STATE_OFF_SCREEN;
 					dpo->visible = false;
+					dpo->aux = 0;
+					dpo->aux2 = 0;
 					dpo->spr->cur_state = SPR_STATE_RIGHT;
 					if (game_state.templar_ct == 1) {
 						dpo->state = STATE_OFF_SCREEN_DELAY_1S;
