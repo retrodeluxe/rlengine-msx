@@ -218,44 +218,68 @@ extern const char str_press_space[];
 
 extern const char intro2_col[];
 extern const char intro2_pat[];
-void show_title_screen()
+extern const char instr_col[];
+extern const char instr_pat[];
+
+static void load_intro_scr()
 {
-	uint16_t i;
-	uint8_t b;
-
 	vdp_screen_disable();
-
 	ascii8_set_data(PAGE_INTRO2_PAT);
 	vdp_memcpy(vdp_base_chars_grp1, intro2_pat, 6144);
 	ascii8_set_data(PAGE_INTRO2_COL);
 	vdp_memcpy(vdp_base_color_grp1, intro2_col, 6144);
+	vdp_screen_enable();
+}
 
-	b =0;
+static void load_instructions_scr()
+{
+	vdp_screen_disable();
+	ascii8_set_data(PAGE_INSTR_PAT);
+	vdp_memcpy(vdp_base_chars_grp1, instr_pat, 6144);
+	ascii8_set_data(PAGE_INSTR_COL);
+	vdp_memcpy(vdp_base_color_grp1, instr_col, 6144);
+	vdp_screen_enable();
+}
+
+void show_title_screen()
+{
+	uint16_t i;
+	uint8_t b = 0;
+	bool showing_instr = false;
+
+	vdp_screen_disable();
 	for (i = 0; i < 768; i++) {
 		vdp_write(vdp_base_names_grp1 + i, b++);
 	}
+	load_intro_scr();
 
-	vdp_screen_enable();
 	ascii8_set_data(PAGE_INTRO);
-
-	/** title music **/
-	pt3_init_notes(NT);  // NT is in PAGE_INTRO
+	pt3_init_notes(NT);
 
 	ascii8_set_data(PAGE_MUSIC);
-
-	pt3_init(title_song_pt3, 1);
+	sys_memcpy(data_buffer, title_song_pt3, title_song_pt3_len);
+	pt3_init(data_buffer, 1);
 
 	sys_irq_init();
 	sys_irq_register(play_music);
 
 	do {
 		sys_wait_vsync();
-	} while (sys_get_key(8) & 1);
+
+		if (sys_get_trigger(0)) {
+			if (showing_instr) {
+				load_intro_scr();
+				showing_instr = false;
+			} else {
+				load_instructions_scr();
+				showing_instr = true;
+			}
+		}
+
+	} while (sys_get_key(7) & 128);
 
 	sys_irq_unregister(play_music);
 	pt3_mute();
-
-	vdp_clear(0);
 }
 
 static void load_intro_font()
@@ -302,6 +326,7 @@ void show_intro_animation() __nonbanked
 
 	tile_init();
 	vdp_screen_disable();
+	vdp_clear(0);
 	load_intro_font();
 
 	sys_memset(scr_tile_buffer, 0, 768);

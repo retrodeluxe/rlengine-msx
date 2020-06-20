@@ -13,3 +13,5 @@
 #define PAGE_ROOM_TITLES 14
 #define PAGE_INTRO2_PAT	 15
 #define PAGE_INTRO2_COL	 16
+#define PAGE_INSTR_PAT	 17
+#define PAGE_INSTR_COL	 18
