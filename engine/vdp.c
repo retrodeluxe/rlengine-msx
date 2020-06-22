@@ -166,6 +166,50 @@ $2:
 	__endasm;
 }
 
+void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
+{
+	buffer;
+
+	__asm
+	ld	l,4(ix)
+	ld	h,5(ix)
+	inc 	hl
+	ld	c, (hl)
+	inc 	hl
+	ld	b, (hl)
+	inc 	hl
+	ld	a,c
+	di
+	out	(0x99),a
+	ld	a,b
+	add	a,#0x40
+	out	(0x99),a
+	ld	e, (hl)
+	inc 	hl
+	ld	d, (hl)
+	inc 	hl
+	inc 	hl
+	inc 	hl
+	push 	hl
+	ex 	de,hl
+	sbc 	hl,bc
+	ex 	de,hl
+	inc	de
+	pop 	hl
+	ld	c,#0x98
+	ld	b,e
+	dec	de
+	inc	d
+$7:
+	outi
+	jp	nz,$7
+	dec	d
+	jr	nz,$7
+	ei
+	__endasm;
+}
+
+
 void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, uint8_t spi) __nonbanked
 {
 	spr;

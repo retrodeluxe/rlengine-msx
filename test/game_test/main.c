@@ -216,24 +216,32 @@ void show_game_over()
 
 extern const char str_press_space[];
 
-extern const char intro2_col[];
-extern const char intro2_pat[];
 extern const char instr_col[];
 extern const char instr_pat[];
+extern const char intropat_vda[];
+extern const char introcol_vda[];
+extern const char introspt_vda[];
+extern const char introsat_vda[];
 
 static void load_intro_scr()
 {
 	vdp_screen_disable();
+	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 	ascii8_set_data(PAGE_INTRO2_PAT);
-	vdp_memcpy(vdp_base_chars_grp1, intro2_pat, 6144);
+	vdp_memcpy_vda(intropat_vda);
+	vdp_memcpy_vda(introspt_vda);
+	vdp_memcpy_vda(introsat_vda);
+	//vdp_memcpy(vdp_base_chars_grp1, intro2_pat, 6144);
 	ascii8_set_data(PAGE_INTRO2_COL);
-	vdp_memcpy(vdp_base_color_grp1, intro2_col, 6144);
+	vdp_memcpy_vda(introcol_vda);
+	//vdp_memcpy(vdp_base_color_grp1, intro2_col, 6144);
 	vdp_screen_enable();
 }
 
 static void load_instructions_scr()
 {
 	vdp_screen_disable();
+	spr_init();
 	ascii8_set_data(PAGE_INSTR_PAT);
 	vdp_memcpy(vdp_base_chars_grp1, instr_pat, 6144);
 	ascii8_set_data(PAGE_INSTR_COL);
