@@ -11,7 +11,7 @@ export GRAPHX := $(BUILD_OUT_TOOLS)/graphx
 
 export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD) $(GRAPHX)
 
-all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD) $(GRAPHX)
+all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD)
 
 $(TGA2H): $(TOOLS_ROOT)/tga2header.c
 	$(hide) $(HOSTCC) $^ -o $@
