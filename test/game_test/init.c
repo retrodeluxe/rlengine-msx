@@ -332,16 +332,13 @@ void show_score_panel()
 
 	tile_object_show(&score, scr_tile_buffer, true);
 
-	_itoa(game_state.live_cnt, snum, 10);
-	snum[2] = '~';
+	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
+	vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
 
 	score_font_set.numeric = &big_digits;
-
+	_itoa(game_state.live_cnt, snum, 10);
 	font_vprintf(&score_font_set, 2, 22, snum);
-
 	_itoa(game_state.cross_cnt, snum, 10);
-	snum[2] = '~';
-
 	font_vprintf(&score_font_set, 6, 22, snum);
 }
 

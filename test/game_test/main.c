@@ -124,6 +124,7 @@ start:
 		if (game_state.show_parchment) {
 			show_parchment(game_state.show_parchment);
 			load_room(game_state.room, true);
+			show_score_panel();
 			game_state.show_parchment = 0;
 		} else if (game_state.change_room) {
 			load_room(game_state.room, false);
@@ -146,6 +147,7 @@ start:
 			}
 			handle_death();
 			load_room(game_state.room, false);
+			show_score_panel();
 		}
 
 		if (game_state.refresh_score) {
