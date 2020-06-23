@@ -87,10 +87,14 @@ void font_color_mask(struct font *f, uint8_t color)
  */
 void font_set_color_mask(struct font_set *fs, uint8_t color)
 {
-	font_color_mask(fs->upper, color);
-	font_color_mask(fs->lower, color);
-	font_color_mask(fs->numeric, color);
-	font_color_mask(fs->symbols, color);
+	if (fs->upper != NULL)
+		font_color_mask(fs->upper, color);
+	if (fs->lower != NULL)
+		font_color_mask(fs->lower, color);
+	if (fs->numeric != NULL)
+		font_color_mask(fs->numeric, color);
+	if (fs->symbols != NULL)
+		font_color_mask(fs->symbols, color);
 }
 
 

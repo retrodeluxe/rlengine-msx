@@ -322,6 +322,8 @@ static void load_parchment_font()
 
 	intro_font_set.upper = &font_upper;
 	intro_font_set.lower = &font_lower;
+	intro_font_set.numeric = NULL;
+	intro_font_set.symbols = NULL;
 }
 
 /**
