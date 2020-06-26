@@ -455,7 +455,7 @@ void load_intro_scene()
 
 void load_room(uint8_t room, bool reload)
 {
-	uint8_t i, id, type, delay, speed, offset;
+	uint8_t i, id, type, delay, speed, offset, min, max;
 	bool add_dpo;
 
 	sys_irq_disable();
@@ -733,8 +733,12 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_STATIC);
 			} else if (map_object->object.movable.type == TYPE_LAVA) {
 				speed = map_object->object.movable.speed;
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
 				add_sprite(dpo, spr_ct, PATRN_FIREBALL);
 				dpo->speed = speed;
+				dpo->max = max;
+				dpo->min = min;
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_FIREBALL);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {

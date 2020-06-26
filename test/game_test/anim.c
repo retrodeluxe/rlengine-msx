@@ -427,6 +427,37 @@ void anim_up_down(struct displ_object *obj)
 }
 
 /**
+ * Simple up-down animation bounded by max/min coordinates
+ */
+void anim_up_down_bounded(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dy = 0;
+
+	dy = obj->speed;
+	switch(obj->state) {
+		case STATE_MOVING_DOWN:
+			if (obj->ypos > obj->max) {
+				obj->state = STATE_MOVING_UP;
+				dy *= -1;;
+			}
+			break;
+		case STATE_MOVING_UP:
+			dy *= -1;
+			if (obj->ypos < obj->min) {
+				obj->state = STATE_MOVING_DOWN;
+				dy *= -1;
+			}
+			break;
+	}
+
+	obj->ypos += dy;
+	spr_animate(sp, 0, dy);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+}
+
+/**
  * Animation for a Templar chasing Jean in different screens
  */
 void anim_chase(struct displ_object *obj)
@@ -890,7 +921,7 @@ void init_animators()
 	animators[ANIM_FISH_JUMP].run = anim_fish_jump;
 	animators[ANIM_SPLASH].run = anim_splash;
 	animators[ANIM_GHOST].run = anim_ghost;
-	animators[ANIM_FIREBALL].run = anim_up_down;
+	animators[ANIM_FIREBALL].run = anim_up_down_bounded;
 	animators[ANIM_ARCHER_SKELETON].run = anim_archer_skeleton;
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;

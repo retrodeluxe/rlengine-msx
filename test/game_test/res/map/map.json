@@ -5338,8 +5338,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"112",
-                     "min":"95",
+                     "max":"160",
+                     "min":"48",
                      "speed":"3",
                      "type":"lava"
                     },
@@ -5419,8 +5419,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"112",
-                     "min":"95",
+                     "max":"160",
+                     "min":"48",
                      "speed":"3",
                      "type":"lava"
                     },
@@ -5446,7 +5446,7 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"112",
+                     "max":"160",
                      "min":"101",
                      "speed":"3",
                      "type":"lava"
@@ -5930,8 +5930,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"112",
-                     "min":"89",
+                     "max":"160",
+                     "min":"8",
                      "speed":"2",
                      "type":"lava"
                     },
@@ -6032,8 +6032,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"112",
-                     "min":"89",
+                     "max":"160",
+                     "min":"8",
                      "speed":"2",
                      "type":"lava"
                     },
@@ -6059,8 +6059,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"112",
-                     "min":"89",
+                     "max":"160",
+                     "min":"8",
                      "speed":"2",
                      "type":"lava"
                     },

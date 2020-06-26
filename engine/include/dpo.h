@@ -37,10 +37,10 @@ struct displ_object {
 	uint8_t type; 	/*< sprite or dynamic tile */
 
 	/* static animation data */
-	int8_t max;	/*<  max coordinate */
-	int8_t min;	/*<  min coordinate */
-	int8_t speed;	/*<  speed */
-	int8_t color;
+	uint8_t max;	/*<  max coordinate */
+	uint8_t min;	/*<  min coordinate */
+	uint8_t speed;	/*<  speed */
+	uint8_t color;
 	bool visible;
 
 	/* collision detection flags */
