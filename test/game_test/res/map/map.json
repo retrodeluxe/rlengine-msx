@@ -2702,8 +2702,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":1192.36363636364,
-                 "y":497.454545454545
+                 "x":1192.86363636364,
+                 "y":497.204545454545
                 }, 
                 {
                  "height":24,
@@ -2759,7 +2759,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"50",
+                     "delay":"20",
                      "type":"plant"
                     },
                  "propertytypes":
@@ -2780,7 +2780,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"100",
+                     "delay":"40",
                      "type":"plant"
                     },
                  "propertytypes":
@@ -2801,7 +2801,7 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"150",
+                     "delay":"60",
                      "type":"plant"
                     },
                  "propertytypes":

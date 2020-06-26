@@ -695,7 +695,7 @@ void anim_plant(struct displ_object *obj)
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 	}
-	if (++obj->state > 160) obj->state = 0;
+	if (++obj->state > 70) obj->state = 0;
 }
 
 /**
