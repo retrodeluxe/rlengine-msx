@@ -25,9 +25,10 @@
 #define SPR_SIZE_8x8	1
 #define SPR_SIZE_16x16	4
 #define SPR_SIZE_16x32	8
-//#define SPR_SIZE_32x16	8
+#define SPR_SIZE_32x16	16
+#define SPR_SIZE_32x32  32
 
-#define spr_dir_lr 		1
+#define spr_dir_lr 	1
 #define spr_dir_lrud 	2
 #define spr_dir_lrudc 	3
 #define spr_dir_all 	4

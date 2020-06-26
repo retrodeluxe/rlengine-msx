@@ -343,15 +343,17 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
  * Update collision state of a display object 16x16
  */
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
-       int8_t dx, int8_t dy, bool notify) __nonbanked
+				int8_t dx, int8_t dy, bool notify) __nonbanked
 {
-       uint8_t size = obj->spr->pattern_set->size;
+	uint8_t size = obj->spr->pattern_set->size;
 
-       if (size == SPR_SIZE_16x16) {
-              phys_detect_tile_collisions_16x16(obj,map, dx, dy, notify);
-       } else if (size = SPR_SIZE_16x32) {
-              phys_detect_tile_collisions_16x32(obj, map, dx, dy, notify);
-       }
+	if (size == SPR_SIZE_16x16) {
+		phys_detect_tile_collisions_16x16(obj,map, dx, dy, notify);
+	} else if (size = SPR_SIZE_16x32) {
+		phys_detect_tile_collisions_16x32(obj, map, dx, dy, notify);
+	} else if (size = SPR_SIZE_32x16) {
+		phys_detect_tile_collisions_16x16(obj,map, dx, dy, notify);
+	}
 }
 
 void phys_detect_fall(struct displ_object *obj, uint8_t *map, int8_t dx) __nonbanked

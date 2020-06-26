@@ -446,7 +446,7 @@ void define_sprite(uint8_t pattidx)
 			spr_copy_pattern_set(PATRN_DEMON, demon, demon_color);
 			break;
 		case PATRN_DARKBAT:
-			spr_define_pattern_set(PATRN_DARKBAT, SPR_SIZE_16x16, 1, 2,
+			spr_define_pattern_set(PATRN_DARKBAT, SPR_SIZE_32x16, 1, 2,
 				two_step_state);
 			spr_copy_pattern_set(PATRN_DARKBAT, darkbat, darkbat_color);
 			break;
