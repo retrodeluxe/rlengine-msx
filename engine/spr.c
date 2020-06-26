@@ -251,6 +251,14 @@ uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
 
 void spr_hide(struct spr_sprite_def *sp) __nonbanked
 {
+	uint8_t n, idx;
+	n = sp->pattern_set->n_planes;
+	if (sp->pattern_set->size == SPR_SIZE_16x32
+		|| sp->pattern_set->size == SPR_SIZE_32x16)
+		n = n * 2;
+	idx = sp->aidx;
+	sys_memset(&spr_attr_valloc[idx], 1, n);
+
 	vdp_memset(vdp_base_spatr_grp1 +
 		   sp->aidx * sizeof(struct vdp_hw_sprite),
 		   sizeof(struct vdp_hw_sprite) * sp->pattern_set->n_planes, 0);
