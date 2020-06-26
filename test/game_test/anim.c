@@ -317,7 +317,7 @@ void anim_static(struct displ_object *obj)
 void anim_cycle_tile(struct displ_object *dpo)
 {
         // maybe I can just set the objet to gone.
-	if (dpo->state++ == 10) {
+	if (dpo->state++ == 5) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
 			dpo->tob->cur_anim_step++;
