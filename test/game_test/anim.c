@@ -20,7 +20,6 @@
 struct animator animators[MAX_ANIMATORS];
 
 extern struct displ_object dpo_jean;
-extern void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir);
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	uint8_t state, uint8_t dir, uint8_t speed);
 
@@ -687,8 +686,12 @@ void anim_plant(struct displ_object *obj)
 		// open
 		obj->tob->cur_anim_step = 1;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
-		add_plant_bullet(obj->xpos, obj->ypos, 0);
-		add_plant_bullet(obj->xpos, obj->ypos, 1);
+		add_bullet(obj->xpos,
+			obj->ypos - 8,
+			PATRN_BULLET, ANIM_FALLING_BULLETS, 0, -4, 0);
+		add_bullet(obj->xpos + 8,
+			obj->ypos - 8,
+			PATRN_BULLET, ANIM_FALLING_BULLETS, 1, -4, 0);
 	} else if (obj->state == obj->aux + 10) {
 		// close
 		obj->tob->cur_anim_step = 0;

@@ -64,9 +64,6 @@ struct displ_object *coll_dpo;
 /** tile object and sprite counters **/
 uint8_t spr_ct, tob_ct, bullet_ct;
 
-/** misc flags **/
-bool init_bullets;
-
 /** current room object data **/
 uint8_t *room_objs;
 
@@ -211,48 +208,6 @@ void add_jean()
 }
 
 /**
- * throws a plant bullet to either left (dir = 0) or right (dir = 1)
- */
-void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir)
-{
-	uint8_t idx;
-
-	if (init_bullets) {
-		define_sprite(PATRN_BULLET);
-		spr_valloc_pattern_set(PATRN_BULLET);
-		init_bullets = false;
-	}
-
-	idx = 0;
-	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
-		if (dpo_bullet[idx].state == 255)
-			break;
-	}
-
-	if (idx == SCENE_MAX_BULLET)
-		return;
-
-	spr_init_sprite(&bullet_sprites[idx], PATRN_BULLET);
-	bullet_sprites[idx].cur_anim_step = 0;
-	spr_set_pos(&bullet_sprites[idx], xpos + 8 * dir, ypos - 8);
-
-	dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
-	dpo_bullet[idx].spr = &bullet_sprites[idx];
-	dpo_bullet[idx].xpos = xpos + 8 * dir;
-	dpo_bullet[idx].ypos = ypos - 8;
-	dpo_bullet[idx].state = dir;
-	dpo_bullet[idx].collision_state = 0;
-	dpo_bullet[idx].aux = -4;
-
-	INIT_LIST_HEAD(&dpo_bullet[idx].list);
-	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
-	add_animator(&dpo_bullet[idx], ANIM_FALLING_BULLETS);
-	list_add(&dpo_bullet[idx].list, &display_list);
-	spr_show(dpo_bullet[idx].spr);
-
-}
-
-/**
  * Add bullet generic
  */
 void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
@@ -278,7 +233,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	dpo_bullet[idx].spr = &bullet_sprites[idx];
 	dpo_bullet[idx].xpos = xpos;
 	dpo_bullet[idx].ypos = ypos;
-	dpo_bullet[idx].state = 0;
+	dpo_bullet[idx].state = state;
 	dpo_bullet[idx].collision_state = 0;
 	dpo_bullet[idx].aux = dir;
 	dpo_bullet[idx].aux2 = speed;
@@ -336,7 +291,6 @@ void clear_room() {
 	spr_ct = 0;
 	tob_ct = 0;
 	bullet_ct = 0;
-	init_bullets = true;
 
 	for (i = 0; i < SCENE_MAX_BULLET; i++) {
 		dpo_bullet[i].state = 255;
@@ -613,6 +567,8 @@ void load_room(uint8_t room, bool reload)
 				delay = map_object->object.shooter.delay;
 				dpo->aux = delay;
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
+				define_sprite(PATRN_BULLET);
+				spr_valloc_pattern_set(PATRN_BULLET);
 				add_animator(dpo, ANIM_SHOOTER_PLANT);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
