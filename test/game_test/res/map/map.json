@@ -4932,9 +4932,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"48",
-                     "min":"34",
-                     "speed":"1",
+                     "max":"128",
+                     "min":"16",
+                     "speed":"2",
                      "type":"demon"
                     },
                  "propertytypes":
@@ -4980,9 +4980,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"44",
-                     "min":"34",
-                     "speed":"1",
+                     "max":"98",
+                     "min":"16",
+                     "speed":"2",
                      "type":"demon"
                     },
                  "propertytypes":
@@ -4998,7 +4998,7 @@
                  "visible":true,
                  "width":16,
                  "x":346.636363636364,
-                 "y":737.136363636364
+                 "y":735.5
                 }, 
                 {
                  "height":24,
@@ -5007,9 +5007,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"48",
-                     "min":"34",
-                     "speed":"1",
+                     "max":"128",
+                     "min":"16",
+                     "speed":"2",
                      "type":"demon"
                     },
                  "propertytypes":
