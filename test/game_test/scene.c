@@ -646,8 +646,15 @@ void load_room(uint8_t room, bool reload)
 			// 	map_object++;
 			// 	continue;
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
-				add_animator(dpo, ANIM_LEFT_RIGHT);
+				dpo->speed = speed;
+				dpo->max = max;
+				dpo->min = min;
+				dpo->state = STATE_MOVING_LEFT;
+				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
 				min = map_object->object.movable.min;
 				max = map_object->object.movable.max;

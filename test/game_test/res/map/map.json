@@ -4765,9 +4765,9 @@
                  "properties":
                     {
                      "dir":"1",
-                     "max":"26",
-                     "min":"4",
-                     "speed":"1",
+                     "max":"192",
+                     "min":"32",
+                     "speed":"2",
                      "type":"dark_bat"
                     },
                  "propertytypes":
@@ -5861,9 +5861,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"124",
-                     "min":"98",
-                     "speed":"1",
+                     "max":"160",
+                     "min":"24",
+                     "speed":"2",
                      "type":"skeleton_ceil"
                     },
                  "propertytypes":
@@ -5957,9 +5957,9 @@
                  "properties":
                     {
                      "dir":"1",
-                     "max":"123",
-                     "min":"98",
-                     "speed":"1",
+                     "max":"196",
+                     "min":"16",
+                     "speed":"2",
                      "type":"dark_bat"
                     },
                  "propertytypes":
@@ -5984,9 +5984,9 @@
                  "properties":
                     {
                      "dir":"1",
-                     "max":"123",
-                     "min":"98",
-                     "speed":"1",
+                     "max":"196",
+                     "min":"70",
+                     "speed":"2",
                      "type":"dark_bat"
                     },
                  "propertytypes":
@@ -6061,7 +6061,7 @@
                      "dir":"3",
                      "max":"160",
                      "min":"8",
-                     "speed":"2",
+                     "speed":"3",
                      "type":"lava"
                     },
                  "propertytypes":
@@ -6424,7 +6424,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":287,
+ "nextobjectid":288,
  "orientation":"orthogonal",
  "properties":
     {

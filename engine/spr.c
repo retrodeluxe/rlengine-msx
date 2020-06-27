@@ -84,14 +84,18 @@ void spr_copy_pattern_set(uint8_t index, uint8_t *patterns, uint8_t *colors)
 void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
 	uint8_t num_states, uint8_t *state_steps)
 {
-	uint16_t pattern_size;
+	uint16_t pattern_size, sz;
 	uint8_t i, total_steps = 0;
 
 	for (i = 0; i < num_states; i++) {
 		total_steps += state_steps[i];
 	}
 
-	pattern_size = size * planes * total_steps * 8;
+	sz = size;
+	if (size == SPR_SIZE_32x16)
+		sz = 8;
+
+	pattern_size = sz * planes * total_steps * 8;
 
 	spr_pattern[index].size = size;
 	spr_pattern[index].n_planes = planes;
@@ -121,7 +125,7 @@ void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)
 uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 {
 	uint16_t npat;
-	uint8_t i, idx, f = 0;
+	uint8_t i, idx, size, f = 0;
 	uint8_t n_steps = 0;
 
 	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
@@ -134,7 +138,11 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 	}
 	ps->n_steps = n_steps;
 
-	npat = ps->n_planes * ps->n_steps * ps->size;
+	size = ps->size;
+	if (ps->size == SPR_SIZE_32x16)
+		size = 8;
+
+	npat = ps->n_planes * ps->n_steps * size;
 
 	for (i = 0; i < vdp_hw_max_patterns - 1; i++) {
 		f = f * spr_patt_valloc[i] + spr_patt_valloc[i];
@@ -152,11 +160,15 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 
 void spr_vfree_pattern_set(uint8_t patrn_idx)
 {
-	uint8_t npat;
+	uint8_t npat, size;
 
 	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
 
-	npat = ps->n_planes * ps->n_steps * ps->size;
+	size = ps->size;
+	if (ps->size == SPR_SIZE_32x16)
+		size = 8;
+
+	npat = ps->n_planes * ps->n_steps * size;
 	ps->allocated = false;
 	sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
@@ -198,13 +210,14 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 			}
 			break;
 		case SPR_SIZE_32x16:
-			base *= (SPR_SIZE_16x16 * 2 * ps->n_planes);
-			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * 2 * ps->n_planes);
+			base *= (SPR_SIZE_16x32 * ps->n_planes); // 0 8 16 32
+			base2 = base + 4;
+			frame = sp->cur_anim_step * SPR_SIZE_16x32 * ps->n_planes; // 0 or 8
 			for (i = 0; i < ps->n_planes; i++) {
 				(sp->planes[i]).color = (ps->colors)[color_frame];
 				(sp->planes[i + 3]).color = (ps->colors)[color_frame];
-				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16 * 2;
-				(sp->planes[i + 3]).pattern = ps->pidx + base + frame + SPR_SIZE_16x16 + i * SPR_SIZE_16x16 * 2 ;
+				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x32;
+				(sp->planes[i + 3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x32;
 			}
 			break;
 
