@@ -1,6 +1,7 @@
-#pragma DATA_PAGE 12
+#include "banks.h"
 
-// PAGE_SPRITES
+#pragma DATA_PAGE 13
+
 #include "gen/game_test_sprites.h"
 #include "msx.h"
 

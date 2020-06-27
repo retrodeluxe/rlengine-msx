@@ -1,6 +1,7 @@
-#pragma DATA_PAGE 10
+#include "banks.h"
 
-// PAGE_MAPTILES
+#pragma DATA_PAGE 11
+
 #include "gen/map1.h"
 #include "gen/map2.h"
 #include "gen/map3.h"

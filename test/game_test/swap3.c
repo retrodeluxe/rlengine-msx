@@ -1,4 +1,6 @@
-#pragma DATA_PAGE 9
+#include "banks.h"
+
+#pragma DATA_PAGE 10
 
 // PAGE_MAP
 #include "gen/map_layer_map.h"

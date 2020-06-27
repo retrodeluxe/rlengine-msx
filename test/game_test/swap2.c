@@ -1,4 +1,6 @@
-#pragma DATA_PAGE 8
+#include "banks.h"
+
+#pragma DATA_PAGE 9
 
 // PAGE_DYNTILES
 #include "gen/rope.h"

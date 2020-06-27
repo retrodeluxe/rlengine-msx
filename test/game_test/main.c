@@ -166,7 +166,7 @@ void animate_all() __nonbanked
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
 			/** XXX: hack for banked function pointers **/
-			ascii8_set_code(6);
+			ascii8_set_code(anim->page);
 			anim->run(dpo);
 			ascii8_restore();
 		}

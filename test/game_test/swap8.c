@@ -1,5 +1,6 @@
-#pragma DATA_PAGE 14
-// PAGE_ROOM_TITLES
+#include "banks.h"
+
+#pragma DATA_PAGE 15
 
 #include "gen/title_escape.h"
 #include "gen/title_death_is_close.h"

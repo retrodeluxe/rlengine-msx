@@ -1,4 +1,4 @@
-#pragma DATA_PAGE 7
+#pragma DATA_PAGE 8
 
 // PAGE_INTRO
 #include "gen/intro_map_layer_intro.h"

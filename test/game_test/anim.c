@@ -307,11 +307,6 @@ void anim_jean(struct displ_object *obj)
 	// log_e("collision %d\n", obj->collision_state);
 }
 
-void anim_static(struct displ_object *obj)
-{
-	// do nothing, just make sure we can display the sprite
-}
-
 void anim_cycle_tile(struct displ_object *dpo)
 {
         // maybe I can just set the objet to gone.
@@ -575,76 +570,8 @@ void anim_chase(struct displ_object *obj)
 }
 
 
-/**
- * Simplified animation for a Templar chasing Jean in intro screen
- */
-void anim_intro_chase(struct displ_object *obj)
-{
-	int8_t dx = 0, dy = 0;
-	struct spr_sprite_def *sp = obj->spr;
-
-	obj->aux++;
-	switch(obj->state) {
-		case STATE_MOVING_RIGHT:
-			dx = 1;
-			break;
-		case STATE_OFF_SCREEN:
-			if (obj->aux > 20) {
-				obj->state = STATE_MOVING_RIGHT;
-				obj->visible = true;
-				spr_show(obj->spr);
-			}
-			return;
-		case STATE_OFF_SCREEN_DELAY_1S:
-			if (obj->aux > 39) {
-				obj->state = STATE_OFF_SCREEN;
-			}
-			return;
-		case STATE_OFF_SCREEN_DELAY_2S:
-			if (obj->aux > 59) {
-				obj->state = STATE_OFF_SCREEN;
-			}
-			return;
-	}
-
-	obj->xpos += dx;
-
-	spr_animate(sp, dx, dy);
-	spr_set_pos(sp, obj->xpos, obj->ypos);
-	spr_update(sp);
-
-	if (obj->xpos > 254) {
-		spr_hide(sp);
-		list_del(&obj->list);
-	}
-}
-
-/**
- * Simplified Jean animation for intro screen
- */
-void anim_intro_jean(struct displ_object *obj)
-{
-	struct spr_sprite_def *sp = obj->spr;
-	struct spr_pattern_set *ps = sp->pattern_set;
-
-	obj->xpos += 1;
-	sp->anim_ctr++;
-
-	if (sp->anim_ctr > sp->anim_ctr_treshold) {
-		sp->cur_anim_step++;
-		sp->anim_ctr = 0;
-	}
-	if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
-		sp->cur_anim_step = 0;
-
-	spr_set_pos(sp, obj->xpos, obj->ypos);
-	spr_update(sp);
-
-	if (obj->xpos > 254) {
-		spr_hide(sp);
-		list_del(&obj->list);
-	}
-}
+extern void anim_intro_chase(struct displ_object *obj);
+extern void anim_intro_jean(struct displ_object *obj);
 
 /**
  * Animation to show the door closing after jeans enters the church, then the
@@ -943,10 +870,15 @@ void anim_gargolyne(struct displ_object *obj)
 
 void init_animators()
 {
+	uint8_t i;
+
+	for (i=0; i< MAX_ANIMATORS; i++) {
+		animators[i].page = 6;
+	}
+
 	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
 	animators[ANIM_LEFT_RIGHT_FLOOR].run = anim_left_right_floor;
 	animators[ANIM_UP_DOWN].run = anim_up_down;
-	animators[ANIM_STATIC].run = anim_static;
 	animators[ANIM_JEAN].run = anim_jean;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 	animators[ANIM_CHASE].run = anim_chase;
@@ -961,8 +893,10 @@ void init_animators()
 	animators[ANIM_ARCHER_SKELETON].run = anim_archer_skeleton;
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
-	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;
-	animators[ANIM_INTRO_JEAN].run = anim_intro_jean;
 	animators[ANIM_LEFT_RIGHT_BOUNDED].run = anim_left_right_bounded;
 
+	animators[ANIM_INTRO_CHASE].page = 7;
+	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;
+	animators[ANIM_INTRO_JEAN].page = 7;
+	animators[ANIM_INTRO_JEAN].run = anim_intro_jean;
 }

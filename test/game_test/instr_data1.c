@@ -1,3 +1,5 @@
-#pragma DATA_PAGE 17
+#include "banks.h"
+
+#pragma DATA_PAGE 18
 
 #include "gen/instr.pat.h"

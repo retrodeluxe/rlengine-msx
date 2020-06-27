@@ -30,6 +30,7 @@ struct displ_object;
 
 struct animator {
 	struct list_head list;
+	uint8_t page;		// HACK: store animator page to allow switching
 	void (*run)(struct displ_object *obj);
 };
 

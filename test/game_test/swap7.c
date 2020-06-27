@@ -1,5 +1,7 @@
-#pragma DATA_PAGE 13
-// PAGE_MUSIC
+#include "banks.h"
+
+#pragma DATA_PAGE 14
+
 // note not all music fits in 8K
 #include "gen/title_song.h"
 #include "gen/huntloop_song.h"

@@ -1,5 +1,6 @@
-#pragma DATA_PAGE 11
+#include "banks.h"
 
-// PAGE_MAPOBJECTS
+#pragma DATA_PAGE 12
+
 #include "gen/map_defs.h"
 #include "gen/map_layer_objects.h"
