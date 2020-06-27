@@ -26,13 +26,16 @@ struct game_state_t {
 	/* action item status */
 	uint8_t hearth[9];
 	uint8_t scroll[7];
+
+	// some of the crosses are inverted...
+	// 1,2,3, 4, 5, 6, 7, 8 normal
+	// 9, 10, 11, 12  inverted
 	uint8_t cross[12];
 	bool bell;
 	uint8_t invisible_trigger[5];
 	uint8_t checkpoint[8];
 	uint8_t toggle[3];
 	bool cross_switch;
-	bool cross_switch_enable;
 	bool door_trigger;
 	uint8_t templar_ct;
 	uint8_t templar_delay;

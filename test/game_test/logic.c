@@ -38,6 +38,7 @@ void init_game_state()
 	game_state.death = false;
 	game_state.templar_delay = 0;
 	game_state.show_parchment = 0;
+	game_state.cross_switch = false;
 
 	// debug helpers
 	game_state.bell = true;
@@ -114,18 +115,20 @@ void bell_handler(struct displ_object *dpo, uint8_t data)
 
 void crosswitch_handler(struct displ_object *dpo, uint8_t data)
 {
-        if (!game_state.cross_switch_enable)
-                return;
+	// because collision remains active, need some mechanism to
+	// avoid multiple activations
 
-        game_state.cross_switch_enable = false;
-        if (game_state.cross_switch) {
-                dpo->tob->cur_anim_step = 0;
-                game_state.cross_switch = false;
-        } else {
-                dpo->tob->cur_anim_step = 1;
-                game_state.cross_switch = true;
-        }
-        update_tileobject(dpo);
+	if (game_state.cross_switch) {
+		dpo->tob->cur_anim_step = 0;
+		game_state.cross_switch = false;
+	} else {
+		dpo->tob->cur_anim_step = 1;
+		game_state.cross_switch = true;
+	}
+	update_tileobject(dpo);
+
+	// need to update crosses in same room - how?
+
 }
 
 

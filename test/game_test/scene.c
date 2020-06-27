@@ -419,12 +419,27 @@ void load_room(uint8_t room, bool reload)
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
-				id = map_object->object.actionitem.action_id;
-				if (game_state.cross[id] == 0) {
-					add_tileobject(dpo, tob_ct, TILE_CROSS);
-					add_animator(dpo, ANIM_CYCLE_TILE);
-					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, pickup_cross, id);
+				id = map_object->object.actionitem.action_id - 1;
+				if (id < 9 && game_state.cross[id] == 0) {
+					if (!game_state.cross_switch) {
+						add_tileobject(dpo, tob_ct, TILE_CROSS);
+						add_animator(dpo, ANIM_CYCLE_TILE);
+						phys_set_colliding_tile_object(dpo,
+							TILE_COLLISION_FULL, pickup_cross, id);
+					} else {
+						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
+						add_animator(dpo, ANIM_CYCLE_TILE);
+					}
+				} else if (id > 8 && game_state.cross[id] == 0) {
+					if (game_state.cross_switch) {
+						add_tileobject(dpo, tob_ct, TILE_CROSS);
+						add_animator(dpo, ANIM_CYCLE_TILE);
+						phys_set_colliding_tile_object(dpo,
+							TILE_COLLISION_FULL, pickup_cross, id);
+					} else {
+						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
+						add_animator(dpo, ANIM_CYCLE_TILE);
+					}
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
 				// TODO: just go to the other one
@@ -448,7 +463,6 @@ void load_room(uint8_t room, bool reload)
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
-				game_state.cross_switch_enable = true;
 				add_tileobject(dpo, tob_ct, TILE_SWITCH);
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_TRIGGER, crosswitch_handler, 0);
