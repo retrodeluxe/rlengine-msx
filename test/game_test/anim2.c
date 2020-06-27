@@ -87,3 +87,34 @@ void anim_intro_jean(struct displ_object *obj)
 		list_del(&obj->list);
 	}
 }
+
+/**
+ * Animation Death Boss
+ */
+void anim_death(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dx = 0;
+
+	dx = obj->speed;
+	switch(obj->state) {
+		case STATE_MOVING_LEFT:
+			if (obj->xpos > obj->max) {
+				obj->state = STATE_MOVING_RIGHT;
+				dx *= -1;;
+			}
+			break;
+		case STATE_MOVING_RIGHT:
+			dx *= -1;
+			if (obj->xpos < obj->min) {
+				obj->state = STATE_MOVING_LEFT;
+				dx *= -1;
+			}
+			break;
+	}
+
+	obj->xpos += dx;
+	spr_animate(sp, dx, 0);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+}

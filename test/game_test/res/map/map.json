@@ -4130,9 +4130,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"122",
-                     "min":"98",
-                     "speed":"1",
+                     "max":"204",
+                     "min":"16",
+                     "speed":"2",
                      "type":"death"
                     },
                  "propertytypes":

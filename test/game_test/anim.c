@@ -890,6 +890,8 @@ void anim_gargolyne(struct displ_object *obj)
 	if (++obj->state > 60) obj->state = 1;
 }
 
+extern void anim_death(struct displ_object *obj);
+
 void init_animators()
 {
 	uint8_t i;
@@ -921,4 +923,6 @@ void init_animators()
 	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;
 	animators[ANIM_INTRO_JEAN].page = 7;
 	animators[ANIM_INTRO_JEAN].run = anim_intro_jean;
+	animators[ANIM_DEATH].page = 7;
+	animators[ANIM_DEATH].run = anim_death;
 }

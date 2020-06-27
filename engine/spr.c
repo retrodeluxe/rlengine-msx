@@ -94,6 +94,8 @@ void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
 	sz = size;
 	if (size == SPR_SIZE_32x16)
 		sz = 8;
+	if (size == SPR_SIZE_32x32)
+		sz = 16;
 
 	pattern_size = sz * planes * total_steps * 8;
 
@@ -141,6 +143,8 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 	size = ps->size;
 	if (ps->size == SPR_SIZE_32x16)
 		size = 8;
+	if (ps->size == SPR_SIZE_32x32)
+		size = 16;
 
 	npat = ps->n_planes * ps->n_steps * size;
 
@@ -167,6 +171,8 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 	size = ps->size;
 	if (ps->size == SPR_SIZE_32x16)
 		size = 8;
+	if (ps->size == SPR_SIZE_32x32)
+		size = 16;
 
 	npat = ps->n_planes * ps->n_steps * size;
 	ps->allocated = false;
@@ -203,10 +209,11 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 			base2 = base + ps->n_planes * ps->n_steps * SPR_SIZE_16x16;
 			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
+				// 2 is the max number of planes supported
 				(sp->planes[i]).color = (ps->colors)[color_frame];
-				(sp->planes[i + 3]).color = (ps->colors)[color_frame];
+				(sp->planes[i + 2]).color = (ps->colors)[color_frame];
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
-				(sp->planes[i + 3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
+				(sp->planes[i + 2]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
 			}
 			break;
 		case SPR_SIZE_32x16:
@@ -214,13 +221,27 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 			base2 = base + 4;
 			frame = sp->cur_anim_step * SPR_SIZE_16x32 * ps->n_planes; // 0 or 8
 			for (i = 0; i < ps->n_planes; i++) {
+				// 2 is the max number of planes supported
 				(sp->planes[i]).color = (ps->colors)[color_frame];
-				(sp->planes[i + 3]).color = (ps->colors)[color_frame];
+				(sp->planes[i + 2]).color = (ps->colors)[color_frame];
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x32;
-				(sp->planes[i + 3]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x32;
+				(sp->planes[i + 2]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x32;
 			}
 			break;
-
+		case SPR_SIZE_32x32:
+			// only 1 plane supported
+			base *= SPR_SIZE_16x32;
+			base2 = base + ps->n_steps * SPR_SIZE_16x32;
+			frame = sp->cur_anim_step * SPR_SIZE_16x32;
+			(sp->planes[0]).color = (ps->colors)[color_frame];
+			(sp->planes[1]).color = (ps->colors)[color_frame];
+			(sp->planes[2]).color = (ps->colors)[color_frame];
+			(sp->planes[3]).color = (ps->colors)[color_frame];
+			(sp->planes[0]).pattern = ps->pidx + base + frame;
+			(sp->planes[1]).pattern = ps->pidx + base + frame + 4;
+			(sp->planes[2]).pattern = ps->pidx + base2 + frame;
+			(sp->planes[3]).pattern = ps->pidx + base2 + frame + 4;
+			break;
 	}
 }
 
@@ -232,7 +253,11 @@ void spr_update(struct spr_sprite_def *sp) __nonbanked
 		vdp_set_hw_sprite(&sp->planes[i], sp->aidx + i);
 		if (sp->pattern_set->size == SPR_SIZE_16x32
 			|| sp->pattern_set->size == SPR_SIZE_32x16) {
-			vdp_set_hw_sprite(&sp->planes[i+3], sp->aidx + i + sp->pattern_set->n_planes);
+			vdp_set_hw_sprite(&sp->planes[i+2], sp->aidx + i + sp->pattern_set->n_planes);
+		} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+			vdp_set_hw_sprite(&sp->planes[1], sp->aidx + 1);
+			vdp_set_hw_sprite(&sp->planes[2], sp->aidx + 2);
+			vdp_set_hw_sprite(&sp->planes[3], sp->aidx + 3);
 		}
 	}
 
@@ -248,6 +273,8 @@ uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
 	if (sp->pattern_set->size == SPR_SIZE_16x32
 		|| sp->pattern_set->size == SPR_SIZE_32x16)
 		n = n * 2;
+	else if (sp->pattern_set->size == SPR_SIZE_32x32)
+		n = n * 4;
 	for (i = 0; i < vdp_hw_max_sprites - 1; i++) {
 		f = f * spr_attr_valloc[i] + spr_attr_valloc[i];
 		if (f == n) {
@@ -269,6 +296,8 @@ void spr_hide(struct spr_sprite_def *sp) __nonbanked
 	if (sp->pattern_set->size == SPR_SIZE_16x32
 		|| sp->pattern_set->size == SPR_SIZE_32x16)
 		n = n * 2;
+	else if (sp->pattern_set->size == SPR_SIZE_32x32)
+		n = n * 4;
 	idx = sp->aidx;
 	sys_memset(&spr_attr_valloc[idx], 1, n);
 
@@ -280,6 +309,8 @@ void spr_hide(struct spr_sprite_def *sp) __nonbanked
 		vdp_memset(vdp_base_spatr_grp1 +
 			   (sp->aidx + sp->pattern_set->n_planes) * sizeof(struct vdp_hw_sprite),
 			   sizeof(struct vdp_hw_sprite) * sp->pattern_set->n_planes, 0);
+	} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+		// TODO
 	}
 }
 
@@ -290,11 +321,18 @@ void spr_set_pos(struct spr_sprite_def *sp, uint8_t xp, uint8_t yp) __nonbanked
 		(sp->planes[i]).x = xp;
 		(sp->planes[i]).y = yp;
 		if (sp->pattern_set->size == SPR_SIZE_16x32) {
-			(sp->planes[i+ 3]).x = xp;
-			(sp->planes[i+ 3]).y = yp + 16;
+			(sp->planes[i+ 2]).x = xp;
+			(sp->planes[i+ 2]).y = yp + 16;
 		} else if (sp->pattern_set->size == SPR_SIZE_32x16) {
-			(sp->planes[i+ 3]).x = xp + 16;
-			(sp->planes[i+ 3]).y = yp;
+			(sp->planes[i+ 2]).x = xp + 16;
+			(sp->planes[i+ 2]).y = yp;
+		} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+			(sp->planes[1]).x = xp + 16;
+			(sp->planes[1]).y = yp;
+			(sp->planes[2]).x = xp;
+			(sp->planes[2]).y = yp + 16;
+			(sp->planes[3]).x = xp + 16;
+			(sp->planes[3]).y = yp + 16;
 		}
 	}
 }
@@ -306,7 +344,11 @@ void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors) __nonbanke
 		(sp->planes[i]).color = colors[i];
 		if (sp->pattern_set->size == SPR_SIZE_16x32
 			|| sp->pattern_set->size == SPR_SIZE_32x16) {
-			(sp->planes[i + 3]).color = colors[i];
+			(sp->planes[i + 2]).color = colors[i];
+		} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+			(sp->planes[1]).color = colors[i];
+			(sp->planes[2]).color = colors[i];
+			(sp->planes[3]).color = colors[i];
 		}
 	}
 }

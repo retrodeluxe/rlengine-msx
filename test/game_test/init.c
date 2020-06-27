@@ -68,6 +68,7 @@ extern const uint8_t spider_state[];
 extern const uint8_t archer_state[];
 extern const uint8_t jean_state[];
 extern const uint8_t spit_state[];
+extern const uint8_t death_state[];
 
 /** score panel primitives **/
 struct tile_object score;
@@ -168,6 +169,13 @@ static void init_tiles_zone_5()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
 }
 
+static void init_tiles_zone_6() {
+	tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_STONE], MAP_TILESET_STONE_POS);
+}
+
 void init_room_tilesets(uint8_t room, bool reload)
 {
 	static uint8_t prev_room = ROOM_SATAN;
@@ -221,6 +229,9 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_clear_colliding_tile(38); // step white
 		phys_set_down_colliding_tile(38);
 
+	} else if (room == ROOM_DEATH) {
+		init_tiles_zone_6();
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS_2]);
 	// zone 4: other cave rooms
 	} else if (room == ROOM_CAVE_TUNNEL || room == ROOM_CAVE_LAKE
 		|| room == ROOM_CAVE_GATE) {
@@ -235,7 +246,7 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_2]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_FOREST]);
-		
+
 		phys_clear_colliding_tile(38); // step white
 		phys_set_down_colliding_tile(38);
 
@@ -493,6 +504,11 @@ void define_sprite(uint8_t pattidx)
 			spr_define_pattern_set(PATRN_SPIT, SPR_SIZE_16x16, 1, 1,
 				spit_state);
 			spr_copy_pattern_set(PATRN_SPIT, spit, spit_color);
+			break;
+		case PATRN_DEATH:
+			spr_define_pattern_set(PATRN_DEATH, SPR_SIZE_32x32, 1, 2,
+				death_state);
+			spr_copy_pattern_set(PATRN_DEATH, death, death_color);
 			break;
 	}
 
