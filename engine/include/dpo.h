@@ -56,6 +56,7 @@ struct displ_object {
 	uint8_t collision_state;
 	struct spr_sprite_def *spr;
 	struct tile_object *tob;
+	struct displ_object *parent;
 	struct list_head list;
 	struct list_head animator_list;
 };

@@ -21,7 +21,7 @@ struct animator animators[MAX_ANIMATORS];
 
 extern struct displ_object dpo_jean;
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed);
+	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
 
 extern void anim_gargolyne(struct displ_object *obj);
 
@@ -647,10 +647,10 @@ void anim_plant(struct displ_object *obj)
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 		add_bullet(obj->xpos,
 			obj->ypos - 8,
-			PATRN_BULLET, ANIM_FALLING_BULLETS, 0, -4, 0);
+			PATRN_BULLET, ANIM_FALLING_BULLETS, 0, -4, 0, NULL);
 		add_bullet(obj->xpos + 8,
 			obj->ypos - 8,
-			PATRN_BULLET, ANIM_FALLING_BULLETS, 1, -4, 0);
+			PATRN_BULLET, ANIM_FALLING_BULLETS, 1, -4, 0, NULL);
 	} else if (obj->state == obj->aux + 10) {
 		// close
 		obj->tob->cur_anim_step = 0;
@@ -701,6 +701,10 @@ void anim_waterdrop(struct displ_object *obj)
 	spr_update(obj->spr);
 }
 
+#define SPLASH_LAUNCH 0
+#define SPLASH_WAIT 1
+#define SPLASH_RECEIVE 2
+
 /**
  * Animation of a fish jumping from the water
  */
@@ -719,12 +723,11 @@ void anim_fish_jump(struct displ_object *obj)
 		obj->aux2++;
 	}
 
-	if (obj->ypos > 160) {
+	if (obj->ypos > 155) {
 		spr_hide(obj->spr);
 		list_del(&obj->list);
 		obj->state = 255;
-		// TODO: need to show the splash down...
-		// which means add a mechanism to notify the parent object
+		obj->parent->aux2 = SPLASH_RECEIVE;
 	} else {
 		spr_animate(sp, 0, dy);
 		spr_set_pos(sp, obj->xpos, obj->ypos);
@@ -737,22 +740,41 @@ void anim_fish_jump(struct displ_object *obj)
  */
 void anim_splash(struct displ_object *obj)
 {
-	obj->state++;
-	if (obj->state == obj->aux) {
-		obj->tob->cur_anim_step = 0;
-		tile_object_show(obj->tob, scr_tile_buffer, true);
-		add_bullet(obj->xpos,
-			obj->ypos - 8,
-			PATRN_FISH, ANIM_FISH_JUMP, 0, -6, 0);
-	} else if (obj->state == obj->aux + 2) {
-		obj->tob->cur_anim_step = 1;
-		tile_object_show(obj->tob, scr_tile_buffer, true);
-	} else if (obj->state == obj->aux + 5) {
-		obj->tob->cur_anim_step = 2;
-		tile_object_show(obj->tob, scr_tile_buffer, true);
-	} else if (obj->state > obj->aux + 10) {
-		obj->state = 0;
-		tile_object_hide(obj->tob, scr_tile_buffer, true);
+	if (obj->aux2 == SPLASH_LAUNCH) {
+		obj->state++;
+		if (obj->state == obj->aux) {
+			obj->tob->cur_anim_step = 0;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+			add_bullet(obj->xpos - 4,
+				obj->ypos - 8,
+				PATRN_FISH, ANIM_FISH_JUMP, 0, -6, 0, obj);
+		} else if (obj->state == obj->aux + 2) {
+			obj->tob->cur_anim_step = 1;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		} else if (obj->state == obj->aux + 5) {
+			obj->tob->cur_anim_step = 2;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		} else if (obj->state > obj->aux + 10) {
+			obj->state = 0;
+			obj->aux2 = SPLASH_WAIT;
+			tile_object_hide(obj->tob, scr_tile_buffer, true);
+		}
+	} else if (obj->aux2 == SPLASH_RECEIVE) {
+		obj->state++;
+		if (obj->state == 0) {
+			obj->tob->cur_anim_step = 0;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		} else if (obj->state == 2) {
+			obj->tob->cur_anim_step = 1;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		} else if (obj->state == 5) {
+			obj->tob->cur_anim_step = 2;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		} else if (obj->state > 10) {
+			obj->state = 0;
+			obj->aux2 = SPLASH_LAUNCH;
+			tile_object_hide(obj->tob, scr_tile_buffer, true);
+		}
 	}
 }
 
@@ -809,7 +831,7 @@ void anim_archer_skeleton(struct displ_object *obj)
 			obj->ypos + 4,
 			PATRN_ARROW,
 			ANIM_HORIZONTAL_PROJECTILE,
-			obj->tob->cur_dir, obj->tob->cur_dir, 8);
+			obj->tob->cur_dir, obj->tob->cur_dir, 8, NULL);
 	} else if (obj->state == obj->aux + 10) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
@@ -858,7 +880,7 @@ void anim_gargolyne(struct displ_object *obj)
 		add_bullet(obj->xpos,
 			obj->ypos + 4,
 			PATRN_SPIT,
-			ANIM_HORIZONTAL_PROJECTILE, 0, 0, 8);
+			ANIM_HORIZONTAL_PROJECTILE, 0, 0, 8, NULL);
 	} else if (obj->state == obj->aux + 10) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);

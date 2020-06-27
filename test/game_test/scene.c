@@ -211,7 +211,7 @@ void add_jean()
  * Add bullet generic
  */
 void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed)
+	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent)
 {
 	uint8_t idx;
 
@@ -237,6 +237,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	dpo_bullet[idx].collision_state = 0;
 	dpo_bullet[idx].aux = dir;
 	dpo_bullet[idx].aux2 = speed;
+	dpo_bullet[idx].parent = parent;
 
 	INIT_LIST_HEAD(&dpo_bullet[idx].list);
 	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
@@ -547,6 +548,7 @@ void load_room(uint8_t room, bool reload)
 				spr_valloc_pattern_set(PATRN_FISH);
 				dpo->visible = false;
 				dpo->aux = delay;
+				dpo->aux2 = 0;
 				add_animator(dpo, ANIM_SPLASH);
 			} else if (map_object->object.shooter.type == TYPE_LEAK) {
 				max = map_object->object.shooter.max;
