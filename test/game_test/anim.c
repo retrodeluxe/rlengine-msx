@@ -21,9 +21,8 @@ struct animator animators[MAX_ANIMATORS];
 
 extern struct displ_object dpo_jean;
 extern void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir);
-extern void add_fish_bullet(uint8_t xpos, uint8_t ypos);
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t dir, uint8_t speed);
+	uint8_t state, uint8_t dir, uint8_t speed);
 
 extern void anim_gargolyne(struct displ_object *obj);
 
@@ -780,7 +779,9 @@ void anim_splash(struct displ_object *obj)
 	if (obj->state == obj->aux) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
-		add_fish_bullet(obj->xpos, obj->ypos);
+		add_bullet(obj->xpos,
+			obj->ypos - 8,
+			PATRN_FISH, ANIM_FISH_JUMP, 0, -6, 0);
 	} else if (obj->state == obj->aux + 2) {
 		obj->tob->cur_anim_step = 1;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
@@ -846,7 +847,7 @@ void anim_archer_skeleton(struct displ_object *obj)
 			obj->ypos + 4,
 			PATRN_ARROW,
 			ANIM_HORIZONTAL_PROJECTILE,
-			obj->tob->cur_dir, 8);
+			obj->tob->cur_dir, obj->tob->cur_dir, 8);
 	} else if (obj->state == obj->aux + 10) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
@@ -895,7 +896,7 @@ void anim_gargolyne(struct displ_object *obj)
 		add_bullet(obj->xpos,
 			obj->ypos + 4,
 			PATRN_SPIT,
-			ANIM_HORIZONTAL_PROJECTILE, 0, 8);
+			ANIM_HORIZONTAL_PROJECTILE, 0, 0, 8);
 	} else if (obj->state == obj->aux + 10) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);

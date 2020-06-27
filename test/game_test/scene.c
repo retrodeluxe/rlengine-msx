@@ -66,7 +66,6 @@ uint8_t spr_ct, tob_ct, bullet_ct;
 
 /** misc flags **/
 bool init_bullets;
-bool init_fish;
 
 /** current room object data **/
 uint8_t *room_objs;
@@ -253,50 +252,11 @@ void add_plant_bullet(uint8_t xpos, uint8_t ypos, uint8_t dir)
 
 }
 
-void add_fish_bullet(uint8_t xpos, uint8_t ypos)
-{
-	uint8_t idx;
-
-	if (init_fish) {
-		define_sprite(PATRN_FISH);
-		spr_valloc_pattern_set(PATRN_FISH);
-		init_fish = false;
-	}
-
-	idx = 0;
-	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
-		if (dpo_bullet[idx].state == 255)
-			break;
-	}
-
-	if (idx == SCENE_MAX_BULLET)
-		return;
-
-	spr_init_sprite(&bullet_sprites[idx], PATRN_FISH);
-	bullet_sprites[idx].cur_anim_step = 0;
-	spr_set_pos(&bullet_sprites[idx], xpos, ypos - 8);
-
-	dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
-	dpo_bullet[idx].spr = &bullet_sprites[idx];
-	dpo_bullet[idx].xpos = xpos;
-	dpo_bullet[idx].ypos = ypos - 8;
-	dpo_bullet[idx].state = 0;
-	dpo_bullet[idx].collision_state = 0;
-	dpo_bullet[idx].aux = -6;
-	dpo_bullet[idx].aux2 = 0;
-
-	INIT_LIST_HEAD(&dpo_bullet[idx].list);
-	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
-	add_animator(&dpo_bullet[idx], ANIM_FISH_JUMP);
-	list_add(&dpo_bullet[idx].list, &display_list);
-	spr_show(dpo_bullet[idx].spr);
-}
-
 /**
  * Add bullet generic
  */
 void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t dir, uint8_t speed)
+	uint8_t state, uint8_t dir, uint8_t speed)
 {
 	uint8_t idx;
 
@@ -310,7 +270,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 		return;
 
 	spr_init_sprite(&bullet_sprites[idx], patrn_id);
-	bullet_sprites[idx].cur_state = dir;
+	bullet_sprites[idx].cur_state = state;
 	bullet_sprites[idx].cur_anim_step = 0;
 	spr_set_pos(&bullet_sprites[idx], xpos, ypos);
 
@@ -377,7 +337,6 @@ void clear_room() {
 	tob_ct = 0;
 	bullet_ct = 0;
 	init_bullets = true;
-	init_fish = true;
 
 	for (i = 0; i < SCENE_MAX_BULLET; i++) {
 		dpo_bullet[i].state = 255;
@@ -630,6 +589,8 @@ void load_room(uint8_t room, bool reload)
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
 				delay = map_object->object.shooter.delay;
 				add_tileobject(dpo, tob_ct, TILE_SPLASH);
+				define_sprite(PATRN_FISH);
+				spr_valloc_pattern_set(PATRN_FISH);
 				dpo->visible = false;
 				dpo->aux = delay;
 				add_animator(dpo, ANIM_SPLASH);
