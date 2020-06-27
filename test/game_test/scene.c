@@ -549,7 +549,9 @@ void load_room(uint8_t room, bool reload)
 				dpo->aux = delay;
 				add_animator(dpo, ANIM_SPLASH);
 			} else if (map_object->object.shooter.type == TYPE_LEAK) {
+				max = map_object->object.shooter.max;
 				add_sprite(dpo, spr_ct, PATRN_WATERDROP);
+				dpo->max = max;
 				add_animator(dpo, ANIM_WATERDROP);
 			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);

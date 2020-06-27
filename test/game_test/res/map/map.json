@@ -2854,11 +2854,13 @@
                  "properties":
                     {
                      "delay":"1.6",
+                     "max":"120",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -2875,11 +2877,13 @@
                  "properties":
                     {
                      "delay":"1.2",
+                     "max":"72",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -2896,12 +2900,14 @@
                  "properties":
                     {
                      "delay":"0.5",
+                     "max":"134",
                      "shootRate":"2",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "shootRate":"string",
                      "type":"string"
                     },
@@ -2919,11 +2925,13 @@
                  "properties":
                     {
                      "delay":"1.4",
+                     "max":"102",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "type":"string"
                     },
                  "rotation":0,
@@ -2940,11 +2948,13 @@
                  "properties":
                     {
                      "delay":"0.7",
+                     "max":"120",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "type":"string"
                     },
                  "rotation":0,

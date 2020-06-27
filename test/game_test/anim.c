@@ -664,6 +664,7 @@ void anim_plant(struct displ_object *obj)
  */
 void anim_waterdrop(struct displ_object *obj)
 {
+	uint8_t max = obj->max;
 	// here we assume all drops start at the same position
 	if (obj->state == 0) {
 		obj->aux2 = obj->ypos;
@@ -685,12 +686,12 @@ void anim_waterdrop(struct displ_object *obj)
 			obj->state = 3;
 		}
 	}
-	if (obj->state == 3 && !is_colliding_down(obj)) {
+	if (obj->state == 3 && obj->ypos < max) {
 		obj->ypos += 4;
 		obj->spr->cur_anim_step = 2;
 		spr_set_pos(obj->spr, obj->xpos, obj->ypos);
 	}
-	if (is_colliding_down(obj)) {
+	if (obj->ypos >= max) {
 		obj->aux = 0;
 		obj->state = 0;
 		obj->ypos = obj->aux2;
@@ -698,7 +699,6 @@ void anim_waterdrop(struct displ_object *obj)
 		spr_set_pos(obj->spr,obj->xpos, obj->ypos);
 	}
 	spr_update(obj->spr);
-	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, 4, false);
 }
 
 /**
