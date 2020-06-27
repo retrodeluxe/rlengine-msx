@@ -5311,9 +5311,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"78",
-                     "min":"66",
-                     "speed":"1",
+                     "max":"104",
+                     "min":"40",
+                     "speed":"2",
                      "type":"skeleton_ceil"
                     },
                  "propertytypes":
@@ -5365,9 +5365,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"83",
-                     "min":"79",
-                     "speed":"1",
+                     "max":"156",
+                     "min":"116",
+                     "speed":"2",
                      "type":"skeleton"
                     },
                  "propertytypes":
@@ -5392,9 +5392,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"92",
-                     "min":"88",
-                     "speed":"1",
+                     "max":"220",
+                     "min":"188",
+                     "speed":"2",
                      "type":"demon"
                     },
                  "propertytypes":

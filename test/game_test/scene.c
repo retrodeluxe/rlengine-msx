@@ -629,8 +629,15 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_DOWN;
 				dpo->speed = speed;
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
-				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
+				dpo->speed = speed;
+				dpo->max = max;
+				dpo->min = min;
+				dpo->state = STATE_MOVING_LEFT;
+				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
@@ -642,11 +649,25 @@ void load_room(uint8_t room, bool reload)
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_DEMON);
-				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
+				dpo->speed = speed;
+				dpo->max = max;
+				dpo->min = min;
+				dpo->state = STATE_MOVING_LEFT;
+				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
+				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
-				add_animator(dpo, ANIM_STATIC);
+				dpo->speed = speed;
+				dpo->max = max;
+				dpo->min = min;
+				dpo->state = STATE_MOVING_LEFT;
+				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_LAVA) {
 				speed = map_object->object.movable.speed;
 				min = map_object->object.movable.min;

@@ -455,6 +455,38 @@ void anim_up_down_bounded(struct displ_object *obj)
 	spr_update(sp);
 }
 
+
+/**
+ * Simple left-right animation bounded by max/min coordinates
+ */
+void anim_left_right_bounded(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dx = 0;
+
+	dx = obj->speed;
+	switch(obj->state) {
+		case STATE_MOVING_LEFT:
+			if (obj->xpos > obj->max) {
+				obj->state = STATE_MOVING_RIGHT;
+				dx *= -1;;
+			}
+			break;
+		case STATE_MOVING_RIGHT:
+			dx *= -1;
+			if (obj->xpos < obj->min) {
+				obj->state = STATE_MOVING_LEFT;
+				dx *= -1;
+			}
+			break;
+	}
+
+	obj->xpos += dx;
+	spr_animate(sp, dx, 0);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+}
+
 /**
  * Animation for a Templar chasing Jean in different screens
  */
@@ -931,5 +963,6 @@ void init_animators()
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
 	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;
 	animators[ANIM_INTRO_JEAN].run = anim_intro_jean;
+	animators[ANIM_LEFT_RIGHT_BOUNDED].run = anim_left_right_bounded;
 
 }
