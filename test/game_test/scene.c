@@ -300,11 +300,6 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 {
 	uint8_t idx;
 
-	//if(!spr_is_allocated(patrn_id)) {
-		define_sprite(patrn_id);
-		spr_valloc_pattern_set(patrn_id);
-	//}
-
 	idx = 0;
 	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
 		if (dpo_bullet[idx].state == 255)
@@ -643,10 +638,14 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_WATERDROP);
 			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
+				define_sprite(PATRN_SPIT);
+				spr_valloc_pattern_set(PATRN_SPIT);
 				dpo->aux = 30;
 				add_animator(dpo, ANIM_GARGOLYNE);
 			} else if (map_object->object.shooter.type == TYPE_ARCHER) {
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
+				define_sprite(PATRN_ARROW);
+				spr_valloc_pattern_set(PATRN_ARROW);
 				dpo->aux = 30;
 				add_animator(dpo, ANIM_ARCHER_SKELETON);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
