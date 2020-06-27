@@ -175,7 +175,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 	for (i = 0; i < sp->cur_state; i++) {
 		base += ps->state_steps[i];
 	}
-	color_frame = base;
+	color_frame = base + sp->cur_anim_step;
 
 	switch (ps->size) {
 		case SPR_SIZE_16x16:
