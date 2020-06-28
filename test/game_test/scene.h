@@ -4,7 +4,7 @@
 #define NEXT_OBJECT(X)	sizeof(struct map_object_item) - sizeof(union map_object) + sizeof(X)
 
 #define SCENE_MAX_DPO	31
-#define SCENE_MAX_BULLET 8
+#define SCENE_MAX_BULLET 9
 
 enum tile_sets_t {
 	TILE_SCROLL,
@@ -38,6 +38,7 @@ enum tile_sets_t {
 	TILE_SPLASH,
 	TILE_BLOCK_CROSS,
 	TILE_INVERTED_CROSS,
+	TILE_FLAME,
 	TILE_MAX,
 };
 

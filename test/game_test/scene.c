@@ -595,6 +595,9 @@ void load_room(uint8_t room, bool reload)
 				define_sprite(PATRN_BULLET);
 				spr_valloc_pattern_set(PATRN_BULLET);
 				add_animator(dpo, ANIM_SHOOTER_PLANT);
+			} else if (map_object->object.shooter.type == TYPE_FLAME) {
+				add_tileobject(dpo, tob_ct, TILE_FLAME);
+				add_animator(dpo, ANIM_DRAGON_FLAME);	
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {

@@ -33,3 +33,4 @@
 #include "gen/checkpoint.h"
 #include "gen/stainedglass.h"
 #include "gen/cross_small.h"
+#include "gen/flame.h"

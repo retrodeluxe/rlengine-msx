@@ -277,3 +277,31 @@ void anim_satan_bullets(struct displ_object *obj)
 		spr_update(sp);
 	}
 }
+
+/**
+ * Animation for Dragon Flame, big tileobject with 2 frames
+ *  it flames for alternating frames for ~4 seconds then stops and
+ *  spits bullets (flames) on the ground in two directions
+ */
+void anim_dragon_flame(struct displ_object *obj)
+{
+	dpo->state++;
+	if (dpo->state < 30) {
+			if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
+				tile_object_show(dpo->tob, scr_tile_buffer, true);
+				dpo->tob->cur_anim_step++;
+			} else {
+				dpo->tob->cur_anim_step = 0;
+			}
+		//dpo->state = 0;
+	} else if (dpo->state == 30) {
+		tile_object_hide(dpo->tob, scr_tile_buffer, true);
+	} else if (dpo->state == 60) {
+		dpo->state = 0;
+	}
+}
+
+void anim_dragon_bullets(struct displ_object *obj)
+{
+
+}
