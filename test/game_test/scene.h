@@ -120,6 +120,7 @@ enum spr_patterns_t {
 	PATRN_BULLET,
 	PATRN_ARROW,
 	PATRN_SPIT,
+	PATRN_SMALL_BULLET,
 	PATRN_MAX,
 };
 

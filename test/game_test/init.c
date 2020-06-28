@@ -382,7 +382,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_LAVA], lava, 1, 1, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 1, 1, 8, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 7, 1, 5);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 7, 3, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);
@@ -514,6 +514,11 @@ void define_sprite(uint8_t pattidx)
 			spr_define_pattern_set(PATRN_DEATH, SPR_SIZE_32x32, 1, 2,
 				death_state);
 			spr_copy_pattern_set(PATRN_DEATH, death, death_color);
+			break;
+		case PATRN_SMALL_BULLET:
+			spr_define_pattern_set(PATRN_SMALL_BULLET, SPR_SIZE_16x16, 1, 1,
+				bat_state);
+			spr_copy_pattern_set(PATRN_SMALL_BULLET, small_bullet, small_bullet_color);
 			break;
 	}
 

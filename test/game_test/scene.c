@@ -721,7 +721,19 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_FIREBALL);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
+				speed = map_object->object.movable.speed;
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
+				dpo->speed = speed;
+				dpo->max = max;
+				dpo->min = min;
+				dpo->aux = 0;
+				dpo->tob->cur_anim_step = 1;
+				dpo->state = STATE_MOVING_UP;
+				add_animator(dpo, ANIM_SATAN);
+				define_sprite(PATRN_SMALL_BULLET);
+				spr_valloc_pattern_set(PATRN_SMALL_BULLET);
 			} else {
 				room_objs += NEXT_OBJECT(struct map_object_movable);
 				continue;

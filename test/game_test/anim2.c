@@ -166,3 +166,68 @@ void anim_scythe(struct displ_object *obj)
 		spr_update(sp);
 	}
 }
+
+/**
+ * Final Boss animation, big tile object that moves vertically and
+ *  spits clusters of 3 bullets
+ */
+void anim_satan(struct displ_object *obj)
+{
+	uint8_t x;
+	struct tile_object *to = dpo->tob;
+	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
+	uint16_t offset_top = to->x/8 + to->y/8 * 32;
+
+	if (obj->state == STATE_MOVING_UP) {
+		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
+			obj->tob->cur_anim_step = 0;
+			// shoot!
+		} else if (obj->tob->cur_anim_step == 2  && obj->aux == 5) {
+			for (x = 0; x < to->ts->frame_w; x++) {
+				vdp_write(vdp_base_names_grp1 + offset_bottom + x, 0);
+			}
+			obj->tob->y-=4;
+			if (obj->tob->y < dpo->min) {
+				obj->state = STATE_MOVING_DOWN;
+			}
+			obj->tob->cur_anim_step = 1;
+		} else if (obj->tob->cur_anim_step == 1 && obj->aux == 5) {
+			obj->tob->cur_anim_step = 2;
+		} else if (obj->tob->cur_anim_step == 0 && obj->aux == 2) {
+			obj->tob->cur_anim_step = 1;
+		}
+	} else if (obj->state == STATE_MOVING_DOWN) {
+		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
+			obj->tob->cur_anim_step = 0;
+			// shoot!
+		} else if (obj->tob->cur_anim_step == 1 && obj->aux == 5) {
+			for (x = 0; x < to->ts->frame_w; x++) {
+				vdp_write(vdp_base_names_grp1 + offset_top + x, 0);
+			}
+			obj->tob->y+=4;
+			if (obj->tob->y > dpo->max) {
+				obj->state = STATE_MOVING_UP;
+			}
+			obj->tob->cur_anim_step = 2;
+		} else if (obj->tob->cur_anim_step == 2 && obj->aux == 5) {
+			obj->tob->cur_anim_step = 1;
+		}  else if (obj->tob->cur_anim_step == 0 && obj->aux == 2) {
+			obj->tob->cur_anim_step = 1;
+		}
+	}
+
+	tile_object_show(dpo->tob, scr_tile_buffer, true);
+	if (obj->tob->cur_anim_step > 2)
+		obj->tob->cur_anim_step = 1;
+	if (obj->aux++ > 5)
+		obj->aux = 0;
+}
+
+/**
+ * Animation of final boss bullets, move linearly in diagonal directions
+ *  no tile collisions; dissapear on wall
+ */
+void anim_satan_bullets(struct displ_object *obj)
+{
+
+}
