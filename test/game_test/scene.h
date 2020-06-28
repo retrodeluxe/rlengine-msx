@@ -8,6 +8,7 @@
 
 enum tile_sets_t {
 	TILE_SCROLL,
+	TILE_RED_SCROLL,
 	TILE_CHECKPOINT,
 	TILE_CROSS,
 	TILE_HEART,

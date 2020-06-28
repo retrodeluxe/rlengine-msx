@@ -18,6 +18,7 @@
 #include "gen/spear.h"
 #include "gen/bell.h"
 #include "gen/scroll.h"
+#include "gen/red_scroll.h"
 #include "gen/invisible_trigger.h"
 #include "gen/cross.h"
 #include "gen/gargolyne.h"

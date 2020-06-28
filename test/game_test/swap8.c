@@ -11,7 +11,6 @@
 #include "gen/title_prayerofhope.h"
 #include "gen/title_underground_river.h"
 #include "gen/title_hidden_garden.h"
-// #include "gen/title_satan.h" doesn't fit
 #include "gen/title_underground_river.h"
 #include "gen/title_unexpected_gate.h"
 #include "gen/title_lake_of_despair.h"

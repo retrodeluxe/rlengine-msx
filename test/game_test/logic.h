@@ -25,7 +25,7 @@ struct game_state_t {
 
 	/* action item status */
 	uint8_t hearth[9];
-	uint8_t scroll[7];
+	uint8_t scroll[8];
 
 	// some of the crosses are inverted...
 	// 1,2,3, 4, 5, 6, 7, 8 normal

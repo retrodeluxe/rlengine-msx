@@ -17,3 +17,5 @@ const uint8_t archer_state[]= {2,2};
 const uint8_t jean_state[] = {2,1,2,2,1,2,2};
 const uint8_t spit_state[] = {1};
 const uint8_t death_state[] = {3,3};
+
+#include "gen/title_satan.h"

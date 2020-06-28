@@ -289,7 +289,8 @@ void init_room_titles()
 	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH], title_evil_church);
 	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH_2], title_tortured_souls);
 	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH_3], title_ashes_to_ashes);
-//	INIT_TILE_SET(tileset_room_title[ROOM_SATAN], title_satan);
+	ascii8_set_data(PAGE_SPRITES);
+	INIT_TILE_SET(tileset_room_title[ROOM_SATAN], title_satan);
 }
 
 void show_room_title(uint8_t room)
@@ -300,7 +301,10 @@ void show_room_title(uint8_t room)
 	#define MAX_TITLE_LEN 18
 	#define SCR_WIDTH 32
 
-	ascii8_set_data(PAGE_ROOM_TITLES);
+	if (room == ROOM_SATAN)
+		ascii8_set_data(PAGE_SPRITES);
+	else
+		ascii8_set_data(PAGE_ROOM_TITLES);
 
 	w = tileset_room_title[room].w;
 	vram_offset = vdp_base_names_grp1 + SCR_WIDTH + 22 * SCR_WIDTH;
@@ -365,6 +369,7 @@ void init_resources()
 	ascii8_set_data(PAGE_DYNTILES);
 
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SCROLL], scroll, 2, 2, 1, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_RED_SCROLL], red_scroll, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CHECKPOINT], checkpoint, 2, 3, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS], cross, 2, 2, 4, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART], hearth, 2, 2, 2, 1);
@@ -377,7 +382,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_LAVA], lava, 1, 1, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 1, 1, 8, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 6, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 7, 1, 5);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);

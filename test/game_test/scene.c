@@ -403,8 +403,15 @@ void load_room(uint8_t room, bool reload)
 			// log_e("action_item_type %d\n", action_item_type);
 			if (action_item_type == TYPE_SCROLL) {
 				id = map_object->object.actionitem.action_id;
-				if (game_state.scroll[id] == 0) {
-					add_tileobject(dpo, tob_ct, TILE_SCROLL);
+				if (id < 7) {
+					if (game_state.scroll[id] == 0) {
+						add_tileobject(dpo, tob_ct, TILE_SCROLL);
+						phys_set_colliding_tile_object(dpo,
+							TILE_COLLISION_FULL, pickup_scroll, id);
+					}
+				} else {
+					add_tileobject(dpo, tob_ct, TILE_RED_SCROLL);
+					dpo->visible = false;
 					phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, pickup_scroll, id);
 				}

@@ -6123,8 +6123,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":1224,
-                 "y":784
+                 "x":1224.33333333333,
+                 "y":777.333333333333
                 }, 
                 {
                  "height":16,
@@ -6405,7 +6405,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"6",
+                     "action_id":"7",
                      "type":"scroll"
                     },
                  "propertytypes":
