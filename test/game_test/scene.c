@@ -37,6 +37,7 @@ struct tile_set tileset[TILE_MAX];
 
 /** scene primitives **/
 struct tile_object tileobject[SCENE_MAX_DPO];
+struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
 struct spr_sprite_def enemy_sprites[SCENE_MAX_DPO];
 struct spr_sprite_def bullet_sprites[SCENE_MAX_BULLET];
 struct spr_sprite_def jean_sprite;
@@ -47,6 +48,7 @@ struct spr_sprite_def jean_sprite;
 /** scene display objects **/
 struct displ_object display_object[SCENE_MAX_DPO];
 struct displ_object dpo_bullet[SCENE_MAX_BULLET];
+struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 
 /** main character display object **/
 struct displ_object dpo_jean;
@@ -244,6 +246,49 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	add_animator(&dpo_bullet[idx], anim_id);
 	list_add(&dpo_bullet[idx].list, &display_list);
 	spr_show(dpo_bullet[idx].spr);
+}
+
+/**
+ * Add dragon flame
+ */
+void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id,
+	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent)
+{
+	uint8_t idx;
+
+	ascii8_set_data(PAGE_DYNTILES);
+	tile_set_valloc(&tileset[tileidx]);
+
+	idx = 0;
+	for (idx = 0; idx < SCENE_MAX_TOB_BULLET; idx++) {
+		if (dpo_tob_bullet[idx].state == 255)
+			break;
+	}
+
+	if (idx == SCENE_MAX_TOB_BULLET)
+		return;
+
+	bullet_tob[idx].x = xpos;
+	bullet_tob[idx].y = ypos;
+	bullet_tob[idx].cur_dir = 0;
+	bullet_tob[idx].cur_anim_step = 0;
+	bullet_tob[idx].ts = &tileset[tileidx];
+	bullet_tob[idx].idx = 0;
+
+	dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
+	dpo_tob_bullet[idx].tob = &bullet_tob[idx];
+	dpo_tob_bullet[idx].xpos = xpos;
+	dpo_tob_bullet[idx].ypos = ypos;
+	dpo_tob_bullet[idx].visible = true;
+	dpo_tob_bullet[idx].state = state;
+	dpo_tob_bullet[idx].aux = dir;
+	dpo_tob_bullet[idx].aux2 = speed;
+	dpo_tob_bullet[idx].parent = parent;
+	INIT_LIST_HEAD(&dpo_tob_bullet[idx].list);
+	list_add(&dpo_tob_bullet[idx].list, &display_list);
+	INIT_LIST_HEAD(&dpo_tob_bullet[idx].animator_list);
+	add_animator(&dpo_tob_bullet[idx], anim_id);
+	tile_object_show(dpo_tob_bullet[idx].tob, scr_tile_buffer, true);
 }
 
 
@@ -597,7 +642,7 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_SHOOTER_PLANT);
 			} else if (map_object->object.shooter.type == TYPE_FLAME) {
 				add_tileobject(dpo, tob_ct, TILE_FLAME);
-				add_animator(dpo, ANIM_DRAGON_FLAME);	
+				add_animator(dpo, ANIM_DRAGON_FLAME);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {

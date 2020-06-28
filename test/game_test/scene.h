@@ -5,6 +5,7 @@
 
 #define SCENE_MAX_DPO	31
 #define SCENE_MAX_BULLET 9
+#define SCENE_MAX_TOB_BULLET 8
 
 enum tile_sets_t {
 	TILE_SCROLL,

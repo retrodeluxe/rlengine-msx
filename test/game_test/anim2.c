@@ -19,6 +19,9 @@
 
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
+extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id,
+	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
+
 /**
  * Simplified animation for a Templar chasing Jean in intro screen
  */
@@ -285,23 +288,61 @@ void anim_satan_bullets(struct displ_object *obj)
  */
 void anim_dragon_flame(struct displ_object *obj)
 {
-	dpo->state++;
-	if (dpo->state < 30) {
-			if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
-				tile_object_show(dpo->tob, scr_tile_buffer, true);
-				dpo->tob->cur_anim_step++;
+	obj->state++;
+	if (obj->state < 30) {
+			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+				tile_object_show(obj->tob, scr_tile_buffer, true);
+				obj->tob->cur_anim_step++;
 			} else {
-				dpo->tob->cur_anim_step = 0;
+				obj->tob->cur_anim_step = 0;
 			}
-		//dpo->state = 0;
-	} else if (dpo->state == 30) {
-		tile_object_hide(dpo->tob, scr_tile_buffer, true);
-	} else if (dpo->state == 60) {
-		dpo->state = 0;
+	} else if (obj->state == 30) {
+		// bullets are tileobjects... how to handle those
+		add_tob_bullet(obj->xpos - 8,
+				obj->ypos + 40,
+				TILE_LAVA, ANIM_DRAGON_BULLETS, 0, 0, 1, NULL);
+		add_tob_bullet(obj->xpos + 24,
+				obj->ypos + 40,
+				TILE_LAVA, ANIM_DRAGON_BULLETS, 0, 1, 1, NULL);
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
+	} else if (obj->state == 60) {
+		obj->state = 0;
 	}
 }
 
+/**
+ * Animation of dragon flame bullets, horizontal translation
+ */
 void anim_dragon_bullets(struct displ_object *obj)
 {
+	uint8_t offset_before, offset_after;
+	int8_t dx;
 
+	offset_before = obj->xpos/8;
+
+	dx = 1;
+	if (obj->aux == 0) {
+		dx = -1;
+	}
+
+	offset_after = (obj->xpos + dx)/8;
+
+	if (offset_before != offset_after) {
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
+	}
+
+	obj->xpos += dx;
+	obj->tob->x += dx;
+
+	if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+		obj->tob->cur_anim_step++;
+	} else {
+		obj->tob->cur_anim_step = 0;
+	}
+	if (obj->xpos < 48 || obj->xpos > 250) {
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
+		list_del(&obj->list);
+		obj->state = 255;
+	}
 }

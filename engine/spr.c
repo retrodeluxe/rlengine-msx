@@ -32,8 +32,8 @@ uint8_t spr_attr_valloc[vdp_hw_max_sprites];
 uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 
 // ram copy for current patterns
-uint8_t spr_patterns[2046];
-uint8_t spr_colors[256];
+uint8_t spr_patterns[2046-512];
+uint8_t spr_colors[256-64];
 uint16_t spr_patterns_idx;
 uint8_t spr_colors_idx;
 
