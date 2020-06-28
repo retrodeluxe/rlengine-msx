@@ -891,7 +891,7 @@ void anim_gargolyne(struct displ_object *obj)
 }
 
 extern void anim_death(struct displ_object *obj);
-
+extern void anim_scythe(struct displ_object *obj);
 void init_animators()
 {
 	uint8_t i;
@@ -925,4 +925,6 @@ void init_animators()
 	animators[ANIM_INTRO_JEAN].run = anim_intro_jean;
 	animators[ANIM_DEATH].page = 7;
 	animators[ANIM_DEATH].run = anim_death;
+	animators[ANIM_SCYTHE].page = 7;
+	animators[ANIM_SCYTHE].run = anim_scythe;
 }

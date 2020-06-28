@@ -17,6 +17,8 @@
 
 #pragma CODE_PAGE 7
 
+extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
+	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
 /**
  * Simplified animation for a Templar chasing Jean in intro screen
  */
@@ -112,9 +114,55 @@ void anim_death(struct displ_object *obj)
 			}
 			break;
 	}
+	// based on current animation state, throw bullet which is a scythe with
+	// own animation
+	if (sp->cur_anim_step == 2 && sp->anim_ctr == 0 && dpo->aux2 < dpo->aux) {
+		obj->aux2++;
+		add_bullet(obj->xpos,
+			obj->ypos + 24,
+			PATRN_SCYTHE, ANIM_SCYTHE, 0, 1, 0, obj);
+	}
 
 	obj->xpos += dx;
 	spr_animate(sp, dx, 0);
 	spr_set_pos(sp, obj->xpos, obj->ypos);
 	spr_update(sp);
+}
+
+/**
+ * animation of scythe bullets, slowly falling with collision detection,
+ *  bullets are deleted when reaching screen borders; shouldn't have more than
+ *  3 active simultaneously
+ */
+void anim_scythe(struct displ_object *obj)
+{
+	int8_t dx, dy;
+	struct spr_sprite_def *sp = obj->spr;
+
+	dx = obj->aux;
+	dy = 2;
+
+	if (obj->state == 0) {
+		sp->anim_ctr_treshold = 1;
+		obj->state = 1;
+		if (obj->xpos > dpo_jean.xpos)
+			obj->aux *= -1;
+	}
+
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false);
+	if (!is_colliding_down(obj)) {
+		obj->ypos += dy;
+	}
+	obj->xpos += dx;
+
+	if (obj->xpos < 4 || obj->xpos > 235 || obj->ypos > 150) {
+		spr_hide(obj->spr);
+		list_del(&obj->list);
+		obj->state = 255;
+		obj->parent->aux2--;
+	} else {
+		spr_animate(sp, dx, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
 }

@@ -667,8 +667,12 @@ void load_room(uint8_t room, bool reload)
 				dpo->speed = speed;
 				dpo->max = max;
 				dpo->min = min;
+				dpo->aux = 4; // max scythes
+				dpo->aux2 = 0; // scythe count
 				dpo->state = STATE_MOVING_RIGHT;
 				add_animator(dpo, ANIM_DEATH);
+				define_sprite(PATRN_SCYTHE);
+				spr_valloc_pattern_set(PATRN_SCYTHE);
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
 				min = map_object->object.movable.min;
 				max = map_object->object.movable.max;

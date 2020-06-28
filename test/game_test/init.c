@@ -445,10 +445,10 @@ void define_sprite(uint8_t pattidx)
 				two_step_state);
 			spr_copy_pattern_set(PATRN_PALADIN, paladin, paladin_color);
 			break;
-		case PATRN_GUADANYA:
-			spr_define_pattern_set(PATRN_GUADANYA, SPR_SIZE_16x16, 1, 1,
+		case PATRN_SCYTHE:
+			spr_define_pattern_set(PATRN_SCYTHE, SPR_SIZE_16x16, 1, 1,
 				single_four_state);
-			spr_copy_pattern_set(PATRN_GUADANYA, guadanya, guadanya_color);
+			spr_copy_pattern_set(PATRN_SCYTHE, scythe, scythe_color);
 			break;
 		case PATRN_GHOST:
 			spr_define_pattern_set(PATRN_GHOST, SPR_SIZE_16x16, 1, 2,
