@@ -181,42 +181,67 @@ void anim_satan(struct displ_object *obj)
 	if (obj->state == STATE_MOVING_UP) {
 		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
 			obj->tob->cur_anim_step = 0;
-			// shoot!
+			add_bullet(obj->xpos - 8,
+				obj->ypos + 12,
+				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
+			add_bullet(obj->xpos - 8,
+				obj->ypos + 12,
+				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
+			add_bullet(obj->xpos - 8,
+				obj->ypos + 12,
+				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		} else if (obj->tob->cur_anim_step == 2  && obj->aux == 5) {
 			for (x = 0; x < to->ts->frame_w; x++) {
 				vdp_write(vdp_base_names_grp1 + offset_bottom + x, 0);
 			}
 			obj->tob->y-=4;
+			obj->ypos-=4;
 			if (obj->tob->y < dpo->min) {
 				obj->state = STATE_MOVING_DOWN;
 			}
 			obj->tob->cur_anim_step = 1;
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		} else if (obj->tob->cur_anim_step == 1 && obj->aux == 5) {
 			obj->tob->cur_anim_step = 2;
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		} else if (obj->tob->cur_anim_step == 0 && obj->aux == 2) {
 			obj->tob->cur_anim_step = 1;
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		}
 	} else if (obj->state == STATE_MOVING_DOWN) {
 		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
 			obj->tob->cur_anim_step = 0;
-			// shoot!
+			add_bullet(obj->xpos - 8,
+				obj->ypos + 12,
+				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
+			add_bullet(obj->xpos - 8,
+				obj->ypos + 12,
+				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
+			add_bullet(obj->xpos - 8,
+				obj->ypos + 12,
+				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		} else if (obj->tob->cur_anim_step == 1 && obj->aux == 5) {
 			for (x = 0; x < to->ts->frame_w; x++) {
 				vdp_write(vdp_base_names_grp1 + offset_top + x, 0);
 			}
 			obj->tob->y+=4;
+			obj->ypos += 4;
 			if (obj->tob->y > dpo->max) {
 				obj->state = STATE_MOVING_UP;
 			}
 			obj->tob->cur_anim_step = 2;
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		} else if (obj->tob->cur_anim_step == 2 && obj->aux == 5) {
 			obj->tob->cur_anim_step = 1;
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		}  else if (obj->tob->cur_anim_step == 0 && obj->aux == 2) {
 			obj->tob->cur_anim_step = 1;
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		}
 	}
 
-	tile_object_show(dpo->tob, scr_tile_buffer, true);
 	if (obj->tob->cur_anim_step > 2)
 		obj->tob->cur_anim_step = 1;
 	if (obj->aux++ > 5)
@@ -229,5 +254,26 @@ void anim_satan(struct displ_object *obj)
  */
 void anim_satan_bullets(struct displ_object *obj)
 {
+	struct spr_sprite_def *sp = obj->spr;
+	int8_t dx = 0, dy = 0;
 
+	dx = obj->aux2;
+	if (obj->aux == 0) {
+		dy = -1;
+	} else if (obj->aux == 2) {
+		dy = 1;
+	}
+
+	obj->xpos -= dx;
+	obj->ypos += dy;
+
+	if (obj->xpos < 4 || obj->ypos < 8) {
+		spr_hide(obj->spr);
+		list_del(&obj->list);
+		obj->state = 255;
+	} else {
+		spr_animate(sp, dx, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
 }
