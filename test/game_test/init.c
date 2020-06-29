@@ -127,6 +127,10 @@ static void init_tiles_zone_1()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_1], MAP_TILESET_CHURCH_1_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO_2], MAP_TILESET_CHURCH_DECO_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_X], MAP_TILESET_X_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL], MAP_TILESET_SKULL_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_ROPE], MAP_TILESET_ROPE_POS);
 }
 
 static void init_tiles_zone_2()
@@ -386,7 +390,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 3, 1, 2);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 4, 4, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DOOR], door, 1, 4, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);

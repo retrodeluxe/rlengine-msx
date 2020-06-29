@@ -896,6 +896,7 @@ extern void anim_satan(struct displ_object *obj);
 extern void anim_satan_bullets(struct displ_object *obj);
 extern void anim_dragon_flame(struct displ_object *obj);
 extern void anim_dragon_bullets(struct displ_object *obj);
+extern void anim_hanging_priest(struct displ_object *obj);
 
 void init_animators()
 {
@@ -940,4 +941,6 @@ void init_animators()
 	animators[ANIM_DRAGON_FLAME].run = anim_dragon_flame;
 	animators[ANIM_DRAGON_BULLETS].page = 7;
 	animators[ANIM_DRAGON_BULLETS].run = anim_dragon_bullets;
+	animators[ANIM_HANGING_PRIEST].page = 7;
+	animators[ANIM_HANGING_PRIEST].run = anim_hanging_priest;
 }

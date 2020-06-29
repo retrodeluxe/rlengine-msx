@@ -694,7 +694,13 @@ void load_room(uint8_t room, bool reload)
 				add_sprite(dpo, spr_ct, PATRN_WORM);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
+				min = map_object->object.movable.min;
+				max = map_object->object.movable.max;
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
+				dpo->max = max;
+				dpo->min = min;
+				dpo->state = STATE_MOVING_DOWN;
+				add_animator(dpo, ANIM_HANGING_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_FLY);

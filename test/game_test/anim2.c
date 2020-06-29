@@ -346,3 +346,56 @@ void anim_dragon_bullets(struct displ_object *obj)
 		obj->state = 255;
 	}
 }
+
+/**
+ * Animation for priests hanging from tree, length of rope
+ *  needs to be adjusted as priests move up and down.
+ */
+void anim_hanging_priest(struct displ_object *obj)
+{
+	int8_t dy;
+	uint8_t ty;
+	struct tile_object *to = dpo->tob;
+	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
+	uint16_t offset_top = to->x/8 + to->y/8 * 32;
+
+	if (obj->state == STATE_MOVING_UP) {
+		if (obj->tob->cur_anim_step > 0) {
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+			obj->tob->cur_anim_step--;
+		} else {
+			vdp_write(vdp_base_names_grp1 + offset_bottom, 0);
+			vdp_write(vdp_base_names_grp1 + offset_bottom + 1, 0);
+			ty = obj->ypos / 8;
+			ty--;
+			obj->ypos = ty * 8;
+			obj->tob->y = ty * 8;
+			obj->tob->cur_anim_step = 3;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		}
+		if (obj->ypos < obj->min) {
+			obj->state = STATE_MOVING_DOWN;
+			obj->tob->cur_dir = 1;
+			obj->tob->cur_anim_step = 0;
+		}
+	} else if (obj->state == STATE_MOVING_DOWN) {
+		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+			obj->tob->cur_anim_step++;
+		} else {
+			vdp_write(vdp_base_names_grp1 + offset_top, 0);
+			vdp_write(vdp_base_names_grp1 + offset_top + 1, 180); // rope
+			ty = obj->ypos / 8;
+			ty++;
+			obj->ypos = ty * 8;
+			obj->tob->y = ty * 8;
+			obj->tob->cur_anim_step = 0;
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+		}
+		if (obj->ypos > obj->max) {
+			obj->state = STATE_MOVING_UP;
+			obj->tob->cur_dir = 0;
+			obj->tob->cur_anim_step = 3;
+		}
+	}
+}
