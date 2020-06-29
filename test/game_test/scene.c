@@ -489,8 +489,8 @@ void load_room(uint8_t room, bool reload)
 						phys_set_colliding_tile_object(dpo,
 							TILE_COLLISION_FULL, pickup_cross, id);
 					} else {
-						//add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
-						//add_animator(dpo, ANIM_CYCLE_TILE);
+						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
+						add_animator(dpo, ANIM_CYCLE_TILE);
 					}
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
