@@ -64,6 +64,25 @@ void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos)
 	}
 }
 
+void font_vfree(struct font *f)
+{
+	if (f != NULL) {
+		tile_set_vfree(&f->tiles);
+	}
+}
+
+void font_set_vfree(struct font_set *fs)
+{
+	if (fs->upper != NULL)
+		tile_set_vfree(&fs->upper->tiles);
+	if (fs->lower != NULL)
+		tile_set_vfree(&fs->lower->tiles);
+	if (fs->numeric != NULL)
+		tile_set_vfree(&fs->numeric->tiles);
+	if (fs->symbols != NULL)
+		tile_set_vfree(&fs->symbols->tiles);
+}
+
 /**
  * Applies a color mask to a font already allocated in vram
  */

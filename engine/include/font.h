@@ -81,4 +81,6 @@ void font_vprintf(struct font_set *fs, uint8_t x, uint8_t y, char *text);
 void font_printf(struct font_set *fs, uint8_t x, uint8_t y, uint8_t *buffer, char *text);
 void font_color_mask(struct font *f, uint8_t color);
 void font_set_color_mask(struct font_set *fs, uint8_t color);
+void font_vfree(struct font *f);
+void font_set_vfree(struct font_set *fs);
 #endif

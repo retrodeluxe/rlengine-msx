@@ -457,4 +457,7 @@ void show_parchment(uint8_t id)
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 
 	} while (!trigger);
+
+	tile_set_vfree(&parchment);
+	font_set_vfree(&intro_font_set);
 }
