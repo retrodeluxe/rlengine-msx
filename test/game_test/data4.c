@@ -69,4 +69,4 @@ const char str_parchment_8_3[] = "of Satan, burn him!";
 const char str_ending_1[] = "Your body was burned";
 const char str_ending_2[] = "in the flames,";
 const char str_ending_3[] = "but your soul has found";
-const char str_ending_4[] = "a place inHeaven";
+const char str_ending_4[] = "a place in Heaven";

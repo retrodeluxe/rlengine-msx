@@ -51,6 +51,7 @@ void load_intro_scene();
 
 struct tile_set logo;
 struct tile_set tileset_intro;
+struct tile_set tileset_ending;
 struct tile_set tileset_gameover;
 struct tile_set parchment;
 struct font font_upper;
@@ -87,6 +88,8 @@ extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;
 extern const unsigned char introjean_song_pt3[];
 extern const unsigned int introjean_song_pt3_len;
+extern const unsigned char prayerofhope_song_pt3[];
+extern const unsigned int prayerofhope_song_pt3_len;
 extern const unsigned int NT[];
 
 extern const char str_press_space[];
@@ -113,6 +116,10 @@ extern const char str_parchment_5_1[];
 extern const char str_parchment_5_2[];
 extern const char str_parchment_6_1[];
 extern const char str_parchment_6_2[];
+extern const char str_ending_1[];
+extern const char str_ending_2[];
+extern const char str_ending_3[];
+extern const char str_ending_4[];
 
 #pragma CODE_PAGE 3
 
@@ -129,6 +136,7 @@ start:
 	init_animators();
 
 	show_intro_animation();
+	//show_ending_animation();
 
 	init_map_tilelayers();
 	init_map_object_layers();
@@ -321,7 +329,7 @@ static void load_intro_font()
 	INIT_FONT(font_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	INIT_FONT(font_symbols, big_font_symbols, FONT_SYMBOLS, 15, 1, 2);
 
-	font_to_vram(&font_upper, 20);
+	font_to_vram(&font_upper, 1);
 	font_to_vram(&font_lower, 128);
 	font_to_vram(&font_symbols, 180);
 	font_to_vram(&font_digits, 224);
@@ -339,7 +347,7 @@ static void load_parchment_font()
 	INIT_FONT(font_lower, big_font_lower, FONT_LOWERCASE, 29, 1, 2);
 	INIT_FONT(font_upper, big_font_upper, FONT_UPPERCASE, 26, 2, 2);
 
-	font_to_vram(&font_upper, 20);
+	font_to_vram(&font_upper, 1);
 	font_to_vram(&font_lower, 128);
 
 	intro_font_set.upper = &font_upper;
@@ -390,6 +398,118 @@ void show_intro_animation() __nonbanked
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 
 	} while (!trigger);
+
+	sys_irq_unregister(play_music);
+	pt3_mute();
+
+	vdp_screen_disable();
+	font_set_vfree(&intro_font_set);
+	vdp_clear(0);
+}
+
+
+void show_ending_gate_animation(uint8_t frame)
+{
+	uint8_t *dst, *dst1, *base = scr_tile_buffer + 256 + 32;
+	uint8_t x,y, tile, tile1, w;
+
+	switch (frame) {
+		case 0:
+			tile = 1; dst = base + 14; w = 4;
+			break;
+		case 1:
+			tile = 5; dst = base + 14; w = 4;
+			break;
+		case 2:
+			tile = 9; dst = base + 13; w = 6;
+			break;
+		case 3:
+			tile = 15; dst = base + 13; w = 6;
+			break;
+		case 4:
+			tile = 21; tile1 = 23; dst = base + 12; dst1 = base + 18; w = 2;
+			break;
+		case 5:
+			tile = 7; tile1 = 5; dst = base + 12; dst1 = base + 18; w = 2;
+			break;
+	}
+
+	switch (frame) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			for (y = 0; y < 6; y++) {
+				for (x = 0; x < w; x++) {
+					*(dst++) = tile++;
+				}
+				tile += 24 - w; dst += 32 - w;
+			}
+			break;
+		case 4:
+		case 5:
+			for (y = 0; y < 6; y++) {
+				for (x = 0; x < w; x++) {
+					*(dst++) = tile++;
+					*(dst1++) = tile1++;
+				}
+				tile += 24 - w; dst += 32 - w;
+				tile1 += 24 - w; dst1 += 32 - w;
+			}
+			break;
+		case 6:
+		// font_printf(&intro_font_set, 6, 2, scr_tile_buffer, str_ending_1);
+		// font_printf(&intro_font_set, 10, 4, scr_tile_buffer, str_ending_2);
+		// font_printf(&intro_font_set, 5, 19, scr_tile_buffer, str_ending_3);
+		// font_printf(&intro_font_set, 8, 21, scr_tile_buffer, str_ending_4);
+			break;
+	}
+}
+
+void show_ending_animation()
+{
+	uint8_t i;
+
+	tile_init();
+	vdp_screen_disable();
+	vdp_clear(0);
+	load_parchment_font();
+
+	sys_memset(scr_tile_buffer, 0, 768);
+	font_printf(&intro_font_set, 6, 2, scr_tile_buffer, str_ending_1);
+	font_printf(&intro_font_set, 10, 4, scr_tile_buffer, str_ending_2);
+	font_printf(&intro_font_set, 5, 19, scr_tile_buffer, str_ending_3);
+	font_printf(&intro_font_set, 8, 21, scr_tile_buffer, str_ending_4);
+
+	tile_init();
+	ascii8_set_data(PAGE_INTRO);
+	INIT_TILE_SET(tileset_ending, ending);
+	tile_set_to_vram_bank(&tileset_ending, BANK1, 1);
+
+	show_ending_gate_animation(0);
+	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
+
+	vdp_screen_enable();
+
+	ascii8_set_data(PAGE_MUSIC);
+
+	pt3_init(prayerofhope_song_pt3, 1);
+
+	sys_irq_init();
+	sys_irq_register(play_music);
+
+	reftick = sys_get_ticks();
+
+	i = 1;
+	do {
+		sys_irq_enable();
+		sys_wait_vsync();
+
+		sys_sleep_ms(700);
+		show_ending_gate_animation(i);
+		vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
+
+	} while (i++ < 10);
 
 	sys_irq_unregister(play_music);
 	pt3_mute();

@@ -40,6 +40,7 @@ enum tile_sets_t {
 	TILE_BLOCK_CROSS,
 	TILE_INVERTED_CROSS,
 	TILE_FLAME,
+	TILE_ENDING,
 	TILE_MAX,
 };
 

@@ -6,5 +6,6 @@
 #include "gen/font_upper.h"
 #include "gen/gameover.h"
 #include "pt3_nt0.h"
+#include "gen/ending.h"
 
 const char str_press_space[]="PRESS SPACE KEY~";
