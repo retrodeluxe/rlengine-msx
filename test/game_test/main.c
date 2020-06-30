@@ -22,8 +22,6 @@
 #include "logic.h"
 #include "banks.h"
 
-#include "gen/intro_map_defs.h"
-#include "gen/intro_tileset_ext.h"
 #include "gen/game_test_tiles_ext.h"
 #include "gen/map_defs.h"
 #include "gen/map_init.h"
