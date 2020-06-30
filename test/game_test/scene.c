@@ -408,7 +408,7 @@ void load_intro_scene()
 
 void load_room(uint8_t room, bool reload)
 {
-	uint8_t i, id, type, delay, speed, offset, min, max;
+	uint8_t i, id, type, delay, offset;
 	bool add_dpo;
 
 	sys_irq_disable();
@@ -560,9 +560,8 @@ void load_room(uint8_t room, bool reload)
 			}
 			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {
-			speed = map_object->object.ghost.speed;
+			dpo->speed = map_object->object.ghost.speed;
 			add_sprite(dpo, spr_ct, PATRN_GHOST);
-			dpo->speed = speed;
 			add_animator(dpo, ANIM_GHOST);
 			room_objs += NEXT_OBJECT(struct map_object_ghost);
 		} else if (map_object->type == ROPE) {
@@ -613,9 +612,8 @@ void load_room(uint8_t room, bool reload)
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_FISH);
 			} else if (map_object->object.shooter.type == TYPE_LEAK) {
-				max = map_object->object.shooter.max;
+				dpo->max = map_object->object.shooter.max;
 				add_sprite(dpo, spr_ct, PATRN_WATERDROP);
-				dpo->max = max;
 				add_animator(dpo, ANIM_WATERDROP);
 			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
@@ -657,9 +655,9 @@ void load_room(uint8_t room, bool reload)
 			add_tileobject(dpo, tob_ct, TILE_STAINED_GLASS);
 			room_objs += NEXT_OBJECT(struct map_object_stainedglass);
 		} else if (map_object->type == MOVABLE) {
-			speed = map_object->object.movable.speed;
-			min = map_object->object.movable.min;
-			max = map_object->object.movable.max;
+			dpo->speed = map_object->object.movable.speed;
+			dpo->min = map_object->object.movable.min;
+			dpo->max = map_object->object.movable.max;
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
 				if (room == ROOM_FOREST ||
@@ -681,11 +679,9 @@ void load_room(uint8_t room, bool reload)
 				add_sprite(dpo, spr_ct, PATRN_BAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT);
 			} else if (map_object->object.movable.type == TYPE_SPIDER) {
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_SPIDER);
 				add_animator(dpo, ANIM_UP_DOWN);
 				dpo->state = STATE_MOVING_DOWN;
-				dpo->speed = speed;
 			} else if (map_object->object.movable.type == TYPE_RAT) {
 				add_sprite(dpo, spr_ct, PATRN_RAT);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
@@ -694,20 +690,14 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
-				dpo->max = max;
-				dpo->min = min;
 				dpo->state = STATE_MOVING_DOWN;
 				add_animator(dpo, ANIM_HANGING_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				add_sprite(dpo, spr_ct, PATRN_FLY);
 				add_animator(dpo, ANIM_UP_DOWN);
 				dpo->state = STATE_MOVING_DOWN;
-				dpo->speed = speed;
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_PALADIN) {
@@ -715,9 +705,6 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
 			} else if (map_object->object.movable.type == TYPE_DEATH) {
 				add_sprite(dpo, spr_ct, PATRN_DEATH);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->aux = 4; // max scythes
 				dpo->aux2 = 0; // scythe count
 				dpo->state = STATE_MOVING_RIGHT;
@@ -726,37 +713,22 @@ void load_room(uint8_t room, bool reload)
 				spr_valloc_pattern_set(PATRN_SCYTHE);
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
 				add_sprite(dpo, spr_ct, PATRN_DEMON);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
 				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_LAVA) {
 				add_sprite(dpo, spr_ct, PATRN_FIREBALL);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_FIREBALL);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
-				dpo->speed = speed;
-				dpo->max = max;
-				dpo->min = min;
 				dpo->aux = 0;
 				dpo->tob->cur_anim_step = 1;
 				dpo->state = STATE_MOVING_UP;
