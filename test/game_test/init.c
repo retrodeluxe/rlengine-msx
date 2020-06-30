@@ -56,6 +56,8 @@ extern struct tile_set tileset[TILE_MAX];
 extern struct tile_set tileset_map[MAP_TILESET_MAX];
 extern struct tile_set tileset_room_title[ROOM_MAX];
 
+extern struct font big_digits;
+
 /** sprite definition data */
 extern const uint8_t two_step_state[];
 extern const uint8_t single_step_state[];
@@ -69,11 +71,6 @@ extern const uint8_t archer_state[];
 extern const uint8_t jean_state[];
 extern const uint8_t spit_state[];
 extern const uint8_t death_state[];
-
-/** score panel primitives **/
-struct tile_object score;
-struct font big_digits;
-struct font_set score_font_set;
 
 void init_map_tilesets()
 {
@@ -295,72 +292,6 @@ void init_room_titles()
 	INIT_TILE_SET(tileset_room_title[ROOM_EVIL_CHURCH_3], title_ashes_to_ashes);
 	ascii8_set_data(PAGE_SPRITES);
 	INIT_TILE_SET(tileset_room_title[ROOM_SATAN], title_satan);
-}
-
-void show_room_title(uint8_t room)
-{
-	uint8_t i, tile, w;
-	uint16_t vram_offset;
-
-	#define MAX_TITLE_LEN 18
-	#define SCR_WIDTH 32
-
-	if (room == ROOM_SATAN)
-		ascii8_set_data(PAGE_SPRITES);
-	else
-		ascii8_set_data(PAGE_ROOM_TITLES);
-
-	w = tileset_room_title[room].w;
-	vram_offset = vdp_base_names_grp1 + SCR_WIDTH + 22 * SCR_WIDTH;
-
-	tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
-
-	vdp_memset(vram_offset - MAX_TITLE_LEN, MAX_TITLE_LEN, 0);
-	vdp_memset(vram_offset - MAX_TITLE_LEN + SCR_WIDTH, MAX_TITLE_LEN, 0);
-
-	tile = 180;
-	for (i = 0; i < w; i++) {
-		vdp_write(vram_offset - w + i, tile + i);
-		vdp_write(vram_offset - w + i + SCR_WIDTH, tile + i + w);
-	}
-}
-
-void show_score_panel()
-{
-	uint8_t i;
-	char snum[3];
-
-	ascii8_set_data(PAGE_DYNTILES);
-	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
-	tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
-
-	score.y = 192 - 16;
-	score.x = 0;
-	score.cur_dir = 0;
-	score.cur_anim_step = 0;
-	score.ts = &tileset[TILE_HEART_STATUS];
-	score.idx = 0;
-
-	tile_object_show(&score, scr_tile_buffer, true);
-
-	score.x = 32;
-	score.y = 192 - 16;
-	score.cur_dir = 0;
-	score.cur_anim_step = 0;
-	score.ts = &tileset[TILE_CROSS_STATUS];
-	score.idx = 0;
-
-	tile_object_show(&score, scr_tile_buffer, true);
-
-	/** clear up 2 digit live count **/
-	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
-	vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
-
-	score_font_set.numeric = &big_digits;
-	_itoa(game_state.live_cnt, snum, 10);
-	font_vprintf(&score_font_set, 2, 22, snum);
-	_itoa(game_state.cross_cnt, snum, 10);
-	font_vprintf(&score_font_set, 6, 22, snum);
 }
 
 void init_resources()
