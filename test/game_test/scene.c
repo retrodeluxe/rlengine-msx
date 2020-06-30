@@ -426,9 +426,6 @@ void load_room(uint8_t room, bool reload)
 
 	init_sfx();
 
-	//phys_init();
-	// init_tile_collisions();
-
 	INIT_LIST_HEAD(&display_list);
 
 	ascii8_set_data(PAGE_MAPOBJECTS);

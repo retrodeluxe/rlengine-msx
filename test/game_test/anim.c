@@ -20,10 +20,21 @@
 struct animator animators[MAX_ANIMATORS];
 
 extern struct displ_object dpo_jean;
-extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
+
+extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
+			uint8_t anim_id, uint8_t state, uint8_t dir,
+			uint8_t speed, struct displ_object *parent);
 
 extern void anim_gargolyne(struct displ_object *obj);
+extern void anim_death(struct displ_object *obj);
+extern void anim_scythe(struct displ_object *obj);
+extern void anim_satan(struct displ_object *obj);
+extern void anim_satan_bullets(struct displ_object *obj);
+extern void anim_dragon_flame(struct displ_object *obj);
+extern void anim_dragon_bullets(struct displ_object *obj);
+extern void anim_hanging_priest(struct displ_object *obj);
+extern void anim_intro_chase(struct displ_object *obj);
+extern void anim_intro_jean(struct displ_object *obj);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -309,7 +320,6 @@ void anim_jean(struct displ_object *obj)
 
 void anim_cycle_tile(struct displ_object *dpo)
 {
-        // maybe I can just set the objet to gone.
 	if (dpo->state++ == 5) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
@@ -568,10 +578,6 @@ void anim_chase(struct displ_object *obj)
 	spr_set_pos(sp, obj->xpos, obj->ypos);
 	spr_update(sp);
 }
-
-
-extern void anim_intro_chase(struct displ_object *obj);
-extern void anim_intro_jean(struct displ_object *obj);
 
 /**
  * Animation to show the door closing after jeans enters the church, then the
@@ -864,7 +870,6 @@ void anim_horizontal_projectile(struct displ_object *obj)
 		spr_set_pos(sp, obj->xpos, obj->ypos);
 		spr_update(sp);
 	}
-
 }
 
 /**
@@ -887,16 +892,9 @@ void anim_gargolyne(struct displ_object *obj)
 	} else if (obj->state == 0) {
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 	}
+	
 	if (++obj->state > 60) obj->state = 1;
 }
-
-extern void anim_death(struct displ_object *obj);
-extern void anim_scythe(struct displ_object *obj);
-extern void anim_satan(struct displ_object *obj);
-extern void anim_satan_bullets(struct displ_object *obj);
-extern void anim_dragon_flame(struct displ_object *obj);
-extern void anim_dragon_bullets(struct displ_object *obj);
-extern void anim_hanging_priest(struct displ_object *obj);
 
 void init_animators()
 {
