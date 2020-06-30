@@ -657,6 +657,9 @@ void load_room(uint8_t room, bool reload)
 			add_tileobject(dpo, tob_ct, TILE_STAINED_GLASS);
 			room_objs += NEXT_OBJECT(struct map_object_stainedglass);
 		} else if (map_object->type == MOVABLE) {
+			speed = map_object->object.movable.speed;
+			min = map_object->object.movable.min;
+			max = map_object->object.movable.max;
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
 				if (room == ROOM_FOREST ||
@@ -690,23 +693,17 @@ void load_room(uint8_t room, bool reload)
 				add_sprite(dpo, spr_ct, PATRN_WORM);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
 			} else if (map_object->object.movable.type == TYPE_PRIEST) {
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 				dpo->max = max;
 				dpo->min = min;
 				dpo->state = STATE_MOVING_DOWN;
 				add_animator(dpo, ANIM_HANGING_PRIEST);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_FLY);
 				add_animator(dpo, ANIM_UP_DOWN);
 				dpo->state = STATE_MOVING_DOWN;
 				dpo->speed = speed;
 			} else if (map_object->object.movable.type == TYPE_SKELETON) {
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_SKELETON);
 				dpo->speed = speed;
 				dpo->max = max;
@@ -717,9 +714,6 @@ void load_room(uint8_t room, bool reload)
 				add_sprite(dpo, spr_ct, PATRN_PALADIN);
 				add_animator(dpo, ANIM_LEFT_RIGHT_FLOOR);
 			} else if (map_object->object.movable.type == TYPE_DEATH) {
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_DEATH);
 				dpo->speed = speed;
 				dpo->max = max;
@@ -731,9 +725,6 @@ void load_room(uint8_t room, bool reload)
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_SCYTHE);
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_DARKBAT);
 				dpo->speed = speed;
 				dpo->max = max;
@@ -741,9 +732,6 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_DEMON) {
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_DEMON);
 				dpo->speed = speed;
 				dpo->max = max;
@@ -751,9 +739,6 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_SKELETON_CEIL) {
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
-				speed = map_object->object.movable.speed;
 				add_sprite(dpo, spr_ct, PATRN_SKELETON_CEILING);
 				dpo->speed = speed;
 				dpo->max = max;
@@ -761,9 +746,6 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_LEFT;
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_LAVA) {
-				speed = map_object->object.movable.speed;
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
 				add_sprite(dpo, spr_ct, PATRN_FIREBALL);
 				dpo->speed = speed;
 				dpo->max = max;
@@ -771,9 +753,6 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_FIREBALL);
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
-				speed = map_object->object.movable.speed;
-				min = map_object->object.movable.min;
-				max = map_object->object.movable.max;
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
 				dpo->speed = speed;
 				dpo->max = max;
