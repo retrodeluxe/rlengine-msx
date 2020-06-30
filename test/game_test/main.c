@@ -3,7 +3,6 @@
  * Copyright (C) Retro DeLuxe 2017-2020, All rights reserved.
  *
  */
-
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
@@ -82,11 +81,30 @@ extern const unsigned char introjean_song_pt3[];
 extern const unsigned int introjean_song_pt3_len;
 extern const unsigned int NT[];
 
+extern const char str_press_space[];
+extern const char instr_col[];
+extern const char instr_pat[];
+extern const char intropat_vda[];
+extern const char introcol_vda[];
+extern const char introspt_vda[];
+extern const char introsat_vda[];
 extern const char str_intro_1[];
 extern const char str_intro_2[];
 extern const char str_intro_3[];
 extern const char str_intro_5[];
 extern const char str_intro_4[];
+extern const char str_parchment_1_1[];
+extern const char str_parchment_1_2[];
+extern const char str_parchment_2_1[];
+extern const char str_parchment_2_2[];
+extern const char str_parchment_3_1[];
+extern const char str_parchment_3_2[];
+extern const char str_parchment_4_1[];
+extern const char str_parchment_4_2[];
+extern const char str_parchment_5_1[];
+extern const char str_parchment_5_2[];
+extern const char str_parchment_6_1[];
+extern const char str_parchment_6_2[];
 
 #pragma CODE_PAGE 3
 
@@ -106,7 +124,6 @@ start:
 
 	init_map_tilelayers();
 	init_map_object_layers();
-
 	init_game_state();
 
 	load_room(game_state.room, true);
@@ -134,12 +151,8 @@ start:
 		animate_all();
 
 		/* framerate limiter 25/30fps */
-		// fps_stall = true;
-		while (sys_get_ticks() - reftick < 1) {
-			fps_stall = false;
-		}
-		// if (fps_stall)
-		// 	log_w("fps stall!\n");
+		while (sys_get_ticks() - reftick < 1);
+			// some work we can do in this loop?
 
 		if (game_state.death) {
 			if(--game_state.live_cnt == 0) {
@@ -217,38 +230,35 @@ void show_game_over()
 	sys_sleep(3);
 }
 
-extern const char str_press_space[];
-
-extern const char instr_col[];
-extern const char instr_pat[];
-extern const char intropat_vda[];
-extern const char introcol_vda[];
-extern const char introspt_vda[];
-extern const char introsat_vda[];
-
 static void load_intro_scr()
 {
 	vdp_screen_disable();
+
 	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
+
 	ascii8_set_data(PAGE_INTRO2_PAT);
 	vdp_memcpy_vda(intropat_vda);
 	vdp_memcpy_vda(introspt_vda);
 	vdp_memcpy_vda(introsat_vda);
-	//vdp_memcpy(vdp_base_chars_grp1, intro2_pat, 6144);
+
 	ascii8_set_data(PAGE_INTRO2_COL);
 	vdp_memcpy_vda(introcol_vda);
-	//vdp_memcpy(vdp_base_color_grp1, intro2_col, 6144);
+
 	vdp_screen_enable();
 }
 
 static void load_instructions_scr()
 {
 	vdp_screen_disable();
+
 	spr_clear();
+
 	ascii8_set_data(PAGE_INSTR_PAT);
 	vdp_memcpy(vdp_base_chars_grp1, instr_pat, 6144);
+
 	ascii8_set_data(PAGE_INSTR_COL);
 	vdp_memcpy(vdp_base_color_grp1, instr_col, 6144);
+
 	vdp_screen_enable();
 }
 
@@ -381,20 +391,6 @@ void show_intro_animation() __nonbanked
 	vdp_clear(0);
 }
 
-extern const char str_parchment_1_1[];
-extern const char str_parchment_1_2[];
-extern const char str_parchment_2_1[];
-extern const char str_parchment_2_2[];
-extern const char str_parchment_3_1[];
-extern const char str_parchment_3_2[];
-extern const char str_parchment_4_1[];
-extern const char str_parchment_4_2[];
-extern const char str_parchment_5_1[];
-extern const char str_parchment_5_2[];
-extern const char str_parchment_6_1[];
-extern const char str_parchment_6_2[];
-
-// TODO: Optimize font loading time
 void show_parchment(uint8_t id)
 {
 	uint8_t x,y;
@@ -450,8 +446,6 @@ void show_parchment(uint8_t id)
 		case 8:
 			break;
 	}
-
-
 
 	do {
 		sys_irq_enable();

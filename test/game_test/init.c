@@ -325,8 +325,6 @@ void show_room_title(uint8_t room)
 	}
 }
 
-// FIXME: show score panel should operate on RAM and let load_screen update VRAM
-//        _except_ for when we update counters of lives or crosses
 void show_score_panel()
 {
 	uint8_t i;
@@ -354,6 +352,7 @@ void show_score_panel()
 
 	tile_object_show(&score, scr_tile_buffer, true);
 
+	/** clear up 2 digit live count **/
 	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
 	vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
 
@@ -441,7 +440,6 @@ void init_sprites()
 
 void init_sfx()
 {
-	/** copy over sfx to ram **/
 	ascii8_set_data(PAGE_MUSIC);
 	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
 	sfx_setup(sfx_buffer);

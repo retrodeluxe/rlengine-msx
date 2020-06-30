@@ -17,10 +17,12 @@
 
 #pragma CODE_PAGE 7
 
-extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
-extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent);
+extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
+			uint8_t anim_id, uint8_t state, uint8_t dir,
+			uint8_t speed, struct displ_object *parent);
+extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
+			uint8_t anim_id, uint8_t state, uint8_t dir,
+			uint8_t speed, struct displ_object *parent);
 
 /**
  * Simplified animation for a Templar chasing Jean in intro screen
