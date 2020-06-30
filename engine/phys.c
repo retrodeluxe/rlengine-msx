@@ -257,6 +257,7 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	obj->collision_state = 0;
 
 	/** check non-blocking collisions **/
+	// FIXME: this needs optimization
 	if (notify) {
 		if (is_coliding_trigger_tile_pair(tile[4], tile[5])) {
 			phys_tile_collision_notify(tile[4]);

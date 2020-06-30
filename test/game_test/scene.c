@@ -69,8 +69,6 @@ uint8_t spr_ct, tob_ct, bullet_ct;
 /** current room object data **/
 uint8_t *room_objs;
 
-extern void define_sprite(uint8_t pattidx);
-extern void init_resources();
 extern void init_room_tilesets(uint8_t room, bool reload);
 extern void show_room_title(uint8_t room);
 
@@ -168,7 +166,7 @@ void update_tileobject(struct displ_object *dpo)
 
 static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
-	define_sprite(pattidx);
+	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(pattidx);
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
 
@@ -190,7 +188,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 
 void add_jean()
 {
-	define_sprite(PATRN_JEAN);
+	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(PATRN_JEAN);
 
 	spr_init_sprite(&jean_sprite, PATRN_JEAN);
@@ -379,7 +377,7 @@ void load_intro_scene()
 		}
 	}
 
-	define_sprite(PATRN_JEAN);
+	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(PATRN_JEAN);
 	spr_init_sprite(&jean_sprite, PATRN_JEAN);
 
@@ -610,12 +608,12 @@ void load_room(uint8_t room, bool reload)
 			if (map_object->object.shooter.type == TYPE_FLUSH) {
 				delay = map_object->object.shooter.delay;
 				add_tileobject(dpo, tob_ct, TILE_SPLASH);
-				define_sprite(PATRN_FISH);
-				spr_valloc_pattern_set(PATRN_FISH);
 				dpo->visible = false;
 				dpo->aux = delay;
 				dpo->aux2 = 0;
 				add_animator(dpo, ANIM_SPLASH);
+				ascii8_set_data(PAGE_SPRITES);
+				spr_valloc_pattern_set(PATRN_FISH);
 			} else if (map_object->object.shooter.type == TYPE_LEAK) {
 				max = map_object->object.shooter.max;
 				add_sprite(dpo, spr_ct, PATRN_WATERDROP);
@@ -623,23 +621,23 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_WATERDROP);
 			} else if (map_object->object.shooter.type == TYPE_GARGOYLE) {
 				add_tileobject(dpo, tob_ct, TILE_GARGOLYNE);
-				define_sprite(PATRN_SPIT);
-				spr_valloc_pattern_set(PATRN_SPIT);
 				dpo->aux = 30;
 				add_animator(dpo, ANIM_GARGOLYNE);
+				ascii8_set_data(PAGE_SPRITES);
+				spr_valloc_pattern_set(PATRN_SPIT);
 			} else if (map_object->object.shooter.type == TYPE_ARCHER) {
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
-				define_sprite(PATRN_ARROW);
-				spr_valloc_pattern_set(PATRN_ARROW);
 				dpo->aux = 30;
 				add_animator(dpo, ANIM_ARCHER_SKELETON);
+				ascii8_set_data(PAGE_SPRITES);
+				spr_valloc_pattern_set(PATRN_ARROW);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
 				delay = map_object->object.shooter.delay;
 				dpo->aux = delay;
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
-				define_sprite(PATRN_BULLET);
-				spr_valloc_pattern_set(PATRN_BULLET);
 				add_animator(dpo, ANIM_SHOOTER_PLANT);
+				ascii8_set_data(PAGE_SPRITES);
+				spr_valloc_pattern_set(PATRN_BULLET);
 			} else if (map_object->object.shooter.type == TYPE_FLAME) {
 				add_tileobject(dpo, tob_ct, TILE_FLAME);
 				add_animator(dpo, ANIM_DRAGON_FLAME);
@@ -732,7 +730,7 @@ void load_room(uint8_t room, bool reload)
 				dpo->aux2 = 0; // scythe count
 				dpo->state = STATE_MOVING_RIGHT;
 				add_animator(dpo, ANIM_DEATH);
-				define_sprite(PATRN_SCYTHE);
+				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_SCYTHE);
 			} else if (map_object->object.movable.type == TYPE_DARK_BAT) {
 				min = map_object->object.movable.min;
@@ -786,7 +784,7 @@ void load_room(uint8_t room, bool reload)
 				dpo->tob->cur_anim_step = 1;
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_SATAN);
-				define_sprite(PATRN_SMALL_BULLET);
+				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_SMALL_BULLET);
 			} else {
 				room_objs += NEXT_OBJECT(struct map_object_movable);
@@ -831,5 +829,6 @@ void init_sfx()
 {
 	/** copy over sfx to ram **/
 	ascii8_set_data(PAGE_MUSIC);
-	sfx_setup(abbaye_sfx_afb);
+	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
+	sfx_setup(sfx_buffer);
 }

@@ -71,6 +71,7 @@ uint8_t scr_tile_buffer[768];
 
 /** ROM transfer buffers **/
 uint8_t data_buffer[2100];
+uint8_t sfx_buffer[431];
 
 uint16_t reftick;
 bool fps_stall;
@@ -98,17 +99,17 @@ void main() __nonbanked
 start:
 	show_title_screen();
 
+	init_resources();
 	init_animators();
+
 	show_intro_animation();
 
 	init_map_tilelayers();
 	init_map_object_layers();
-	init_room_titles();
 
-	init_resources();
 	init_game_state();
 
-	load_room(game_state.room, false);
+	load_room(game_state.room, true);
 	show_score_panel();
 
 	/** game loop **/
@@ -198,7 +199,7 @@ void show_game_over()
 	vdp_clear(0);
 
 	tile_init();
-	spr_init();
+	spr_clear();
 
 	ascii8_set_data(PAGE_INTRO);
 	INIT_TILE_SET(tileset_gameover, gameover);
@@ -243,7 +244,7 @@ static void load_intro_scr()
 static void load_instructions_scr()
 {
 	vdp_screen_disable();
-	spr_init();
+	spr_clear();
 	ascii8_set_data(PAGE_INSTR_PAT);
 	vdp_memcpy(vdp_base_chars_grp1, instr_pat, 6144);
 	ascii8_set_data(PAGE_INSTR_COL);
@@ -288,6 +289,7 @@ void show_title_screen()
 
 	} while (sys_get_key(7) & 128);
 
+	vdp_screen_disable();
 	sys_irq_unregister(play_music);
 	pt3_mute();
 }
@@ -375,6 +377,7 @@ void show_intro_animation() __nonbanked
 	pt3_mute();
 
 	vdp_screen_disable();
+	font_set_vfree(&intro_font_set);
 	vdp_clear(0);
 }
 
@@ -402,7 +405,7 @@ void show_parchment(uint8_t id)
 	stop_music();
 	vdp_screen_disable();
 	tile_init();
-	spr_init();
+	spr_clear();
 
 	load_parchment_font();
 

@@ -366,8 +366,8 @@ void show_score_panel()
 
 void init_resources()
 {
+	init_room_titles();
 	init_map_tilesets();
-	spr_init();
 
 	/** initialize dynamic tile sets **/
 	ascii8_set_data(PAGE_DYNTILES);
@@ -402,129 +402,39 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVERTED_CROSS], invertedcross, 2, 2, 3, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_FLAME], flame, 3, 6, 2, 1);
 
+	init_sprites();
+
 	/** copy numeric font to vram **/
 	ascii8_set_data(PAGE_MAPTILES);
 	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
 	font_to_vram_bank(&big_digits, BANK2, 224);
 }
 
-void define_sprite(uint8_t pattidx)
+void init_sprites()
 {
-	uint16_t size;
-	uint8_t frames;
-
+	spr_init();
 	ascii8_set_data(PAGE_SPRITES);
-	switch(pattidx) {
-		case PATRN_BAT:
-			spr_define_pattern_set(PATRN_BAT, SPR_SIZE_16x16, 1, 1,
-				bat_state);
-			spr_copy_pattern_set(PATRN_BAT, bat, bat_color);
-			break;
-		case PATRN_RAT:
-			spr_define_pattern_set(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_RAT, rat, rat_color);
-			break;
-		case PATRN_SPIDER:
-			spr_define_pattern_set(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1,
-				bat_state);
-			spr_copy_pattern_set(PATRN_SPIDER, spider, spider_color);
-			break;
-		case PATRN_JEAN:
-			spr_define_pattern_set(PATRN_JEAN, SPR_SIZE_16x32, 1, 7,
-				jean_state);
-			spr_copy_pattern_set(PATRN_JEAN, monk1, monk1_color);
-			break;
-		case PATRN_TEMPLAR:
-			spr_define_pattern_set(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_TEMPLAR, templar, templar_color);
-			break;
-		case PATRN_WORM:
-			spr_define_pattern_set(PATRN_WORM, SPR_SIZE_16x16, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_WORM, worm, worm_color);
-			break;
-		case PATRN_SKELETON:
-			spr_define_pattern_set(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_SKELETON, skeleton, skeleton_color);
-			break;
-		case PATRN_PALADIN:
-			spr_define_pattern_set(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_PALADIN, paladin, paladin_color);
-			break;
-		case PATRN_SCYTHE:
-			spr_define_pattern_set(PATRN_SCYTHE, SPR_SIZE_16x16, 1, 1,
-				single_four_state);
-			spr_copy_pattern_set(PATRN_SCYTHE, scythe, scythe_color);
-			break;
-		case PATRN_GHOST:
-			spr_define_pattern_set(PATRN_GHOST, SPR_SIZE_16x16, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_GHOST, ghost, ghost_color);
-			break;
-		case PATRN_DEMON:
-			spr_define_pattern_set(PATRN_DEMON, SPR_SIZE_16x32, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_DEMON, demon, demon_color);
-			break;
-		case PATRN_DARKBAT:
-			spr_define_pattern_set(PATRN_DARKBAT, SPR_SIZE_32x16, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_DARKBAT, darkbat, darkbat_color);
-			break;
-		case PATRN_FLY:
-			spr_define_pattern_set(PATRN_FLY, SPR_SIZE_16x16, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_FLY, fly, fly_color);
-			break;
-		case PATRN_SKELETON_CEILING:
-			spr_define_pattern_set(PATRN_SKELETON_CEILING, SPR_SIZE_16x32, 1, 2,
-				two_step_state);
-			spr_copy_pattern_set(PATRN_SKELETON_CEILING, skeleton_ceiling, skeleton_ceiling_color);
-			break;
-		case PATRN_FISH:
-			spr_define_pattern_set(PATRN_FISH, SPR_SIZE_16x16, 1, 1,
-				bat_state);
-			spr_copy_pattern_set(PATRN_FISH, fish, fish_color);
-			break;
-		case PATRN_FIREBALL:
-			spr_define_pattern_set(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1,
-				bat_state);
-			spr_copy_pattern_set(PATRN_FIREBALL, fireball, fireball_color);
-			break;
-		case PATRN_WATERDROP:
-			spr_define_pattern_set(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1,
-				waterdrop_state);
-			spr_copy_pattern_set(PATRN_WATERDROP, waterdrop, waterdrop_color);
-			break;
-		case PATRN_BULLET:
-			spr_define_pattern_set(PATRN_BULLET, SPR_SIZE_16x16, 1, 4,
-				bullet_state);
-			spr_copy_pattern_set(PATRN_BULLET, bullet, bullet_color);
-			break;
-		case PATRN_ARROW:
-			spr_define_pattern_set(PATRN_ARROW, SPR_SIZE_16x16, 1, 2,
-				single_step_state);
-			spr_copy_pattern_set(PATRN_ARROW, arrow, arrow_color);
-			break;
-		case PATRN_SPIT:
-			spr_define_pattern_set(PATRN_SPIT, SPR_SIZE_16x16, 1, 1,
-				spit_state);
-			spr_copy_pattern_set(PATRN_SPIT, spit, spit_color);
-			break;
-		case PATRN_DEATH:
-			spr_define_pattern_set(PATRN_DEATH, SPR_SIZE_32x32, 1, 2,
-				death_state);
-			spr_copy_pattern_set(PATRN_DEATH, death, death_color);
-			break;
-		case PATRN_SMALL_BULLET:
-			spr_define_pattern_set(PATRN_SMALL_BULLET, SPR_SIZE_16x16, 1, 1,
-				bat_state);
-			spr_copy_pattern_set(PATRN_SMALL_BULLET, small_bullet, small_bullet_color);
-			break;
-	}
 
+	SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_16x16, 1, 1, bat_state, bat);
+	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2, two_step_state, rat);
+	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, bat_state, spider);
+	SPR_DEFINE_PATTERN_SET(PATRN_JEAN, SPR_SIZE_16x32, 1, 7, jean_state, monk1);
+	SPR_DEFINE_PATTERN_SET(PATRN_TEMPLAR, SPR_SIZE_16x32, 1, 2, two_step_state, templar);
+	SPR_DEFINE_PATTERN_SET(PATRN_WORM, SPR_SIZE_16x16, 1, 2, two_step_state, worm);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton);
+	SPR_DEFINE_PATTERN_SET(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2, two_step_state, paladin);
+	SPR_DEFINE_PATTERN_SET(PATRN_SCYTHE, SPR_SIZE_16x16, 1, 1, single_four_state, scythe);
+	SPR_DEFINE_PATTERN_SET(PATRN_GHOST, SPR_SIZE_16x16, 1, 2, two_step_state, ghost);
+	SPR_DEFINE_PATTERN_SET(PATRN_DEMON, SPR_SIZE_16x32, 1, 2, two_step_state, demon);
+	SPR_DEFINE_PATTERN_SET(PATRN_DARKBAT, SPR_SIZE_32x16, 1, 2, two_step_state, darkbat);
+	SPR_DEFINE_PATTERN_SET(PATRN_FLY, SPR_SIZE_16x16, 1, 2, two_step_state, fly);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON_CEILING, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton_ceiling);
+	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
+	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
+	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
+	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 4, bullet_state, bullet);
+	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow);
+	SPR_DEFINE_PATTERN_SET(PATRN_SPIT, SPR_SIZE_16x16, 1, 1, spit_state, spit);
+	SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, death_state, death);
+	SPR_DEFINE_PATTERN_SET(PATRN_SMALL_BULLET, SPR_SIZE_16x16, 1, 1, bat_state, small_bullet);
 }
