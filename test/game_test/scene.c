@@ -70,6 +70,7 @@ uint8_t spr_ct, tob_ct, bullet_ct;
 uint8_t *room_objs;
 
 extern void init_room_tilesets(uint8_t room, bool reload);
+extern void init_sfx();
 extern void show_room_title(uint8_t room);
 
 void play_room_music() __nonbanked
@@ -811,13 +812,4 @@ void load_room(uint8_t room, bool reload)
 	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
 	vdp_screen_enable();
 	start_music(room);
-}
-
-// move to init
-void init_sfx()
-{
-	/** copy over sfx to ram **/
-	ascii8_set_data(PAGE_MUSIC);
-	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
-	sfx_setup(sfx_buffer);
 }

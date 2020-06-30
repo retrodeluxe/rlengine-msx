@@ -438,3 +438,11 @@ void init_sprites()
 	SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, death_state, death);
 	SPR_DEFINE_PATTERN_SET(PATRN_SMALL_BULLET, SPR_SIZE_16x16, 1, 1, bat_state, small_bullet);
 }
+
+void init_sfx()
+{
+	/** copy over sfx to ram **/
+	ascii8_set_data(PAGE_MUSIC);
+	sys_memcpy(sfx_buffer, abbaye_sfx_afb, abbaye_sfx_afb_len);
+	sfx_setup(sfx_buffer);
+}
