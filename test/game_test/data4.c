@@ -1,5 +1,3 @@
-#include "banks.h"
-
 #pragma DATA_PAGE 11
 
 #include "gen/map1.h"

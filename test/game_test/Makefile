@@ -9,7 +9,7 @@ LOCAL_ROM_DATA_START_PAGE := 8
 LOCAL_ROM_DATA_END_PAGE := 19
 
 LOCAL_ROM_NAME := game_test
-LOCAL_SRC_FILES := main.c logic.c anim.c scene.c init.c swap1.c swap2.c swap3.c \
-	swap4.c swap5.c swap6.c swap7.c swap8.c title_data1.c title_data2.c instr_data1.c \
-	instr_data2.c anim2.c
+LOCAL_SRC_FILES := main.c logic.c anim.c anim2.c scene.c init.c \
+	data1.c data2.c data3.c data4.c data5.c data6.c data7.c data8.c \
+	data9.c data10.c data11.c data12.c
 include $(BUILD_ROM_ASCII8_BANKSWITCH)

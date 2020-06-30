@@ -1,8 +1,5 @@
-#include "banks.h"
-
 #pragma DATA_PAGE 14
 
-// note not all music fits in 8K
 #include "gen/title_song.h"
 #include "gen/huntloop_song.h"
 #include "gen/church_song.h"
@@ -10,5 +7,4 @@
 #include "gen/prayerofhope_song.h"
 #include "gen/game_test_sfx.h"
 #include "gen/hell_song.h"
-// #include "gen/evilfight_song.h"
 #include "gen/introjean_song.h"

@@ -1,5 +1,3 @@
-#include "banks.h"
-
 #pragma DATA_PAGE 13
 
 #include "gen/game_test_sprites.h"

@@ -1,5 +1,3 @@
-#include "banks.h"
-
 #pragma DATA_PAGE 16
 
 #include "gen/intropat.vda.h"
