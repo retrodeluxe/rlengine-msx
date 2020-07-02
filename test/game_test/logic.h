@@ -67,6 +67,6 @@ void bell_handler(struct displ_object *dpo, uint8_t data);
 void crosswitch_handler(struct displ_object *dpo, uint8_t data);
 // void set_trigger_handler_object(struct map_object_item *map_object);
 void trigger_handler(struct displ_object *dpo, uint8_t data);
-void spear_handler(struct displ_object *dpo, uint8_t data);
+void deadly_tile_handler(struct displ_object *dpo, uint8_t data);
 void cup_handler(struct displ_object *dpo, uint8_t data);
 #endif

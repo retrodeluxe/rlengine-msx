@@ -536,8 +536,8 @@ void load_room(uint8_t room, bool reload)
 						phys_set_colliding_tile_object(dpo,
 							TILE_COLLISION_FULL, pickup_cross, id);
 					} else {
-						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
-						add_animator(dpo, ANIM_CYCLE_TILE);
+						//add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
+						//add_animator(dpo, ANIM_CYCLE_TILE);
 					}
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
@@ -594,21 +594,22 @@ void load_room(uint8_t room, bool reload)
 		} else if (map_object->type == STATIC) {
 			if (map_object->object.static_.type == TYPE_DRAGON) {
 				add_tileobject(dpo, tob_ct, TILE_DRAGON);
-				// here there is some nice animation to do
 			} else if (map_object->object.static_.type == TYPE_LAVA) {
 				offset = map_object->object.static_.offset;
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
 				dpo->tob->cur_anim_step = offset;
 				add_animator(dpo, ANIM_CYCLE_TILE);
 				phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, spear_handler, 0);
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				add_tileobject(dpo, tob_ct, TILE_SPEAR);
 				phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, spear_handler, 0);
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				add_tileobject(dpo, tob_ct, TILE_WATER);
 				add_animator(dpo, ANIM_CYCLE_TILE);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {
@@ -677,6 +678,8 @@ void load_room(uint8_t room, bool reload)
 				add_tileobject(dpo, tob_ct, TILE_ARCHER_SKELETON);
 				dpo->aux = 30;
 				add_animator(dpo, ANIM_ARCHER_SKELETON);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_ARROW);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
@@ -684,11 +687,15 @@ void load_room(uint8_t room, bool reload)
 				dpo->aux = delay;
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
 				add_animator(dpo, ANIM_SHOOTER_PLANT);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_BULLET);
 			} else if (map_object->object.shooter.type == TYPE_FLAME) {
 				add_tileobject(dpo, tob_ct, TILE_FLAME);
 				add_animator(dpo, ANIM_DRAGON_FLAME);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
@@ -806,6 +813,8 @@ void load_room(uint8_t room, bool reload)
 				dpo->tob->cur_anim_step = 1;
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_SATAN);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_SMALL_BULLET);
 			} else {

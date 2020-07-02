@@ -152,7 +152,7 @@ void trigger_handler(struct displ_object *dpo, uint8_t data)
 	}
 }
 
-void spear_handler(struct displ_object *dpo, uint8_t data)
+void deadly_tile_handler(struct displ_object *dpo, uint8_t data)
 {
 	if (dpo_jean.state != STATE_COLLISION
 		&& dpo_jean.state != STATE_DEATH) {
