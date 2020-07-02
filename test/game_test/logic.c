@@ -42,6 +42,8 @@ void init_game_state()
 	game_state.cup_picked_up = false;
 	game_state.red_parchment = false;
 	game_state.start_ending_seq = false;
+	game_state.start_bonfire_seq = false;
+	game_state.final_animation = false;
 
 	// debug helpers
 	game_state.bell = true;

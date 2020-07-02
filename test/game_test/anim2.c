@@ -436,3 +436,79 @@ void anim_red_parchment(struct displ_object *obj)
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 	}
 }
+
+void anim_evil_chamber(struct displ_object *obj)
+{
+	int8_t dx = 0, dy = 0;
+	struct spr_sprite_def *sp = obj->spr;
+
+	obj->aux++;
+	switch(obj->state) {
+		case STATE_MOVING_RIGHT:
+			dx = 2;
+			break;
+		case STATE_OFF_SCREEN:
+			if (obj->aux > 10) {
+				obj->state = STATE_MOVING_RIGHT;
+				obj->visible = true;
+				spr_show(obj->spr);
+			}
+			return;
+		case STATE_OFF_SCREEN_DELAY_1S:
+			if (obj->aux > 19) {
+				obj->state = STATE_OFF_SCREEN;
+			}
+			return;
+		case STATE_OFF_SCREEN_DELAY_2S:
+			if (obj->aux > 29) {
+				obj->state = STATE_OFF_SCREEN;
+			}
+			return;
+	}
+
+	obj->xpos += dx;
+
+	spr_animate(sp, dx, dy);
+	spr_set_pos(sp, obj->xpos, obj->ypos);
+	spr_update(sp);
+
+	if (obj->xpos > 120) {
+		game_state.show_parchment = 8; // blue parchment
+		game_state.start_bonfire_seq = true;
+	}
+}
+
+/**
+ * Animation for the bonfire ending sequence
+ *  jean shakes left and right 3 times then dies.
+ */
+void anim_jean_bonfire(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	struct spr_pattern_set *ps = sp->pattern_set;
+
+	if (obj->state == 0) {
+		sp->cur_state = JANE_STATE_LEFT;
+		spr_update(sp);
+	} else if (obj->state == 25) {
+		sp->cur_state = JANE_STATE_RIGHT;
+		spr_update(sp);
+	} else if (obj->state == 50) {
+		sp->cur_state = JANE_STATE_LEFT;
+		spr_update(sp);
+	} else if (obj->state > 50 && obj->state < 70) {
+		sp->cur_state = JANE_STATE_DEATH;
+		sp->anim_ctr++;
+		if (sp->anim_ctr > sp->anim_ctr_treshold) {
+			sp->cur_anim_step++;
+			sp->anim_ctr = 0;
+		}
+		if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
+			sp->cur_anim_step = 0;
+
+		spr_update(sp);
+	} else if (obj->state == 71) {
+		game_state.final_animation = true;
+	}
+	obj->state++;
+}

@@ -117,6 +117,9 @@ extern const char str_parchment_6_2[];
 extern const char str_parchment_7_1[];
 extern const char str_parchment_7_2[];
 extern const char str_parchment_7_3[];
+extern const char str_parchment_8_1[];
+extern const char str_parchment_8_2[];
+extern const char str_parchment_8_3[];
 extern const char str_ending_1[];
 extern const char str_ending_2[];
 extern const char str_ending_3[];
@@ -156,12 +159,25 @@ start:
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 
 		change_room();
+		if (game_state.start_ending_seq) {
+			game_state.change_room = true;
+			game_state.room = ROOM_EVIL_CHAMBER;
+			game_state.start_ending_seq = false;
+		}
+		if (game_state.start_bonfire_seq) {
+			game_state.change_room = true;
+			game_state.room = ROOM_BONFIRE;
+			game_state.start_bonfire_seq = false;
+		}
 		if (game_state.show_parchment) {
 			show_parchment(game_state.show_parchment);
 			load_room(game_state.room, true);
 			show_score_panel();
 			game_state.show_parchment = 0;
-		} else if (game_state.change_room) {
+		}  else if (game_state.final_animation) {
+			show_ending_animation();
+			goto start;
+		}  else if (game_state.change_room) {
 			load_room(game_state.room, false);
 		}
 
@@ -185,8 +201,6 @@ start:
 			game_state.refresh_score = false;
 			show_score_panel();
 		}
-
-
 	}
 }
 
@@ -471,6 +485,7 @@ void show_ending_animation()
 {
 	uint8_t i;
 
+	spr_init();
 	tile_init();
 	vdp_screen_disable();
 	vdp_clear(0);
@@ -512,6 +527,7 @@ void show_ending_animation()
 
 	} while (i++ < 10);
 
+	sys_sleep(5);
 	sys_irq_unregister(play_music);
 	pt3_mute();
 
@@ -545,6 +561,12 @@ void show_parchment(uint8_t id)
 
 		ascii8_set_data(PAGE_MAPTILES);
 		INIT_TILE_SET(parchment, parchment_red);
+		tile_set_to_vram(&parchment, 1);
+	} else if (id == 8) {
+		font_set_color_mask(&intro_font_set, 0x7);
+
+		ascii8_set_data(PAGE_MAPTILES);
+		INIT_TILE_SET(parchment, parchment_blue);
 		tile_set_to_vram(&parchment, 1);
 	}
 
@@ -584,6 +606,9 @@ void show_parchment(uint8_t id)
 			font_vprintf(&intro_font_set, 7, 14, str_parchment_7_3);
 			break;
 		case 8:
+			font_vprintf(&intro_font_set, 5, 8, str_parchment_8_1);
+			font_vprintf(&intro_font_set, 5, 11, str_parchment_8_2);
+			font_vprintf(&intro_font_set, 7, 14, str_parchment_8_3);
 			break;
 	}
 
@@ -607,10 +632,14 @@ void show_room_title(uint8_t room)
 	#define MAX_TITLE_LEN 18
 	#define SCR_WIDTH 32
 
-	if (room == ROOM_SATAN)
+ 	if (room == ROOM_EVIL_CHAMBER || room == ROOM_BONFIRE)
+		return;
+
+	if (room == ROOM_SATAN) {
 		ascii8_set_data(PAGE_SPRITES);
-	else
+	} else {
 		ascii8_set_data(PAGE_ROOM_TITLES);
+	}
 
 	w = tileset_room_title[room].w;
 	vram_offset = vdp_base_names_grp1 + SCR_WIDTH + 22 * SCR_WIDTH;

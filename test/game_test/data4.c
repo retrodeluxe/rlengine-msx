@@ -58,14 +58,14 @@ const char str_parchment_6_1[] = "Glide through";
 const char str_parchment_6_2[] = "the beast cage";
 
 // red parchment
-const char str_parchment_7_1[] = "Your death will come";
+const char str_parchment_7_1[] = "Your doom will come";
 const char str_parchment_7_2[] = "not by my hand,";
 const char str_parchment_7_3[] = "but by human hands";
 
 // ending parchment
 const char str_parchment_8_1[] = "Heresy!!!TheCatar";
 const char str_parchment_8_2[] = "is hidden on the throne";
-const char str_parchment_8_3[] = "of Satan, burn him!";
+const char str_parchment_8_3[] = "ofSatan, burn him!";
 
 // ending strings
 const char str_ending_1[] = "Your body was burned";

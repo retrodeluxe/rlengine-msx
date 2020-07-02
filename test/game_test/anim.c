@@ -37,6 +37,8 @@ extern void anim_intro_chase(struct displ_object *obj);
 extern void anim_intro_jean(struct displ_object *obj);
 extern void anim_explosion(struct displ_object *obj);
 extern void anim_red_parchment(struct displ_object *obj);
+extern void anim_evil_chamber(struct displ_object *obj);
+extern void anim_jean_bonfire(struct displ_object *obj);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -946,5 +948,9 @@ void init_animators()
 	animators[ANIM_EXPLOSION].page = 7;
 	animators[ANIM_EXPLOSION].run = anim_explosion;
 	animators[ANIM_RED_PARCHMENT].page = 7;
-	animators[ANIM_RED_PARCHMENT].run = anim_red_parchment;	
+	animators[ANIM_RED_PARCHMENT].run = anim_red_parchment;
+	animators[ANIM_EVIL_CHAMBER].page = 7;
+	animators[ANIM_EVIL_CHAMBER].run = anim_evil_chamber;
+	animators[ANIM_JEAN_BONFIRE].page = 7;
+	animators[ANIM_JEAN_BONFIRE].run = anim_jean_bonfire;
 }

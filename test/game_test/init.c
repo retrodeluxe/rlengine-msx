@@ -185,7 +185,7 @@ void init_room_tilesets(uint8_t room, bool reload)
 	ascii8_set_data(PAGE_MAPTILES);
 
 	// zone 1: forest and church
-	if (room < ROOM_CAVE_DRAGON) {
+	if (room > ROOM_EVIL_CHAMBER && room < ROOM_CAVE_DRAGON) {
 		if (prev_room > ROOM_HAGMAN_TREE || reload) {
 			clear_map_tilesets();
 			init_tiles_zone_1();
@@ -252,14 +252,13 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_down_colliding_tile(38);
 
 	// zone 5: evil church
-	} else if (room > ROOM_CAVE_GATE) {
+	} else if (room > ROOM_CAVE_GATE || room == ROOM_EVIL_CHAMBER) {
 		if (prev_room == ROOM_CAVE_GATE || reload) {
 			clear_map_tilesets();
 			init_tiles_zone_5();
 		}
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS_2]);
-
 	}
 
 	prev_room = room;

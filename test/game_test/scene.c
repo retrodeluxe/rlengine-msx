@@ -187,7 +187,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_ct++;
 }
 
-void add_jean()
+void add_jean(uint8_t room)
 {
 	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(PATRN_JEAN);
@@ -205,7 +205,15 @@ void add_jean()
 	INIT_LIST_HEAD(&dpo_jean.list);
 	list_add(&dpo_jean.list, &display_list);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
-	add_animator(&dpo_jean, ANIM_JEAN);
+
+	if (room == ROOM_BONFIRE) {
+		dpo_jean.xpos = 124;
+		dpo_jean.ypos = 104;
+		spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
+		add_animator(&dpo_jean, ANIM_JEAN_BONFIRE);
+	} else {
+		add_animator(&dpo_jean, ANIM_JEAN);
+	}
 }
 
 /**
@@ -720,6 +728,25 @@ void load_room(uint8_t room, bool reload)
 						dpo->state = STATE_OFF_SCREEN_DELAY_2S;
 					}
 					game_state.templar_ct++;
+				} else if (room == ROOM_EVIL_CHAMBER) {
+					add_animator(dpo, ANIM_EVIL_CHAMBER);
+					dpo->state = STATE_OFF_SCREEN;
+					dpo->visible = false;
+					dpo->aux = 0;
+					dpo->aux2 = 0;
+					dpo->spr->cur_state = SPR_STATE_RIGHT;
+					if (game_state.templar_ct == 1) {
+						dpo->state = STATE_OFF_SCREEN_DELAY_1S;
+					} else if (game_state.templar_ct == 2) {
+						dpo->state = STATE_OFF_SCREEN_DELAY_2S;
+					}
+					game_state.templar_ct++;
+				} else if (room == ROOM_BONFIRE) {
+					dpo->spr->cur_state = SPR_STATE_RIGHT;
+					if (game_state.templar_ct > 1) {
+						dpo->spr->cur_state = SPR_STATE_LEFT;
+					}
+					game_state.templar_ct++;
 				}
 			} else if (map_object->object.movable.type == TYPE_BAT) {
 				add_sprite(dpo, spr_ct, PATRN_BAT);
@@ -789,7 +816,7 @@ void load_room(uint8_t room, bool reload)
 		}
 	}
 
-	add_jean();
+	add_jean(room);
 	// phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements

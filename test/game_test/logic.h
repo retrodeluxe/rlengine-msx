@@ -45,6 +45,8 @@ struct game_state_t {
 	uint8_t show_parchment;
 	uint8_t red_parchment;
 	bool start_ending_seq;
+	bool start_bonfire_seq;
+	bool final_animation;
 };
 
 enum trigger_ids {
