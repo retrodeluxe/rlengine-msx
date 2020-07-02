@@ -415,10 +415,24 @@ void anim_hanging_priest(struct displ_object *obj)
 
 void anim_explosion(struct displ_object *obj)
 {
-	if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
-		tile_object_show(obj->tob, scr_tile_buffer, true);
-		obj->tob->cur_anim_step++;
+	if (obj->state++ < 60) {
+		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+			obj->tob->cur_anim_step++;
+		} else {
+			obj->tob->cur_anim_step = 0;
+		}
 	} else {
-		obj->tob->cur_anim_step = 0;
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
+		list_del(&obj->list);
+		game_state.red_parchment = true;
+	}
+}
+
+void anim_red_parchment(struct displ_object *obj)
+{
+	if (game_state.red_parchment) {
+		obj->visible = true;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
 	}
 }

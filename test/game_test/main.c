@@ -114,6 +114,9 @@ extern const char str_parchment_5_1[];
 extern const char str_parchment_5_2[];
 extern const char str_parchment_6_1[];
 extern const char str_parchment_6_2[];
+extern const char str_parchment_7_1[];
+extern const char str_parchment_7_2[];
+extern const char str_parchment_7_3[];
 extern const char str_ending_1[];
 extern const char str_ending_2[];
 extern const char str_ending_3[];
@@ -531,11 +534,19 @@ void show_parchment(uint8_t id)
 
 	load_parchment_font();
 
-	font_set_color_mask(&intro_font_set, 0xA);
+	if (id < 7) {
+		font_set_color_mask(&intro_font_set, 0xA);
 
-	ascii8_set_data(PAGE_MAPTILES);
-	INIT_TILE_SET(parchment, parchment_yelow);
-	tile_set_to_vram(&parchment, 1);
+		ascii8_set_data(PAGE_MAPTILES);
+		INIT_TILE_SET(parchment, parchment_yelow);
+		tile_set_to_vram(&parchment, 1);
+	} else if (id == 7) {
+		font_set_color_mask(&intro_font_set, 0x6);
+
+		ascii8_set_data(PAGE_MAPTILES);
+		INIT_TILE_SET(parchment, parchment_red);
+		tile_set_to_vram(&parchment, 1);
+	}
 
 	sys_memcpy(scr_tile_buffer, parchment_map_parchment, 768);
 
@@ -568,6 +579,9 @@ void show_parchment(uint8_t id)
 			font_vprintf(&intro_font_set, 8, 12, str_parchment_6_2);
 			break;
 		case 7:
+			font_vprintf(&intro_font_set, 5, 8, str_parchment_7_1);
+			font_vprintf(&intro_font_set, 9, 11, str_parchment_7_2);
+			font_vprintf(&intro_font_set, 7, 14, str_parchment_7_3);
 			break;
 		case 8:
 			break;

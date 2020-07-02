@@ -43,6 +43,8 @@ struct game_state_t {
 	bool refresh_score;
 	bool cup_picked_up;
 	uint8_t show_parchment;
+	uint8_t red_parchment;
+	bool start_ending_seq;
 };
 
 enum trigger_ids {
@@ -55,6 +57,7 @@ extern struct game_state_t game_state;
 void null_handler(struct displ_object *dpo, uint8_t data);
 void pickup_heart(struct displ_object *dpo, uint8_t data);
 void pickup_scroll(struct displ_object *dpo, uint8_t data);
+void pickup_red_scroll(struct displ_object *dpo, uint8_t data);
 void pickup_cross(struct displ_object *dpo, uint8_t data);
 void checkpoint_handler(struct displ_object *dpo, uint8_t data);
 void toggle_handler(struct displ_object *dpo, uint8_t data);

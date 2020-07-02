@@ -40,6 +40,8 @@ void init_game_state()
 	game_state.show_parchment = 0;
 	game_state.cross_switch = false;
 	game_state.cup_picked_up = false;
+	game_state.red_parchment = false;
+	game_state.start_ending_seq = false;
 
 	// debug helpers
 	game_state.bell = true;
@@ -77,6 +79,14 @@ void pickup_scroll(struct displ_object *dpo, uint8_t data)
 	remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 	game_state.show_parchment = data;
+}
+
+void pickup_red_scroll(struct displ_object *dpo, uint8_t data)
+{
+	remove_tileobject(dpo);
+	sfx_play_effect(SFX_PICKUP_ITEM, 0);
+	game_state.show_parchment = data;
+	game_state.start_ending_seq = true;
 }
 
 void pickup_cross(struct displ_object *dpo, uint8_t data)

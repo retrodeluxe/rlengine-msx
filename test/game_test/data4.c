@@ -32,6 +32,8 @@
 
 // parchment
 #include "gen/parchment_yelow.h"
+#include "gen/parchment_red.h"
+#include "gen/parchment_blue.h"
 #include "gen/parchment_map.h"
 
 // intro strings

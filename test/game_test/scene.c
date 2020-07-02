@@ -495,8 +495,9 @@ void load_room(uint8_t room, bool reload)
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_RED_SCROLL);
 					dpo->visible = false;
+					add_animator(dpo, ANIM_RED_PARCHMENT);
 					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, pickup_scroll, id);
+						TILE_COLLISION_FULL, pickup_red_scroll, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 				id = map_object->object.actionitem.action_id;
@@ -683,8 +684,10 @@ void load_room(uint8_t room, bool reload)
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
+			// TODO: show only collected ones
 			id = map_object->object.block.index;
 			add_tileobject(dpo, tob_ct, TILE_BLOCK_CROSS);
+			dpo->tob->cur_anim_step = id % 4;
 			add_animator(dpo, ANIM_CYCLE_TILE);
 			if (id == 1) {
 				phys_set_colliding_tile_object(dpo,
