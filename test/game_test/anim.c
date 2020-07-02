@@ -35,6 +35,7 @@ extern void anim_dragon_bullets(struct displ_object *obj);
 extern void anim_hanging_priest(struct displ_object *obj);
 extern void anim_intro_chase(struct displ_object *obj);
 extern void anim_intro_jean(struct displ_object *obj);
+extern void anim_explosion(struct displ_object *obj);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -892,7 +893,7 @@ void anim_gargolyne(struct displ_object *obj)
 	} else if (obj->state == 0) {
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 	}
-	
+
 	if (++obj->state > 60) obj->state = 1;
 }
 
@@ -941,4 +942,6 @@ void init_animators()
 	animators[ANIM_DRAGON_BULLETS].run = anim_dragon_bullets;
 	animators[ANIM_HANGING_PRIEST].page = 7;
 	animators[ANIM_HANGING_PRIEST].run = anim_hanging_priest;
+	animators[ANIM_EXPLOSION].page = 7;
+	animators[ANIM_EXPLOSION].run = anim_explosion;
 }

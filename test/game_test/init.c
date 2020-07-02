@@ -331,6 +331,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_BLOCK_CROSS], cross_small, 1, 1, 4, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVERTED_CROSS], invertedcross, 2, 2, 3, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_FLAME], flame, 3, 6, 2, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_EXPLOSION], boss_explosion, 4, 6, 2, 1);
 
 	init_sprites();
 

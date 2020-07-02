@@ -23,6 +23,8 @@ extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
 extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 			uint8_t anim_id, uint8_t state, uint8_t dir,
 			uint8_t speed, struct displ_object *parent);
+extern void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id);
+extern void clear_bullets();
 
 /**
  * Simplified animation for a Templar chasing Jean in intro screen
@@ -182,6 +184,15 @@ void anim_satan(struct displ_object *obj)
 	struct tile_object *to = dpo->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
+
+	/** cup has been picked up **/
+	if (game_state.cup_picked_up) {
+		clear_bullets();
+		add_explosion(obj->xpos, obj->ypos, ANIM_EXPLOSION);
+		tile_object_hide(dpo->tob, scr_tile_buffer, true);
+		list_del(&obj->list);
+		return;
+	}
 
 	if (obj->state == STATE_MOVING_UP) {
 		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
@@ -399,5 +410,15 @@ void anim_hanging_priest(struct displ_object *obj)
 			obj->tob->cur_dir = 0;
 			obj->tob->cur_anim_step = 3;
 		}
+	}
+}
+
+void anim_explosion(struct displ_object *obj)
+{
+	if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+		obj->tob->cur_anim_step++;
+	} else {
+		obj->tob->cur_anim_step = 0;
 	}
 }

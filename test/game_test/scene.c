@@ -290,6 +290,48 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 	tile_object_show(dpo_tob_bullet[idx].tob, scr_tile_buffer, true);
 }
 
+void clear_bullets()
+{
+	uint8_t idx;
+
+	idx = 0;
+	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
+		if (dpo_bullet[idx].state != 255) {
+			spr_hide(dpo_bullet[idx].spr);
+			list_del(&dpo_bullet[idx].list);
+			dpo_bullet[idx].state = 255;
+		}
+	}
+}
+
+void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
+{
+	uint8_t idx = 0;
+
+	ascii8_set_data(PAGE_DYNTILES);
+	tile_set_vfree(&tileset[TILE_SATAN]);
+	tile_set_valloc(&tileset[TILE_EXPLOSION]); // explosion
+
+	bullet_tob[idx].x = xpos;
+	bullet_tob[idx].y = ypos;
+	bullet_tob[idx].cur_dir = 0;
+	bullet_tob[idx].cur_anim_step = 0;
+	bullet_tob[idx].ts = &tileset[TILE_EXPLOSION];
+	bullet_tob[idx].idx = 0;
+
+	dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
+	dpo_tob_bullet[idx].tob = &bullet_tob[0];
+	dpo_tob_bullet[idx].xpos = xpos;
+	dpo_tob_bullet[idx].ypos = ypos;
+	dpo_tob_bullet[idx].visible = true;
+	dpo_tob_bullet[idx].state = 0;
+	INIT_LIST_HEAD(&dpo_tob_bullet[0].list);
+	list_add(&dpo_tob_bullet[0].list, &display_list);
+	INIT_LIST_HEAD(&dpo_tob_bullet[0].animator_list);
+	add_animator(&dpo_tob_bullet[0], anim_id);
+	tile_object_show(dpo_tob_bullet[0].tob, scr_tile_buffer, true);
+}
+
 
 inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
@@ -518,8 +560,9 @@ void load_room(uint8_t room, bool reload)
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
-				// TODO: end game sequence
 				add_tileobject(dpo, tob_ct, TILE_CUP);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_TRIGGER, cup_handler, 0);
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
 				id = map_object->object.actionitem.action_id;
 				add_tileobject(dpo, tob_ct, TILE_INVISIBLE_TRIGGER);

@@ -39,6 +39,7 @@ void init_game_state()
 	game_state.templar_delay = 0;
 	game_state.show_parchment = 0;
 	game_state.cross_switch = false;
+	game_state.cup_picked_up = false;
 
 	// debug helpers
 	game_state.bell = true;
@@ -145,4 +146,11 @@ void spear_handler(struct displ_object *dpo, uint8_t data)
 		&& dpo_jean.state != STATE_DEATH) {
 			dpo_jean.state = STATE_COLLISION;
 	}
+}
+
+void cup_handler(struct displ_object *dpo, uint8_t data)
+{
+        remove_tileobject(dpo);
+	sfx_play_effect(SFX_PICKUP_ITEM, 0);
+	game_state.cup_picked_up = true;
 }

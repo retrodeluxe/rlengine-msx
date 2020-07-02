@@ -41,6 +41,7 @@ struct game_state_t {
 	uint8_t templar_delay;
 	bool death;
 	bool refresh_score;
+	bool cup_picked_up;
 	uint8_t show_parchment;
 };
 
@@ -62,4 +63,5 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data);
 // void set_trigger_handler_object(struct map_object_item *map_object);
 void trigger_handler(struct displ_object *dpo, uint8_t data);
 void spear_handler(struct displ_object *dpo, uint8_t data);
+void cup_handler(struct displ_object *dpo, uint8_t data);
 #endif
