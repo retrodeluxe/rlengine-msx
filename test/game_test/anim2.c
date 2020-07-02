@@ -415,7 +415,7 @@ void anim_hanging_priest(struct displ_object *obj)
 
 void anim_explosion(struct displ_object *obj)
 {
-	if (obj->state++ < 60) {
+	if (obj->state++ < 20) {
 		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
 			tile_object_show(obj->tob, scr_tile_buffer, true);
 			obj->tob->cur_anim_step++;
