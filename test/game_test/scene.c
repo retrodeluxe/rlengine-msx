@@ -91,6 +91,7 @@ void start_music(uint8_t room)
 	ascii8_set_data(PAGE_MUSIC);
 
 	switch (room) {
+		case ROOM_EVIL_CHAMBER:
 		case ROOM_FOREST:
 		case ROOM_GRAVEYARD:
 			sys_memcpy(data_buffer, huntloop_song_pt3, huntloop_song_pt3_len);
@@ -119,6 +120,11 @@ void start_music(uint8_t room)
 		case ROOM_EVIL_CHURCH_2:
 		case ROOM_EVIL_CHURCH_3:
 			sys_memcpy(data_buffer, hell_song_pt3, hell_song_pt3_len);
+			break;
+		case ROOM_SATAN:
+		case ROOM_DEATH:
+			ascii8_set_data(PAGE_INTRO);
+			sys_memcpy(data_buffer, evilfight_song_pt3, evilfight_song_pt3_len);
 			break;
 		default:
 			break;
