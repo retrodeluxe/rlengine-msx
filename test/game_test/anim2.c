@@ -180,92 +180,99 @@ void anim_scythe(struct displ_object *obj)
  */
 void anim_satan(struct displ_object *obj)
 {
-	uint8_t x;
+	uint8_t x, ty;
 	static uint8_t delay = 0;
 	struct tile_object *to = dpo->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
 
-	if (delay++ < 50)
+	if (obj->aux2) {
+		obj->aux2--;
 		return;
+	} else {
+		obj->aux2 = 1; // reduce framerate
+	}
 
 	/** cup has been picked up **/
 	if (game_state.cup_picked_up) {
 		clear_bullets();
+		phys_clear_colliding_tile_object(obj);
 		add_explosion(obj->xpos, obj->ypos, ANIM_EXPLOSION);
-		tile_object_hide(dpo->tob, scr_tile_buffer, true);
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
 		list_del(&obj->list);
 		return;
 	}
 
+
+
 	if (obj->state == STATE_MOVING_UP) {
-		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
-			obj->tob->cur_anim_step = 0;
-			add_bullet(obj->xpos - 8,
-				obj->ypos + 12,
-				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
-			add_bullet(obj->xpos - 8,
-				obj->ypos + 12,
-				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
-			add_bullet(obj->xpos - 8,
-				obj->ypos + 12,
-				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
-		} else if (obj->tob->cur_anim_step == 2  && obj->aux == 5) {
+			obj->tob->cur_anim_step++;
+		} else {
 			for (x = 0; x < to->ts->frame_w; x++) {
 				vdp_write(vdp_base_names_grp1 + offset_bottom + x, 0);
 			}
-			obj->tob->y-=4;
-			obj->ypos-=4;
-			if (obj->tob->y < dpo->min) {
-				obj->state = STATE_MOVING_DOWN;
+			ty = obj->ypos / 8;
+			ty--;
+			obj->ypos = ty * 8;
+			obj->tob->y = ty * 8;
+			if (obj->aux++ > 3) {
+				obj->tob->cur_anim_step = 0;
+				// optimize this so that we can do in a single call maybe?
+				add_bullet(obj->xpos - 8,
+					obj->ypos + 12,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
+				add_bullet(obj->xpos - 8,
+					obj->ypos + 12,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
+				add_bullet(obj->xpos - 8,
+					obj->ypos + 12,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+				obj->aux = 0;
+			} else {
+				obj->tob->cur_anim_step = 1;
 			}
-			obj->tob->cur_anim_step = 1;
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
-		} else if (obj->tob->cur_anim_step == 1 && obj->aux == 5) {
-			obj->tob->cur_anim_step = 2;
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
-		} else if (obj->tob->cur_anim_step == 0 && obj->aux == 2) {
-			obj->tob->cur_anim_step = 1;
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		}
+		 if (obj->ypos < obj->min) {
+			obj->state = STATE_MOVING_DOWN;
+			obj->tob->cur_anim_step = 2;
+		}
 	} else if (obj->state == STATE_MOVING_DOWN) {
-		if (obj->tob->cur_anim_step == 1 && obj->aux == 2) {
-			obj->tob->cur_anim_step = 0;
-			add_bullet(obj->xpos - 8,
-				obj->ypos + 12,
-				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
-			add_bullet(obj->xpos - 8,
-				obj->ypos + 12,
-				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
-			add_bullet(obj->xpos - 8,
-				obj->ypos + 12,
-				PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+		if (obj->tob->cur_anim_step > 0) {
+			if (obj->tob->cur_anim_step == 1 && obj->aux++ > 3) {
+				obj->tob->cur_anim_step = 0;
+				add_bullet(obj->xpos - 8,
+					obj->ypos + 12,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
+				add_bullet(obj->xpos - 8,
+					obj->ypos + 12,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
+				add_bullet(obj->xpos - 8,
+					obj->ypos + 12,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+				obj->aux = 0;
+			} else {
+				obj->tob->cur_anim_step--;
+			}
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
-		} else if (obj->tob->cur_anim_step == 1 && obj->aux == 5) {
+		} else {
 			for (x = 0; x < to->ts->frame_w; x++) {
 				vdp_write(vdp_base_names_grp1 + offset_top + x, 0);
 			}
-			obj->tob->y+=4;
-			obj->ypos += 4;
-			if (obj->tob->y > dpo->max) {
-				obj->state = STATE_MOVING_UP;
-			}
+			ty = obj->ypos / 8;
+			ty++;
+			obj->ypos = ty * 8;
+			obj->tob->y = ty * 8;
 			obj->tob->cur_anim_step = 2;
 			tile_object_show(dpo->tob, scr_tile_buffer, true);
-		} else if (obj->tob->cur_anim_step == 2 && obj->aux == 5) {
+		}
+		if (obj->ypos > obj->max) {
+			obj->state = STATE_MOVING_UP;
 			obj->tob->cur_anim_step = 1;
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
-		}  else if (obj->tob->cur_anim_step == 0 && obj->aux == 2) {
-			obj->tob->cur_anim_step = 1;
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
 		}
 	}
-
-	if (obj->tob->cur_anim_step > 2)
-		obj->tob->cur_anim_step = 1;
-	if (obj->aux++ > 5)
-		obj->aux = 0;
 }
 
 /**
@@ -287,7 +294,7 @@ void anim_satan_bullets(struct displ_object *obj)
 	obj->xpos -= dx;
 	obj->ypos += dy;
 
-	if (obj->xpos < 4 || obj->ypos < 8) {
+	if (obj->xpos < 4 || obj->ypos < 4) {
 		spr_hide(obj->spr);
 		list_del(&obj->list);
 		obj->state = 255;
@@ -538,7 +545,7 @@ void anim_block_crosses(struct displ_object *obj)
 			tile_object_show(obj->tob, scr_tile_buffer, true);
 			obj->state++;
 		}
-		if (obj->state == 6) {
+		if (obj->state == 12) {
 			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
 				tile_object_show(obj->tob, scr_tile_buffer, true);
 				obj->tob->cur_anim_step++;

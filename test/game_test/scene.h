@@ -4,7 +4,7 @@
 #define NEXT_OBJECT(X)	sizeof(struct map_object_item) - sizeof(union map_object) + sizeof(X)
 
 #define SCENE_MAX_DPO	31
-#define SCENE_MAX_BULLET 6
+#define SCENE_MAX_BULLET 9
 #define SCENE_MAX_TOB_BULLET 8
 
 enum tile_sets_t {

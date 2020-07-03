@@ -817,6 +817,7 @@ void load_room(uint8_t room, bool reload)
 			} else if (map_object->object.movable.type == TYPE_SATAN) {
 				add_tileobject(dpo, tob_ct, TILE_SATAN);
 				dpo->aux = 0;
+				dpo->aux2 = 50;
 				dpo->tob->cur_anim_step = 1;
 				dpo->state = STATE_MOVING_UP;
 				add_animator(dpo, ANIM_SATAN);
