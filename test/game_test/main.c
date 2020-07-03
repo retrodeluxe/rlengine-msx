@@ -686,6 +686,8 @@ void show_score_panel()
 	/** clear up 2 digit live count **/
 	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
 	vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
+	vdp_write(vdp_base_names_grp1 + 7 + 22 * 32, 0);
+	vdp_write(vdp_base_names_grp1 + 7 + 23 * 32, 0);
 
 	score_font_set.numeric = &big_digits;
 	_itoa(game_state.live_cnt, snum, 10);

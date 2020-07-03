@@ -703,11 +703,12 @@ void load_room(uint8_t room, bool reload)
 			id = map_object->object.block.index;
 			add_tileobject(dpo, tob_ct, TILE_BLOCK_CROSS);
 			dpo->tob->cur_anim_step = id % 3;
-			add_animator(dpo, ANIM_CYCLE_TILE);
-			if (id == 1) {
-				phys_set_colliding_tile_object(dpo,
-					TILE_COLLISION_FULL, null_handler, 0);
-			}
+			dpo->aux = id;
+			dpo->state = 0;
+			dpo->visible = false;
+			add_animator(dpo, ANIM_BLOCK_CROSSES);
+			phys_set_colliding_tile_object(dpo,
+				TILE_COLLISION_FULL, null_handler, 0);
 			room_objs += NEXT_OBJECT(struct map_object_block);
 		} else if (map_object->type == STEP) {
 			// TODO: Add special collisions

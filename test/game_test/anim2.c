@@ -181,9 +181,13 @@ void anim_scythe(struct displ_object *obj)
 void anim_satan(struct displ_object *obj)
 {
 	uint8_t x;
+	static uint8_t delay = 0;
 	struct tile_object *to = dpo->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
+
+	if (delay++ < 50)
+		return;
 
 	/** cup has been picked up **/
 	if (game_state.cup_picked_up) {
@@ -511,4 +515,38 @@ void anim_jean_bonfire(struct displ_object *obj)
 		game_state.final_animation = true;
 	}
 	obj->state++;
+}
+
+/**
+ * Animation for block crosses apearing sequentially on final boss
+ */
+void anim_block_crosses(struct displ_object *obj)
+{
+	static uint8_t ct1 = 0, ct2 = 0;
+
+	if (ct1++ > 40) {
+		if (game_state.cross_cnt > 0) {
+			ct2++;
+			game_state.cross_cnt--;
+			game_state.refresh_score = true;
+		}
+		ct1 = 0;
+	}
+	if (ct2 >= obj->aux) {
+		if (obj->state == 0) {
+			sfx_play_effect(SFX_SHOOT, 0);
+			tile_object_show(obj->tob, scr_tile_buffer, true);
+			obj->state++;
+		}
+		if (obj->state == 6) {
+			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+				tile_object_show(obj->tob, scr_tile_buffer, true);
+				obj->tob->cur_anim_step++;
+			} else {
+				obj->tob->cur_anim_step = 0;
+			}
+			obj->state = 1;
+		}
+		obj->state++;
+	}
 }

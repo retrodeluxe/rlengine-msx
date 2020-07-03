@@ -39,6 +39,7 @@ extern void anim_explosion(struct displ_object *obj);
 extern void anim_red_parchment(struct displ_object *obj);
 extern void anim_evil_chamber(struct displ_object *obj);
 extern void anim_jean_bonfire(struct displ_object *obj);
+extern void anim_block_crosses(struct displ_object *obj);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -73,6 +74,13 @@ void change_room() __nonbanked
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room -= 5;
 		game_state.change_room = true;
+	}
+
+	/** final boss room is a checkpoint **/
+	if (game_state.room == ROOM_SATAN) {
+		game_state.checkpoint_x = game_state.jean_x;
+		game_state.checkpoint_y = game_state.jean_y;
+		game_state.checkpoint_room = game_state.room;
 	}
 }
 
@@ -953,4 +961,6 @@ void init_animators()
 	animators[ANIM_EVIL_CHAMBER].run = anim_evil_chamber;
 	animators[ANIM_JEAN_BONFIRE].page = 7;
 	animators[ANIM_JEAN_BONFIRE].run = anim_jean_bonfire;
+	animators[ANIM_BLOCK_CROSSES].page = 7;
+	animators[ANIM_BLOCK_CROSSES].run = anim_block_crosses;
 }
