@@ -55,21 +55,25 @@ void phys_init()
 	sys_memset(colliding_tiles, 255, 32);
 	sys_memset(colliding_tiles_down, 255, 32);
 	sys_memset(colliding_tiles_trigger, 255, 32);
+	sprite_colision_cb = NULL;
 	n_cgroups = 0;
 }
 
 /* note that this runs in interrupt context */
 void phys_set_sprite_collision_handler(void (*handler))
 {
-	sprite_colision_cb = handler;
-	sys_irq_register(phys_check_collision_bit);
+	if (sprite_colision_cb == NULL) {
+		sprite_colision_cb = handler;
+		sys_irq_register(phys_check_collision_bit);
+	}
 }
 
 void phys_clear_sprite_collision_handler() __nonbanked
 {
-	// FIXME: unregister is hanging sometimes
-	sys_irq_unregister(phys_check_collision_bit);
-	sprite_colision_cb = NULL;
+	if (sprite_colision_cb != NULL) {
+		sys_irq_unregister(phys_check_collision_bit);
+		sprite_colision_cb = NULL;
+	}
 }
 
 /**

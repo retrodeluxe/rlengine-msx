@@ -397,6 +397,7 @@ void clear_room() __nonbanked
 
 	/* clear all sprite attributes and patterns from VRAM but
 	   _not_ sprite definitions in RAM */
+	phys_clear_sprite_collision_handler();
 	spr_clear();
 
 	/* free dynamic tiles, but do not clear patterns from VRAM */
@@ -894,7 +895,7 @@ void load_room(uint8_t room, bool reload)
 	}
 
 	add_jean(room);
-	// phys_set_sprite_collision_handler(jean_collision_handler);
+	phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements
 	list_for_each(elem, &display_list) {
