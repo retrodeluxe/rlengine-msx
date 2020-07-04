@@ -123,6 +123,25 @@
                  "width":16,
                  "x":0,
                  "y":130
+                }, 
+                {
+                 "height":50,
+                 "id":286,
+                 "name":"pentagram",
+                 "properties":
+                    {
+                     "type":"blue"
+                    },
+                 "propertytypes":
+                    {
+                     "type":"string"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":50,
+                 "x":100.530303030304,
+                 "y":49.4090909090903
                 }],
          "opacity":1,
          "properties":
@@ -1299,7 +1318,7 @@
                 }, 
                 {
                  "height":50,
-                 "id":286,
+                 "id":292,
                  "name":"stainedglass",
                  "properties":
                     {
@@ -6467,6 +6486,25 @@
                  "width":8,
                  "x":1025,
                  "y":836.333333333333
+                }, 
+                {
+                 "height":50,
+                 "id":293,
+                 "name":"pentagram",
+                 "properties":
+                    {
+                     "type":"blue"
+                    },
+                 "propertytypes":
+                    {
+                     "type":"string"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":50,
+                 "x":1129.19696969697,
+                 "y":755.40909090909
                 }],
          "opacity":1,
          "properties":
@@ -6482,7 +6520,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":292,
+ "nextobjectid":294,
  "orientation":"orthogonal",
  "properties":
     {

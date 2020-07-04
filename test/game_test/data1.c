@@ -6,3 +6,4 @@
 #include "gen/ending.h"
 
 #include "gen/evilfight_song.h"
+#include "gen/pentagram.h"

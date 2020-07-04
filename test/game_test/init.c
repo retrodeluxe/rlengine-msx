@@ -168,7 +168,7 @@ static void init_tiles_zone_5()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FLAMES], MAP_TILESET_FLAMES_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
+	//tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
 }
 
 static void init_tiles_zone_6() {
@@ -333,6 +333,8 @@ void init_resources()
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_FLAME], flame, 3, 6, 2, 1);
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_EXPLOSION], boss_explosion, 4, 6, 2, 1);
+	ascii8_set_data(PAGE_INTRO);
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_PENTAGRAM], pentagram, 6, 6, 1, 1);
 
 	init_sprites();
 

@@ -150,7 +150,10 @@ void start_music(uint8_t room)
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
-	ascii8_set_data(PAGE_DYNTILES);
+	if (tileidx == TILE_PENTAGRAM)
+		ascii8_set_data(PAGE_INTRO);
+	else
+		ascii8_set_data(PAGE_DYNTILES);
 	tile_set_valloc(&tileset[tileidx]);
 
 	ascii8_set_data(PAGE_MAPOBJECTS);
@@ -397,8 +400,9 @@ void clear_room() __nonbanked
 
 	/* clear all sprite attributes and patterns from VRAM but
 	   _not_ sprite definitions in RAM */
-	phys_clear_sprite_collision_handler();
 	spr_clear();
+
+	phys_clear_sprite_collision_handler();
 
 	/* free dynamic tiles, but do not clear patterns from VRAM */
 	for (i = 0; i < tob_ct; i++) {
@@ -777,6 +781,9 @@ void load_room(uint8_t room, bool reload)
 			room_objs += NEXT_OBJECT(struct map_object_step);
 		} else if (map_object->type == STAINEDGLASS) {
 			add_tileobject(dpo, tob_ct, TILE_STAINED_GLASS);
+			room_objs += NEXT_OBJECT(struct map_object_stainedglass);
+		} else if (map_object->type == PENTAGRAM) {
+			add_tileobject(dpo, tob_ct, TILE_PENTAGRAM);
 			room_objs += NEXT_OBJECT(struct map_object_stainedglass);
 		} else if (map_object->type == MOVABLE) {
 			dpo->speed = map_object->object.movable.speed;

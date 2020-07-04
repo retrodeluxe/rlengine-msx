@@ -179,6 +179,9 @@ start:
 			goto start;
 		} else if (game_state.change_room) {
 			load_room(game_state.room, false);
+			// hack: ensure font digits not overwritten by pentagram
+			if (game_state.room == ROOM_SATAN)
+				reload_font_digits();
 		} else if (game_state.teletransport) {
 			load_room(game_state.room, true);
 		}
@@ -196,6 +199,8 @@ start:
 			}
 			handle_death();
 			load_room(game_state.room, true);
+			if (game_state.room == ROOM_SATAN)
+				reload_font_digits();
 			show_score_panel();
 		}
 
