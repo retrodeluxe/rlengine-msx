@@ -557,3 +557,32 @@ void anim_block_crosses(struct displ_object *obj)
 		obj->state++;
 	}
 }
+
+/**
+ * Animation for crosses with dynamic switch
+ */
+void anim_cross(struct displ_object *obj)
+{
+	if (game_state.cross_switch) {
+		if(obj->aux == 1)
+			obj->visible = true;
+		else
+			obj->visible = false;
+	} else if (!game_state.cross_switch) {
+		if(obj->aux == 0)
+			obj->visible = true;
+		else
+			obj->visible = false;
+	}
+	if (obj->visible) {
+		if (obj->state++ == 5) {
+			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+				tile_object_show(obj->tob, scr_tile_buffer, true);
+				obj->tob->cur_anim_step++;
+			} else {
+				obj->tob->cur_anim_step = 0;
+			}
+			obj->state = 0;
+		}
+	}
+}

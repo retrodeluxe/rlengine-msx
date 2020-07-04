@@ -129,9 +129,8 @@ void bell_handler(struct displ_object *dpo, uint8_t data)
 
 void crosswitch_handler(struct displ_object *dpo, uint8_t data)
 {
-	// because collision remains active, need some mechanism to
-	// avoid multiple activations
-
+	/** switch is only active once every time it appears **/
+	phys_clear_colliding_tile_object(dpo);
 	if (game_state.cross_switch) {
 		dpo->tob->cur_anim_step = 0;
 		game_state.cross_switch = false;
