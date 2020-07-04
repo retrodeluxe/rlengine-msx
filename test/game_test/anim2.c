@@ -221,14 +221,14 @@ void anim_satan(struct displ_object *obj)
 				obj->tob->cur_anim_step = 0;
 				// optimize this so that we can do in a single call maybe?
 				add_bullet(obj->xpos - 8,
-					obj->ypos + 12,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
+					obj->ypos,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
 				add_bullet(obj->xpos - 8,
-					obj->ypos + 12,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
+					obj->ypos + 8,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
 				add_bullet(obj->xpos - 8,
-					obj->ypos + 12,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+					obj->ypos + 16,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
 				obj->aux = 0;
 			} else {
 				obj->tob->cur_anim_step = 1;
@@ -244,14 +244,14 @@ void anim_satan(struct displ_object *obj)
 			if (obj->tob->cur_anim_step == 1 && obj->aux++ > 3) {
 				obj->tob->cur_anim_step = 0;
 				add_bullet(obj->xpos - 8,
-					obj->ypos + 12,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 3, NULL);
+					obj->ypos ,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
 				add_bullet(obj->xpos - 8,
-					obj->ypos + 12,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 3, NULL);
+					obj->ypos + 8,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
 				add_bullet(obj->xpos - 8,
-					obj->ypos + 12,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 3, NULL);
+					obj->ypos + 16,
+					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
 				obj->aux = 0;
 			} else {
 				obj->tob->cur_anim_step--;
