@@ -88,13 +88,17 @@ void stop_music()
 
 void start_music(uint8_t room)
 {
+	bool play;
+
 	ascii8_set_data(PAGE_MUSIC);
 
+	play = false;
 	switch (room) {
 		case ROOM_EVIL_CHAMBER:
 		case ROOM_FOREST:
 		case ROOM_GRAVEYARD:
 			sys_memcpy(data_buffer, huntloop_song_pt3, huntloop_song_pt3_len);
+			play = true;
 			break;
 		case ROOM_CHURCH_ENTRANCE:
 		case ROOM_CHURCH_ALTAR:
@@ -104,9 +108,11 @@ void start_music(uint8_t room)
 		case ROOM_CATACOMBS_FLIES:
 		case ROOM_CATACOMBS_WHEEL:
 			sys_memcpy(data_buffer, church_song_pt3, church_song_pt3_len);
+			play = true;
 			break;
 		case ROOM_PRAYER_OF_HOPE:
 			sys_memcpy(data_buffer, prayerofhope_song_pt3, prayerofhope_song_pt3_len);
+			play = true;
 			break;
 		case ROOM_CAVE_LAKE:
 		case ROOM_CAVE_DRAGON:
@@ -115,23 +121,29 @@ void start_music(uint8_t room)
 		case ROOM_HIDDEN_GARDEN:
 		case ROOM_HIDDEN_RIVER:
 			sys_memcpy(data_buffer, cave_song_pt3, cave_song_pt3_len);
+			play = true;
 			break;
 		case ROOM_EVIL_CHURCH:
 		case ROOM_EVIL_CHURCH_2:
 		case ROOM_EVIL_CHURCH_3:
 			sys_memcpy(data_buffer, hell_song_pt3, hell_song_pt3_len);
+			play = true;
 			break;
 		case ROOM_SATAN:
 		case ROOM_DEATH:
 			ascii8_set_data(PAGE_INTRO);
 			sys_memcpy(data_buffer, evilfight_song_pt3, evilfight_song_pt3_len);
+			play = true;
 			break;
+		case ROOM_BONFIRE:
 		default:
 			break;
 	}
 
-	pt3_init(data_buffer, 1);
-	sys_irq_register(play_room_music);
+	if (play) {
+		pt3_init(data_buffer, 1);
+		sys_irq_register(play_room_music);
+	}
 }
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
