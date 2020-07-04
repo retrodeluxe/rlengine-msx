@@ -363,14 +363,23 @@ static void load_parchment_font()
 
 	INIT_FONT(font_lower, big_font_lower, FONT_LOWERCASE, 29, 1, 2);
 	INIT_FONT(font_upper, big_font_upper, FONT_UPPERCASE, 26, 2, 2);
+	INIT_FONT(font_symbols, big_font_symbols, FONT_SYMBOLS, 15, 1, 2);
 
-	font_to_vram(&font_upper, 1);
-	font_to_vram(&font_lower, 128);
+	font_to_vram(&font_upper, 17);
+	font_to_vram(&font_lower, 128 + 17);
+	font_to_vram(&font_symbols, 180 + 17);
 
 	intro_font_set.upper = &font_upper;
 	intro_font_set.lower = &font_lower;
 	intro_font_set.numeric = NULL;
-	intro_font_set.symbols = NULL;
+	intro_font_set.symbols = &font_symbols;
+}
+
+static void reload_font_digits()
+{
+	ascii8_set_data(PAGE_MAPTILES);
+	INIT_FONT(big_digits, font_big_digits, FONT_NUMERIC, 10, 1, 2);
+	font_to_vram_bank(&big_digits, BANK2, 224);
 }
 
 /**
@@ -450,7 +459,6 @@ void show_ending_gate_animation(uint8_t frame)
 			tile = 7; tile1 = 5; dst = base + 12; dst1 = base + 18; w = 2;
 			break;
 	}
-
 	switch (frame) {
 		case 0:
 		case 1:
@@ -559,7 +567,7 @@ void show_parchment(uint8_t id)
 		INIT_TILE_SET(parchment, parchment_yelow);
 		tile_set_to_vram(&parchment, 1);
 	} else if (id == 7) {
-		font_set_color_mask(&intro_font_set, 0x6);
+		font_set_color_mask(&intro_font_set, 0x8);
 
 		ascii8_set_data(PAGE_MAPTILES);
 		INIT_TILE_SET(parchment, parchment_red);
@@ -603,12 +611,12 @@ void show_parchment(uint8_t id)
 			font_vprintf(&intro_font_set, 8, 12, str_parchment_6_2);
 			break;
 		case 7:
-			font_vprintf(&intro_font_set, 5, 8, str_parchment_7_1);
+			font_vprintf(&intro_font_set, 6, 8, str_parchment_7_1);
 			font_vprintf(&intro_font_set, 9, 11, str_parchment_7_2);
 			font_vprintf(&intro_font_set, 7, 14, str_parchment_7_3);
 			break;
 		case 8:
-			font_vprintf(&intro_font_set, 5, 8, str_parchment_8_1);
+			font_vprintf(&intro_font_set, 6, 8, str_parchment_8_1);
 			font_vprintf(&intro_font_set, 5, 11, str_parchment_8_2);
 			font_vprintf(&intro_font_set, 7, 14, str_parchment_8_3);
 			break;
@@ -624,6 +632,7 @@ void show_parchment(uint8_t id)
 
 	tile_set_vfree(&parchment);
 	font_set_vfree(&intro_font_set);
+	reload_font_digits();
 }
 
 void show_room_title(uint8_t room)
