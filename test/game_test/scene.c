@@ -318,7 +318,7 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 	tile_object_show(dpo_tob_bullet[idx].tob, scr_tile_buffer, true);
 }
 
-void clear_bullets()
+void clear_bullets() __nonbanked
 {
 	uint8_t idx;
 
@@ -391,7 +391,8 @@ void jean_collision_handler() __nonbanked
 	}
 }
 
-void clear_room() {
+void clear_room() __nonbanked
+{
 	uint8_t i;
 
 	/* clear all sprite attributes and patterns from VRAM but
@@ -415,13 +416,13 @@ void clear_room() {
 /**
  * clean room ephemeral state
  */
-void clean_state()
+void clean_state() __nonbanked
 {
 	game_state.templar_delay = 0;
 	game_state.templar_ct = 0;
 }
 
-void load_intro_scene()
+void load_intro_scene() __nonbanked
 {
 	uint8_t i;
 	struct map_object_item tmp_obj;
@@ -836,6 +837,8 @@ void load_room(uint8_t room, bool reload)
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 				dpo->state = STATE_MOVING_DOWN;
 				add_animator(dpo, ANIM_HANGING_PRIEST);
+				//phys_set_colliding_tile_object(dpo,
+				//	TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				add_sprite(dpo, spr_ct, PATRN_FLY);
 				add_animator(dpo, ANIM_UP_DOWN);

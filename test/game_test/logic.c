@@ -51,7 +51,7 @@ void init_game_state()
 	game_state.toggle[0] = 1;
 	game_state.toggle[1] = 1;
 	game_state.toggle[2] = 1;
-	game_state.cross_cnt = 12;
+	//game_state.cross_cnt = 12;
 }
 
 void handle_death()
