@@ -195,7 +195,7 @@ start:
 				goto start;
 			}
 			handle_death();
-			load_room(game_state.room, false);
+			load_room(game_state.room, true);
 			show_score_panel();
 		}
 
