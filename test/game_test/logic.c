@@ -174,17 +174,26 @@ void teletransport(struct displ_object *dpo, uint8_t data)
 		return;
 
 	// need to change jeans position and also room
+	// but only trigger the change if jean is fully inside the portal
 	if (game_state.room == ROOM_CAVE_DRAGON) {
-		game_state.room = ROOM_HIDDEN_RIVER;
-		game_state.jean_x = 167;
-		game_state.jean_y = 110;
-		game_state.teletransport = true;
+		if (dpo_jean.xpos > 175 && dpo_jean.xpos < 199) {
+			game_state.room = ROOM_HIDDEN_RIVER;
+			game_state.jean_x = 167;
+			game_state.jean_y = 110;
+			game_state.teletransport = true;
+			phys_clear_colliding_tile_object(dpo);
+			sfx_play_effect(SFX_PORTAL, 0);
+		}
 	} else if (game_state.room == ROOM_HIDDEN_RIVER) {
-		game_state.room = ROOM_CAVE_DRAGON;
-		game_state.jean_x = 180;
-		game_state.jean_y = 124;
-		game_state.teletransport = true;
+		if (dpo_jean.xpos > 165 && dpo_jean.xpos < 175
+			&& dpo_jean.ypos > 100) {
+			game_state.room = ROOM_CAVE_DRAGON;
+			game_state.jean_x = 180;
+			game_state.jean_y = 124;
+			game_state.teletransport = true;
+			phys_clear_colliding_tile_object(dpo);
+			sfx_play_effect(SFX_PORTAL, 0);
+		}
 	}
-	phys_clear_colliding_tile_object(dpo);
-	sfx_play_effect(SFX_PORTAL, 0);
+
 }

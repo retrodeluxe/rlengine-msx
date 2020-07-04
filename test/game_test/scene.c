@@ -584,7 +584,7 @@ void load_room(uint8_t room, bool reload)
 					game_state.teletransport = false;
 				} else {
 					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, teletransport, id);
+						TILE_COLLISION_TRIGGER, teletransport, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
 				id = map_object->object.actionitem.action_id;
