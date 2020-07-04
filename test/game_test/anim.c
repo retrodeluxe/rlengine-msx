@@ -41,6 +41,7 @@ extern void anim_evil_chamber(struct displ_object *obj);
 extern void anim_jean_bonfire(struct displ_object *obj);
 extern void anim_block_crosses(struct displ_object *obj);
 extern void anim_cross(struct displ_object *obj);
+extern void anim_templar_bonfire(struct displ_object *obj);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -966,4 +967,7 @@ void init_animators()
 	animators[ANIM_BLOCK_CROSSES].run = anim_block_crosses;
 	animators[ANIM_CROSS].page = 7;
 	animators[ANIM_CROSS].run = anim_cross;
+	animators[ANIM_TEMPLAR_BONFIRE].page = 7;
+	animators[ANIM_TEMPLAR_BONFIRE].run = anim_templar_bonfire;
+
 }

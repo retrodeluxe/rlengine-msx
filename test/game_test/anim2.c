@@ -475,6 +475,11 @@ void anim_evil_chamber(struct displ_object *obj)
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
+		case STATE_OFF_SCREEN_DELAY_3S:
+			if (obj->aux > 39) {
+				obj->state = STATE_OFF_SCREEN;
+			}
+			return;
 	}
 
 	obj->xpos += dx;
@@ -483,7 +488,7 @@ void anim_evil_chamber(struct displ_object *obj)
 	spr_set_pos(sp, obj->xpos, obj->ypos);
 	spr_update(sp);
 
-	if (obj->xpos > 120) {
+	if (obj->xpos > 140) {
 		game_state.show_parchment = 8; // blue parchment
 		game_state.start_bonfire_seq = true;
 	}
@@ -495,19 +500,24 @@ void anim_evil_chamber(struct displ_object *obj)
  */
 void anim_jean_bonfire(struct displ_object *obj)
 {
+	// needs to last a bit longer....
+	// and is not showing templar sprites...
 	struct spr_sprite_def *sp = obj->spr;
 	struct spr_pattern_set *ps = sp->pattern_set;
 
 	if (obj->state == 0) {
-		sp->cur_state = JANE_STATE_LEFT;
-		spr_update(sp);
-	} else if (obj->state == 25) {
-		sp->cur_state = JANE_STATE_RIGHT;
+		sp->cur_state = JANE_STATE_LEFT_JUMP;
 		spr_update(sp);
 	} else if (obj->state == 50) {
-		sp->cur_state = JANE_STATE_LEFT;
+		sp->cur_state = JANE_STATE_RIGHT_JUMP;
 		spr_update(sp);
-	} else if (obj->state > 50 && obj->state < 70) {
+	} else if (obj->state == 100) {
+		sp->cur_state = JANE_STATE_LEFT_JUMP;
+		spr_update(sp);
+	} else if (obj->state == 150) {
+		// doesn't sound because there isn't any music...
+		sfx_play_effect(SFX_DEATH, 0);
+	} else if (obj->state > 150 && obj->state < 170) {
 		sp->cur_state = JANE_STATE_DEATH;
 		sp->anim_ctr++;
 		if (sp->anim_ctr > sp->anim_ctr_treshold) {
@@ -518,7 +528,7 @@ void anim_jean_bonfire(struct displ_object *obj)
 			sp->cur_anim_step = 0;
 
 		spr_update(sp);
-	} else if (obj->state == 71) {
+	} else if (obj->state == 170) {
 		game_state.final_animation = true;
 	}
 	obj->state++;
@@ -585,4 +595,10 @@ void anim_cross(struct displ_object *obj)
 			obj->state = 0;
 		}
 	}
+}
+
+void anim_templar_bonfire(struct displ_object *obj)
+{
+	struct spr_sprite_def *sp = obj->spr;
+	spr_update(sp);
 }

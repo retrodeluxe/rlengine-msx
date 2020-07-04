@@ -495,7 +495,7 @@ void show_ending_animation()
 {
 	uint8_t i;
 
-	spr_init();
+	spr_clear();
 	tile_init();
 	vdp_screen_disable();
 	vdp_clear(0);

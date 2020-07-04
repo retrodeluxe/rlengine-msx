@@ -136,6 +136,8 @@ void start_music(uint8_t room)
 			play = true;
 			break;
 		case ROOM_BONFIRE:
+			play = false;
+			//sys_memset(data_buffer, 0, 2000);
 		default:
 			break;
 	}
@@ -226,7 +228,7 @@ void add_jean(uint8_t room)
 
 	if (room == ROOM_BONFIRE) {
 		dpo_jean.xpos = 124;
-		dpo_jean.ypos = 104;
+		dpo_jean.ypos = 100;
 		spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
 		add_animator(&dpo_jean, ANIM_JEAN_BONFIRE);
 	} else {
@@ -654,8 +656,10 @@ void load_room(uint8_t room, bool reload)
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
 				dpo->tob->cur_anim_step = offset;
 				add_animator(dpo, ANIM_CYCLE_TILE);
-				phys_set_colliding_tile_object(dpo,
+				if (room != ROOM_BONFIRE) {
+					phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
+				}
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				add_tileobject(dpo, tob_ct, TILE_SPEAR);
 				phys_set_colliding_tile_object(dpo,
@@ -803,9 +807,12 @@ void load_room(uint8_t room, bool reload)
 						dpo->state = STATE_OFF_SCREEN_DELAY_1S;
 					} else if (game_state.templar_ct == 2) {
 						dpo->state = STATE_OFF_SCREEN_DELAY_2S;
+					} else if (game_state.templar_ct == 3) {
+						dpo->state = STATE_OFF_SCREEN_DELAY_3S;
 					}
 					game_state.templar_ct++;
 				} else if (room == ROOM_BONFIRE) {
+					add_animator(dpo, ANIM_TEMPLAR_BONFIRE);
 					dpo->spr->cur_state = SPR_STATE_RIGHT;
 					if (game_state.templar_ct > 1) {
 						dpo->spr->cur_state = SPR_STATE_LEFT;
