@@ -124,12 +124,21 @@ bool tile_set_valloc(struct tile_set *ts)
 
 	offset = pos * 8;
 	vsize = size * 8;
-	vdp_rle_inflate(vdp_base_chars_grp1 + offset, ts->pattern, vsize);
-	vdp_rle_inflate(vdp_base_color_grp1 + offset, ts->color, vsize);
-	vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, vsize);
-	vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, vsize);
-	vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, vsize);
-	vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, vsize);
+	if (ts->raw) {
+		vdp_memcpy(vdp_base_chars_grp1 + offset, ts->pattern, vsize);
+		vdp_memcpy(vdp_base_color_grp1 + offset, ts->color, vsize);
+		vdp_memcpy(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, vsize);
+		vdp_memcpy(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, vsize);
+		vdp_memcpy(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, vsize);
+		vdp_memcpy(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, vsize);
+	} else {
+		vdp_rle_inflate(vdp_base_chars_grp1 + offset, ts->pattern, vsize);
+		vdp_rle_inflate(vdp_base_color_grp1 + offset, ts->color, vsize);
+		vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, vsize);
+		vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, vsize);
+		vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, vsize);
+		vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, vsize);
+	}
 	ts->allocated = true;
 	ts->pidx = pos;
 	return true;

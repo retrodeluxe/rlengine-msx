@@ -21,6 +21,7 @@
 #include "banks.h"
 
 #include "gen/game_test_tiles_ext.h"
+#include "gen/game_test_raw_tiles_ext.h"
 #include "gen/game_test_fonts_ext.h"
 #include "gen/game_test_sprites_ext.h"
 #include "gen/map_defs.h"
@@ -311,11 +312,9 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TOGGLE], toggle, 2, 2, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TELETRANSPORT], portal, 2, 3, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CUP], cup, 2, 2, 1, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_LAVA], lava, 1, 1, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 1, 1, 8, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 7, 3, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);
@@ -325,12 +324,15 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_CROSS_STATUS], cross_status, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HEART_STATUS], hearth_status, 2, 2, 1, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPLASH], splash, 2, 1, 3, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_BLOCK_CROSS], cross_small, 1, 1, 4, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVERTED_CROSS], invertedcross, 2, 2, 3, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_FLAME], flame, 3, 6, 2, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_EXPLOSION], boss_explosion, 4, 6, 2, 1);
+
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 7, 3, 1)
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_FLAME], flame, 3, 6, 2, 1);
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_EXPLOSION], boss_explosion, 4, 6, 2, 1);
 
 	init_sprites();
 

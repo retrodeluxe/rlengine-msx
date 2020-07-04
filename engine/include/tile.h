@@ -40,6 +40,7 @@ struct tile_set {
 	uint8_t frame_h; /*< height of each tile object inside the set */
 	uint8_t n_frames;
 	uint8_t n_dirs;
+	bool raw;	/** indicates if the tileset is compressed */
 };
 
 struct tile_map {
@@ -63,7 +64,8 @@ struct tile_object {
 				(SET).h = GEN ## _tile_h;\
 				(SET).pattern = GEN ## _tile;\
 				(SET).color = GEN ## _tile_color; \
-				(SET).allocated = false;
+				(SET).allocated = false; \
+				(SET).raw = false;
 
 #define INIT_DYNAMIC_TILE_SET(SET, GEN, W, H, F, D)	(SET).w = GEN ## _tile_w;\
 							(SET).h = GEN ## _tile_h;\
@@ -73,7 +75,19 @@ struct tile_object {
 							(SET).frame_w = W; \
 							(SET).frame_h = H; \
 							(SET).n_frames = F; \
-							(SET).n_dirs = D;
+							(SET).n_dirs = D; \
+							(SET).raw = false;
+
+#define INIT_RAW_DYNAMIC_TILE_SET(SET, GEN, W, H, F, D)	(SET).w = GEN ## _tile_w;\
+							(SET).h = GEN ## _tile_h;\
+							(SET).pattern = GEN ## _tile;\
+							(SET).color = GEN ## _tile_color; \
+							(SET).allocated = false; \
+							(SET).frame_w = W; \
+							(SET).frame_h = H; \
+							(SET).n_frames = F; \
+							(SET).n_dirs = D; \
+							(SET).raw = true;
 
 extern void tile_init();
 extern bool tile_set_valloc(struct tile_set *ts);
