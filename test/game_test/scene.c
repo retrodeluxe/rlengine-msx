@@ -577,8 +577,15 @@ void load_room(uint8_t room, bool reload)
 					}
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
-				// TODO: just go to the other one
+				id = map_object->object.actionitem.action_id;
 				add_tileobject(dpo, tob_ct, TILE_TELETRANSPORT);
+				/** portal is only enabled if we enter the room from a doorway */
+				if (game_state.teletransport) {
+					game_state.teletransport = false;
+				} else {
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, teletransport, id);
+				}
 			} else if (map_object->object.actionitem.type == TYPE_HEART) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.hearth[id] == 0) {
@@ -644,8 +651,9 @@ void load_room(uint8_t room, bool reload)
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				add_tileobject(dpo, tob_ct, TILE_WATER);
 				add_animator(dpo, ANIM_CYCLE_TILE);
-				phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, deadly_tile_handler, 0);
+				// this overflows
+				//phys_set_colliding_tile_object(dpo,
+				//		TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {

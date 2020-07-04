@@ -44,6 +44,7 @@ void init_game_state()
 	game_state.start_ending_seq = false;
 	game_state.start_bonfire_seq = false;
 	game_state.final_animation = false;
+	game_state.teletransport = false;
 
 	// debug helpers
 	game_state.bell = true;
@@ -165,4 +166,25 @@ void cup_handler(struct displ_object *dpo, uint8_t data)
         remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 	game_state.cup_picked_up = true;
+}
+
+void teletransport(struct displ_object *dpo, uint8_t data)
+{
+	if (game_state.teletransport)
+		return;
+
+	// need to change jeans position and also room
+	if (game_state.room == ROOM_CAVE_DRAGON) {
+		game_state.room = ROOM_HIDDEN_RIVER;
+		game_state.jean_x = 167;
+		game_state.jean_y = 110;
+		game_state.teletransport = true;
+	} else if (game_state.room == ROOM_HIDDEN_RIVER) {
+		game_state.room = ROOM_CAVE_DRAGON;
+		game_state.jean_x = 180;
+		game_state.jean_y = 124;
+		game_state.teletransport = true;
+	}
+	phys_clear_colliding_tile_object(dpo);
+	sfx_play_effect(SFX_PORTAL, 0);
 }

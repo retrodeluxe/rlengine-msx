@@ -136,6 +136,7 @@ enum sound_effects {
 	SFX_SHOOT,
 	SFX_DOOR,
 	SFX_SLASH,
+	SFX_PORTAL
 };
 
 enum rooms_t {

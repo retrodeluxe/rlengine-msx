@@ -47,6 +47,7 @@ struct game_state_t {
 	bool start_ending_seq;
 	bool start_bonfire_seq;
 	bool final_animation;
+	bool teletransport;
 };
 
 enum trigger_ids {
@@ -65,8 +66,8 @@ void checkpoint_handler(struct displ_object *dpo, uint8_t data);
 void toggle_handler(struct displ_object *dpo, uint8_t data);
 void bell_handler(struct displ_object *dpo, uint8_t data);
 void crosswitch_handler(struct displ_object *dpo, uint8_t data);
-// void set_trigger_handler_object(struct map_object_item *map_object);
 void trigger_handler(struct displ_object *dpo, uint8_t data);
 void deadly_tile_handler(struct displ_object *dpo, uint8_t data);
 void cup_handler(struct displ_object *dpo, uint8_t data);
+void teletransport(struct displ_object *dpo, uint8_t data);
 #endif

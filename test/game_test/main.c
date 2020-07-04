@@ -174,11 +174,13 @@ start:
 			load_room(game_state.room, true);
 			show_score_panel();
 			game_state.show_parchment = 0;
-		}  else if (game_state.final_animation) {
+		} else if (game_state.final_animation) {
 			show_ending_animation();
 			goto start;
-		}  else if (game_state.change_room) {
+		} else if (game_state.change_room) {
 			load_room(game_state.room, false);
+		} else if (game_state.teletransport) {
+			load_room(game_state.room, true);
 		}
 
 		animate_all();
