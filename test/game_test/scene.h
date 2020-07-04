@@ -130,12 +130,11 @@ enum spr_patterns_t {
 
 enum sound_effects {
 	SFX_JUMP,
-	SFX_CHAIN,
+	SFX_SWITCH,
 	SFX_PICKUP_ITEM,
 	SFX_DEATH,
 	SFX_SHOOT,
 	SFX_DOOR,
-	SFX_SLASH,
 	SFX_PORTAL
 };
 

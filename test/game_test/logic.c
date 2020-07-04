@@ -119,6 +119,7 @@ void toggle_handler(struct displ_object *dpo, uint8_t data)
         game_state.toggle[data] = 1;
         dpo->tob->cur_anim_step = 1;
         update_tileobject(dpo);
+	sfx_play_effect(SFX_SWITCH, 0);
 }
 
 void bell_handler(struct displ_object *dpo, uint8_t data)
@@ -126,6 +127,7 @@ void bell_handler(struct displ_object *dpo, uint8_t data)
         game_state.bell = true;
         dpo->tob->cur_anim_step = 1;
         update_tileobject(dpo);
+	sfx_play_effect(SFX_SWITCH, 0);
 }
 
 void crosswitch_handler(struct displ_object *dpo, uint8_t data)
@@ -140,9 +142,7 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data)
 		game_state.cross_switch = true;
 	}
 	update_tileobject(dpo);
-
-	// need to update crosses in same room - how?
-
+	sfx_play_effect(SFX_SWITCH, 0);
 }
 
 

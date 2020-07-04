@@ -671,6 +671,7 @@ void anim_plant(struct displ_object *obj)
 		add_bullet(obj->xpos + 8,
 			obj->ypos - 8,
 			PATRN_BULLET, ANIM_FALLING_BULLETS, 1, -4, 0, NULL);
+		sfx_play_effect(SFX_SHOOT,0);
 	} else if (obj->state == obj->aux + 10) {
 		// close
 		obj->tob->cur_anim_step = 0;
@@ -852,6 +853,7 @@ void anim_archer_skeleton(struct displ_object *obj)
 			PATRN_ARROW,
 			ANIM_HORIZONTAL_PROJECTILE,
 			obj->tob->cur_dir, obj->tob->cur_dir, 8, NULL);
+		sfx_play_effect(SFX_SHOOT,0);
 	} else if (obj->state == obj->aux + 10) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
@@ -900,6 +902,7 @@ void anim_gargolyne(struct displ_object *obj)
 			obj->ypos + 4,
 			PATRN_SPIT,
 			ANIM_HORIZONTAL_PROJECTILE, 0, 0, 8, NULL);
+		sfx_play_effect(SFX_SHOOT, 0);
 	} else if (obj->state == obj->aux + 10) {
 		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
