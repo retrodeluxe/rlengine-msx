@@ -15,3 +15,4 @@
 #define PAGE_INTRO2_COL	 17
 #define PAGE_INSTR_PAT	 18
 #define PAGE_INSTR_COL	 19
+#define PAGE_RAW_TILES	 20

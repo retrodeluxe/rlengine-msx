@@ -150,8 +150,8 @@ void start_music(uint8_t room)
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
 {
-	if (tileidx == TILE_PENTAGRAM)
-		ascii8_set_data(PAGE_INTRO);
+	if (tileset[tileidx].raw)
+		ascii8_set_data(PAGE_RAW_TILES);
 	else
 		ascii8_set_data(PAGE_DYNTILES);
 	tile_set_valloc(&tileset[tileidx]);

@@ -1,5 +1,3 @@
-#include "banks.h"
-
 #pragma DATA_PAGE 9
 
 // PAGE_DYNTILES
@@ -8,7 +6,6 @@
 #include "gen/cross_status.h"
 #include "gen/priest.h"
 #include "gen/retro_logo.h"
-#include "gen/satan.h"
 #include "gen/cup.h"
 #include "gen/splash.h"
 #include "gen/trapdoor.h"
@@ -29,9 +26,5 @@
 #include "gen/plant.h"
 #include "gen/hearth_status.h"
 #include "gen/water.h"
-#include "gen/dragon.h"
 #include "gen/checkpoint.h"
-#include "gen/stainedglass.h"
 #include "gen/cross_small.h"
-#include "gen/flame.h"
-#include "gen/boss_explosion.h"
