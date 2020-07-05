@@ -201,6 +201,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	dpo->xpos = map_object->x;
 	dpo->ypos = map_object->y;
 	dpo->state = 0;
+	dpo->visible = true;
 	dpo->collision_state = 0;
 	dpo->check_collision = true;
 
@@ -222,6 +223,7 @@ void add_jean(uint8_t room)
 	dpo_jean.type = DISP_OBJECT_SPRITE;
 	dpo_jean.state = STATE_IDLE;
 	dpo_jean.spr = &jean_sprite;
+	dpo_jean.visible = true;
 	dpo_jean.collision_state = 0;
 	dpo_jean.check_collision = false;
 	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
@@ -270,6 +272,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	dpo_bullet[idx].aux = dir;
 	dpo_bullet[idx].aux2 = speed;
 	dpo_bullet[idx].parent = parent;
+	dpo_bullet[idx].visible = true;
 
 	INIT_LIST_HEAD(&dpo_bullet[idx].list);
 	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
@@ -473,6 +476,7 @@ void load_intro_scene() __nonbanked
 	dpo_jean.spr = &jean_sprite;
 	dpo_jean.collision_state = 0;
 	dpo_jean.check_collision = false;
+	dpo_jean.visible = true;
 	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
 	INIT_LIST_HEAD(&dpo_jean.list);
 	list_add(&dpo_jean.list, &display_list);
@@ -485,7 +489,6 @@ void load_intro_scene() __nonbanked
 			spr_show(dpo->spr);
 		}
 	}
-
 }
 
 
@@ -923,6 +926,7 @@ void load_room(uint8_t room, bool reload)
 
 	show_room_title(game_state.room);
 	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
+	spr_refresh();
 	vdp_screen_enable();
 	start_music(room);
 }

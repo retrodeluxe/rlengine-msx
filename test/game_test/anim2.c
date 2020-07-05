@@ -60,9 +60,11 @@ void anim_intro_chase(struct displ_object *obj)
 
 	obj->xpos += dx;
 
-	spr_animate(sp, dx, dy);
-	spr_set_pos(sp, obj->xpos, obj->ypos);
-	spr_update(sp);
+	if (obj->visible) {
+		spr_animate(sp, dx, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
 
 	if (obj->xpos > 254) {
 		spr_hide(sp);
@@ -123,7 +125,7 @@ void anim_death(struct displ_object *obj)
 	}
 	// based on current animation state, throw bullet which is a scythe with
 	// own animation
-	if (sp->cur_anim_step == 2 && sp->anim_ctr == 0 && dpo->aux2 < dpo->aux) {
+	if (sp->cur_anim_step == 2 && sp->anim_ctr == 0 && obj->aux2 < obj->aux) {
 		obj->aux2++;
 		add_bullet(obj->xpos,
 			obj->ypos + 24,
@@ -182,7 +184,7 @@ void anim_satan(struct displ_object *obj)
 {
 	uint8_t x, ty;
 	static uint8_t delay = 0;
-	struct tile_object *to = dpo->tob;
+	struct tile_object *to = obj->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
 
@@ -207,7 +209,7 @@ void anim_satan(struct displ_object *obj)
 
 	if (obj->state == STATE_MOVING_UP) {
 		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
+			tile_object_show(obj->tob, scr_tile_buffer, true);
 			obj->tob->cur_anim_step++;
 		} else {
 			for (x = 0; x < to->ts->frame_w; x++) {
@@ -233,7 +235,7 @@ void anim_satan(struct displ_object *obj)
 			} else {
 				obj->tob->cur_anim_step = 1;
 			}
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
+			tile_object_show(obj->tob, scr_tile_buffer, true);
 		}
 		 if (obj->ypos < obj->min) {
 			obj->state = STATE_MOVING_DOWN;
@@ -256,7 +258,7 @@ void anim_satan(struct displ_object *obj)
 			} else {
 				obj->tob->cur_anim_step--;
 			}
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
+			tile_object_show(obj->tob, scr_tile_buffer, true);
 		} else {
 			for (x = 0; x < to->ts->frame_w; x++) {
 				vdp_write(vdp_base_names_grp1 + offset_top + x, 0);
@@ -266,7 +268,7 @@ void anim_satan(struct displ_object *obj)
 			obj->ypos = ty * 8;
 			obj->tob->y = ty * 8;
 			obj->tob->cur_anim_step = 2;
-			tile_object_show(dpo->tob, scr_tile_buffer, true);
+			tile_object_show(obj->tob, scr_tile_buffer, true);
 		}
 		if (obj->ypos > obj->max) {
 			obj->state = STATE_MOVING_UP;
@@ -379,7 +381,7 @@ void anim_hanging_priest(struct displ_object *obj)
 {
 	int8_t dy;
 	uint8_t ty;
-	struct tile_object *to = dpo->tob;
+	struct tile_object *to = obj->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
 

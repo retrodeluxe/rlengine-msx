@@ -146,6 +146,7 @@ start:
 	init_game_state();
 	init_scene();
 
+	//spr_refresh();
 	load_room(game_state.room, true);
 	show_score_panel();
 
@@ -153,6 +154,7 @@ start:
 	for(;;) {
 		sys_irq_enable();
 		sys_wait_vsync();
+		spr_refresh();
 
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0) | sys_get_stick(1);
@@ -179,6 +181,7 @@ start:
 			goto start;
 		} else if (game_state.change_room) {
 			load_room(game_state.room, false);
+			spr_refresh();
 			// hack: ensure font digits not overwritten by pentagram
 			if (game_state.room == ROOM_SATAN)
 				reload_font_digits();
@@ -218,6 +221,7 @@ void animate_all() __nonbanked
 		list_for_each(elem2, &dpo->animator_list) {
 			anim = list_entry(elem2, struct animator, list);
 			/** XXX: hack for banked function pointers **/
+			//log_e("dpo aidx:%d n:%d\n",dpo->spr->aidx, dpo->spr->pattern_set->n_planes);
 			ascii8_set_code(anim->page);
 			anim->run(dpo);
 			ascii8_restore();
@@ -410,6 +414,7 @@ void show_intro_animation() __nonbanked
 	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
 
 	load_intro_scene();
+	spr_refresh();
 	vdp_screen_enable();
 
 	ascii8_set_data(PAGE_MUSIC);
@@ -424,6 +429,7 @@ void show_intro_animation() __nonbanked
 	do {
 		sys_irq_enable();
 		sys_wait_vsync();
+		spr_refresh();
 
 		animate_all();
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
@@ -588,6 +594,7 @@ void show_parchment(uint8_t id)
 	sys_memcpy(scr_tile_buffer, parchment_map_parchment, 768);
 
 	vdp_fastcopy_nametable(scr_tile_buffer);
+	spr_refresh();
 	vdp_screen_enable();
 
 	switch (id) {

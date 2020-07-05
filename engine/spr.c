@@ -34,6 +34,7 @@ uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 // spr pattern sets
 struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 
+struct vdp_hw_sprite spr_attr[vdp_hw_max_sprites];
 /**
  * spr_init: initialize vdp sprites and allocation tables
  */
@@ -41,16 +42,29 @@ void spr_init(void)
 {
 	spr_clear();
 	sys_memset(spr_pattern, 0,  sizeof(struct spr_pattern_set) * SPR_PATRN_MAX);
+}
 
+void spr_refresh(void)
+{
+	vdp_memcpy(vdp_base_spatr_grp1, (uint8_t *)&spr_attr,
+		sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites);
 }
 
 void spr_clear(void)
 {
 	uint8_t i;
+	struct vdp_hw_sprite null_spr;
 
 	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
-	// set all atributes out of screen
-	vdp_memset(vdp_base_spatr_grp1, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites, 212);
+
+	null_spr.y = 193;
+	null_spr.x = 0;
+	null_spr.pattern = 0;
+	null_spr.color = 128; // EC bit
+
+	for (i = 0; i < vdp_hw_max_sprites; i++)
+		sys_memcpy((uint8_t *)&spr_attr[i], (uint8_t *)&null_spr, sizeof(struct vdp_hw_sprite));
+
 	sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
 
@@ -200,17 +214,16 @@ void spr_update(struct spr_sprite_def *sp) __nonbanked
 	uint8_t i;
 	spr_calc_patterns(sp);
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
-		vdp_set_hw_sprite(&sp->planes[i], sp->aidx + i);
+		sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i], 4);
 		if (sp->pattern_set->size == SPR_SIZE_16x32
 			|| sp->pattern_set->size == SPR_SIZE_32x16) {
-			vdp_set_hw_sprite(&sp->planes[i+2], sp->aidx + i + sp->pattern_set->n_planes);
+			sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1], (uint8_t *)&sp->planes[i + 2], 4);
 		} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
-			vdp_set_hw_sprite(&sp->planes[1], sp->aidx + 1);
-			vdp_set_hw_sprite(&sp->planes[2], sp->aidx + 2);
-			vdp_set_hw_sprite(&sp->planes[3], sp->aidx + 3);
+			sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1], (uint8_t *)&sp->planes[1], 4);
+			sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 2], (uint8_t *)&sp->planes[2], 4);
+			sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 3], (uint8_t *)&sp->planes[3], 4);
 		}
 	}
-
 }
 
 /**
@@ -218,7 +231,7 @@ void spr_update(struct spr_sprite_def *sp) __nonbanked
  */
 uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
 {
-	uint8_t i, idx, n, f = 0;
+	uint8_t i, idx = 7, n, f = 0;
 	n = sp->pattern_set->n_planes;
 	if (sp->pattern_set->size == SPR_SIZE_16x32
 		|| sp->pattern_set->size == SPR_SIZE_32x16)
@@ -235,7 +248,6 @@ uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
 			return true;
 		}
 	}
-	log_e("could not allocate attribute\n");
 	return false;
 }
 
@@ -259,14 +271,11 @@ void spr_hide(struct spr_sprite_def *sp) __nonbanked
 	null_spr.pattern = 0;
 	null_spr.color = 128; // EC bit
 
-	vdp_memcpy(vdp_base_spatr_grp1 +
-		   sp->aidx * sizeof(struct vdp_hw_sprite), (uint8_t *)&null_spr,
-	    sizeof(struct vdp_hw_sprite) * sp->pattern_set->n_planes);
+	// FIXME: still wrong handling of multiple planes
+	sys_memcpy((uint8_t *)&spr_attr[sp->aidx], (uint8_t *)&null_spr, sizeof(struct vdp_hw_sprite));
 	if (sp->pattern_set->size == SPR_SIZE_16x32
 		|| sp->pattern_set->size == SPR_SIZE_32x16) {
-		vdp_memcpy(vdp_base_spatr_grp1 +
-			   (sp->aidx + sp->pattern_set->n_planes) * sizeof(struct vdp_hw_sprite),
-			   (uint8_t *)&null_spr, sizeof(struct vdp_hw_sprite) * sp->pattern_set->n_planes);
+		sys_memcpy((uint8_t *)&spr_attr[sp->aidx + 1], (uint8_t *)&null_spr, sizeof(struct vdp_hw_sprite));
 	} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
 		// TODO
 	}

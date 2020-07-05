@@ -116,4 +116,5 @@ extern void spr_update(struct spr_sprite_def *sp) __nonbanked;
 extern void spr_hide(struct spr_sprite_def *sp) __nonbanked;
 extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy) __nonbanked;
 extern bool spr_is_allocated(uint8_t patrn_idx);
+extern void spr_refresh(void);
 #endif
