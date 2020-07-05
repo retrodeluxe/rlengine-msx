@@ -846,7 +846,7 @@ void anim_archer_skeleton(struct displ_object *obj)
 	}
 
 	if (obj->state == obj->aux) {
-		obj->tob->cur_anim_step = 1;
+		obj->tob->cur_anim_step = 0;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 		add_bullet(obj->xpos,
 			obj->ypos + 4,
@@ -855,7 +855,7 @@ void anim_archer_skeleton(struct displ_object *obj)
 			obj->tob->cur_dir, obj->tob->cur_dir, 8, NULL);
 		sfx_play_effect(SFX_SHOOT,0);
 	} else if (obj->state == obj->aux + 10) {
-		obj->tob->cur_anim_step = 0;
+		obj->tob->cur_anim_step = 1;
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 	} else if (obj->state == 0) {
 		tile_object_show(obj->tob, scr_tile_buffer, true);
