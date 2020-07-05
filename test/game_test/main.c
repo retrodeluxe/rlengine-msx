@@ -140,11 +140,11 @@ start:
 	init_animators();
 
 	show_intro_animation();
-	//show_ending_animation();
 
 	init_map_tilelayers();
 	init_map_object_layers();
 	init_game_state();
+	init_scene();
 
 	load_room(game_state.room, true);
 	show_score_panel();

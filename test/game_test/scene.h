@@ -200,5 +200,6 @@ extern const unsigned int abbaye_sfx_afb_len;
 
 extern void remove_tileobject(struct displ_object *dpo);
 extern void update_tileobject(struct displ_object *dpo);
+void init_scene();
 
 #endif

@@ -394,6 +394,13 @@ void jean_collision_handler() __nonbanked
 	}
 }
 
+void init_scene()
+{
+	spr_ct = 0;
+	tob_ct = 0;
+	bullet_ct = 0;
+}
+
 void clear_room() __nonbanked
 {
 	uint8_t i;
@@ -433,7 +440,7 @@ void load_intro_scene() __nonbanked
 	struct map_object_item tmp_obj;
 	map_object = &tmp_obj;
 
-	clear_room();
+	spr_clear();
 
 	INIT_LIST_HEAD(&display_list);
 
