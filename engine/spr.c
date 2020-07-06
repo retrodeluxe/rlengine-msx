@@ -53,18 +53,11 @@ void spr_refresh(void)
 void spr_clear(void)
 {
 	uint8_t i;
-	struct vdp_hw_sprite null_spr;
 
 	vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 
-	null_spr.y = 193;
-	null_spr.x = 0;
-	null_spr.pattern = 0;
-	null_spr.color = 128; // EC bit
-
-	for (i = 0; i < vdp_hw_max_sprites; i++)
-		sys_memcpy((uint8_t *)&spr_attr[i], (uint8_t *)&null_spr, sizeof(struct vdp_hw_sprite));
-
+	/** entirely disable sprites by setting y=208 **/
+	sys_memset(spr_attr, 208, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites);
 	sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
 	sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
 
