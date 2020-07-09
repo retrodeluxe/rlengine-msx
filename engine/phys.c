@@ -159,6 +159,7 @@ static void phys_tile_collision_notify(uint8_t tile) __nonbanked
 	for (i = 0; i < n_cgroups; i++) {
 		if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
 			// FIXME: huge hack for function pointers
+			//        also breaks build for non-ascii8 roms
 			ascii8_set_code(3);
 			cgroup[i].handler(cgroup[i].dpo, cgroup[i].data);
 			ascii8_set_code(6);
