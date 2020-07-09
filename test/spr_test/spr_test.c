@@ -51,14 +51,13 @@ void main()
 
 	vdp_set_mode(vdp_grp1);
 	vdp_set_color(vdp_white, vdp_black);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 
 	spr_init();
 	/**
 	 * Composite sprites
 	 */
-	spr_define_pattern_set(PATRN_MONK, SPR_SIZE_16x32, 1, 2,
-		monk_states, monk1, monk1_color);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, monk_states, monk1);
 	spr_valloc_pattern_set(PATRN_MONK);
 
 	xpos[0] = 100; ypos [0] = 100;
@@ -70,7 +69,8 @@ void main()
 
 	do {
 		sys_wait_vsync();
-		sys_sleep(100);
+		spr_refresh();
+		sys_sleep_ms(100);
 		spr_animate(&monk,-1,0);
 		xpos[0]--;
 		spr_set_pos(&monk, xpos[0], ypos[0]);
@@ -82,7 +82,7 @@ void main()
 	/**
 	 * Low level sprites using direct access to VRAM
 	 */
-	vdp_copy_to_vram(bee1, vdp_base_sppat_grp1, 16 * 8);
+	vdp_memcpy(vdp_base_sppat_grp1, bee1, 16 * 8);
 	bee_hw.x = 100;
 	bee_hw.y = 100;
 	bee_hw.pattern = 0;
@@ -96,12 +96,12 @@ void main()
 	 * Single layer sprites with animation in two directions
 	 */
 
-	spr_define_pattern_set(PATRN_BEE, SPR_SIZE_16x16, 1, 2,
-		two_states, bee1, bee1_color);
-	spr_define_pattern_set(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
-		two_states, rat, rat_color);
-	spr_define_pattern_set(PATRN_EGG, SPR_SIZE_16x16, 2, 3,
-		four_states, eggerland, eggerland_color);
+	SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2,
+		two_states, bee1);
+	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
+		two_states, rat);
+	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3,
+		four_states, eggerland);
 
 	spr_valloc_pattern_set(PATRN_BEE);
 	spr_valloc_pattern_set(PATRN_RAT);
@@ -124,6 +124,7 @@ void main()
 
 	do {
 		sys_wait_vsync();
+		spr_refresh();
 		for (i = 0; i< 10; i++) {
 			spr_animate(&bee[i],1,-1);
 			spr_animate(&rats[i],-1,1);
