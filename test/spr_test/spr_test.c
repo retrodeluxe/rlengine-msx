@@ -46,7 +46,7 @@ void main()
 	unsigned int count = 0;
 	uint8_t i;
 	uint8_t two_states[] = {2,2};
-	uint8_t four_states[] = {4,4,4};
+	uint8_t four_states[] = {3,3,3,3};
 	uint8_t monk_states[] = {3,3};
 
 	vdp_set_mode(vdp_grp1);
@@ -89,6 +89,7 @@ void main()
 	bee_hw.color = 15;
 	vdp_set_hw_sprite(&bee_hw, 0);
 
+
 	do {
 	} while (sys_get_key(8) & 1);
 
@@ -100,7 +101,7 @@ void main()
 		two_states, bee1);
 	SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
 		two_states, rat);
-	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 3,
+	SPR_DEFINE_PATTERN_SET(PATRN_EGG, SPR_SIZE_16x16, 2, 4,
 		four_states, eggerland);
 
 	spr_valloc_pattern_set(PATRN_BEE);
@@ -132,6 +133,7 @@ void main()
 			spr_set_pos(&rats[i], --xpos2[i], ++ypos2[i]);
 			spr_update(&bee[i]);
 			spr_update(&rats[i]);
+			spr_update(&eggspr);
 		}
 	} while (sys_get_key(8) & 1);
 

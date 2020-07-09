@@ -66,7 +66,7 @@ struct spr_pattern_set {
 	uint8_t n_steps;
 	uint8_t *patterns;
 	uint8_t *colors;
-	uint8_t colors2[12];
+	uint8_t colors2[24]; // FIXME: this requires some sort of dynamic allocation
 };
 
 /**

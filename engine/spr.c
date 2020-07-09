@@ -157,7 +157,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 			base *= (ps->size * ps->n_planes);
 			frame = sp->cur_anim_step * (ps->size * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
-				(sp->planes[i]).color |= (ps->colors2)[color_frame];
+				(sp->planes[i]).color |= (ps->colors2)[color_frame + i];
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * ps->size;
 			}
 			break;
