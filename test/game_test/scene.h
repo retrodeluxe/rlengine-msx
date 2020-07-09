@@ -127,6 +127,7 @@ enum spr_patterns_t {
 	PATRN_ARROW,
 	PATRN_SPIT,
 	PATRN_SMALL_BULLET,
+	PATRN_HEARTH_MASK,
 	PATRN_MAX,
 };
 

@@ -23,8 +23,9 @@
 #include "list.h"
 #include "sprite.h"
 
-#define DISP_OBJECT_SPRITE 1
-#define DISP_OBJECT_TILE 2
+#define DISP_OBJECT_SPRITE 	1
+#define DISP_OBJECT_TILE 	2
+#define DISP_OBJECT_COMBO 	3
 
 struct displ_object;
 

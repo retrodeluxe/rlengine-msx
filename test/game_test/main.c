@@ -60,6 +60,7 @@ struct font_set intro_font_set;
 struct animator *anim;
 struct displ_object *dpo;
 struct list_head *elem,*elem2;
+struct spr_sprite_def score_hearth_mask;
 
 uint8_t stick;
 uint8_t trigger;
@@ -684,6 +685,7 @@ void show_score_panel()
 {
 	uint8_t i;
 	char snum[3];
+	struct spr_pattern_set *ps = &spr_pattern[PATRN_HEARTH_MASK];
 
 	ascii8_set_data(PAGE_DYNTILES);
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
@@ -697,6 +699,15 @@ void show_score_panel()
 	score.idx = 0;
 
 	tile_object_show(&score, scr_tile_buffer, true);
+
+	// add mask for hearth
+	ascii8_set_data(PAGE_SPRITES);
+	spr_valloc_pattern_set(PATRN_HEARTH_MASK);
+	ps->colors2[0] = 1;
+
+	spr_init_sprite(&score_hearth_mask, PATRN_HEARTH_MASK);
+	spr_set_pos(&score_hearth_mask, score.x, score.y);
+	spr_show(&score_hearth_mask);
 
 	score.x = 32;
 	score.y = 192 - 16;

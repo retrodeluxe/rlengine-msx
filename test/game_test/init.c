@@ -375,6 +375,9 @@ void init_sprites()
 	SPR_DEFINE_PATTERN_SET(PATRN_SPIT, SPR_SIZE_16x16, 1, 1, spit_state, spit);
 	SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, death_state, death);
 	SPR_DEFINE_PATTERN_SET(PATRN_SMALL_BULLET, SPR_SIZE_16x16, 1, 1, bat_state, small_bullet);
+
+	// Combo masks
+	SPR_DEFINE_PATTERN_SET(PATRN_HEARTH_MASK, SPR_SIZE_16x16, 1, 1, spit_state, hearth_status_mask);
 }
 
 void init_sfx()
