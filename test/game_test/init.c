@@ -378,6 +378,7 @@ void init_sprites()
 
 	// Combo masks
 	SPR_DEFINE_PATTERN_SET(PATRN_HEARTH_MASK, SPR_SIZE_16x16, 1, 1, spit_state, hearth_status_mask);
+	SPR_DEFINE_PATTERN_SET(PATRN_CROSS_MASK, SPR_SIZE_16x16, 1, 1, spit_state, cross_status_mask);
 }
 
 void init_sfx()

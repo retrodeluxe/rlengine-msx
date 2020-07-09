@@ -61,6 +61,7 @@ struct animator *anim;
 struct displ_object *dpo;
 struct list_head *elem,*elem2;
 struct spr_sprite_def score_hearth_mask;
+struct spr_sprite_def score_cross_mask;
 
 uint8_t stick;
 uint8_t trigger;
@@ -717,6 +718,16 @@ void show_score_panel()
 	score.idx = 0;
 
 	tile_object_show(&score, scr_tile_buffer, true);
+
+	// add mask for cross
+	ascii8_set_data(PAGE_SPRITES);
+	spr_valloc_pattern_set(PATRN_CROSS_MASK);
+	ps = &spr_pattern[PATRN_CROSS_MASK];
+	ps->colors2[0] = 1;
+
+	spr_init_sprite(&score_cross_mask, PATRN_CROSS_MASK);
+	spr_set_pos(&score_cross_mask, score.x, score.y);
+	spr_show(&score_cross_mask);
 
 	/** clear up 2 digit live count **/
 	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
