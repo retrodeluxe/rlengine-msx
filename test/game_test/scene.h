@@ -70,6 +70,7 @@ enum map_tile_sets {
       MAP_TILESET_SKULL_2,
       MAP_TILESET_ROPE,
       MAP_TILESET_CAVE_2,
+      MAP_TILESET_DEBUG,
       MAP_TILESET_MAX,
 };
 

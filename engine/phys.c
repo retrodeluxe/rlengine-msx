@@ -236,17 +236,17 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	x = obj->xpos;
 	y = obj->ypos;
 
-	base_ceiling_l = map + x / 8 + (y + 7) / 8 * TILE_WIDTH;
-	base_ceiling_r = map + (x + 8) / 8 + (y + 7) / 8 * TILE_WIDTH;
+	base_ceiling_l = map + (x + 4) / 8 + (y + 12) / 8 * TILE_WIDTH;
+	base_ceiling_r = map + (x + 8) / 8 + (y + 12) / 8 * TILE_WIDTH;
 
-	base_left_t = map + (x - 1) / 8 + (y + 15) / 8 * TILE_WIDTH;
-	base_left_b = map + (x - 1) / 8 + (y + 24) / 8 * TILE_WIDTH;
+	base_left_t = map + x / 8 + (y + 18) / 8 * TILE_WIDTH;
+	base_left_b = map + x / 8 + (y + 24) / 8 * TILE_WIDTH;
 
-	base_right_t = map + (x + 15) / 8 + (y + 15) / 8 * TILE_WIDTH;
-	base_right_b = map + (x + 15) / 8 + (y + 24) / 8 * TILE_WIDTH;
+	base_right_t = map + (x + 12) / 8 + (y + 18) / 8 * TILE_WIDTH;
+	base_right_b = map + (x + 12) / 8 + (y + 24) / 8 * TILE_WIDTH;
 
 	// collision down does not depend on dy
-	base_floor_l = map + x / 8 + (y + 32) / 8 * TILE_WIDTH;
+	base_floor_l = map + (x + 4) / 8 + (y + 32) / 8 * TILE_WIDTH;
 	base_floor_r = map + (x + 8) / 8 + (y + 32) / 8 * TILE_WIDTH;
 
 	tile[0] = *(base_ceiling_l);
@@ -257,6 +257,15 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	tile[5] = *(base_right_b);
 	tile[6] = *(base_floor_l);
 	tile[7] = *(base_floor_r);
+
+	vdp_write(vdp_base_names_grp1 + base_ceiling_l - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_ceiling_r - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_left_t - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_left_b - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_right_t - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_right_b - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_floor_l - map, 254);
+	vdp_write(vdp_base_names_grp1 + base_floor_r - map, 254);
 
 	obj->collision_state = 0;
 
@@ -269,28 +278,35 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 		}
 	}
 
-	if (is_coliding_tile_pair(tile[2], tile[3])) {
-		obj->collision_state |= COLLISION_LEFT;
-	}
-	if (is_coliding_tile_pair(tile[4], tile[5])) {
-		obj->collision_state |= COLLISION_RIGHT;
-	}
-	if (is_coliding_tile_pair(tile[0], tile[1])) {
-		obj->collision_state |= COLLISION_UP;
-	}
-
-	if (is_coliding_tile_pair(tile[6], tile[7])) {
-		obj->collision_state |= COLLISION_DOWN;
+	if (obj->xpos > -1 && obj->xpos < 239) {
+		if (is_coliding_tile_pair(tile[2], tile[3])) {
+			obj->collision_state |= COLLISION_LEFT;
+		}
+		if (is_coliding_tile_pair(tile[4], tile[5])) {
+			obj->collision_state |= COLLISION_RIGHT;
+		}
 	}
 
-	if (is_coliding_down_tile_pair(tile[6], tile[7])) {
-		obj->collision_state |= COLLISION_DOWN_FT;
-		if (notify) {
-			phys_tile_collision_notify(tile[6]);
-			phys_tile_collision_notify(tile[7]);
+	if (obj->ypos > -1) {
+		if (is_coliding_tile_pair(tile[0], tile[1])) {
+			obj->collision_state |= COLLISION_UP;
+		}
+	}
+	if (obj->ypos < (192 - 52)) {
+
+		if (is_coliding_tile_pair(tile[6], tile[7])) {
+			obj->collision_state |= COLLISION_DOWN;
 		}
 
-		obj->ypos = (y / 8) * 8;
+		if (is_coliding_down_tile_pair(tile[6], tile[7])) {
+			obj->collision_state |= COLLISION_DOWN_FT;
+			if (notify) {
+				phys_tile_collision_notify(tile[6]);
+				phys_tile_collision_notify(tile[7]);
+			}
+
+			obj->ypos = (y / 8) * 8;
+		}
 	}
 
 }

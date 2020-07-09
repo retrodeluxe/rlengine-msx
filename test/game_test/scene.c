@@ -912,7 +912,7 @@ void load_room(uint8_t room, bool reload)
 	}
 
 	add_jean(room);
-	phys_set_sprite_collision_handler(jean_collision_handler);
+	//phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements
 	list_for_each(elem, &display_list) {

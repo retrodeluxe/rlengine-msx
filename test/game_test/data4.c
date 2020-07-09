@@ -24,6 +24,8 @@
 #include "gen/map22.h"
 #include "gen/map23.h"
 
+#include "gen/debug.h"
+
 // font used for parchment and intro
 #include "gen/big_font_upper.h"
 #include "gen/big_font_lower.h"

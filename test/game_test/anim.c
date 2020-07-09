@@ -52,27 +52,28 @@ void change_room() __nonbanked
 {
 	game_state.change_room = false;
 
-	if (dpo_jean.xpos > 239) {
-		game_state.jean_x = 5;
+	if (dpo_jean.xpos > 247) {
+		game_state.jean_x = -8;
 		game_state.jean_y = dpo_jean.ypos;
 		game_state.room += 1;
 		game_state.change_room = true;
 
-	} else if (dpo_jean.xpos < 0) {
-		game_state.jean_x = 239;
+	} else if (dpo_jean.xpos < -8) {
+		game_state.jean_x = 247;
 		game_state.jean_y = dpo_jean.ypos;
 		game_state.room -= 1;
 		game_state.change_room = true;
 	}
 
-	if (dpo_jean.ypos > (192 - 50)) {
-		game_state.jean_y = 1;
+	// need 4 sprites on the score area to hide
+	if (dpo_jean.ypos > (192 - 48)) {
+		game_state.jean_y = -8;
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room += 5;
 		game_state.change_room = true;
 
-	} else if (dpo_jean.ypos < 0) {
-		game_state.jean_y = 192 - 64;
+	} else if (dpo_jean.ypos < -16) {
+		game_state.jean_y = 192 - 48 - 8;
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room -= 5;
 		game_state.change_room = true;

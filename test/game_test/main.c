@@ -155,6 +155,7 @@ start:
 		sys_irq_enable();
 		sys_wait_vsync();
 		spr_refresh();
+		vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
 
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0) | sys_get_stick(1);

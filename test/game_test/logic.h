@@ -9,8 +9,8 @@ struct game_state_t {
 	bool change_room;
 
 	/* jean position when swithing rooms */
-	uint8_t jean_x;
-	uint8_t jean_y;
+	int16_t jean_x;
+	int16_t jean_y;
 
 	/* check point saved position */
 	uint8_t checkpoint_x;

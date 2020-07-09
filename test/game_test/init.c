@@ -103,6 +103,7 @@ void init_map_tilesets()
 	INIT_TILE_SET(tileset_map[MAP_TILESET_SKULL_2], map21);
 	INIT_TILE_SET(tileset_map[MAP_TILESET_ROPE], map22);
 	INIT_TILE_SET(tileset_map[MAP_TILESET_CAVE_2], map23);
+	INIT_TILE_SET(tileset_map[MAP_TILESET_DEBUG], debug);
 }
 
 void clear_map_tilesets()
@@ -184,6 +185,8 @@ void init_room_tilesets(uint8_t room, bool reload)
 
 	phys_init();
 	ascii8_set_data(PAGE_MAPTILES);
+
+	tile_set_to_vram(&tileset_map[MAP_TILESET_DEBUG], 254);
 
 	// zone 1: forest and church
 	if (room > ROOM_EVIL_CHAMBER && room < ROOM_CAVE_DRAGON) {
@@ -329,7 +332,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVERTED_CROSS], invertedcross, 2, 2, 3, 1);
 
 	ascii8_set_data(PAGE_RAW_TILES);
-	
+
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_STAINED_GLASS], stainedglass, 6, 6, 1, 1);
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_SATAN], satan, 4, 7, 3, 1)
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_DRAGON], dragon, 11, 5, 1, 1);

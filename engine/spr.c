@@ -281,35 +281,36 @@ void spr_set_pos(struct spr_sprite_def *sp, int16_t xp, int16_t yp) __nonbanked
 {
 	uint8_t i, x, y, ec = 0;
 
-	if (yp > -32 && yp < 0) y = yp;
+	if (yp > -33 && yp < 0) y = (int8_t)yp;
 	else if (yp == 0) y = 0xFF;
-	else if (yp > 0 && yp < 192) y = yp - 1;
+	else if (yp > 0 && yp < 193) y = yp - 1;
+	// need to cover > 192 as well
 
 	if (xp < 0) {x = xp + 32; ec = 128;}
 	else if (xp >= 0 && xp < 256) x = xp;
 
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
-		(sp->planes[i]).x = xp;
-		(sp->planes[i]).y = yp;
+		(sp->planes[i]).x = x;
+		(sp->planes[i]).y = y;
 		(sp->planes[i]).color = ec;
 		if (sp->pattern_set->size == SPR_SIZE_16x32) {
-			(sp->planes[i+ 2]).x = xp;
-			(sp->planes[i+ 2]).y = yp + 16;
+			(sp->planes[i+ 2]).x = x;
+			(sp->planes[i+ 2]).y = y + 16;
 			(sp->planes[i+ 2]).color = ec;
 		} else if (sp->pattern_set->size == SPR_SIZE_32x16) {
-			(sp->planes[i+ 2]).x = xp + 16;
-			(sp->planes[i+ 2]).y = yp;
+			(sp->planes[i+ 2]).x = x + 16;
+			(sp->planes[i+ 2]).y = y;
 			(sp->planes[i+ 2]).color = ec;
 		} else if (sp->pattern_set->size == SPR_SIZE_32x32) {
-			(sp->planes[1]).x = xp + 16;
-			(sp->planes[1]).y = yp;
+			(sp->planes[1]).x = x + 16;
+			(sp->planes[1]).y = y;
 			(sp->planes[1]).color = ec;
-			(sp->planes[2]).x = xp;
-			(sp->planes[2]).y = yp + 16;
-			(sp->planes[i]).color = ec;
-			(sp->planes[3]).x = xp + 16;
-			(sp->planes[3]).y = yp + 16;
-			(sp->planes[i]).color = ec;
+			(sp->planes[2]).x = x;
+			(sp->planes[2]).y = y + 16;
+			(sp->planes[2]).color = ec;
+			(sp->planes[3]).x = x + 16;
+			(sp->planes[3]).y = y + 16;
+			(sp->planes[3]).color = ec;
 		}
 	}
 }

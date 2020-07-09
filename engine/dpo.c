@@ -27,11 +27,12 @@
   */
  void dpo_simple_animate(struct displ_object *dpo, signed char dx, signed char dy) __nonbanked
  {
- 	uint8_t old_dir, x, y;
+ 	uint8_t old_dir;
+	int16_t x, y;
 	struct spr_sprite_def *sp = dpo->spr;
 
-	x = (sp->planes[0]).x;
-	y = (sp->planes[0]).y;
+	x = dpo->xpos;
+	y = dpo->ypos;
 
 	if (dpo-> type == DISP_OBJECT_SPRITE) {
 		spr_animate(sp, dx, dy);
