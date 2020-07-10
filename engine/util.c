@@ -89,7 +89,7 @@ static void vprintk(char *fmt, va_list args) __nonbanked
  *   debug log trough printer port,
  *   useful when running in openmsx
  */
-void log(int level, char *fmt, ...)
+void log(int level, char *fmt, ...) __nonbanked
 {
 	va_list args;
 

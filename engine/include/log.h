@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _MSX_H_LOG
 #define _MSX_H_LOG
 
@@ -31,7 +31,7 @@
 #define LOGLEVEL 7
 
 #ifdef DEBUG
-extern void log(int level, char *fmt, ...);
+extern void log(int level, char *fmt, ...) __nonbanked;
 extern void dump_vram(int start_addr, int end_addr);
 
 #define log_d(_fmt, ...)  log(LOG_DEBUG, _fmt, ##__VA_ARGS__)
