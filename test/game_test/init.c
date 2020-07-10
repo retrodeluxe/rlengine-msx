@@ -362,7 +362,7 @@ void init_sprites()
 	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, two_step_state, skeleton);
 	SPR_DEFINE_PATTERN_SET(PATRN_PALADIN, SPR_SIZE_16x32, 1, 2, two_step_state, paladin);
 	SPR_DEFINE_PATTERN_SET(PATRN_SCYTHE, SPR_SIZE_16x16, 1, 1, single_four_state, scythe);
-	SPR_DEFINE_PATTERN_SET(PATRN_GHOST, SPR_SIZE_16x16, 1, 2, two_step_state, ghost);
+	SPR_DEFINE_PATTERN_SET(PATRN_GHOST, SPR_SIZE_16x16, 3, 2, two_step_state, ghost);
 	SPR_DEFINE_PATTERN_SET(PATRN_DEMON, SPR_SIZE_16x32, 1, 2, two_step_state, demon);
 	SPR_DEFINE_PATTERN_SET(PATRN_DARKBAT, SPR_SIZE_32x16, 1, 2, two_step_state, darkbat);
 	SPR_DEFINE_PATTERN_SET(PATRN_FLY, SPR_SIZE_16x16, 1, 2, two_step_state, fly);
