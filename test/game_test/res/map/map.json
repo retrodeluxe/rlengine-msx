@@ -314,9 +314,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"91",
-                     "min":"72",
-                     "speed":"1",
+                     "max":"216",
+                     "min":"136",
+                     "speed":"2",
                      "type":"rat"
                     },
                  "propertytypes":
@@ -341,9 +341,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"91",
-                     "min":"72",
-                     "speed":"1",
+                     "max":"115",
+                     "min":"50",
+                     "speed":"2",
                      "type":"rat"
                     },
                  "propertytypes":
@@ -379,8 +379,8 @@
                     {
                      "color":"0",
                      "dir":"2",
-                     "max":"16",
-                     "min":"11",
+                     "max":"140",
+                     "min":"85",
                      "speed":"1",
                      "type":"spider"
                     },
@@ -408,8 +408,8 @@
                     {
                      "color":"1",
                      "dir":"3",
-                     "max":"18",
-                     "min":"13",
+                     "max":"140",
+                     "min":"85",
                      "speed":"2",
                      "type":"spider"
                     },
@@ -437,8 +437,8 @@
                     {
                      "color":"0",
                      "dir":"2",
-                     "max":"15",
-                     "min":"11",
+                     "max":"140",
+                     "min":"85",
                      "speed":"1",
                      "type":"spider"
                     },
@@ -466,8 +466,8 @@
                     {
                      "color":"1",
                      "dir":"2",
-                     "max":"18",
-                     "min":"15",
+                     "max":"140",
+                     "min":"85",
                      "speed":"2",
                      "type":"spider"
                     },
@@ -1164,9 +1164,9 @@
                  "properties":
                     {
                      "dir":"1",
-                     "max":"115",
-                     "min":"100",
-                     "speed":"1",
+                     "max":"216",
+                     "min":"60",
+                     "speed":"2",
                      "type":"bat"
                     },
                  "propertytypes":
@@ -1190,10 +1190,10 @@
                  "name":"movable",
                  "properties":
                     {
-                     "dir":"0",
-                     "max":"124",
-                     "min":"106",
-                     "speed":"1",
+                     "dir":"2",
+                     "max":"216",
+                     "min":"90",
+                     "speed":"2",
                      "type":"bat"
                     },
                  "propertytypes":
@@ -1352,9 +1352,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"150",
-                     "min":"146",
-                     "speed":"0.5",
+                     "max":"180",
+                     "min":"142",
+                     "speed":"1",
                      "type":"worm"
                     },
                  "propertytypes":
@@ -1379,9 +1379,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"146",
-                     "min":"139",
-                     "speed":"0.5",
+                     "max":"200",
+                     "min":"30",
+                     "speed":"1",
                      "type":"worm"
                     },
                  "propertytypes":
@@ -2269,8 +2269,8 @@
                     {
                      "color":"1",
                      "dir":"2",
-                     "max":"62",
-                     "min":"49",
+                     "max":"140",
+                     "min":"42",
                      "speed":"3",
                      "type":"fly"
                     },
@@ -2298,8 +2298,8 @@
                     {
                      "color":"0",
                      "dir":"2",
-                     "max":"52",
-                     "min":"45",
+                     "max":"60",
+                     "min":"8",
                      "speed":"1",
                      "type":"fly"
                     },
@@ -2327,8 +2327,8 @@
                     {
                      "color":"0",
                      "dir":"2",
-                     "max":"62",
-                     "min":"58",
+                     "max":"140",
+                     "min":"112",
                      "speed":"1",
                      "type":"fly"
                     },
@@ -2356,8 +2356,8 @@
                     {
                      "color":"1",
                      "dir":"2",
-                     "max":"62",
-                     "min":"45",
+                     "max":"140",
+                     "min":"8",
                      "speed":"3",
                      "type":"fly"
                     },
@@ -2385,8 +2385,8 @@
                     {
                      "color":"1",
                      "dir":"2",
-                     "max":"62",
-                     "min":"45",
+                     "max":"140",
+                     "min":"8",
                      "speed":"2",
                      "type":"fly"
                     },
@@ -2476,9 +2476,9 @@
                  "properties":
                     {
                      "dir":"1",
-                     "max":"120",
-                     "min":"106",
-                     "speed":"1",
+                     "max":"216",
+                     "min":"85",
+                     "speed":"2",
                      "type":"skeleton"
                     },
                  "propertytypes":
@@ -2503,9 +2503,9 @@
                  "properties":
                     {
                      "dir":"1",
-                     "max":"114",
-                     "min":"104",
-                     "speed":"1",
+                     "max":"130",
+                     "min":"40",
+                     "speed":"2",
                      "type":"skeleton"
                     },
                  "propertytypes":
@@ -2731,9 +2731,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"150",
-                     "min":"134",
-                     "speed":"0.5",
+                     "max":"180",
+                     "min":"50",
+                     "speed":"1",
                      "type":"worm"
                     },
                  "propertytypes":
@@ -2779,8 +2779,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"51",
-                     "min":"45",
+                     "max":"145",
+                     "min":"16",
                      "speed":"2",
                      "type":"spider"
                     },
@@ -3017,9 +3017,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"14",
-                     "min":"10",
-                     "speed":"0.5",
+                     "max":"108",
+                     "min":"80",
+                     "speed":"1",
                      "type":"paladin"
                     },
                  "propertytypes":
@@ -3044,9 +3044,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"24",
-                     "min":"16",
-                     "speed":"0.5",
+                     "max":"190",
+                     "min":"130",
+                     "speed":"1",
                      "type":"paladin"
                     },
                  "propertytypes":
@@ -3676,8 +3676,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"73",
-                     "min":"67",
+                     "max":"80",
+                     "min":"16",
                      "speed":"1",
                      "type":"spider"
                     },
@@ -4763,8 +4763,8 @@
                  "properties":
                     {
                      "dir":"3",
-                     "max":"76",
-                     "min":"67",
+                     "max":"80",
+                     "min":"16",
                      "speed":"1",
                      "type":"spider"
                     },
@@ -4848,9 +4848,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"18",
-                     "min":"10",
-                     "speed":"0.5",
+                     "max":"145",
+                     "min":"82",
+                     "speed":"1",
                      "type":"paladin"
                     },
                  "propertytypes":

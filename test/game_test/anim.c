@@ -359,101 +359,6 @@ void anim_cycle_tile(struct displ_object *dpo)
         }
 }
 
-void anim_left_right(struct displ_object *obj)
-{
-	int8_t dx = 0;
-	switch(obj->state) {
-		case STATE_MOVING_LEFT:
-			dx = -2;
-			if (is_colliding_left(obj)) {
-				obj->state = STATE_MOVING_RIGHT;
-				dx = 2;
-			}
-			break;
-		case STATE_MOVING_RIGHT:
-			dx = 2;
-			if (is_colliding_right(obj)) {
-				obj->state = STATE_MOVING_LEFT;
-				dx = -2;
-			}
-			break;
-		default:
-			obj->state = STATE_MOVING_LEFT;
-	}
-
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false, false);
-	dpo_simple_animate(obj, dx, 0);
-}
-
-void anim_left_right_floor(struct displ_object *obj)
-{
-	struct spr_sprite_def *sp = obj->spr;
-	int8_t dx = 0;
-	switch(obj->state) {
-		case STATE_MOVING_LEFT:
-			dx = -2;
-			if (is_colliding_left(obj)
-				|| !is_colliding_down(obj)
-				|| obj->xpos < 3) {
-				obj->state = STATE_MOVING_RIGHT;
-				dx = 2;
-			}
-			break;
-		case STATE_MOVING_RIGHT:
-			dx = 2;
-			if (is_colliding_right(obj) || !is_colliding_down(obj)) {
-				obj->state = STATE_MOVING_LEFT;
-				dx = -2;
-			}
-			break;
-		default:
-			obj->state = STATE_MOVING_LEFT;
-	}
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false, false);
-	phys_detect_fall(obj, scr_tile_buffer, dx);
-
-	if ((dx > 0 && !is_colliding_right(obj))
-		|| (dx < 0 && !is_colliding_left(obj))) {
-		obj->xpos += dx;
-	}
-	spr_animate(sp, dx, 0);
-	spr_set_pos(sp, obj->xpos, obj->ypos);
-	spr_update(sp);
-}
-
-void anim_up_down(struct displ_object *obj)
-{
-	struct spr_sprite_def *sp = obj->spr;
-	int8_t dy = 0;
-
-	dy = obj->speed;
-	switch(obj->state) {
-		case STATE_MOVING_DOWN:
-			if (is_colliding_down(obj)) {
-				obj->state = STATE_MOVING_UP;
-				dy *= -1;;
-			}
-			break;
-		case STATE_MOVING_UP:
-			dy *= -1;
-			if (is_colliding_up(obj)) {
-				obj->state = STATE_MOVING_DOWN;
-				dy *= -1;
-			}
-			break;
-	}
-
-	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy, false, false);
-
-	if ((dy > 0 && !is_colliding_down(obj))
-		|| (dy < 0 && !is_colliding_up(obj))) {
-		obj->ypos += dy;
-	}
-	spr_animate(sp, 0, dy);
-	spr_set_pos(sp, obj->xpos, obj->ypos);
-	spr_update(sp);
-}
-
 /**
  * Simple up-down animation bounded by max/min coordinates
  */
@@ -476,6 +381,9 @@ void anim_up_down_bounded(struct displ_object *obj)
 				obj->state = STATE_MOVING_DOWN;
 				dy *= -1;
 			}
+			break;
+		default:
+			obj->state = STATE_MOVING_DOWN;
 			break;
 	}
 
@@ -508,6 +416,9 @@ void anim_left_right_bounded(struct displ_object *obj)
 				obj->state = STATE_MOVING_LEFT;
 				dx *= -1;
 			}
+			break;
+		default:
+			obj->state = STATE_MOVING_LEFT;
 			break;
 	}
 
@@ -932,9 +843,6 @@ void init_animators()
 		animators[i].page = 6;
 	}
 
-	animators[ANIM_LEFT_RIGHT].run = anim_left_right;
-	animators[ANIM_LEFT_RIGHT_FLOOR].run = anim_left_right_floor;
-	animators[ANIM_UP_DOWN].run = anim_up_down;
 	animators[ANIM_JEAN].run = anim_jean;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
 	animators[ANIM_CHASE].run = anim_chase;
@@ -945,7 +853,7 @@ void init_animators()
 	animators[ANIM_FISH_JUMP].run = anim_fish_jump;
 	animators[ANIM_SPLASH].run = anim_splash;
 	animators[ANIM_GHOST].run = anim_ghost;
-	animators[ANIM_FIREBALL].run = anim_up_down_bounded;
+	animators[ANIM_UP_DOWN_BOUNDED].run = anim_up_down_bounded;
 	animators[ANIM_ARCHER_SKELETON].run = anim_archer_skeleton;
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
