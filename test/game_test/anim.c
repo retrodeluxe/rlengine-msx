@@ -68,13 +68,13 @@ void change_room() __nonbanked
 	// need 4 sprites on the score area to hide
 	if (dpo_jean.ypos > 144) {
 		log_e("room down %d\n",dpo_jean.ypos);
-		game_state.jean_y = -15;
-		dpo_jean.ypos = -15;
+		game_state.jean_y = -24;
+		dpo_jean.ypos = -24;
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room += 5;
 		game_state.change_room = true;
 
-	} else if (dpo_jean.ypos < -16 && game_state.room != ROOM_HAGMAN_TREE) {
+	} else if (dpo_jean.ypos < -24 && game_state.room != ROOM_HAGMAN_TREE) {
 		game_state.jean_y = 144;
 		dpo_jean.ypos = 159;
 		game_state.jean_x = dpo_jean.xpos;
@@ -147,38 +147,20 @@ void anim_jean(struct displ_object *obj)
 			return;
 		case STATE_JUMPING:
 			dy = jmp++;
-			//jump_ct++;
-
-			//if (jump_ct < 5) {
-			//	dy = -4;
-		//		dy += dy_8 / 2;
-		//		dy_8 = 0;
-		//	} else if (jump_ct < 10) {
-		//		dy = 0;
-		//	} else {
-		//		jump_ct = 0;
-		//		obj->state = STATE_FALLING;
-		//	}
 			if (jmp == 0) {
 				obj->state = STATE_FALLING;
 			}
 			if (stick == STICK_LEFT) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
-				dx = -3;
+				dx = -2;
 			} else if (stick == STICK_RIGHT) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
-				dx = 3;
+				dx = 2;
 			}
 			if (is_colliding_up(obj)) {
 				obj->state = STATE_FALLING;
 				jmp = 0;
 			}
-			// handle trigger again for extended
-			// if (trigger) {
-			// 	if (jump_ct < 5) {
-			// 		dy_8 = -8;
-			// 	}
-			// }
 			break;
 		case STATE_MOVING_LEFT:
 			sp->cur_state = JANE_STATE_LEFT;
@@ -201,7 +183,6 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
-				//jmp = 0;
 			break;
 		case STATE_MOVING_RIGHT:
 			sp->cur_state = JANE_STATE_RIGHT;
@@ -227,7 +208,6 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
-				//jmp = 0;
 			break;
 		case STATE_CROUCHING:
 			if (stick == STICK_DOWN ) {
@@ -256,7 +236,6 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
-				//jmp = 0;
 			break;
 		case STATE_IDLE:
 			jmp = 0;
@@ -280,7 +259,6 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
-				//jmp = 0;
 			break;
 		case STATE_FALLING:
 			dy = jmp;
@@ -294,10 +272,10 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (stick == STICK_LEFT) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
-				dx = -3;
+				dx = -2;
 			} else if (stick == STICK_RIGHT) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
-				dx = 3;
+				dx = 2;
 			}
 			if (is_colliding_down(obj) || is_colliding_down_ft(obj)) {
 				if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
