@@ -230,12 +230,24 @@ static bool is_coliding_trigger_tile_pair(uint8_t tile1, uint8_t tile2) __nonban
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
         uint8_t *map, int8_t dx, int8_t dy, bool notify) __nonbanked
 {
-	uint8_t x, y, c;
+	int16_t x, y;
+	int16_t xp, yp;
 	uint8_t *base_ceiling_l, *base_ceiling_r, *base_left_t, *base_left_b;
 	uint8_t *base_right_t, *base_right_b, *base_floor_l, *base_floor_r;
 
-	x = obj->xpos;
-	y = obj->ypos;
+	/** truncate tile positions to screen borders **/
+	xp = obj->xpos + dx;
+	yp = obj->ypos + dy;
+
+	if (xp < 0) x = 0;
+	else if (xp > 240) x = 240;
+	else x = xp;
+	if (yp < -12) y = -12;
+	else if (yp > 143) y = 143;
+	else y = yp;
+
+	// this doesn't work because cannot apply offset properly....
+	// y + 12 and y positive prevents it.
 
 	base_ceiling_l = map + (x + 4) / 8 + (y + 12) / 8 * TILE_WIDTH;
 	base_ceiling_r = map + (x + 8) / 8 + (y + 12) / 8 * TILE_WIDTH;
@@ -259,14 +271,14 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	tile[6] = *(base_floor_l);
 	tile[7] = *(base_floor_r);
 
-	vdp_write(vdp_base_names_grp1 + base_ceiling_l - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_ceiling_r - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_left_t - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_left_b - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_right_t - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_right_b - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_floor_l - map, 254);
-	vdp_write(vdp_base_names_grp1 + base_floor_r - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_ceiling_l - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_ceiling_r - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_left_t - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_left_b - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_right_t - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_right_b - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_floor_l - map, 254);
+	// vdp_write(vdp_base_names_grp1 + base_floor_r - map, 254);
 
 	obj->collision_state = 0;
 
@@ -279,36 +291,39 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 		}
 	}
 
-	if (obj->xpos > -1 && obj->xpos < 239) {
+	//if (obj->xpos > 1 && obj->xpos < 239) {
 		if (is_coliding_tile_pair(tile[2], tile[3])) {
 			obj->collision_state |= COLLISION_LEFT;
 		}
 		if (is_coliding_tile_pair(tile[4], tile[5])) {
 			obj->collision_state |= COLLISION_RIGHT;
 		}
-	}
+	//}
 
-	if (obj->ypos > -1) {
+	//if (obj->ypos > 0) {
 		if (is_coliding_tile_pair(tile[0], tile[1])) {
 			obj->collision_state |= COLLISION_UP;
+
+			//obj->ypos = (int16_t)(((y / 8) + 1) * 8);
+			//log_e("col up ypos %d\n", obj->ypos);
 		}
-	}
-	if (obj->ypos < (192 - 52)) {
+	//}
+	//if (obj->ypos < 191) {
 
 		if (is_coliding_tile_pair(tile[6], tile[7])) {
 			obj->collision_state |= COLLISION_DOWN;
 		}
 
-		if (is_coliding_down_tile_pair(tile[6], tile[7])) {
+		if (is_coliding_down_tile_pair(tile[6], tile[7]) && dy >= 0) {
 			obj->collision_state |= COLLISION_DOWN_FT;
 			if (notify) {
 				phys_tile_collision_notify(tile[6]);
 				phys_tile_collision_notify(tile[7]);
 			}
 
-			obj->ypos = (y / 8) * 8;
+			obj->ypos = (int16_t)((y / 8) * 8);
 		}
-	}
+	//}
 
 }
 

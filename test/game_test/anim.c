@@ -66,14 +66,17 @@ void change_room() __nonbanked
 	}
 
 	// need 4 sprites on the score area to hide
-	if (dpo_jean.ypos > (192 - 48)) {
-		game_state.jean_y = -8;
+	if (dpo_jean.ypos > 144) {
+		log_e("room down %d\n",dpo_jean.ypos);
+		game_state.jean_y = -15;
+		dpo_jean.ypos = -15;
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room += 5;
 		game_state.change_room = true;
 
-	} else if (dpo_jean.ypos < -16) {
-		game_state.jean_y = 192 - 48 - 8;
+	} else if (dpo_jean.ypos < -16 && game_state.room != ROOM_HAGMAN_TREE) {
+		game_state.jean_y = 144;
+		dpo_jean.ypos = 159;
 		game_state.jean_x = dpo_jean.xpos;
 		game_state.room -= 5;
 		game_state.change_room = true;
@@ -84,6 +87,11 @@ void change_room() __nonbanked
 		game_state.checkpoint_x = game_state.jean_x;
 		game_state.checkpoint_y = game_state.jean_y;
 		game_state.checkpoint_room = game_state.room;
+	}
+
+	if (game_state.change_room) {
+		log_e("room change: %d\n",game_state.room);
+		log_e("jean x %d y %d\n",game_state.jean_x, game_state.jean_y);
 	}
 }
 
@@ -106,10 +114,9 @@ void anim_jean_death(struct displ_object *obj)
 
 void anim_jean(struct displ_object *obj)
 {
-	static uint8_t jump_ct = 0, fall_ct = 0;
 	static uint8_t death_ct = 0;
-	static int8_t dy_8 = 0;
 	int8_t dx, dy;
+	static int16_t jmp = 0;
 	uint8_t x, y, fallthrough;
 
 	#define CROUCH_OFFSET 8
@@ -139,16 +146,20 @@ void anim_jean(struct displ_object *obj)
 			game_state.death = true;
 			return;
 		case STATE_JUMPING:
-			jump_ct++;
+			dy = jmp++;
+			//jump_ct++;
 
-			if (jump_ct < 5) {
-				dy = -4;
-				dy += dy_8 / 2;
-				dy_8 = 0;
-			} else if (jump_ct < 10) {
-				dy = 0;
-			} else {
-				jump_ct = 0;
+			//if (jump_ct < 5) {
+			//	dy = -4;
+		//		dy += dy_8 / 2;
+		//		dy_8 = 0;
+		//	} else if (jump_ct < 10) {
+		//		dy = 0;
+		//	} else {
+		//		jump_ct = 0;
+		//		obj->state = STATE_FALLING;
+		//	}
+			if (jmp == 0) {
 				obj->state = STATE_FALLING;
 			}
 			if (stick == STICK_LEFT) {
@@ -158,12 +169,16 @@ void anim_jean(struct displ_object *obj)
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
 				dx = 3;
 			}
-			// handle trigger again for extended
-			if (trigger) {
-				if (jump_ct < 5) {
-					dy_8 = -8;
-				}
+			if (is_colliding_up(obj)) {
+				obj->state = STATE_FALLING;
+				jmp = 0;
 			}
+			// handle trigger again for extended
+			// if (trigger) {
+			// 	if (jump_ct < 5) {
+			// 		dy_8 = -8;
+			// 	}
+			// }
 			break;
 		case STATE_MOVING_LEFT:
 			sp->cur_state = JANE_STATE_LEFT;
@@ -181,10 +196,12 @@ void anim_jean(struct displ_object *obj)
 			if (trigger) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
 				obj->state = STATE_JUMPING;
+				jmp = -8;
 				sfx_play_effect(SFX_JUMP, 0);
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
+				//jmp = 0;
 			break;
 		case STATE_MOVING_RIGHT:
 			sp->cur_state = JANE_STATE_RIGHT;
@@ -205,10 +222,12 @@ void anim_jean(struct displ_object *obj)
 			if (trigger) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
 				obj->state = STATE_JUMPING;
+				jmp = -8;
 				sfx_play_effect(SFX_JUMP, 0);
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
+				//jmp = 0;
 			break;
 		case STATE_CROUCHING:
 			if (stick == STICK_DOWN ) {
@@ -237,8 +256,10 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
+				//jmp = 0;
 			break;
 		case STATE_IDLE:
+			jmp = 0;
 			if (stick == STICK_LEFT) {
 				obj->state = STATE_MOVING_LEFT;
 			} else if (stick == STICK_RIGHT) {
@@ -254,13 +275,16 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (trigger) {
 				obj->state = STATE_JUMPING;
+				jmp = -8;
 				sfx_play_effect(SFX_JUMP, 0);
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
+				//jmp = 0;
 			break;
 		case STATE_FALLING:
-			dy = 4;
+			dy = jmp;
+			if (jmp++ > 6) jmp = 6;
 			if (sp->cur_state == JANE_STATE_RIGHT
 				|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
 					sp->cur_state = JANE_STATE_RIGHT_JUMP;
@@ -282,7 +306,6 @@ void anim_jean(struct displ_object *obj)
 					sp->cur_state = JANE_STATE_LEFT;
 				}
 				obj->state = STATE_IDLE;
-				fall_ct = 0;
 			}
 			break;
 	}
@@ -327,10 +350,7 @@ void anim_jean(struct displ_object *obj)
 	}
 
 
-	// log_e("state %d\n", obj->state);
-	// log_e("dx %d dy %d\n", dx, dy);
-	// log_e("x %d y %d\n", obj->xpos, obj->ypos);
-	// log_e("collision %d\n", obj->collision_state);
+	//log_e("state %d pos %d %d col %d dx %d dy %d jmp %d\n", obj->state, obj->xpos, obj->ypos, obj->collision_state, dx ,dy, jmp);
 }
 
 void anim_cycle_tile(struct displ_object *dpo)
