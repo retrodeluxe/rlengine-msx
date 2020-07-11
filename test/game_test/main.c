@@ -148,9 +148,7 @@ start:
 	init_game_state();
 	init_scene();
 
-	//spr_refresh();
 	load_room(game_state.room, true);
-	show_score_panel();
 
 	/** game loop **/
 	for(;;) {
@@ -178,7 +176,6 @@ start:
 		if (game_state.show_parchment) {
 			show_parchment(game_state.show_parchment);
 			load_room(game_state.room, true);
-			show_score_panel();
 			game_state.show_parchment = 0;
 		} else if (game_state.final_animation) {
 			show_ending_animation();

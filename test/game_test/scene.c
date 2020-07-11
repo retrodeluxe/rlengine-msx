@@ -927,6 +927,7 @@ void load_room(uint8_t room, bool reload)
 	}
 
 	show_room_title(game_state.room);
+	show_score_panel();
 	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
 	spr_refresh();
 	vdp_screen_enable();
