@@ -11,6 +11,9 @@ struct game_state_t {
 	/* jean position when swithing rooms */
 	int16_t jean_x;
 	int16_t jean_y;
+	uint8_t jean_state;
+	uint8_t jean_collision_state;
+	uint8_t jean_anim_state;
 
 	/* check point saved position */
 	uint8_t checkpoint_x;

@@ -646,6 +646,7 @@ void show_parchment(uint8_t id)
 
 	} while (!trigger);
 
+	trigger = 0;
 	tile_set_vfree(&parchment);
 	font_set_vfree(&intro_font_set);
 	reload_font_digits();

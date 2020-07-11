@@ -217,14 +217,15 @@ void add_jean(uint8_t room)
 	spr_valloc_pattern_set(PATRN_JEAN);
 
 	spr_init_sprite(&jean_sprite, PATRN_JEAN);
+	jean_sprite.cur_state = game_state.jean_anim_state;
 
 	dpo_jean.xpos = game_state.jean_x;
 	dpo_jean.ypos = game_state.jean_y;
 	dpo_jean.type = DISP_OBJECT_SPRITE;
-	dpo_jean.state = STATE_IDLE;
+	dpo_jean.state = game_state.jean_state;
 	dpo_jean.spr = &jean_sprite;
 	dpo_jean.visible = true;
-	dpo_jean.collision_state = 0;
+	dpo_jean.collision_state = game_state.jean_collision_state;
 	dpo_jean.check_collision = false;
 	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
 	INIT_LIST_HEAD(&dpo_jean.list);

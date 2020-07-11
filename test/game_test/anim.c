@@ -65,9 +65,7 @@ void change_room() __nonbanked
 		game_state.change_room = true;
 	}
 
-	// need 4 sprites on the score area to hide
 	if (dpo_jean.ypos > 144) {
-		log_e("room down %d\n",dpo_jean.ypos);
 		game_state.jean_y = -24;
 		dpo_jean.ypos = -24;
 		game_state.jean_x = dpo_jean.xpos;
@@ -90,8 +88,10 @@ void change_room() __nonbanked
 	}
 
 	if (game_state.change_room) {
-		log_e("room change: %d\n",game_state.room);
-		log_e("jean x %d y %d\n",game_state.jean_x, game_state.jean_y);
+		//log_e("room change state %d\n", dpo_jean.state);
+		game_state.jean_state = dpo_jean.state;
+		game_state.jean_collision_state = dpo_jean.collision_state;
+		game_state.jean_anim_state = dpo_jean.spr->cur_state;
 	}
 }
 
@@ -130,6 +130,8 @@ void anim_jean(struct displ_object *obj)
 
 	x = (sp->planes[0]).x;
 	y = (sp->planes[0]).y;
+
+	//log_e("state in %d\n", obj->state);
 
 	switch(obj->state) {
 		case STATE_COLLISION:
