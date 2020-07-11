@@ -688,7 +688,7 @@ void anim_splash(struct displ_object *obj)
 		if (obj->state == obj->aux) {
 			obj->tob->cur_anim_step = 0;
 			tile_object_show(obj->tob, scr_tile_buffer, true);
-			add_bullet(obj->xpos - 4,
+			add_bullet(obj->xpos,
 				obj->ypos - 8,
 				PATRN_FISH, ANIM_FISH_JUMP, 0, -6, 0, obj);
 		} else if (obj->state == obj->aux + 2) {
