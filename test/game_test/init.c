@@ -146,6 +146,7 @@ static void init_tiles_zone_3()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_1], MAP_TILESET_CAVE_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_2], MAP_TILESET_CAVE_2_POS);	
 	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
 }
 

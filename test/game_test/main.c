@@ -672,12 +672,12 @@ void show_room_title(uint8_t room)
 	w = tileset_room_title[room].w;
 	vram_offset = vdp_base_names_grp1 + SCR_WIDTH + 22 * SCR_WIDTH;
 
-	tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 180);
+	tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 184);
 
 	vdp_memset(vram_offset - MAX_TITLE_LEN, MAX_TITLE_LEN, 0);
 	vdp_memset(vram_offset - MAX_TITLE_LEN + SCR_WIDTH, MAX_TITLE_LEN, 0);
 
-	tile = 180;
+	tile = 184;
 	for (i = 0; i < w; i++) {
 		vdp_write(vram_offset - w + i, tile + i);
 		vdp_write(vram_offset - w + i + SCR_WIDTH, tile + i + w);
