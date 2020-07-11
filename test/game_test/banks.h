@@ -16,3 +16,4 @@
 #define PAGE_INSTR_PAT	 18
 #define PAGE_INSTR_COL	 19
 #define PAGE_RAW_TILES	 20
+#define PAGE_RAW_MAPTILES 21

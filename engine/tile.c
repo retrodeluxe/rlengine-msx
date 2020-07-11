@@ -154,7 +154,10 @@ void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 	if (ts->allocated)
 		return;
 
-	tile_set_to_vram_bank(ts, ALLBANKS, pos);
+	if(ts->raw)
+		tile_set_to_vram_bank_raw(ts, ALLBANKS, pos);
+	else
+		tile_set_to_vram_bank(ts, ALLBANKS, pos);
 }
 
 void tile_set_to_vram_raw(struct tile_set *ts, uint8_t pos)

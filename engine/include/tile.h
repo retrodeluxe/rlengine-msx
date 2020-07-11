@@ -67,6 +67,13 @@ struct tile_object {
 				(SET).allocated = false; \
 				(SET).raw = false;
 
+#define INIT_RAW_TILE_SET(SET, GEN)	(SET).w = GEN ## _tile_w;\
+				(SET).h = GEN ## _tile_h;\
+				(SET).pattern = GEN ## _tile;\
+				(SET).color = GEN ## _tile_color; \
+				(SET).allocated = false; \
+				(SET).raw = true;
+
 #define INIT_DYNAMIC_TILE_SET(SET, GEN, W, H, F, D)	(SET).w = GEN ## _tile_w;\
 							(SET).h = GEN ## _tile_h;\
 							(SET).pattern = GEN ## _tile;\

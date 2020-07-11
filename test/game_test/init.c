@@ -78,32 +78,32 @@ void init_map_tilesets()
 	tile_init();
 	phys_init();
 
-	ascii8_set_data(PAGE_MAPTILES);
+	ascii8_set_data(PAGE_RAW_MAPTILES);
 
-	INIT_TILE_SET(tileset_map[MAP_TILESET_FOREST], map1);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_1], map2);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_2], map3);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_TREES_1], map4);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CAVE_1], map5);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CATACOMBS_1], map6);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_BEAM], map7);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_STONE], map8);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_FLAMES], map9);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_BRICKS], map10);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_BRICKS_2], map11);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_PLANT], map12);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_FOREST_2], map13);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_GRAVES], map14);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_DECO], map15);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CHURCH_DECO_2], map16);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_X], map17);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_HANGING_PLANT], map18);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_SKULL], map19);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_DEATH_DECO], map20);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_SKULL_2], map21);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_ROPE], map22);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_CAVE_2], map23);
-	INIT_TILE_SET(tileset_map[MAP_TILESET_DEBUG], debug);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_FOREST], map1);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CHURCH_1], map2);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CHURCH_2], map3);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_TREES_1], map4);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CAVE_1], map5);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CATACOMBS_1], map6);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_BEAM], map7);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_STONE], map8);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_FLAMES], map9);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_BRICKS], map10);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_BRICKS_2], map11);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_PLANT], map12);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_FOREST_2], map13);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_GRAVES], map14);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CHURCH_DECO], map15);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CHURCH_DECO_2], map16);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_X], map17);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_HANGING_PLANT], map18);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_SKULL], map19);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_DEATH_DECO], map20);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_SKULL_2], map21);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_ROPE], map22);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_CAVE_2], map23);
+	INIT_RAW_TILE_SET(tileset_map[MAP_TILESET_DEBUG], debug);
 }
 
 void clear_map_tilesets()
@@ -187,7 +187,7 @@ void init_room_tilesets(uint8_t room, bool reload)
 	static uint8_t prev_room = ROOM_SATAN;
 
 	phys_init();
-	ascii8_set_data(PAGE_MAPTILES);
+	ascii8_set_data(PAGE_RAW_MAPTILES);
 
 	tile_set_to_vram(&tileset_map[MAP_TILESET_DEBUG], 254);
 
