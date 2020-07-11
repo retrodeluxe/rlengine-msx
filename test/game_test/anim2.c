@@ -158,7 +158,7 @@ void anim_scythe(struct displ_object *obj)
 			obj->aux *= -1;
 	}
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false, false);
 	if (!is_colliding_down(obj)) {
 		obj->ypos += dy;
 	}

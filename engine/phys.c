@@ -228,7 +228,7 @@ static bool is_coliding_trigger_tile_pair(uint8_t tile1, uint8_t tile2) __nonban
  * Update dpo collision_state
  */
 static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
-        uint8_t *map, int8_t dx, int8_t dy, bool notify) __nonbanked
+        uint8_t *map, int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked
 {
 	int16_t x, y;
 	int16_t xp, yp;
@@ -251,11 +251,16 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	base_ceiling_l = map + (x + 4) / 8 + (y + 12) / 8 * TILE_WIDTH;
 	base_ceiling_r = map + (x + 8) / 8 + (y + 12) / 8 * TILE_WIDTH;
 
-	base_left_t = map + x / 8 + (y + 18) / 8 * TILE_WIDTH;
 	base_left_b = map + x / 8 + (y + 24) / 8 * TILE_WIDTH;
-
-	base_right_t = map + (x + 12) / 8 + (y + 18) / 8 * TILE_WIDTH;
 	base_right_b = map + (x + 12) / 8 + (y + 24) / 8 * TILE_WIDTH;
+
+	if (duck) {
+		base_left_t = base_left_b;
+		base_right_t = base_right_b;
+	} else {
+		base_left_t = map + x / 8 + (y + 18) / 8 * TILE_WIDTH;
+		base_right_t = map + (x + 12) / 8 + (y + 18) / 8 * TILE_WIDTH;
+	}
 
 	base_floor_l = map + (x + 4) / 8 + (y + 32) / 8 * TILE_WIDTH;
 	base_floor_r = map + (x + 8) / 8 + (y + 32) / 8 * TILE_WIDTH;
@@ -324,7 +329,7 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
  * XXX: Enemies do not trigger collision callbacks with tob, need a flag.
  */
 static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
-        uint8_t *map, int8_t dx, int8_t dy, bool notify) __nonbanked
+        uint8_t *map, int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked
 {
 	uint8_t x,y, c;
 	uint8_t *base_tl, *base_bl, *base_tr, *base_br;
@@ -372,16 +377,16 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
  * Update collision state of a display object 16x16
  */
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
-				int8_t dx, int8_t dy, bool notify) __nonbanked
+				int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked
 {
 	uint8_t size = obj->spr->pattern_set->size;
 
 	if (size == SPR_SIZE_16x16) {
-		phys_detect_tile_collisions_16x16(obj,map, dx, dy, notify);
+		phys_detect_tile_collisions_16x16(obj,map, dx, dy, duck, notify);
 	} else if (size = SPR_SIZE_16x32) {
-		phys_detect_tile_collisions_16x32(obj, map, dx, dy, notify);
+		phys_detect_tile_collisions_16x32(obj, map, dx, dy, duck, notify);
 	} else if (size = SPR_SIZE_32x16) {
-		phys_detect_tile_collisions_16x16(obj,map, dx, dy, notify);
+		phys_detect_tile_collisions_16x16(obj,map, dx, dy, duck, notify);
 	}
 }
 

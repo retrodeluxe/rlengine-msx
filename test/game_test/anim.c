@@ -221,18 +221,24 @@ void anim_jean(struct displ_object *obj)
 			} else if (stick == STICK_DOWN_RIGHT) {
 				dx = 2;
 				sp->cur_state = JANE_STATE_RIGHT_CROUCH;
-			} else if (stick == STICK_CENTER) {
+			} else if (stick == STICK_CENTER && !is_colliding_up(obj)) {
 				if (sp->cur_state == JANE_STATE_LEFT_CROUCH)
 					sp->cur_state = JANE_STATE_LEFT;
 				else if (sp->cur_state == JANE_STATE_RIGHT_CROUCH)
 					sp->cur_state = JANE_STATE_RIGHT;
 				obj->state = STATE_IDLE;
-			} else if (stick == STICK_LEFT) {
+			} else if (stick == STICK_LEFT && !is_colliding_up(obj)) {
 				obj->state = STATE_MOVING_LEFT;
 				sp->cur_state = JANE_STATE_LEFT;
-			} else if (stick == STICK_RIGHT) {
+			} else if (stick == STICK_LEFT && is_colliding_up(obj)) {
+				dx = -2;
+				sp->cur_state = JANE_STATE_LEFT_CROUCH;
+			} else if (stick == STICK_RIGHT && !is_colliding_up(obj)) {
 				obj->state = STATE_MOVING_RIGHT;
 				sp->cur_state = JANE_STATE_RIGHT;
+			} else if (stick == STICK_RIGHT && is_colliding_up(obj)) {
+				dx = 2;
+				sp->cur_state = JANE_STATE_RIGHT_CROUCH;
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
 				obj->state = STATE_FALLING;
@@ -289,7 +295,11 @@ void anim_jean(struct displ_object *obj)
 	}
 
 	/** handle collisions and update sprite **/
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, true);
+	if (obj->state == STATE_CROUCHING) {
+		phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, true, true);
+	} else {
+		phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false, true);
+	}
 
 	if (obj->state != STATE_IDLE) {
 		sp->anim_ctr++;
@@ -369,7 +379,7 @@ void anim_left_right(struct displ_object *obj)
 			obj->state = STATE_MOVING_LEFT;
 	}
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false, false);
 	dpo_simple_animate(obj, dx, 0);
 }
 
@@ -397,7 +407,7 @@ void anim_left_right_floor(struct displ_object *obj)
 		default:
 			obj->state = STATE_MOVING_LEFT;
 	}
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, 0, false, false);
 	phys_detect_fall(obj, scr_tile_buffer, dx);
 
 	if ((dx > 0 && !is_colliding_right(obj))
@@ -431,7 +441,7 @@ void anim_up_down(struct displ_object *obj)
 			break;
 	}
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy, false);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, 0, dy, false, false);
 
 	if ((dy > 0 && !is_colliding_down(obj))
 		|| (dy < 0 && !is_colliding_up(obj))) {
@@ -513,7 +523,7 @@ void anim_chase(struct displ_object *obj)
 	int8_t dx = 0, dy = 0;
 	struct spr_sprite_def *sp = obj->spr;
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false, false);
 
 	if (game_state.room == ROOM_GRAVEYARD)
 		phys_detect_fall(obj, scr_tile_buffer, dx);
@@ -814,7 +824,7 @@ void anim_ghost(struct displ_object *obj)
 	if (obj->ypos > dpo_jean.ypos) {
 		dy *= -1;
 	}
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false);
+	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false, false);
 	if ((dx > 0 && !is_colliding_right(obj))
 		|| (dx < 0 && !is_colliding_left(obj))) {
 		obj->xpos += dx;
