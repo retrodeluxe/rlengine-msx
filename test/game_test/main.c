@@ -298,6 +298,7 @@ static void load_instructions_scr()
 	vdp_screen_disable();
 
 	spr_clear();
+	spr_refresh();
 
 	ascii8_set_data(PAGE_INSTR_PAT);
 	vdp_memcpy(vdp_base_chars_grp1, instr_pat, 6144);
