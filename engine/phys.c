@@ -78,8 +78,6 @@ void phys_clear_sprite_collision_handler() __nonbanked
 
 /**
  * set callbacks for specific tiles
- *
- *  FIXME: the same tile object repeated many times will create repeated cgroups
  */
 void phys_set_tile_collision_handler(enum tile_collision_type type,
 	struct displ_object *dpo, void (*handler), uint8_t data)
@@ -98,13 +96,18 @@ void phys_set_tile_collision_handler(enum tile_collision_type type,
 	if (i < n_cgroups && !(type & TILE_COLLISION_MULTIPLE))
 		return;
 
-	cgroup[i].start = base_tile;
-	cgroup[i].end = base_tile + num_tiles - 1;
-	cgroup[i].handler = handler;
-	cgroup[i].data = data;
-	cgroup[i].dpo = dpo;
-	cgroup[i].type = type;
+	cgroup[n_cgroups].start = base_tile;
+	cgroup[n_cgroups].end = base_tile + num_tiles - 1;
+	cgroup[n_cgroups].handler = handler;
+	cgroup[n_cgroups].data = data;
+	cgroup[n_cgroups].dpo = dpo;
+	cgroup[n_cgroups].type = type;
 	n_cgroups++;
+
+	// dump cgroups
+	//for (i = 0; i < n_cgroups; i++) {
+	//	log_e("cgroup %d: start %d end %d\n", i, cgroup[i].start,cgroup[i].end);
+	//}
 }
 
 /**
@@ -161,15 +164,22 @@ void phys_set_colliding_tile_set(struct tile_set *ts)
 
 /*
  * if the tile has a handler set, notify
- * XXX: this is asking for optimization
  */
-static void phys_tile_collision_notify(uint8_t tile) __nonbanked
+static void phys_tile_collision_notify(uint8_t tile, uint16_t x, uint16_t y) __nonbanked
 {
 	uint8_t i;
+	int16_t d;
+
 	for (i = 0; i < n_cgroups; i++) {
 		if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
-			// FIXME: huge hack for function pointers
-			//        also breaks build for non-ascii8 roms
+			if (cgroup[i].type & TILE_COLLISION_MULTIPLE) {
+				d = (cgroup[i].dpo->xpos - x);
+				d = d < 0 ? (d*-1):d;
+				if (d > 32) {
+					log_e("bad obj: %d\n",d);
+					continue;
+				}
+			}
 			ascii8_set_code(3);
 			cgroup[i].handler(cgroup[i].dpo, cgroup[i].data);
 			ascii8_set_code(6);
@@ -299,8 +309,8 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	// FIXME: this needs optimization
 	if (notify) {
 		if (is_coliding_trigger_tile_pair(tile[4], tile[5])) {
-			phys_tile_collision_notify(tile[4]);
-			phys_tile_collision_notify(tile[5]);
+			phys_tile_collision_notify(tile[4], x, y);
+			phys_tile_collision_notify(tile[5], x ,y);
 		}
 	}
 
@@ -322,8 +332,8 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	if (is_coliding_down_tile_pair(tile[6], tile[7]) && dy >= 0) {
 		obj->collision_state |= COLLISION_DOWN_FT;
 		if (notify) {
-			phys_tile_collision_notify(tile[6]);
-			phys_tile_collision_notify(tile[7]);
+			phys_tile_collision_notify(tile[6], x, y);
+			phys_tile_collision_notify(tile[7], x, y);
 		}
 
 		if (dy > 0 && yp < 0)

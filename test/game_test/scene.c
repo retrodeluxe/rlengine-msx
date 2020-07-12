@@ -53,6 +53,9 @@ struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 /** main character display object **/
 struct displ_object dpo_jean;
 
+/** temporary dpo **/
+struct displ_object *tmp_dpo;
+
 /** main display list **/
 struct list_head display_list;
 
@@ -562,59 +565,75 @@ void load_room(uint8_t room, bool reload)
 						TILE_COLLISION_FULL, toggle_handler, id);
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
-					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CROSS) {
+				/**
+				 * This is a complicated corner case: two objects need to
+				 * be switched over when an external action happens, and
+				 * also we can have multiple copies on the room with different
+				 * states each. Finally, it is possible to pick up each one
+				 * of the items when in one of the states...
+				 */
 				id = map_object->object.actionitem.action_id - 1;
 				if (id < 8 && game_state.cross[id] == 0) {
-					// FIXME: mapping to callback per tileobject collision
-					//  allows a single data, so two tobs generate same logic
 					if (!game_state.cross_switch) {
-						add_tileobject(dpo, tob_ct, TILE_CROSS);
-						dpo->aux = 0;
-						add_animator(dpo, ANIM_CROSS);
-						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL, pickup_cross, id);
-						dpo++;
 						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
 						dpo->aux = 1;
 						add_animator(dpo, ANIM_CROSS);
 						dpo->visible = false;
+						tmp_dpo = dpo;
+						dpo++;
+						add_tileobject(dpo, tob_ct, TILE_CROSS);
+						dpo->aux = 0;
+						dpo->parent = tmp_dpo;
+						add_animator(dpo, ANIM_CROSS);
+						phys_set_colliding_tile_object(dpo,
+							TILE_COLLISION_FULL
+							| TILE_COLLISION_MULTIPLE, pickup_cross, id);
 					} else {
 						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
 						dpo->aux = 1;
 						add_animator(dpo, ANIM_CROSS);
+						tmp_dpo = dpo;
 						dpo++;
 						add_tileobject(dpo, tob_ct, TILE_CROSS);
 						dpo-> aux = 0;
+						dpo-> parent = tmp_dpo;
 						add_animator(dpo, ANIM_CROSS);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL, pickup_cross, id);
+							TILE_COLLISION_FULL
+							| TILE_COLLISION_MULTIPLE, pickup_cross, id);
 						dpo->visible = false;
 					}
 				} else if (id > 7 && game_state.cross[id] == 0) {
-					if (game_state.cross_switch) {
+					if (!game_state.cross_switch) {
 						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
 						dpo->aux = 0;
 						add_animator(dpo, ANIM_CROSS);
+						tmp_dpo = dpo;
 						dpo++;
 						add_tileobject(dpo, tob_ct, TILE_CROSS);
 						dpo->aux = 1;
+						dpo->parent = tmp_dpo;
 						add_animator(dpo, ANIM_CROSS);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL, pickup_cross, id);
+							TILE_COLLISION_FULL
+							|TILE_COLLISION_MULTIPLE, pickup_cross, id);
 						dpo->visible = false;
 					} else {
-						add_tileobject(dpo, tob_ct, TILE_CROSS);
-						dpo->aux = 1;
-						add_animator(dpo, ANIM_CROSS);
-						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL, pickup_cross, id);
-						dpo++;
 						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
 						dpo->aux = 0;
 						add_animator(dpo, ANIM_CROSS);
 						dpo->visible = false;
+						tmp_dpo = dpo;
+						dpo++;
+						add_tileobject(dpo, tob_ct, TILE_CROSS);
+						dpo->aux = 1;
+						dpo->parent = tmp_dpo;
+						add_animator(dpo, ANIM_CROSS);
+						phys_set_colliding_tile_object(dpo,
+							TILE_COLLISION_FULL
+							|TILE_COLLISION_MULTIPLE, pickup_cross, id);
 					}
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
@@ -633,7 +652,8 @@ void load_room(uint8_t room, bool reload)
 					add_tileobject(dpo, tob_ct, TILE_HEART);
 					add_animator(dpo, ANIM_CYCLE_TILE);
 					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, pickup_heart, id);
+						TILE_COLLISION_FULL
+						|TILE_COLLISION_MULTIPLE, pickup_heart, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
 				id = map_object->object.actionitem.action_id;
