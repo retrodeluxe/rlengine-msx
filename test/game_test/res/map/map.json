@@ -2017,7 +2017,7 @@
                  "name":"static",
                  "properties":
                     {
-                     "damage":"0",
+                     "damage":"1",
                      "type":"spear"
                     },
                  "propertytypes":
@@ -2076,7 +2076,7 @@
                  "name":"static",
                  "properties":
                     {
-                     "damage":"0",
+                     "damage":"1",
                      "type":"spear"
                     },
                  "propertytypes":
@@ -2097,7 +2097,7 @@
                  "name":"static",
                  "properties":
                     {
-                     "damage":"0",
+                     "damage":"1",
                      "type":"spear"
                     },
                  "propertytypes":

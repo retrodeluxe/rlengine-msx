@@ -510,7 +510,7 @@ void load_intro_scene() __nonbanked
 
 void load_room(uint8_t room, bool reload)
 {
-	uint8_t i, id, type, delay, offset;
+	uint8_t i, id, type, delay, offset, damage;
 	bool add_dpo;
 
 	//sys_irq_disable();
@@ -708,9 +708,14 @@ void load_room(uint8_t room, bool reload)
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				}
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
-				add_tileobject(dpo, tob_ct, TILE_SPEAR);
-				phys_set_colliding_tile_object(dpo,
+				damage = map_object->object.static_.damage;
+				if (damage == 1) {
+					add_tileobject(dpo, tob_ct, TILE_HARMLESS_SPEAR);
+				} else {
+					add_tileobject(dpo, tob_ct, TILE_SPEAR);
+					phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
+				}
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				add_tileobject(dpo, tob_ct, TILE_WATER);
 				add_animator(dpo, ANIM_CYCLE_TILE);
