@@ -154,10 +154,10 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (stick == STICK_LEFT) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
-				dx = -2;
+				dx = -3;
 			} else if (stick == STICK_RIGHT) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
-				dx = 2;
+				dx = 3;
 			}
 			if (is_colliding_up(obj)) {
 				obj->state = STATE_FALLING;
