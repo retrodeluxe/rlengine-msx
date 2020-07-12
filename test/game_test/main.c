@@ -256,6 +256,7 @@ void show_game_over()
 
 	tile_init();
 	spr_clear();
+	spr_refresh();
 
 	ascii8_set_data(PAGE_INTRO);
 	INIT_TILE_SET(tileset_gameover, gameover);
@@ -270,7 +271,7 @@ void show_game_over()
 		vdp_poke_names(y * 32 + x, ct);
 	}
 	vdp_screen_enable();
-	sys_sleep(3);
+	sys_sleep(5);
 }
 
 static void load_intro_scr()
