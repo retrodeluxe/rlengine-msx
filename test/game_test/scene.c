@@ -694,9 +694,8 @@ void load_room(uint8_t room, bool reload)
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				add_tileobject(dpo, tob_ct, TILE_WATER);
 				add_animator(dpo, ANIM_CYCLE_TILE);
-				// this overflows
-				//phys_set_colliding_tile_object(dpo,
-				//		TILE_COLLISION_FULL, deadly_tile_handler, 0);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_static);
 		} else if (map_object->type == GHOST) {

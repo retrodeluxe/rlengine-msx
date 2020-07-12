@@ -81,19 +81,29 @@ void phys_clear_sprite_collision_handler() __nonbanked
  *
  *  FIXME: the same tile object repeated many times will create repeated cgroups
  */
-void phys_set_tile_collision_handler(struct displ_object *dpo,
-	void (*handler), uint8_t data)
+void phys_set_tile_collision_handler(enum tile_collision_type type,
+	struct displ_object *dpo, void (*handler), uint8_t data)
 {
-	// FIXME: check for overrun and report error.
+	uint8_t i;
 	uint8_t base_tile = dpo->tob->ts->pidx;
 	uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
 		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
 
-	cgroup[n_cgroups].start = base_tile;
-	cgroup[n_cgroups].end = base_tile + num_tiles - 1;
-	cgroup[n_cgroups].handler = handler;
-	cgroup[n_cgroups].data = data;
-	cgroup[n_cgroups].dpo = dpo;
+	for (i = 0; i < n_cgroups; i++) {
+		if (cgroup[i].start == base_tile) {
+			break;
+		}
+	}
+
+	if (i < n_cgroups && !(type & TILE_COLLISION_MULTIPLE))
+		return;
+
+	cgroup[i].start = base_tile;
+	cgroup[i].end = base_tile + num_tiles - 1;
+	cgroup[i].handler = handler;
+	cgroup[i].data = data;
+	cgroup[i].dpo = dpo;
+	cgroup[i].type = type;
 	n_cgroups++;
 }
 
@@ -109,15 +119,15 @@ void phys_set_colliding_tile_object(struct displ_object *dpo,
 		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
 
 	for (i = base_tile; i < base_tile + num_tiles; i++) {
-		if (type == TILE_COLLISION_DOWN)
+		if (type & TILE_COLLISION_DOWN)
 			phys_set_down_colliding_tile(i);
-		else if (type == TILE_COLLISION_TRIGGER)
+		else if (type & TILE_COLLISION_TRIGGER)
 			phys_set_trigger_colliding_tile(i);
-		else
+		else if (type & TILE_COLLISION_FULL)
 			phys_set_colliding_tile(i);
 	}
 
-	phys_set_tile_collision_handler(dpo, handler, data);
+	phys_set_tile_collision_handler(type, dpo, handler, data);
 }
 
 void phys_clear_colliding_tile_object(struct displ_object *dpo)

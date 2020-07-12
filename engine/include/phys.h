@@ -44,20 +44,24 @@ struct tile_collision_group {
         uint8_t start;
         uint8_t end;
         uint8_t data;
+	uint8_t type;
         struct displ_object *dpo;
         void (*handler)(struct displ_object *dpo, uint8_t data);
 };
 
 enum tile_collision_type {
-	TILE_COLLISION_FULL,
-	TILE_COLLISION_DOWN,
-	TILE_COLLISION_TRIGGER,
+	TILE_COLLISION_FULL = 1,
+	TILE_COLLISION_DOWN = 2,
+	TILE_COLLISION_TRIGGER = 4,
+	TILE_COLLISION_MULTIPLE = 8,	// indicates multiple objects may
+					// share same tiles on screen and have
+					// different handlers
 };
 
 void phys_init();
 void phys_set_sprite_collision_handler(void (*handler));
 void phys_clear_sprite_collision_handler() __nonbanked;
-void phys_set_tile_collision_handler(struct displ_object *dpo, void (*handler), uint8_t data);
+void phys_set_tile_collision_handler(enum tile_collision_type type, struct displ_object *dpo, void (*handler), uint8_t data);
 void phys_set_colliding_tile_object(struct displ_object *dpo, enum tile_collision_type type, void (*handler), uint8_t data);
 void phys_clear_colliding_tile_object(struct displ_object *dpo);
 void phys_set_colliding_tile(uint8_t tile);
