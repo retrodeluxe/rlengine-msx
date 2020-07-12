@@ -414,6 +414,7 @@ void init_scene()
 	spr_ct = 0;
 	tob_ct = 0;
 	bullet_ct = 0;
+	current_song = NULL;
 }
 
 void clear_room() __nonbanked
