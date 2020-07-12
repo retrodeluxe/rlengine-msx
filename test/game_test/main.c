@@ -566,7 +566,6 @@ void show_parchment(uint8_t id)
 	game_state.jean_x = dpo_jean.xpos;
 	game_state.jean_y = dpo_jean.ypos;
 
-	stop_music();
 	vdp_screen_disable();
 	tile_init();
 	spr_clear();

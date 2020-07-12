@@ -69,6 +69,9 @@ uint8_t spr_ct, tob_ct, bullet_ct;
 /** current room object data **/
 uint8_t *room_objs;
 
+/** current song **/
+uint8_t *current_song;
+
 extern void init_room_tilesets(uint8_t room, bool reload);
 extern void init_sfx();
 extern void show_room_title(uint8_t room);
@@ -88,17 +91,17 @@ void stop_music()
 
 void start_music(uint8_t room)
 {
-	bool play;
+	uint8_t *new_song;
+	uint16_t new_song_len;
 
 	ascii8_set_data(PAGE_MUSIC);
 
-	play = false;
 	switch (room) {
 		case ROOM_EVIL_CHAMBER:
 		case ROOM_FOREST:
 		case ROOM_GRAVEYARD:
-			sys_memcpy(data_buffer, huntloop_song_pt3, huntloop_song_pt3_len);
-			play = true;
+			new_song = huntloop_song_pt3;
+			new_song_len = huntloop_song_pt3_len;
 			break;
 		case ROOM_CHURCH_ENTRANCE:
 		case ROOM_CHURCH_ALTAR:
@@ -107,44 +110,52 @@ void start_music(uint8_t room)
 		case ROOM_CATACOMBS:
 		case ROOM_CATACOMBS_FLIES:
 		case ROOM_CATACOMBS_WHEEL:
-			sys_memcpy(data_buffer, church_song_pt3, church_song_pt3_len);
-			play = true;
+			new_song = church_song_pt3;
+			new_song_len = church_song_pt3_len;
 			break;
 		case ROOM_PRAYER_OF_HOPE:
-			sys_memcpy(data_buffer, prayerofhope_song_pt3, prayerofhope_song_pt3_len);
-			play = true;
+			new_song = prayerofhope_song_pt3;
+			new_song_len = prayerofhope_song_pt3_len;
 			break;
 		case ROOM_CAVE_LAKE:
 		case ROOM_CAVE_DRAGON:
 		case ROOM_CAVE_GHOST:
+		case ROOM_CAVE_GATE:
 		case ROOM_CAVE_TUNNEL:
 		case ROOM_HIDDEN_GARDEN:
 		case ROOM_HIDDEN_RIVER:
-			sys_memcpy(data_buffer, cave_song_pt3, cave_song_pt3_len);
-			play = true;
+			new_song = cave_song_pt3;
+			new_song_len = cave_song_pt3_len;
 			break;
 		case ROOM_EVIL_CHURCH:
 		case ROOM_EVIL_CHURCH_2:
 		case ROOM_EVIL_CHURCH_3:
-			sys_memcpy(data_buffer, hell_song_pt3, hell_song_pt3_len);
-			play = true;
+			new_song = hell_song_pt3;
+			new_song_len = hell_song_pt3_len;
 			break;
 		case ROOM_SATAN:
 		case ROOM_DEATH:
 			ascii8_set_data(PAGE_INTRO);
-			sys_memcpy(data_buffer, evilfight_song_pt3, evilfight_song_pt3_len);
-			play = true;
+			new_song = evilfight_song_pt3;
+			new_song_len = evilfight_song_pt3_len;
 			break;
 		case ROOM_BONFIRE:
-			play = false;
-			//sys_memset(data_buffer, 0, 2000);
-		default:
+		case ROOM_HAGMAN_TREE:
+			new_song = NULL;
 			break;
 	}
 
-	if (play) {
-		pt3_init(data_buffer, 1);
-		sys_irq_register(play_room_music);
+	if (new_song != current_song) {
+		if (new_song != NULL) {
+			stop_music();
+			sys_memcpy(data_buffer, new_song, new_song_len);
+			pt3_init(data_buffer, 1);
+			sys_irq_register(play_room_music);
+		} else {
+			// FIXME: this stops sound effects as well
+			stop_music();
+		}
+		current_song = new_song;
 	}
 }
 
@@ -498,9 +509,7 @@ void load_room(uint8_t room, bool reload)
 	uint8_t i, id, type, delay, offset;
 	bool add_dpo;
 
-	sys_irq_disable();
-
-	stop_music();
+	//sys_irq_disable();
 
 	clear_room();
 	clean_state();
@@ -800,7 +809,7 @@ void load_room(uint8_t room, bool reload)
 			dpo->speed = map_object->object.movable.speed;
 			dpo->min = map_object->object.movable.min;
 			dpo->max = map_object->object.movable.max;
-			dpo->state = map_object->object.movable.dir; 
+			dpo->state = map_object->object.movable.dir;
 			if (map_object->object.movable.type == TYPE_TEMPLAR) {
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
 				if (room == ROOM_FOREST ||
