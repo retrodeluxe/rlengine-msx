@@ -268,8 +268,8 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 	else if (yp > 143) y = 143;
 	else y = yp;
 
-	base_ceiling_l = map + (x + 4) / 8 + (y + 12) / 8 * TILE_WIDTH;
-	base_ceiling_r = map + (x + 8) / 8 + (y + 12) / 8 * TILE_WIDTH;
+	base_ceiling_l = map + (x + 4) / 8 + (y + 16) / 8 * TILE_WIDTH;
+	base_ceiling_r = map + (x + 8) / 8 + (y + 16) / 8 * TILE_WIDTH;
 
 	base_left_b = map + x / 8 + (y + 24) / 8 * TILE_WIDTH;
 	base_right_b = map + (x + 12) / 8 + (y + 24) / 8 * TILE_WIDTH;
