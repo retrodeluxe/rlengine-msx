@@ -914,7 +914,7 @@ void load_room(uint8_t room, bool reload)
 				add_animator(dpo, ANIM_LEFT_RIGHT_BOUNDED);
 			} else if (map_object->object.movable.type == TYPE_DEATH) {
 				add_sprite(dpo, spr_ct, PATRN_DEATH);
-				dpo->aux = 4; // max scythes
+				dpo->aux = 3; // max scythes
 				dpo->aux2 = 0; // scythe count
 				dpo->state = STATE_MOVING_RIGHT;
 				add_animator(dpo, ANIM_DEATH);

@@ -129,7 +129,7 @@ void anim_death(struct displ_object *obj)
 		obj->aux2++;
 		add_bullet(obj->xpos,
 			obj->ypos + 24,
-			PATRN_SCYTHE, ANIM_SCYTHE, 0, 1, 0, obj);
+			PATRN_SCYTHE, ANIM_SCYTHE, 0, 1, 1, obj);
 	}
 
 	obj->xpos += dx;
@@ -149,7 +149,7 @@ void anim_scythe(struct displ_object *obj)
 	struct spr_sprite_def *sp = obj->spr;
 
 	dx = obj->aux;
-	dy = 2;
+	dy = 1;
 
 	if (obj->state == 0) {
 		sp->anim_ctr_treshold = 1;
