@@ -40,6 +40,7 @@ void show_title_screen();
 void show_intro_animation();
 void animate_all() __nonbanked;
 void show_score_panel();
+void refresh_score();
 void show_parchment(uint8_t id);
 
 void play_music() __nonbanked;
@@ -205,12 +206,12 @@ start:
 			load_room(game_state.room, true);
 			if (game_state.room == ROOM_SATAN)
 				reload_font_digits();
-			show_score_panel();
+			refresh_score();
 		}
 
 		if (game_state.refresh_score) {
 			game_state.refresh_score = false;
-			show_score_panel();
+			refresh_score();
 		}
 	}
 }
@@ -682,10 +683,26 @@ void show_room_title(uint8_t room)
 	}
 }
 
+void refresh_score()
+{
+	char snum[3];
+
+	/** clear up 2 digit live count **/
+	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
+	vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
+	vdp_write(vdp_base_names_grp1 + 7 + 22 * 32, 0);
+	vdp_write(vdp_base_names_grp1 + 7 + 23 * 32, 0);
+
+	score_font_set.numeric = &big_digits;
+	_itoa(game_state.live_cnt, snum, 10);
+	font_vprintf(&score_font_set, 2, 22, snum);
+	_itoa(game_state.cross_cnt, snum, 10);
+	font_vprintf(&score_font_set, 6, 22, snum);
+}
+
 void show_score_panel()
 {
 	uint8_t i;
-	char snum[3];
 	struct spr_pattern_set *ps = &spr_pattern[PATRN_HEARTH_MASK];
 
 	ascii8_set_data(PAGE_DYNTILES);
@@ -729,15 +746,5 @@ void show_score_panel()
 	spr_set_pos(&score_cross_mask, score.x, score.y);
 	spr_show(&score_cross_mask);
 
-	/** clear up 2 digit live count **/
-	vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
-	vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
-	vdp_write(vdp_base_names_grp1 + 7 + 22 * 32, 0);
-	vdp_write(vdp_base_names_grp1 + 7 + 23 * 32, 0);
-
-	score_font_set.numeric = &big_digits;
-	_itoa(game_state.live_cnt, snum, 10);
-	font_vprintf(&score_font_set, 2, 22, snum);
-	_itoa(game_state.cross_cnt, snum, 10);
-	font_vprintf(&score_font_set, 6, 22, snum);
+	refresh_score();
 }
