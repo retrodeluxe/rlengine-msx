@@ -1770,7 +1770,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"2",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -2246,7 +2246,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"2",
+                     "action_id":"4",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -3239,7 +3239,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"4",
+                     "action_id":"6",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -5411,7 +5411,7 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":592,
+                 "x":600.5,
                  "y":840
                 }, 
                 {
@@ -5467,33 +5467,6 @@
                  "width":16,
                  "x":719.090909090909,
                  "y":760.181818181818
-                }, 
-                {
-                 "height":16,
-                 "id":242,
-                 "name":"movable",
-                 "properties":
-                    {
-                     "dir":"3",
-                     "max":"160",
-                     "min":"48",
-                     "speed":"3",
-                     "type":"lava"
-                    },
-                 "propertytypes":
-                    {
-                     "dir":"string",
-                     "max":"string",
-                     "min":"string",
-                     "speed":"string",
-                     "type":"string"
-                    },
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":608,
-                 "y":856
                 }, 
                 {
                  "height":16,
@@ -5964,7 +5937,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"0",
+                     "action_id":"7",
                      "type":"heart"
                     },
                  "propertytypes":
@@ -6066,7 +6039,7 @@
                  "name":"actionitem",
                  "properties":
                     {
-                     "action_id":"7",
+                     "action_id":"8",
                      "type":"heart"
                     },
                  "propertytypes":
