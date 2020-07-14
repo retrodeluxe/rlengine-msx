@@ -681,9 +681,12 @@ void load_room(uint8_t room, bool reload)
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
-				add_tileobject(dpo, tob_ct, TILE_CUP);
-				phys_set_colliding_tile_object(dpo,
-					TILE_COLLISION_TRIGGER, cup_handler, 0);
+				// Can only fight final boss if we have all 12 crosses
+				if (game_state.cross_cnt == 12) {
+					add_tileobject(dpo, tob_ct, TILE_CUP);
+					phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_TRIGGER, cup_handler, 0);
+				}
 			} else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
 				id = map_object->object.actionitem.action_id;
 				add_tileobject(dpo, tob_ct, TILE_INVISIBLE_TRIGGER);
@@ -818,16 +821,18 @@ void load_room(uint8_t room, bool reload)
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
-			// TODO: show only collected ones
-			id = map_object->object.block.index;
-			add_tileobject(dpo, tob_ct, TILE_BLOCK_CROSS);
-			dpo->tob->cur_anim_step = id % 3;
-			dpo->aux = id;
-			dpo->state = 0;
-			dpo->visible = false;
-			add_animator(dpo, ANIM_BLOCK_CROSSES);
-			phys_set_colliding_tile_object(dpo,
-				TILE_COLLISION_FULL, null_handler, 0);
+			// Can only fight boss if we have all 12 crosses
+			if (game_state.cross_cnt == 12) {
+				id = map_object->object.block.index;
+				add_tileobject(dpo, tob_ct, TILE_BLOCK_CROSS);
+				dpo->tob->cur_anim_step = id % 3;
+				dpo->aux = id;
+				dpo->state = 0;
+				dpo->visible = false;
+				add_animator(dpo, ANIM_BLOCK_CROSSES);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_FULL, null_handler, 0);
+			}
 			room_objs += NEXT_OBJECT(struct map_object_block);
 		} else if (map_object->type == STEP) {
 			// TODO: Add special collisions
@@ -946,7 +951,7 @@ void load_room(uint8_t room, bool reload)
 				phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
-				spr_valloc_pattern_set(PATRN_SMALL_BULLET);
+				spr_valloc_pattern_set(PATRN_BULLET);
 			} else {
 				room_objs += NEXT_OBJECT(struct map_object_movable);
 				continue;
@@ -956,7 +961,7 @@ void load_room(uint8_t room, bool reload)
 	}
 
 	add_jean(room);
-	//phys_set_sprite_collision_handler(jean_collision_handler);
+	phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements
 	list_for_each(elem, &display_list) {

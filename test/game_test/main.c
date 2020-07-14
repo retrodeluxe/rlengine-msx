@@ -204,8 +204,8 @@ start:
 			}
 			handle_death();
 			load_room(game_state.room, true);
-			if (game_state.room == ROOM_SATAN)
-				reload_font_digits();
+			//if (game_state.room == ROOM_SATAN)
+			//	reload_font_digits();
 			refresh_score();
 		}
 

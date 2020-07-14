@@ -16,8 +16,8 @@ struct game_state_t {
 	uint8_t jean_anim_state;
 
 	/* check point saved position */
-	uint8_t checkpoint_x;
-	uint8_t checkpoint_y;
+	int16_t checkpoint_x;
+	int16_t checkpoint_y;
 	uint8_t checkpoint_room;
 
 	/* cross and live count for state panel */

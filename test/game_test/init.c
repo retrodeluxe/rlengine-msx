@@ -182,6 +182,13 @@ static void init_tiles_zone_6() {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_STONE], MAP_TILESET_STONE_POS);
 }
 
+static void init_tiles_zone_7() {
+	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS], MAP_TILESET_BRICKS_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
+	//tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FLAMES], MAP_TILESET_FLAMES_POS);
+}
+
 void init_room_tilesets(uint8_t room, bool reload)
 {
 	static uint8_t prev_room = ROOM_SATAN;
@@ -239,8 +246,10 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_down_colliding_tile(38);
 
 	} else if (room == ROOM_DEATH) {
+		clear_map_tilesets();
 		init_tiles_zone_6();
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS_2]);
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_STONE]);
 	// zone 4: other cave rooms
 	} else if (room == ROOM_CAVE_TUNNEL || room == ROOM_CAVE_LAKE
 		|| room == ROOM_CAVE_GATE) {
@@ -263,13 +272,17 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_down_colliding_tile(38);
 
 	// zone 5: evil church
-	} else if (room > ROOM_CAVE_GATE || room == ROOM_EVIL_CHAMBER) {
+	} else if (room > ROOM_CAVE_GATE && room < ROOM_SATAN || room == ROOM_EVIL_CHAMBER) {
 		if (prev_room == ROOM_CAVE_GATE || reload) {
 			clear_map_tilesets();
 			init_tiles_zone_5();
 		}
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS_2]);
+	} else if (room == ROOM_SATAN) {
+		clear_map_tilesets();
+		init_tiles_zone_7();
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS]);
 	}
 
 	prev_room = room;
@@ -378,7 +391,7 @@ void init_sprites()
 	SPR_DEFINE_PATTERN_SET(PATRN_FISH, SPR_SIZE_16x16, 1, 1, bat_state, fish);
 	SPR_DEFINE_PATTERN_SET(PATRN_FIREBALL, SPR_SIZE_16x16, 1, 1, bat_state, fireball);
 	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
-	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 4, bullet_state, bullet);
+	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 1, bullet_state, bullet);
 	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow);
 	SPR_DEFINE_PATTERN_SET(PATRN_SPIT, SPR_SIZE_16x16, 1, 1, spit_state, spit);
 	SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, death_state, death);

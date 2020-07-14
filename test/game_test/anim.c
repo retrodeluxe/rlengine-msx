@@ -80,18 +80,18 @@ void change_room() __nonbanked
 		game_state.change_room = true;
 	}
 
-	/** final boss room is a checkpoint **/
-	if (game_state.room == ROOM_SATAN) {
-		game_state.checkpoint_x = game_state.jean_x;
-		game_state.checkpoint_y = game_state.jean_y;
-		game_state.checkpoint_room = game_state.room;
-	}
-
 	if (game_state.change_room) {
 		//log_e("room change state %d\n", dpo_jean.state);
 		game_state.jean_state = dpo_jean.state;
 		game_state.jean_collision_state = dpo_jean.collision_state;
 		game_state.jean_anim_state = dpo_jean.spr->cur_state;
+
+		/** final boss room is a checkpoint **/
+		if (game_state.room == ROOM_SATAN) {
+			game_state.checkpoint_x = game_state.jean_x;
+			game_state.checkpoint_y = game_state.jean_y;
+			game_state.checkpoint_room = game_state.room;
+		}
 	}
 }
 

@@ -224,13 +224,13 @@ void anim_satan(struct displ_object *obj)
 				// optimize this so that we can do in a single call maybe?
 				add_bullet(obj->xpos - 8,
 					obj->ypos,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
+					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
 				add_bullet(obj->xpos - 8,
 					obj->ypos + 8,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
+					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
 				add_bullet(obj->xpos - 8,
 					obj->ypos + 16,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
+					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
 				obj->aux = 0;
 			} else {
 				obj->tob->cur_anim_step = 1;
@@ -247,13 +247,13 @@ void anim_satan(struct displ_object *obj)
 				obj->tob->cur_anim_step = 0;
 				add_bullet(obj->xpos - 8,
 					obj->ypos ,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
+					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
 				add_bullet(obj->xpos - 8,
 					obj->ypos + 8,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
+					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
 				add_bullet(obj->xpos - 8,
 					obj->ypos + 16,
-					PATRN_SMALL_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
+					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
 				obj->aux = 0;
 			} else {
 				obj->tob->cur_anim_step--;
@@ -539,10 +539,11 @@ void anim_jean_bonfire(struct displ_object *obj)
 /**
  * Animation for block crosses apearing sequentially on final boss
  */
+// compiler issue, ct2 fails to initialize properly
+static uint8_t ct1 = 0;
+static uint8_t ct2 = 0;
 void anim_block_crosses(struct displ_object *obj)
 {
-	static uint8_t ct1 = 0, ct2 = 0;
-
 	if (ct1++ > 40) {
 		if (game_state.cross_cnt > 0) {
 			ct2++;
