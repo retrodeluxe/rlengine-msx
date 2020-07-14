@@ -51,6 +51,7 @@ struct game_state_t {
 	bool start_bonfire_seq;
 	bool final_animation;
 	bool teletransport;
+	bool final_fight;
 };
 
 enum trigger_ids {

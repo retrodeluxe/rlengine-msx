@@ -540,10 +540,12 @@ void anim_jean_bonfire(struct displ_object *obj)
  * Animation for block crosses apearing sequentially on final boss
  */
 // compiler issue, ct2 fails to initialize properly
-static uint8_t ct1 = 0;
-static uint8_t ct2 = 0;
+
 void anim_block_crosses(struct displ_object *obj)
 {
+	static uint8_t ct1 = 0;
+	static uint8_t ct2 = 0;
+
 	if (ct1++ > 40) {
 		if (game_state.cross_cnt > 0) {
 			ct2++;

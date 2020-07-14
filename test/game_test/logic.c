@@ -37,6 +37,7 @@ void init_game_state()
 	game_state.change_room = false;
 	game_state.live_cnt = GAME_MAX_LIVES;
 	game_state.cross_cnt = 0;
+	game_state.final_fight = false;
 	game_state.templar_ct = 0;
 	game_state.death = false;
 	game_state.templar_delay = 0;
