@@ -429,90 +429,139 @@ void anim_left_right_bounded(struct displ_object *obj)
 }
 
 /**
- * Animation for a Templar chasing Jean in different screens
+ * Animation for a Templar chasing Jean in the forest
  */
-void anim_chase(struct displ_object *obj)
+void anim_chase_forest(struct displ_object *obj)
 {
 	int8_t dx = 0, dy = 0;
 	struct spr_sprite_def *sp = obj->spr;
 
-	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false, false);
-
-	if (game_state.room == ROOM_GRAVEYARD)
-		phys_detect_fall(obj, scr_tile_buffer, dx);
-
-	obj->aux2++;
+	dx = 2;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
 			dx = 2;
-			if (is_colliding_right(obj)) {
+			if (obj->xpos > 204 && obj->xpos < 210) {
+				obj->state = STATE_FALLING_RIGHT;
+			} else if (obj->xpos > 154 && obj->xpos < 170) {
 				obj->state = STATE_HOPPING_RIGHT;
 				obj->aux = 0;
-			} else if (!is_colliding_right(obj) && !is_colliding_down(obj)) {
-				if (game_state.room == ROOM_FOREST)
-					obj->state = STATE_FALLING_RIGHT;
-				else
-					obj->state = STATE_HOPPING_RIGHT;
+			} else if (obj->xpos == 140) {
+				obj->state = STATE_HOPPING_RIGHT;
+				obj->aux = 0;
 			}
 			break;
 		case STATE_HOPPING_RIGHT:
 			obj->aux++;
 			if (obj->aux < 5) {
-				dy = -4;
+				dy = -2;
 				dx = 2;
-			} else if (obj->aux < 10) {
+			} else if (obj->aux < 15) {
 				dy = 0;
-			} else {
-				dy = 4;
-				dx = 2;
 			}
-			if (obj->aux > 10 && is_colliding_down(obj)) {
-				obj->aux = 0;
+			if (obj->ypos < 112) {
+				obj->ypos = 112;
+				obj->state = STATE_MOVING_RIGHT;
+			} else if (obj->ypos == 120) {
+				obj->ypos = 120;
 				obj->state = STATE_MOVING_RIGHT;
 			}
 			break;
 		case STATE_FALLING_RIGHT:
 			dy = 4;
 			dx = 2;
-			if (is_colliding_down(obj)) {
-				obj->state = STATE_MOVING_RIGHT;
+			if (obj->ypos > 124) {
+				obj->ypos = 124;
+			 	obj->state = STATE_MOVING_RIGHT;
 			}
 			break;
 		case STATE_OFF_SCREEN:
-			if (obj->aux2 > 10) {
+			if (obj->xpos > -32) {
 				obj->state = STATE_MOVING_RIGHT;
 				obj->visible = true;
 				spr_show(obj->spr);
 			}
-			return;
-		case STATE_OFF_SCREEN_DELAY_1S:
-			if (obj->aux2 > 19) {
-				obj->state = STATE_OFF_SCREEN;
+			break;
+	}
+
+	obj->xpos += dx;
+	obj->ypos += dy;
+	if (obj->visible) {
+		spr_animate(sp, dx, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
+	}
+}
+
+/**
+ * Animation for a Templar chasing Jean in the forest
+ */
+void anim_chase_graveyard(struct displ_object *obj)
+{
+	int8_t dx = 0, dy = 0;
+	struct spr_sprite_def *sp = obj->spr;
+
+	dx = 2;
+	switch(obj->state) {
+		case STATE_MOVING_RIGHT:
+			dx = 2;
+			if (obj->xpos == 72
+				|| obj->xpos == 118
+				|| obj->xpos == 150) {
+				obj->state = STATE_HOPPING_RIGHT;
+				obj->aux = 0;
+			} else if (obj->xpos > 200 && obj->xpos < 230) {
+				obj->state = 8;
+				obj->aux = 0;
+			} else if (obj->xpos > 247) {
+				dx = 0;
 			}
-			return;
-		case STATE_OFF_SCREEN_DELAY_2S:
-			if (obj->aux2 > 29) {
-				obj->state = STATE_OFF_SCREEN;
+			break;
+		case STATE_HOPPING_RIGHT:
+			obj->aux++;
+			if (obj->aux < 4) {
+				dy = -2;
+				dx = 2;
+			} else if (obj->aux < 8) {
+				dy = 0;
+			} else {
+				obj->state = STATE_FALLING_RIGHT;
 			}
-			return;
+			break;
+		case 8:
+			obj->aux++;
+			if (obj->aux < 5) {
+				dy = -2;
+				dx = 2;
+			} else if (obj->aux < 7) {
+				dy = 0;
+			} else {
+				obj->state = STATE_MOVING_RIGHT;
+			}
+			break;
+		case STATE_FALLING_RIGHT:
+			dy = 4;
+			dx = 2;
+			if (obj->ypos > 124) {
+				obj->ypos = 124;
+			 	obj->state = STATE_MOVING_RIGHT;
+			}
+			break;
+		case STATE_OFF_SCREEN:
+			if (obj->xpos > -32) {
+				obj->state = STATE_MOVING_RIGHT;
+				obj->visible = true;
+				spr_show(obj->spr);
+			}
+			break;
 	}
 
-
-
-	//log_e("dx %d dy %d collision \n", dx, dy, obj->collision_state);
-
-	if ((dx > 0 && !is_colliding_right(obj))
-		|| (dx < 0 && !is_colliding_left(obj))) {
-		obj->xpos += dx;
+	obj->xpos += dx;
+	obj->ypos += dy;
+	if (obj->visible) {
+		spr_animate(sp, dx, dy);
+		spr_set_pos(sp, obj->xpos, obj->ypos);
+		spr_update(sp);
 	}
-	if ((dy > 0 && !is_colliding_down(obj))
-		|| (dy < 0 && !is_colliding_up(obj))) {
-		obj->ypos += dy;
-	}
-
-	spr_animate(sp, dx, dy);
-	spr_set_pos(sp, obj->xpos, obj->ypos);
-	spr_update(sp);
 }
 
 /**
@@ -792,14 +841,12 @@ void anim_archer_skeleton(struct displ_object *obj)
 void anim_horizontal_projectile(struct displ_object *obj)
 {
 	struct spr_sprite_def *sp = obj->spr;
-	int8_t dx = 0, dy = 0;
+	int8_t dx;
 
-	if (obj->aux == 0) {
-		obj->xpos -= obj->aux2;
-	} else {
-		obj->xpos += obj->aux2;
-	}
+	if (obj->aux == 0) dx = -obj->aux2;
+	else dx = obj->aux2;
 
+	obj->xpos += dx;
 	if (obj->xpos < 4 || obj->xpos > 235) {
 		spr_hide(obj->spr);
 		list_del(&obj->list);
@@ -846,7 +893,8 @@ void init_animators()
 
 	animators[ANIM_JEAN].run = anim_jean;
 	animators[ANIM_CYCLE_TILE].run = anim_cycle_tile;
-	animators[ANIM_CHASE].run = anim_chase;
+	animators[ANIM_CHASE_FOREST].run = anim_chase_forest;
+	animators[ANIM_CHASE_GRAVEYARD].run = anim_chase_graveyard;
 	animators[ANIM_CLOSE_DOOR].run = anim_close_door;
 	animators[ANIM_SHOOTER_PLANT].run = anim_plant;
 	animators[ANIM_FALLING_BULLETS].run = anim_falling_bullets;

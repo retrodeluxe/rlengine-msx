@@ -860,16 +860,20 @@ void load_room(uint8_t room, bool reload)
 				add_sprite(dpo, spr_ct, PATRN_TEMPLAR);
 				if (room == ROOM_FOREST ||
 					room == ROOM_GRAVEYARD) {
-					add_animator(dpo, ANIM_CHASE);
+					if (room == ROOM_FOREST)
+						add_animator(dpo, ANIM_CHASE_FOREST);
+					else
+						add_animator(dpo, ANIM_CHASE_GRAVEYARD);
 					dpo->state = STATE_OFF_SCREEN;
 					dpo->visible = false;
+					dpo->xpos = -32;
 					dpo->aux = 0;
 					dpo->aux2 = 0;
 					dpo->spr->cur_state = SPR_STATE_RIGHT;
 					if (game_state.templar_ct == 1) {
-						dpo->state = STATE_OFF_SCREEN_DELAY_1S;
+						dpo->xpos = -56;
 					} else if (game_state.templar_ct == 2) {
-						dpo->state = STATE_OFF_SCREEN_DELAY_2S;
+						dpo->xpos = -80;
 					}
 					game_state.templar_ct++;
 				} else if (room == ROOM_EVIL_CHAMBER) {
