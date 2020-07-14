@@ -143,6 +143,10 @@ void start_music(uint8_t room)
 			new_song_len = evilfight_song_pt3_len;
 			break;
 		case ROOM_BONFIRE:
+			// replace with silence.
+			new_song = title_song_pt3;
+			new_song_len = title_song_pt3_len;
+			break;
 		case ROOM_HAGMAN_TREE:
 			new_song = NULL;
 			break;
@@ -977,8 +981,11 @@ void load_room(uint8_t room, bool reload)
 		}
 	}
 
-	show_room_title(game_state.room);
-	show_score_panel();
+	if (room != ROOM_EVIL_CHAMBER && room != ROOM_BONFIRE) {
+		show_room_title(game_state.room);
+		show_score_panel();
+	}
+
 	vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
 	spr_refresh();
 	vdp_screen_enable();
