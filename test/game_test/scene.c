@@ -752,8 +752,8 @@ void load_room(uint8_t room, bool reload)
 			id = map_object->object.door.action_id;
 			add_dpo = false;
 			if (id == 0) {
-				dpo->visible = game_state.door_trigger;
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
+				dpo->visible = game_state.door_trigger;
 				add_animator(dpo, ANIM_CLOSE_DOOR);
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_FULL, null_handler, 0);

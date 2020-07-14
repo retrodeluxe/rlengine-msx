@@ -579,6 +579,7 @@ void anim_close_door(struct displ_object *obj)
 			obj->tob->cur_anim_step = 0;
 		}
 		if (obj->state == 20 || obj->state == 21) {
+			obj->tob->cur_dir = 0;
 			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
 				obj->tob->cur_anim_step++;
 				if (obj->tob->cur_anim_step > 1)
@@ -587,6 +588,7 @@ void anim_close_door(struct displ_object *obj)
 				sfx_play_effect(SFX_DOOR, 0);
 			}
 		} else if (obj->state == 22) {
+			obj->tob->cur_dir = 0;
 			obj->tob->cur_anim_step = 0;
 			obj->state = 0;
 		}
