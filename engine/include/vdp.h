@@ -70,7 +70,6 @@ extern void vdp_write(uint16_t address, uint8_t value) __nonbanked;
 extern void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked;
 extern void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked;
 extern void vdp_memcpy_vda(uint8_t *buffer) __nonbanked;
-extern void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, uint8_t spi) __nonbanked;
 extern void vdp_init_hw_sprites(char spritesize, char zoom);
 extern void vdp_fastcopy_nametable(uint8_t * buffer) __nonbanked;
 extern void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size);

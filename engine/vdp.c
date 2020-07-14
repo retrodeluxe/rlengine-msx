@@ -22,21 +22,20 @@
 
 #pragma CODE_PAGE 2
 
-static char t_spritesize;
 uint8_t rle_prev;
 uint8_t rle_prev_run;
 
 void vdp_screen_disable(void)
 {
 	__asm
-	call 0x0041
+	call BIOS_DISSCR
 	__endasm;
 }
 
 void vdp_screen_enable(void)
 {
 	__asm
-	call 0x0044
+	call BIOS_ENASCR
 	__endasm;
 }
 
@@ -45,15 +44,8 @@ void vdp_set_mode(char mode)
 	mode;
 
 	__asm
-	push	ix
-	push	iy
 	ld	a,4(ix)
-	ld	(0xfcaf),a
-	ld	ix,#0x5f
-	ld	iy,(0xfcc0)
-	call	0x1c
-	pop iy
-	pop ix
+	call	BIOS_CHGMOD
 	__endasm;
 }
 
@@ -63,6 +55,9 @@ void vdp_set_color(char ink, char border)
 	border;
 
 	__asm
+	ld	a,(VDP_DW)
+	inc 	a
+	ld	c,a
 	ld	a,4(ix)
 	ld	b,5(ix)
 	sla	a
@@ -71,10 +66,10 @@ void vdp_set_color(char ink, char border)
 	sla	a
 	add	a,b
 	di
-	out	(#0x99),a
+	out	(c),a
 	ld	a,#0x87
 	ei
-	out	(#0x99),a
+	out	(c),a
 	__endasm;
 }
 
@@ -85,18 +80,22 @@ void vdp_write(uint16_t address, uint8_t value) __nonbanked
 	value;
 
 	__asm
+	ld	a,(VDP_DW)
+	inc	a
+	ld	c,a
 	di
 	ld	l,4(ix)
 	ld	h,5(ix)
 	ld	a,l
 	di
-	out	(0x99),a
+	out	(c),a
 	ld	a,h
 	add	a,#0x40
 	ei
-	out	(0x99),a
+	out	(c),a
 	ld	a,6(ix)
-	out	(0x98),a
+	dec	c
+	out	(c),a
 	__endasm;
 }
 
@@ -107,23 +106,27 @@ void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked
 	value;
 
 	__asm
+	ld	a,(VDP_DW)
+	inc	a
+	ld	c,a
 	ld	l,4(ix)
 	ld	h,5(ix)
-	in	a,(0x99)
+	in	a,(c)
 	ld	a,l
 	di
-	out	(0x99),a
+	out	(c),a
 	ld	a,h
 	add	a,#0x40
-	out	(0x99),a
+	out	(c),a
 	ld	e,6(ix)
 	ld	d,7(ix)
 	ld	a,8(ix)
 	ld	b,e
 	dec	de
 	inc	d
+	dec 	c
 $1:
-	out	(0x98),a
+	out	(c),a
 	djnz	$1
 	dec	d
 	jr	nz,$1
@@ -141,19 +144,22 @@ void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked
 	size;
 
 	__asm
+	ld	a,(VDP_DW)
+	inc	a
+	ld	c,a
 	ld	l,4(ix)
 	ld	h,5(ix)
 	ld	a,l
 	di
-	out	(0x99),a
+	out	(c),a
 	ld	a,h
 	add	a,#0x40
-	out	(0x99),a
+	out	(c),a
 	ld	l,6(ix)
 	ld	h,7(ix)
 	ld	e,8(ix)
 	ld	d,9(ix)
-	ld	c,#0x98
+	dec 	c
 	ld	b,e
 	dec	de
 	inc	d
@@ -174,16 +180,25 @@ void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
 	ld	l,4(ix)
 	ld	h,5(ix)
 	inc 	hl
+	ld	e, (hl)
+	inc 	hl
+	ld	d, (hl)
+	ld	a,(VDP_DW)
+	inc 	a
+	ld	c,a
+	ld	a,e
+	di
+	out	(c),a
+	ld	a,d
+	add	a,#0x40
+	out	(c),a
+	ld	l,4(ix)
+	ld	h,5(ix)
+	inc 	hl
 	ld	c, (hl)
 	inc 	hl
 	ld	b, (hl)
 	inc 	hl
-	ld	a,c
-	di
-	out	(0x99),a
-	ld	a,b
-	add	a,#0x40
-	out	(0x99),a
 	ld	e, (hl)
 	inc 	hl
 	ld	d, (hl)
@@ -196,7 +211,8 @@ void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
 	ex 	de,hl
 	inc	de
 	pop 	hl
-	ld	c,#0x98
+	ld	a,(VDP_DW)
+	ld	c,a
 	ld	b,e
 	dec	de
 	inc	d
@@ -209,43 +225,14 @@ $7:
 	__endasm;
 }
 
-
-void vdp_set_hw_sprite(struct vdp_hw_sprite *spr, uint8_t spi) __nonbanked
-{
-	spr;
-	spi;
-
-	__asm
-	ld	c,6(ix)	;spi
-	sla	c
-	sla	c
-	xor	a
-	ld	b,a
-	ld 	hl,#vdp_base_spatr_grp1
-	add	hl,bc
-	ld	a,l
-	di
-	out	(0x99),a
-	ld	a,h
-	add	a,#0x40
-	out	(0x99),a
-	ld	l,4(ix) ; buffer address (spr)
-	ld	h,5(ix)
-	ld	c,#0x98
-	ld	b,#4
-$6:
-	outi
-	jp	nz,$6
-	ei
-	__endasm;
-}
-
 void vdp_init_hw_sprites(char spritesize, char zoom)
 {
-	t_spritesize = spritesize;
 	zoom;
 
 	__asm
+	ld	a,(VDP_DW)
+	inc	a
+	ld	c,a
 	ld	b,#0x00
 	ld	a,4(ix)
 	and	#0x0F
@@ -264,10 +251,10 @@ $4:
 	or	b
 	ld	(hl),a
 	di
-	out	(0x99),a
+	out	(c),a
 	ld	a,#0x81
 	ei
-	out	(0x99),a
+	out	(c),a
 	__endasm;
 }
 
@@ -276,17 +263,20 @@ void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked
 	buffer;
 
 	__asm
+	ld	a,(VDP_DW)
+	inc	a
+	ld	c,a
 	ld	hl,#vdp_base_names_grp1
 	ld	a,l
 	di
-	out	(0x99),a
+	out	(c),a
 	ld	a,h
 	add	a,#0x40
-	out	(0x99),a
+	out	(c),a
 	ld	b,#0		; 256*3 = 768 blocks
 	ld	l,4(ix)  	; buffer address
 	ld	h,5(ix)
-	ld	c,#0x98
+	dec	c
 $5:
 	outi
 	nop
@@ -312,13 +302,17 @@ static void vdp_write_internal() __naked
 {
 	__asm
 	ex	af,af'
+	ld	a,(VDP_DW)
+	inc	a
+	ld	c,a
 	ld 	a,e
-	out 	(0x99),a
+	out 	(c),a
 	ld	a,d
 	add 	a,#0x40
-	out 	(0x99),a
+	out 	(c),a
 	ex	af,af'
-	out 	(0x98),a
+	dec	c
+	out 	(c),a
 	inc 	de
 	ret
 	__endasm;
