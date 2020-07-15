@@ -818,7 +818,7 @@ void load_room(uint8_t room, bool reload)
 				phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
-				spr_valloc_pattern_set(PATRN_BULLET);
+				spr_valloc_pattern_set(PATRN_SMALL_BULLET);
 			} else if (map_object->object.shooter.type == TYPE_FLAME) {
 				add_tileobject(dpo, tob_ct, TILE_FLAME);
 				add_animator(dpo, ANIM_DRAGON_FLAME);

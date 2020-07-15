@@ -605,9 +605,9 @@ void anim_falling_bullets(struct displ_object *obj)
 	struct spr_sprite_def *sp = obj->spr;
 	int8_t dx = 0, dy = 0;
 
-	if (obj->state == 1) {
+	if (obj->aux2 == 1) {
 		dx = 2;
-	} else if (obj->state == 0) {
+	} else if (obj->aux2 == 0) {
 		dx = -2;
 	}
 
@@ -640,12 +640,12 @@ void anim_plant(struct displ_object *obj)
 		tile_object_show(obj->tob, scr_tile_buffer, true);
 		add_bullet(obj->xpos,
 			obj->ypos - 8,
-			PATRN_BULLET, ANIM_FALLING_BULLETS, 0, -4, 0, NULL);
+			PATRN_SMALL_BULLET, ANIM_FALLING_BULLETS, 0, -4, 0, NULL);
 		sfx_play_effect(SFX_SHOOT,0);
 	} else if (obj->state == obj->aux + 5) {
 		add_bullet(obj->xpos + 8,
 			obj->ypos - 8,
-			PATRN_BULLET, ANIM_FALLING_BULLETS, 1, -4, 0, NULL);
+			PATRN_SMALL_BULLET, ANIM_FALLING_BULLETS, 0, -4, 1, NULL);
 	} else if (obj->state == obj->aux + 10) {
 		// close
 		obj->tob->cur_anim_step = 0;
