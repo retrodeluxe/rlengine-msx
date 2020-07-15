@@ -133,6 +133,39 @@ void phys_set_colliding_tile_object(struct displ_object *dpo,
 	phys_set_tile_collision_handler(type, dpo, handler, data);
 }
 
+void phys_set_masked_colliding_tile_object(struct displ_object *dpo,
+	enum tile_collision_type type, uint8_t x, uint8_t y,
+	uint8_t w, uint8_t h,
+	void (*handler), uint8_t data)
+{
+	uint8_t i,j,k;
+	uint8_t base_tile = dpo->tob->ts->pidx;
+	uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
+		dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
+	uint8_t tiles_in_row = dpo->tob->ts->frame_w * dpo->tob->ts->n_frames
+		* dpo->tob->ts->n_dirs;
+	uint8_t num_frames = dpo->tob->ts->n_frames * dpo->tob->ts->n_dirs;
+	uint8_t frame_base;
+
+	for (i = 0; i < num_frames; i++) {
+		frame_base = base_tile + i * dpo->tob->ts->frame_w;
+		frame_base += x + y * tiles_in_row;
+		for (j = frame_base; j < frame_base + h * tiles_in_row; j++) {
+			for (k = j; k < j + w; k++) {
+				if (type & TILE_COLLISION_DOWN)
+					phys_set_down_colliding_tile(k);
+				else if (type & TILE_COLLISION_TRIGGER)
+					phys_set_trigger_colliding_tile(k);
+				else if (type & TILE_COLLISION_FULL)
+					phys_set_colliding_tile(k);
+			}
+		}
+	}
+
+	phys_set_tile_collision_handler(type, dpo, handler, data);
+}
+
+
 void phys_clear_colliding_tile_object(struct displ_object *dpo)
 {
 	uint8_t i;
