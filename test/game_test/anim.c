@@ -360,6 +360,22 @@ void anim_cycle_tile(struct displ_object *dpo)
 }
 
 /**
+ * tile cycling for lava
+ */
+void anim_lava(struct displ_object *dpo)
+{
+	if (dpo->state++ == 10) {
+		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
+			tile_object_show(dpo->tob, scr_tile_buffer, true);
+			dpo->tob->cur_anim_step++;
+		} else {
+			dpo->tob->cur_anim_step = 0;
+		}
+		dpo->state = 0;
+	}
+}
+
+/**
  * Simple up-down animation bounded by max/min coordinates
  */
 void anim_up_down_bounded(struct displ_object *obj)
@@ -909,6 +925,7 @@ void init_animators()
 	animators[ANIM_HORIZONTAL_PROJECTILE].run = anim_horizontal_projectile;
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
 	animators[ANIM_LEFT_RIGHT_BOUNDED].run = anim_left_right_bounded;
+	animators[ANIM_LAVA].run = anim_lava;
 
 	animators[ANIM_INTRO_CHASE].page = 7;
 	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;

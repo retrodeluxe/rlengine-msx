@@ -21,6 +21,8 @@
 #include "gen/gargolyne.h"
 #include "gen/invertedcross.h"
 #include "gen/lava.h"
+#include "gen/lava4.h"
+#include "gen/lava6.h"
 #include "gen/toggle.h"
 #include "gen/door.h"
 #include "gen/plant.h"

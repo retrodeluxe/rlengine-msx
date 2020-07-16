@@ -166,7 +166,8 @@ void start_music(uint8_t room)
 	}
 }
 
-static void add_tileobject(struct displ_object *dpo, uint8_t objidx, enum tile_sets_t tileidx)
+static void add_tileobject(struct displ_object *dpo, uint8_t objidx,
+	enum tile_sets_t tileidx)
 {
 	if (tileset[tileidx].raw)
 		ascii8_set_data(PAGE_RAW_TILES);
@@ -229,7 +230,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_ct++;
 }
 
-void add_jean(uint8_t room)
+void add_jean(uint8_t room) __nonbanked
 {
 	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(PATRN_JEAN);
@@ -719,11 +720,17 @@ void load_room(uint8_t room, bool reload)
 				offset = map_object->object.static_.offset;
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
 				dpo->tob->cur_anim_step = offset;
-				add_animator(dpo, ANIM_CYCLE_TILE);
+				add_animator(dpo, ANIM_LAVA);
 				if (room != ROOM_BONFIRE) {
 					phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 				}
+			} else if (map_object->object.static_.type == TYPE_LAVA4) {
+				add_tileobject(dpo, tob_ct, TILE_LAVA4);
+				add_animator(dpo, ANIM_LAVA);
+			} else if (map_object->object.static_.type == TYPE_LAVA6) {
+				add_tileobject(dpo, tob_ct, TILE_LAVA6);
+				add_animator(dpo, ANIM_LAVA);
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				damage = map_object->object.static_.damage;
 				if (damage == 1) {
