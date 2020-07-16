@@ -340,7 +340,7 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_LAVA6], lava6, 6, 1, 2, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_SPEAR], spear, 1, 1, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_HARMLESS_SPEAR], spear, 1, 1, 1, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 1, 1, 8, 1);
+	INIT_DYNAMIC_TILE_SET(tileset[TILE_WATER], water, 8, 1, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);

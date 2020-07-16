@@ -901,6 +901,19 @@ void anim_gargolyne(struct displ_object *obj)
 	if (++obj->state > 60) obj->state = 1;
 }
 
+/**
+ * Water animation by tileobject shift
+ */
+void anim_water(struct displ_object *obj)
+{
+	if (dpo->state++ == 10) {
+		dpo->tob->idx++;
+		if (dpo->tob->idx > 7) dpo->tob->idx = 0;
+		tile_object_show(dpo->tob, scr_tile_buffer, true);
+		dpo->state = 0;
+	}
+}
+
 void init_animators()
 {
 	uint8_t i;
@@ -926,6 +939,7 @@ void init_animators()
 	animators[ANIM_GARGOLYNE].run = anim_gargolyne;
 	animators[ANIM_LEFT_RIGHT_BOUNDED].run = anim_left_right_bounded;
 	animators[ANIM_LAVA].run = anim_lava;
+	animators[ANIM_WATER].run = anim_water;
 
 	animators[ANIM_INTRO_CHASE].page = 7;
 	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;

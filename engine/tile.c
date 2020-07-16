@@ -188,6 +188,7 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 {
 	uint16_t offset = to->x/8 + to->y/8 * 32;
 	uint8_t *ptr = scrbuf + offset;
+	uint8_t tile_base = to->ts->pidx;
 	uint8_t tile = to->ts->pidx + to->idx;
 	uint8_t x,y;
 
@@ -201,6 +202,10 @@ void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vra
 				vdp_write(vdp_base_names_grp1 + offset + x, tile);
 			}
 			tile++;
+			/** allow for shift using idx: this will only work
+			    for single frame one direction objects **/
+			if (to->idx > 0 && tile > tile_base + to->ts->frame_w -1)
+				tile = tile_base;
 		}
 		ptr += 32;
 		offset += 32;

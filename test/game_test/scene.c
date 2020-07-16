@@ -742,7 +742,7 @@ void load_room(uint8_t room, bool reload)
 				}
 			} else if (map_object->object.static_.type == TYPE_WATER) {
 				add_tileobject(dpo, tob_ct, TILE_WATER);
-				add_animator(dpo, ANIM_CYCLE_TILE);
+				add_animator(dpo, ANIM_WATER);
 				phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			}
