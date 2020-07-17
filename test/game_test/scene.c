@@ -929,8 +929,8 @@ void load_room(uint8_t room, bool reload)
 				add_tileobject(dpo, tob_ct, TILE_PRIEST);
 				dpo->state = STATE_MOVING_DOWN;
 				add_animator(dpo, ANIM_HANGING_PRIEST);
-				//phys_set_colliding_tile_object(dpo,
-				//	TILE_COLLISION_FULL, deadly_tile_handler, 0);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				add_sprite(dpo, spr_ct, PATRN_FLY);
 				add_animator(dpo, ANIM_UP_DOWN_BOUNDED);

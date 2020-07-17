@@ -392,6 +392,8 @@ void anim_hanging_priest(struct displ_object *obj)
 		} else {
 			vdp_write(vdp_base_names_grp1 + offset_bottom, 0);
 			vdp_write(vdp_base_names_grp1 + offset_bottom + 1, 0);
+			*(scr_tile_buffer + offset_bottom) = 0;
+			*(scr_tile_buffer + offset_bottom + 1) = 0;
 			ty = obj->ypos / 8;
 			ty--;
 			obj->ypos = ty * 8;
@@ -411,6 +413,8 @@ void anim_hanging_priest(struct displ_object *obj)
 		} else {
 			vdp_write(vdp_base_names_grp1 + offset_top, 0);
 			vdp_write(vdp_base_names_grp1 + offset_top + 1, 180); // rope
+			*(scr_tile_buffer + offset_top) = 0;
+			*(scr_tile_buffer + offset_top + 1) = 100;
 			ty = obj->ypos / 8;
 			ty++;
 			obj->ypos = ty * 8;
