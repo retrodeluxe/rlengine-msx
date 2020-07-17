@@ -390,8 +390,8 @@ void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
 inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
-		if (dpo->xpos < (dpo_jean.xpos + 20) &&
-			(dpo->xpos + 20) > dpo_jean.xpos) {
+		if (dpo->xpos < (dpo_jean.xpos + 10) &&
+			(dpo->xpos + 10) > dpo_jean.xpos) {
 			if (dpo_jean.state == STATE_CROUCHING) {
 				// this depends on the height of the sprite as well
 				if (dpo->ypos < (dpo_jean.ypos + 28) &&
@@ -399,7 +399,7 @@ inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 					return true;
 				}
 			} else {
-				if (dpo->ypos < (dpo_jean.ypos + 28) &&
+				if (dpo->ypos < (dpo_jean.ypos + 16) &&
 					(dpo->ypos + 20) > dpo_jean.ypos) {
 					return true;
 				}
