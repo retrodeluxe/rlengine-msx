@@ -136,6 +136,8 @@ void main() __nonbanked
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 
+	sys_rand_init((uint8_t *)&main);
+
 start:
 	show_title_screen();
 

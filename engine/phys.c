@@ -44,10 +44,11 @@ static uint8_t n_cgroups;
 
 #define SPR_COLLISION_FRAME_SKIP	7   /* bitmask for frameskip */
 
+static uint8_t frame_skip;
+static bool skip;
+
 void phys_check_collision_bit() __nonbanked
 {
-	static uint8_t frame_skip = 0;
-	static bool skip = false;
 	uint8_t *status = (uint8_t *)STATFL;
 
 	/** check collisions every X frames **/
@@ -70,6 +71,8 @@ void phys_init()
 	sys_memset(colliding_tiles_trigger, 255, 32);
 	sprite_colision_cb = NULL;
 	n_cgroups = 0;
+	frame_skip = 0;
+	skip = false;
 }
 
 /* note that this runs in interrupt context */

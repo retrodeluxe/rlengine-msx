@@ -230,3 +230,48 @@ uint16_t sys_get_ticks() __nonbanked
 {
     return sys_ticks;
 }
+
+/**
+ *  LFSR RNG
+ */
+uint8_t rng_seed[8];
+
+uint8_t sys_rand_init(uint8_t *seed) __nonbanked
+{
+	sys_memcpy(rng_seed, seed, 8);
+}
+
+uint8_t sys_rand() __nonbanked
+{
+	__asm
+	ld hl,#_rng_seed+4
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+	inc hl
+	ld c,(hl)
+	inc hl
+	ld a,(hl)
+	ld b,a
+	rl e
+	rl c
+	rl e
+	rl c
+	rl e
+	rl c
+	ld h,a
+	rl e
+	rl c
+	xor b
+	rl e
+	xor h
+	xor c
+	xor d
+	ld hl,#_rng_seed+6
+	ld de,#_rng_seed+7
+	ld bc,#7
+	lddr
+	ld (de),a
+	ld l,a
+	__endasm;
+}

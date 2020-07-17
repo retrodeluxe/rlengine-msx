@@ -794,18 +794,33 @@ void anim_splash(struct displ_object *obj)
  */
 void anim_ghost(struct displ_object *obj)
 {
-	int8_t dx, dy;
+	static int8_t dx, dy;
 	struct spr_sprite_def *sp = obj->spr;
 
-	dx = obj->speed;
-	dy = obj->speed;
-	if (obj->xpos > dpo_jean.xpos) {
-		dx *= -1;
+	if (obj->aux == 10) {
+		dx = obj->speed;
+		dy = obj->speed;
+		if (obj->xpos > dpo_jean.xpos) {
+			dx *= -1;
+		}
+		if (obj->ypos > dpo_jean.ypos) {
+			dy *= -1;
+		}
+		if (is_colliding(obj)) {
+			if (is_colliding_x(obj)
+				&& sys_rand() > 128) {
+				dy *= -1;
+			}
+			if (is_colliding_y(obj)
+				&& sys_rand() > 128) {
+				dx *= -1;
+			}
+		}
 	}
-	if (obj->ypos > dpo_jean.ypos) {
-		dy *= -1;
-	}
+	if (obj->aux++ > 10) obj->aux = 0;
+
 	phys_detect_tile_collisions(obj, scr_tile_buffer, dx, dy, false, false);
+
 	if ((dx > 0 && !is_colliding_right(obj))
 		|| (dx < 0 && !is_colliding_left(obj))) {
 		obj->xpos += dx;

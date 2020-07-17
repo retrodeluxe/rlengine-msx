@@ -754,6 +754,7 @@ void load_room(uint8_t room, bool reload)
 		} else if (map_object->type == GHOST) {
 			dpo->speed = map_object->object.ghost.speed;
 			add_sprite(dpo, spr_ct, PATRN_GHOST);
+			dpo->aux = 0;
 			add_animator(dpo, ANIM_GHOST);
 			room_objs += NEXT_OBJECT(struct map_object_ghost);
 		} else if (map_object->type == ROPE) {
