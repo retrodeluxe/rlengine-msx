@@ -42,11 +42,24 @@ static uint8_t n_cgroups;
 #define SPR_COLISION_MASK 32
 #define SPR_5TH_ALIGN_MASK 64
 
+#define SPR_COLLISION_FRAME_SKIP	7   /* bitmask for frameskip */
+
 void phys_check_collision_bit() __nonbanked
 {
+	static uint8_t frame_skip = 0;
+	static bool skip = false;
 	uint8_t *status = (uint8_t *)STATFL;
-	if ((*status & SPR_COLISION_MASK) != 0) {
+
+	/** check collisions every X frames **/
+	if (!frame_skip && (*status & SPR_COLISION_MASK) != 0) {
 		sprite_colision_cb();
+		skip = true;
+	}
+	if (skip) {
+		frame_skip++;
+		frame_skip &= SPR_COLLISION_FRAME_SKIP;
+		if (!frame_skip)
+			skip = false;
 	}
 }
 
