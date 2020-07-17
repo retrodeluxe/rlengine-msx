@@ -7,3 +7,4 @@
 #include "gen/dragon.h"
 #include "gen/satan.h"
 #include "gen/pentagram.h"
+#include "gen/priest.h"

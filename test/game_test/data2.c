@@ -4,7 +4,6 @@
 #include "gen/rope.h"
 #include "gen/hearth.h"
 #include "gen/cross_status.h"
-#include "gen/priest.h"
 #include "gen/retro_logo.h"
 #include "gen/cup.h"
 #include "gen/splash.h"

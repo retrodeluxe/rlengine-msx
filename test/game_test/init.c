@@ -344,7 +344,6 @@ void init_resources()
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_ARCHER_SKELETON], archer_skeleton, 2, 3, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_GARGOLYNE], gargolyne, 2, 2, 1, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_PLANT], plant, 2, 2, 2, 1);
-	INIT_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 4, 4, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_DOOR], door, 1, 4, 2, 2);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_TRAPDOOR], trapdoor, 2, 2, 1, 1);
 	INIT_DYNAMIC_TILE_SET(tileset[TILE_INVISIBLE_TRIGGER], invisible_trigger, 1, 4, 1, 1);
@@ -362,7 +361,7 @@ void init_resources()
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_FLAME], flame, 3, 6, 2, 1);
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_EXPLOSION], boss_explosion, 4, 6, 2, 1);
 	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_PENTAGRAM], pentagram, 6, 6, 1, 1);
-
+	INIT_RAW_DYNAMIC_TILE_SET(tileset[TILE_PRIEST], priest, 2, 4, 4, 2);
 	init_sprites();
 
 	/** copy numeric font to vram **/
