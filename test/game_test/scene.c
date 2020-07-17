@@ -728,9 +728,13 @@ void load_room(uint8_t room, bool reload)
 			} else if (map_object->object.static_.type == TYPE_LAVA4) {
 				add_tileobject(dpo, tob_ct, TILE_LAVA4);
 				add_animator(dpo, ANIM_LAVA);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_LAVA6) {
 				add_tileobject(dpo, tob_ct, TILE_LAVA6);
 				add_animator(dpo, ANIM_LAVA);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_SPEAR) {
 				damage = map_object->object.static_.damage;
 				if (damage == 1) {
