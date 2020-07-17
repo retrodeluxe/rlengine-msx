@@ -358,7 +358,7 @@ void clear_bullets() __nonbanked
 	}
 }
 
-void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
+void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id) __nonbanked
 {
 	uint8_t idx = 0;
 
@@ -525,6 +525,7 @@ void load_room(uint8_t room, bool reload)
 {
 	uint8_t i, id, type, delay, offset, damage;
 	bool add_dpo;
+	struct spr_pattern_set *ps;
 
 	//sys_irq_disable();
 
@@ -701,10 +702,25 @@ void load_room(uint8_t room, bool reload)
 					TILE_COLLISION_TRIGGER, trigger_handler, id);
 			} else if (map_object->object.actionitem.type == TYPE_BELL) {
 				if (!game_state.bell) {
+					add_sprite(dpo, spr_ct, PATRN_BELL_MASK);
+					dpo->check_collision = false;
+					ps = &spr_pattern[PATRN_BELL_MASK];
+					ps->colors2[0] = 1;
+					ps->colors2[1] = 1;
+					tmp_dpo = dpo;
+					dpo++;
 					add_tileobject(dpo, tob_ct, TILE_BELL);
+					dpo->parent = tmp_dpo;
 					phys_set_colliding_tile_object(dpo,
 						TILE_COLLISION_TRIGGER, bell_handler, id);
 				} else {
+					add_sprite(dpo, spr_ct, PATRN_BELL_MASK);
+					ps = &spr_pattern[PATRN_BELL_MASK];
+					ps->colors2[0] = 1;
+					ps->colors2[1] = 1;
+					dpo->spr->cur_anim_step = 1;
+					dpo->check_collision = false;
+					dpo++;
 					add_tileobject(dpo, tob_ct, TILE_BELL);
 					dpo->tob->cur_anim_step = 1;
 				}

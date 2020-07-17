@@ -137,9 +137,12 @@ void toggle_handler(struct displ_object *dpo, uint8_t data)
 
 void bell_handler(struct displ_object *dpo, uint8_t data)
 {
-        game_state.bell = true;
-        dpo->tob->cur_anim_step = 1;
-        update_tileobject(dpo);
+	game_state.bell = true;
+	dpo->tob->cur_anim_step = 1;
+	update_tileobject(dpo);
+	phys_clear_colliding_tile_object(dpo);
+	dpo->parent->spr->cur_anim_step = 1;
+	spr_update(dpo->parent->spr);
 	sfx_play_effect(SFX_SWITCH, 0);
 }
 
