@@ -612,6 +612,13 @@ void anim_close_door(struct displ_object *obj)
 	}
 }
 
+void anim_open_door(struct displ_object *obj)
+{
+	if (game_state.toggle[2] != 0) {
+		tile_object_hide(obj->tob, scr_tile_buffer, true);
+	}
+}
+
 /**
  * Animation for bullets thrown up and to one side,
  *      following an inverted parabolic trajectory
@@ -955,6 +962,7 @@ void init_animators()
 	animators[ANIM_LEFT_RIGHT_BOUNDED].run = anim_left_right_bounded;
 	animators[ANIM_LAVA].run = anim_lava;
 	animators[ANIM_WATER].run = anim_water;
+	animators[ANIM_OPEN_DOOR].run = anim_open_door;
 
 	animators[ANIM_INTRO_CHASE].page = 7;
 	animators[ANIM_INTRO_CHASE].run = anim_intro_chase;

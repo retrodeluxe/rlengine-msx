@@ -770,16 +770,24 @@ void load_room(uint8_t room, bool reload)
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_FULL, null_handler, 0);
 			} else if (id == 1 && game_state.toggle[0] == 0) {
+				/** hanging priests, opens with dragon toggle **/
 				add_dpo = true;
 			} else if (id == 2 && !game_state.bell) {
 				add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_FULL, null_handler, 0);
 			} else if (id == 3 && game_state.toggle[1] == 0) {
-				// cave lake door
+				/** death door, opens with toggle in hangin priests */
 				add_dpo = true;
-			} else if (id == 4 && game_state.toggle[2] == 0) {
-				add_dpo = true;
+			} else if (id == 4) {
+				/** evil church door, open with toggle room */
+				add_tileobject(dpo, tob_ct, TILE_DOOR);
+				dpo->tob->cur_dir = 1;
+				dpo->tob->cur_anim_step = 0;
+				dpo->visible = game_state.toggle[2] == 0;
+				add_animator(dpo, ANIM_OPEN_DOOR);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_FULL, null_handler, 0);
 			} else if (id == 5) {
 				// church tower door
 				add_dpo = true;
