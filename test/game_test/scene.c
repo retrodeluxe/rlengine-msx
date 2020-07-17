@@ -362,7 +362,7 @@ void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
 {
 	uint8_t idx = 0;
 
-	ascii8_set_data(PAGE_DYNTILES);
+	ascii8_set_data(PAGE_RAW_TILES);
 	tile_set_vfree(&tileset[TILE_SATAN]);
 	tile_set_valloc(&tileset[TILE_EXPLOSION]); // explosion
 
