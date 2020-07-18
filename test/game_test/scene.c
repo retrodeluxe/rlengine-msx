@@ -141,7 +141,7 @@ static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patter
 	spr_ct++;
 }
 
-void add_jean(uint8_t room) __nonbanked
+void add_jean() __nonbanked
 {
 	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(PATRN_JEAN);
@@ -162,7 +162,7 @@ void add_jean(uint8_t room) __nonbanked
 	list_add(&dpo_jean.list, &display_list);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
 
-	if (room == ROOM_BONFIRE) {
+	if (game_state.room == ROOM_BONFIRE) {
 		dpo_jean.xpos = 124;
 		dpo_jean.ypos = 100;
 		spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
@@ -271,40 +271,26 @@ void clear_bullets() __nonbanked
 	}
 }
 
-void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id) __nonbanked
-{
-	uint8_t idx = 0;
-
-	ascii8_set_data(PAGE_RAW_TILES);
-	tile_set_vfree(&tileset[TILE_SATAN]);
-	tile_set_valloc(&tileset[TILE_EXPLOSION]); // explosion
-
-	bullet_tob[idx].x = xpos;
-	bullet_tob[idx].y = ypos;
-	bullet_tob[idx].cur_dir = 0;
-	bullet_tob[idx].cur_anim_step = 0;
-	bullet_tob[idx].ts = &tileset[TILE_EXPLOSION];
-	bullet_tob[idx].idx = 0;
-
-	dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
-	dpo_tob_bullet[idx].tob = &bullet_tob[0];
-	dpo_tob_bullet[idx].xpos = xpos;
-	dpo_tob_bullet[idx].ypos = ypos;
-	dpo_tob_bullet[idx].visible = true;
-	dpo_tob_bullet[idx].state = 0;
-	INIT_LIST_HEAD(&dpo_tob_bullet[0].list);
-	list_add(&dpo_tob_bullet[0].list, &display_list);
-	INIT_LIST_HEAD(&dpo_tob_bullet[0].animator_list);
-	add_animator(&dpo_tob_bullet[0], anim_id);
-	tile_object_show(dpo_tob_bullet[0].tob, scr_tile_buffer, true);
-}
-
-
 inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
+	uint8_t spr_size = dpo->spr->pattern_set->size;
+	uint8_t box_x, box_y, box_w, box_h;;
+
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
-		if (dpo->xpos < (dpo_jean.xpos + 10) &&
-			(dpo->xpos + 10) > dpo_jean.xpos) {
+
+		// switch(spr_size) {
+		// 	case SPR_SIZE_16x16:
+		// 		box_x = 10; box_w = 10; box_y = 16; box_h = 10;
+		// 	case SPR_SIZE_16x32:
+				box_x = 10; box_w = 10; box_y = 16; box_h = 10;
+		// 		break;
+		// 	case SPR_SIZE_32x16:
+		// 	case SPR_SIZE_32x32:
+		// }
+		if (dpo->xpos < (dpo_jean.xpos + box_x) &&
+			(dpo->xpos + box_w) > dpo_jean.xpos) {
+			//log_e("X C %d vs %d\n", dpo->xpos, dpo_jean.xpos);
+
 			if (dpo_jean.state == STATE_CROUCHING) {
 				// this depends on the height of the sprite as well
 				if (dpo->ypos < (dpo_jean.ypos + 28) &&
@@ -312,8 +298,9 @@ inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 					return true;
 				}
 			} else {
-				if (dpo->ypos < (dpo_jean.ypos + 16) &&
-					(dpo->ypos + 20) > dpo_jean.ypos) {
+				if (dpo->ypos < (dpo_jean.ypos + box_y) &&
+					(dpo->ypos + box_h) > dpo_jean.ypos + 8) {
+					//log_e("Y C %d vx %d\n", dpo->ypos, dpo_jean.ypos);
 					return true;
 				}
 			}
@@ -938,7 +925,7 @@ void load_room(uint8_t room, bool reload)
 		}
 	}
 
-	add_jean(room);
+	add_jean();
 	phys_set_sprite_collision_handler(jean_collision_handler);
 
 	// show all elements

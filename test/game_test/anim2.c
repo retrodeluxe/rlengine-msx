@@ -14,6 +14,7 @@
 #include "anim.h"
 #include "logic.h"
 #include "scene.h"
+#include "banks.h"
 
 #pragma CODE_PAGE 7
 
@@ -23,8 +24,39 @@ extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
 extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 			uint8_t anim_id, uint8_t state, uint8_t dir,
 			uint8_t speed, struct displ_object *parent);
-extern void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id);
 extern void clear_bullets();
+
+extern struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
+extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
+extern struct tile_set tileset[TILE_MAX];
+
+void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
+{
+	uint8_t idx = 0;
+
+	ascii8_set_data(PAGE_RAW_TILES);
+	tile_set_vfree(&tileset[TILE_SATAN]);
+	tile_set_valloc(&tileset[TILE_EXPLOSION]); // explosion
+
+	bullet_tob[idx].x = xpos;
+	bullet_tob[idx].y = ypos;
+	bullet_tob[idx].cur_dir = 0;
+	bullet_tob[idx].cur_anim_step = 0;
+	bullet_tob[idx].ts = &tileset[TILE_EXPLOSION];
+	bullet_tob[idx].idx = 0;
+
+	dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
+	dpo_tob_bullet[idx].tob = &bullet_tob[0];
+	dpo_tob_bullet[idx].xpos = xpos;
+	dpo_tob_bullet[idx].ypos = ypos;
+	dpo_tob_bullet[idx].visible = true;
+	dpo_tob_bullet[idx].state = 0;
+	INIT_LIST_HEAD(&dpo_tob_bullet[0].list);
+	list_add(&dpo_tob_bullet[0].list, &display_list);
+	INIT_LIST_HEAD(&dpo_tob_bullet[0].animator_list);
+	add_animator(&dpo_tob_bullet[0], anim_id);
+	tile_object_show(dpo_tob_bullet[0].tob, scr_tile_buffer, true);
+}
 
 /**
  * Simplified animation for a Templar chasing Jean in intro screen
@@ -199,9 +231,9 @@ void anim_satan(struct displ_object *obj)
 	if (game_state.cup_picked_up) {
 		clear_bullets();
 		phys_clear_colliding_tile_object(obj);
-		add_explosion(obj->xpos, obj->ypos, ANIM_EXPLOSION);
 		tile_object_hide(obj->tob, scr_tile_buffer, true);
 		list_del(&obj->list);
+		add_explosion(obj->xpos, obj->ypos, ANIM_EXPLOSION);
 		return;
 	}
 
