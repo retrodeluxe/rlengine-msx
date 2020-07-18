@@ -253,6 +253,8 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 	INIT_LIST_HEAD(&dpo_tob_bullet[idx].animator_list);
 	add_animator(&dpo_tob_bullet[idx], anim_id);
 	tile_object_show(dpo_tob_bullet[idx].tob, scr_tile_buffer, true);
+	phys_set_colliding_tile_object(&dpo_tob_bullet[idx],
+		TILE_COLLISION_FULL, deadly_tile_handler, 0);
 }
 
 void clear_bullets() __nonbanked
@@ -367,6 +369,9 @@ void clear_room() __nonbanked
 
 	for (i = 0; i < SCENE_MAX_BULLET; i++) {
 		dpo_bullet[i].state = 255;
+	}
+	for (i = 0; i < SCENE_MAX_TOB_BULLET; i++) {
+		dpo_tob_bullet[i].state = 255;
 	}
 }
 
