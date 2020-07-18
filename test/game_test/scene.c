@@ -280,7 +280,7 @@ inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 
 	/** Hack to optimize final boss bullet performance **/
 	if (game_state.room == ROOM_SATAN) {
-		return false;
+		return true;
 	}
 
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
