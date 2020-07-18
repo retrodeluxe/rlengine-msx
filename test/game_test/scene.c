@@ -260,13 +260,10 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 void clear_bullets() __nonbanked
 {
 	uint8_t idx;
-
-	idx = 0;
 	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
 		if (dpo_bullet[idx].state != 255) {
-			spr_hide(dpo_bullet[idx].spr);
+			spr_hide(&bullet_sprites[idx]);
 			list_del(&dpo_bullet[idx].list);
-			dpo_bullet[idx].state = 255;
 		}
 	}
 }
@@ -275,6 +272,11 @@ inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
 	uint8_t spr_size = dpo->spr->pattern_set->size;
 	uint8_t box_x, box_y, box_w, box_h;;
+
+	/** Hack to optimize final boss bullet performance **/
+	if (game_state.room == ROOM_SATAN) {
+		return false;
+	}
 
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
 

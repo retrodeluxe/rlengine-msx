@@ -27,8 +27,10 @@ extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 extern void clear_bullets();
 
 extern struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
+extern struct displ_object dpo_bullet[SCENE_MAX_BULLET];
 extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
 extern struct tile_set tileset[TILE_MAX];
+extern struct spr_sprite_def bullet_sprites[SCENE_MAX_BULLET];
 
 void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
 {
@@ -209,6 +211,57 @@ void anim_scythe(struct displ_object *obj)
 }
 
 /**
+ *  Hack to handle satan bullets as a bundle
+ */
+void add_satan_bullets(uint8_t xpos, uint8_t ypos)
+{
+	uint8_t idx;
+
+	idx = 0;
+	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
+		if (dpo_bullet[idx].state == 255)
+			break;
+	}
+
+	if (idx == SCENE_MAX_BULLET)
+		return;
+
+	// repeat 3 times
+	spr_init_sprite(&bullet_sprites[idx], PATRN_BULLET);
+	spr_init_sprite(&bullet_sprites[idx + 1], PATRN_BULLET);
+	spr_init_sprite(&bullet_sprites[idx + 2], PATRN_BULLET);
+	bullet_sprites[idx].cur_state = 0;
+	bullet_sprites[idx].cur_anim_step = 0;
+	bullet_sprites[idx + 1].cur_state = 0;
+	bullet_sprites[idx + 1].cur_anim_step = 0;
+	bullet_sprites[idx + 2].cur_state = 0;
+	bullet_sprites[idx + 2].cur_anim_step = 0;
+	spr_set_pos(&bullet_sprites[idx], xpos, ypos);
+	spr_set_pos(&bullet_sprites[idx + 1], xpos, ypos + 8);
+	spr_set_pos(&bullet_sprites[idx + 2], xpos, ypos + 16);
+	spr_show(&bullet_sprites[idx]);
+	spr_show(&bullet_sprites[idx + 1]);
+	spr_show(&bullet_sprites[idx + 2]);
+	// asign only the first one, store index in aux
+	dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
+	dpo_bullet[idx].spr = &bullet_sprites[idx];
+	dpo_bullet[idx].xpos = xpos;
+	dpo_bullet[idx].ypos = ypos;
+	dpo_bullet[idx].state = 0;
+	dpo_bullet[idx+1].state = 0;
+	dpo_bullet[idx+2].state = 0; // save 3 spots
+	dpo_bullet[idx].collision_state = 0;
+	dpo_bullet[idx].aux = idx;
+	dpo_bullet[idx].aux2 = 7; // store sprite bullet state in 3 LSB
+
+	// only one tob is added - animations happens for a sequence
+	INIT_LIST_HEAD(&dpo_bullet[idx].list);
+	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
+	add_animator(&dpo_bullet[idx], ANIM_SATAN_BULLETS);
+	list_add(&dpo_bullet[idx].list, &display_list);
+}
+
+/**
  * Final Boss animation, big tile object that moves vertically and
  *  spits clusters of 3 bullets
  */
@@ -237,8 +290,6 @@ void anim_satan(struct displ_object *obj)
 		return;
 	}
 
-
-
 	if (obj->state == STATE_MOVING_UP) {
 		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
 			tile_object_show(obj->tob, scr_tile_buffer, true);
@@ -253,16 +304,7 @@ void anim_satan(struct displ_object *obj)
 			obj->tob->y = ty * 8;
 			if (obj->aux++ > 3) {
 				obj->tob->cur_anim_step = 0;
-				// optimize this so that we can do in a single call maybe?
-				add_bullet(obj->xpos - 8,
-					obj->ypos,
-					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
-				add_bullet(obj->xpos - 8,
-					obj->ypos + 8,
-					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
-				add_bullet(obj->xpos - 8,
-					obj->ypos + 16,
-					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
+				add_satan_bullets(obj->xpos - 8, obj->ypos);
 				obj->aux = 0;
 			} else {
 				obj->tob->cur_anim_step = 1;
@@ -277,15 +319,7 @@ void anim_satan(struct displ_object *obj)
 		if (obj->tob->cur_anim_step > 0) {
 			if (obj->tob->cur_anim_step == 1 && obj->aux++ > 3) {
 				obj->tob->cur_anim_step = 0;
-				add_bullet(obj->xpos - 8,
-					obj->ypos ,
-					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 0, 4, NULL);
-				add_bullet(obj->xpos - 8,
-					obj->ypos + 8,
-					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 1, 4, NULL);
-				add_bullet(obj->xpos - 8,
-					obj->ypos + 16,
-					PATRN_BULLET, ANIM_SATAN_BULLETS, 0, 2, 4, NULL);
+				add_satan_bullets(obj->xpos - 8, obj->ypos);
 				obj->aux = 0;
 			} else {
 				obj->tob->cur_anim_step--;
@@ -311,31 +345,52 @@ void anim_satan(struct displ_object *obj)
 
 /**
  * Animation of final boss bullets, move linearly in diagonal directions
- *  no tile collisions; dissapear on wall
+ *  no tile collisions; dissapear on wall.
+ *
+ * Hack to handle sets of 3 bullets in a bundle for performance
  */
 void anim_satan_bullets(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
-	int8_t dx = 0, dy = 0;
+	struct spr_sprite_def *sp;
+	uint8_t idx, i;
+	int16_t x,y;
+	int8_t dx, dy;
 
-	dx = obj->aux2;
-	if (obj->aux == 0) {
-		dy = -1;
-	} else if (obj->aux == 2) {
-		dy = 1;
+	dx = -4; dy = 0;
+	idx = obj->aux;
+	for (i = 0; i < 3; i++) {
+		if (obj->aux2 & (1 << i)) {
+			sp = &bullet_sprites[idx + i];
+
+			if (i == 0) {
+				dy = -1;
+			} else if (i == 2) {
+				dy = 1;
+			} else {
+				dy = 0;
+			}
+
+			x = sp->planes[0].x;
+			y = sp->planes[0].y;
+
+			x = x + dx;
+			y = y + dy + 1; // correction y spr coords are offset -1
+
+			if (x < 4 || y < 4) {
+				spr_hide(sp);
+				obj->aux2 &= ~(1 << i);
+			} else {
+				spr_animate(sp, dx, dy);
+				spr_set_pos(sp, x, y);
+				spr_update(sp);
+			}
+		}
 	}
-
-	obj->xpos -= dx;
-	obj->ypos += dy;
-
-	if (obj->xpos < 4 || obj->ypos < 4) {
-		spr_hide(obj->spr);
+	if (obj->aux2 == 0) {
 		list_del(&obj->list);
-		obj->state = 255;
-	} else {
-		spr_animate(sp, dx, dy);
-		spr_set_pos(sp, obj->xpos, obj->ypos);
-		spr_update(sp);
+		dpo_bullet[idx].state = 255;
+		dpo_bullet[idx+1].state = 255;
+		dpo_bullet[idx+2].state = 255;
 	}
 }
 
@@ -596,7 +651,7 @@ void anim_block_crosses(struct displ_object *obj)
 			tile_object_show(obj->tob, scr_tile_buffer, true);
 			obj->state++;
 		}
-		if (obj->state == 12) {
+		if (obj->state == 30) {
 			if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
 				tile_object_show(obj->tob, scr_tile_buffer, true);
 				obj->tob->cur_anim_step++;
