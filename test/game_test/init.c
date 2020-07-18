@@ -189,6 +189,15 @@ static void init_tiles_zone_7() {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FLAMES], MAP_TILESET_FLAMES_POS);
 }
 
+// dragon
+static void init_tiles_zone_8() {
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_1], MAP_TILESET_CAVE_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_2], MAP_TILESET_CAVE_2_POS);
+}
+
 void init_room_tilesets(uint8_t room, bool reload)
 {
 	static uint8_t prev_room = ROOM_SATAN;
@@ -229,9 +238,9 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_down_colliding_tile(38);
 
 	// zone 3: cave gardens
-	} else if (room == ROOM_CAVE_DRAGON || room == ROOM_CAVE_GHOST
+	} else if (room == ROOM_CAVE_GHOST
 		|| room == ROOM_HIDDEN_RIVER || room == ROOM_HIDDEN_GARDEN) {
-		if (prev_room == ROOM_CATACOMBS_FLIES
+		if (prev_room == ROOM_CATACOMBS_FLIES || prev_room == ROOM_CAVE_DRAGON
 			|| prev_room == ROOM_CAVE_LAKE
 			|| prev_room == ROOM_CATACOMBS
 			|| prev_room == ROOM_CAVE_TUNNEL || reload) {
@@ -253,8 +262,7 @@ void init_room_tilesets(uint8_t room, bool reload)
 	// zone 4: other cave rooms
 	} else if (room == ROOM_CAVE_TUNNEL || room == ROOM_CAVE_LAKE
 		|| room == ROOM_CAVE_GATE) {
-		if (prev_room == ROOM_CAVE_DRAGON
-			|| prev_room == ROOM_CATACOMBS_WHEEL
+		if (prev_room == ROOM_CATACOMBS_WHEEL || prev_room == ROOM_CAVE_DRAGON
 			|| prev_room == ROOM_CAVE_GHOST
 			|| prev_room == ROOM_EVIL_CHURCH || reload) {
 				clear_map_tilesets();
@@ -283,6 +291,15 @@ void init_room_tilesets(uint8_t room, bool reload)
 		clear_map_tilesets();
 		init_tiles_zone_7();
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS]);
+	} else if (room == ROOM_CAVE_DRAGON) {
+		clear_map_tilesets();
+		init_tiles_zone_8();
+
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_FOREST]);
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CAVE_1]);
+
+		phys_clear_colliding_tile(38); // step white
+		phys_set_down_colliding_tile(38);
 	}
 
 	prev_room = room;
