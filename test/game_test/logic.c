@@ -129,9 +129,10 @@ void checkpoint_handler(struct displ_object *dpo, uint8_t data)
 
 void toggle_handler(struct displ_object *dpo, uint8_t data)
 {
-        game_state.toggle[data] = 1;
-        dpo->tob->cur_anim_step = 1;
-        update_tileobject(dpo);
+	game_state.toggle[data] = 1;
+	dpo->tob->cur_anim_step = 1;
+	update_tileobject(dpo);
+	phys_clear_colliding_tile_object(dpo);
 	sfx_play_effect(SFX_SWITCH, 0);
 }
 
