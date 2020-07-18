@@ -361,6 +361,10 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
 			phys_tile_collision_notify(tile[4], x, y);
 			phys_tile_collision_notify(tile[5], x ,y);
 		}
+		if (is_coliding_trigger_tile_pair(tile[2], tile[3])) {
+			phys_tile_collision_notify(tile[2], x, y);
+			phys_tile_collision_notify(tile[3], x ,y);
+		}
 	}
 
 	if (is_coliding_tile_pair(tile[2], tile[3])) {
