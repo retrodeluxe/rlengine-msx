@@ -42,6 +42,7 @@ extern void anim_jean_bonfire(struct displ_object *obj);
 extern void anim_block_crosses(struct displ_object *obj);
 extern void anim_cross(struct displ_object *obj);
 extern void anim_templar_bonfire(struct displ_object *obj);
+extern void anim_close_door_satan(struct displ_object *obj);
 
 void add_animator(struct displ_object *dpo, enum anim_t animidx)
 {
@@ -996,5 +997,6 @@ void init_animators()
 	animators[ANIM_CROSS].run = anim_cross;
 	animators[ANIM_TEMPLAR_BONFIRE].page = 7;
 	animators[ANIM_TEMPLAR_BONFIRE].run = anim_templar_bonfire;
-
+	animators[ANIM_CLOSE_DOOR_SATAN].page = 7;
+	animators[ANIM_CLOSE_DOOR_SATAN].run = anim_close_door_satan;
 }

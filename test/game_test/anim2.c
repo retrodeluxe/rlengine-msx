@@ -698,3 +698,11 @@ void anim_templar_bonfire(struct displ_object *obj)
 	struct spr_sprite_def *sp = obj->spr;
 	spr_update(sp);
 }
+
+void anim_close_door_satan(struct displ_object *obj)
+{
+	if (!obj->visible && dpo_jean.xpos > 20) {
+		obj->visible = true;
+		tile_object_show(obj->tob, scr_tile_buffer, true);
+	}
+}

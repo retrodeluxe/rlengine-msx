@@ -167,6 +167,11 @@ void add_jean() __nonbanked
 		dpo_jean.ypos = 100;
 		spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
 		add_animator(&dpo_jean, ANIM_JEAN_BONFIRE);
+	} else if (game_state.room == ROOM_EVIL_CHAMBER) {
+		dpo_jean.xpos = 200;
+		dpo_jean.ypos = 96;
+		jean_sprite.cur_state = SPR_STATE_LEFT;
+		spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
 	} else {
 		add_animator(&dpo_jean, ANIM_JEAN);
 	}
@@ -725,6 +730,13 @@ void load_room(uint8_t room, bool reload)
 			} else if (id == 5) {
 				// church tower door
 				add_dpo = true;
+			} else if (id == 6 && game_state.cross_cnt == 12) {
+				/* satan door */
+				add_tileobject(dpo, tob_ct, TILE_DOOR);
+				dpo->visible = false;
+				add_animator(dpo, ANIM_CLOSE_DOOR_SATAN);
+				phys_set_colliding_tile_object(dpo,
+					TILE_COLLISION_FULL, null_handler, 0);
 			}
 			if (add_dpo) {
 				add_tileobject(dpo, tob_ct, TILE_DOOR);

@@ -2918,29 +2918,6 @@
                 }, 
                 {
                  "height":16,
-                 "id":126,
-                 "name":"shooter",
-                 "properties":
-                    {
-                     "delay":"1.2",
-                     "max":"72",
-                     "type":"leak"
-                    },
-                 "propertytypes":
-                    {
-                     "delay":"string",
-                     "max":"string",
-                     "type":"string"
-                    },
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":88,
-                 "y":560
-                }, 
-                {
-                 "height":16,
                  "id":127,
                  "name":"shooter",
                  "properties":
@@ -4707,9 +4684,9 @@
                  "properties":
                     {
                      "dir":"0",
-                     "max":"156",
+                     "max":"144",
                      "min":"116",
-                     "speed":"2",
+                     "speed":"1",
                      "type":"skeleton"
                     },
                  "propertytypes":
@@ -4736,7 +4713,7 @@
                      "dir":"0",
                      "max":"220",
                      "min":"188",
-                     "speed":"2",
+                     "speed":"1",
                      "type":"demon"
                     },
                  "propertytypes":
@@ -5428,6 +5405,27 @@
                  "width":50,
                  "x":1129.19696969697,
                  "y":755.40909090909
+                }, 
+                {
+                 "height":32,
+                 "id":294,
+                 "name":"door",
+                 "properties":
+                    {
+                     "action_id":"6",
+                     "type":"0"
+                    },
+                 "propertytypes":
+                    {
+                     "action_id":"string",
+                     "type":"string"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":8,
+                 "x":1024.66666666667,
+                 "y":839
                 }],
          "opacity":1,
          "properties":
@@ -5443,7 +5441,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":294,
+ "nextobjectid":295,
  "orientation":"orthogonal",
  "properties":
     {
