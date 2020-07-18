@@ -72,99 +72,10 @@ uint8_t spr_ct, tob_ct, bullet_ct;
 /** current room object data **/
 uint8_t *room_objs;
 
-/** current song **/
-uint8_t *current_song;
-
 extern void init_room_tilesets(uint8_t room, bool reload);
 extern void init_sfx();
 extern void show_room_title(uint8_t room);
-
-void play_room_music() __nonbanked
-{
-	pt3_decode();
-	sfx_play();
-	pt3_play();
-}
-
-void stop_music()
-{
-	sys_irq_unregister(play_room_music);
-	pt3_mute();
-}
-
-void start_music(uint8_t room)
-{
-	uint8_t *new_song;
-	uint16_t new_song_len;
-
-	ascii8_set_data(PAGE_MUSIC);
-
-	switch (room) {
-		case ROOM_EVIL_CHAMBER:
-		case ROOM_FOREST:
-		case ROOM_GRAVEYARD:
-			new_song = huntloop_song_pt3;
-			new_song_len = huntloop_song_pt3_len;
-			break;
-		case ROOM_CHURCH_ENTRANCE:
-		case ROOM_CHURCH_ALTAR:
-		case ROOM_CHURCH_TOWER:
-		case ROOM_CHURCH_WINE_SUPPLIES:
-		case ROOM_CATACOMBS:
-		case ROOM_CATACOMBS_FLIES:
-		case ROOM_CATACOMBS_WHEEL:
-			new_song = church_song_pt3;
-			new_song_len = church_song_pt3_len;
-			break;
-		case ROOM_PRAYER_OF_HOPE:
-			new_song = prayerofhope_song_pt3;
-			new_song_len = prayerofhope_song_pt3_len;
-			break;
-		case ROOM_CAVE_LAKE:
-		case ROOM_CAVE_DRAGON:
-		case ROOM_CAVE_GHOST:
-		case ROOM_CAVE_GATE:
-		case ROOM_CAVE_TUNNEL:
-		case ROOM_HIDDEN_GARDEN:
-		case ROOM_HIDDEN_RIVER:
-			new_song = cave_song_pt3;
-			new_song_len = cave_song_pt3_len;
-			break;
-		case ROOM_EVIL_CHURCH:
-		case ROOM_EVIL_CHURCH_2:
-		case ROOM_EVIL_CHURCH_3:
-			new_song = hell_song_pt3;
-			new_song_len = hell_song_pt3_len;
-			break;
-		case ROOM_SATAN:
-		case ROOM_DEATH:
-			ascii8_set_data(PAGE_INTRO);
-			new_song = evilfight_song_pt3;
-			new_song_len = evilfight_song_pt3_len;
-			break;
-		case ROOM_BONFIRE:
-			// replace with silence.
-			new_song = title_song_pt3;
-			new_song_len = title_song_pt3_len;
-			break;
-		case ROOM_HAGMAN_TREE:
-			new_song = NULL;
-			break;
-	}
-
-	if (new_song != current_song) {
-		if (new_song != NULL) {
-			stop_music();
-			sys_memcpy(data_buffer, new_song, new_song_len);
-			pt3_init(data_buffer, 1);
-			sys_irq_register(play_room_music);
-		} else {
-			// FIXME: this stops sound effects as well
-			stop_music();
-		}
-		current_song = new_song;
-	}
-}
+extern void start_music(uint8_t room);
 
 static void add_tileobject(struct displ_object *dpo, uint8_t objidx,
 	enum tile_sets_t tileidx)
@@ -424,6 +335,8 @@ void jean_collision_handler() __nonbanked
 		}
 	}
 }
+
+extern uint8_t *current_song;
 
 void init_scene()
 {
