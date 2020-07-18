@@ -680,11 +680,20 @@ void load_room(uint8_t room, bool reload)
 					dpo->tob->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_SWITCH) {
+				add_sprite(dpo, spr_ct, PATRN_SWITCH_MASK);
+				dpo->check_collision = false;
+				ps = &spr_pattern[PATRN_SWITCH_MASK];
+				ps->colors2[0] = 1;
+				ps->colors2[1] = 1;
+				tmp_dpo = dpo;
+				dpo++;
 				add_tileobject(dpo, tob_ct, TILE_SWITCH);
+				dpo->parent = tmp_dpo;
 				phys_set_colliding_tile_object(dpo,
 					TILE_COLLISION_TRIGGER, crosswitch_handler, 0);
 				if(game_state.cross_switch) {
 					dpo->tob->cur_anim_step = 1;
+					dpo->parent->spr->cur_anim_step = 1;
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CUP) {
 				// Can only fight final boss if we have all 12 crosses

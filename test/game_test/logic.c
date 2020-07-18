@@ -152,12 +152,15 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data)
 	phys_clear_colliding_tile_object(dpo);
 	if (game_state.cross_switch) {
 		dpo->tob->cur_anim_step = 0;
+		dpo->parent->spr->cur_anim_step = 0;
 		game_state.cross_switch = false;
 	} else {
 		dpo->tob->cur_anim_step = 1;
+		dpo->parent->spr->cur_anim_step = 1;
 		game_state.cross_switch = true;
 	}
 	update_tileobject(dpo);
+	spr_update(dpo->parent->spr);
 	sfx_play_effect(SFX_SWITCH, 0);
 }
 
