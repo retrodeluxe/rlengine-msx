@@ -659,6 +659,8 @@ void load_room(uint8_t room, bool reload)
 		} else if (map_object->type == STATIC) {
 			if (map_object->object.static_.type == TYPE_DRAGON) {
 				add_tileobject(dpo, tob_ct, TILE_DRAGON);
+				phys_set_colliding_tile_object(dpo,
+						TILE_COLLISION_FULL, deadly_tile_handler, 0);
 			} else if (map_object->object.static_.type == TYPE_LAVA) {
 				offset = map_object->object.static_.offset;
 				add_tileobject(dpo, tob_ct, TILE_LAVA);
