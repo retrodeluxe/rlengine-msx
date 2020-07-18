@@ -110,7 +110,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 			idx = i - npat + 1;
 			sys_memset(&spr_patt_valloc[idx], 0, npat);
 			vdp_memcpy(vdp_base_sppat_grp1 + idx * 8, ps->patterns, npat * 8);
-			sys_memcpy(ps->colors2, ps->colors, ps->n_planes * ps->n_steps);
+			sys_memcpy(ps->colors2, ps->colors, npat / 4);
 			ps->pidx = idx;
 			ps->allocated = true;
 			return true;
@@ -166,9 +166,10 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 			base2 = base + ps->n_planes * ps->n_steps * SPR_SIZE_16x16;
 			frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
 			for (i = 0; i < ps->n_planes; i++) {
-				// 2 is the max number of planes supported
-				(sp->planes[i]).color |= (ps->colors2)[color_frame];
-				(sp->planes[i + 2]).color |= (ps->colors2)[color_frame];
+				(sp->planes[i]).color &= 128;
+				(sp->planes[i]).color |= (ps->colors2)[color_frame + i];
+				(sp->planes[i + 2]).color &= 128;
+				(sp->planes[i + 2]).color |= (ps->colors2)[color_frame + i];
 				(sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
 				(sp->planes[i + 2]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
 			}
