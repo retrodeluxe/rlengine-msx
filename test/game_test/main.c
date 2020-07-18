@@ -79,6 +79,9 @@ struct tile_object score;
 struct font big_digits;
 struct font_set score_font_set;
 
+/** current song **/
+uint8_t *current_song;
+
 uint16_t reftick;
 bool fps_stall;
 
@@ -139,6 +142,7 @@ void main() __nonbanked
 	sys_rand_init((uint8_t *)&main);
 
 start:
+	current_song = NULL;
 	show_title_screen();
 
 	init_resources();
@@ -752,9 +756,6 @@ void show_score_panel()
 	refresh_score();
 }
 
-/** current song **/
-uint8_t *current_song;
-
 void play_room_music() __nonbanked
 {
 	pt3_decode();
@@ -762,10 +763,10 @@ void play_room_music() __nonbanked
 	pt3_play();
 }
 
-void stop_music()
+void stop_music() __nonbanked
 {
-	sys_irq_unregister(play_room_music);
 	pt3_mute();
+	sys_irq_unregister(play_room_music);
 }
 
 void start_music(uint8_t room)
@@ -775,6 +776,7 @@ void start_music(uint8_t room)
 
 	ascii8_set_data(PAGE_MUSIC);
 
+	new_song = NULL;
 	switch (room) {
 		case ROOM_EVIL_CHAMBER:
 		case ROOM_FOREST:
@@ -830,10 +832,12 @@ void start_music(uint8_t room)
 
 	if (new_song != current_song) {
 		if (new_song != NULL) {
+			sys_irq_disable();
 			stop_music();
 			sys_memcpy(data_buffer, new_song, new_song_len);
 			pt3_init(data_buffer, 1);
 			sys_irq_register(play_room_music);
+			sys_irq_enable();
 		} else {
 			// FIXME: this stops sound effects as well
 			stop_music();
