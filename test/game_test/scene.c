@@ -209,6 +209,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
 	dpo_bullet[idx].aux2 = speed;
 	dpo_bullet[idx].parent = parent;
 	dpo_bullet[idx].visible = true;
+	dpo_bullet[idx].check_collision = true;
 
 	INIT_LIST_HEAD(&dpo_bullet[idx].list);
 	INIT_LIST_HEAD(&dpo_bullet[idx].animator_list);
@@ -262,47 +263,42 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 		TILE_COLLISION_FULL, deadly_tile_handler, 0);
 }
 
-inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
+inline bool jean_check_collision() __nonbanked
 {
-	uint8_t spr_size = dpo->spr->pattern_set->size;
-	uint8_t box_x, box_y, box_w, box_h;;
+	uint8_t spr_size = coll_dpo->spr->pattern_set->size;
+	int16_t box_x, box_y, box_w, box_h;;
 
 	/** Hack to optimize final boss bullet performance **/
 	if (game_state.room == ROOM_SATAN) {
 		return true;
 	}
-
-	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
-		switch(spr_size) {
-		 	case SPR_SIZE_16x16:
-		 		box_x = 16; box_w = 16; box_y = 32; box_h = 16;
-				break;
-		 	case SPR_SIZE_16x32:
-				/** less strict to allow jumping over enemies */
-				box_x = 10; box_w = 10; box_y = 16; box_h = 10;
-		 		break;
-		 	case SPR_SIZE_32x16:
-				box_x = 10; box_w = 32; box_y = 32; box_h = 16;
-				break;
-		 	case SPR_SIZE_32x32:
-				box_x = 16; box_w = 32; box_y = 32; box_h = 32;
-				break;
-		}
-		if (dpo->xpos < (dpo_jean.xpos + box_x) &&
-			(dpo->xpos + box_w) > dpo_jean.xpos) {
-			log_e("X C %d vs %d\n", dpo->xpos, dpo_jean.xpos);
-			if (dpo_jean.state == STATE_CROUCHING) {
-				// this depends on the height of the sprite as well
-				if (dpo->ypos < (dpo_jean.ypos + 28) &&
-					(dpo->ypos + 16) > (dpo_jean.ypos + 16)) {
-					return true;
-				}
-			} else {
-				if (dpo->ypos < (dpo_jean.ypos + box_y) &&
-					(dpo->ypos + box_h) > dpo_jean.ypos + 8) {
-					log_e("Y C %d vx %d\n", dpo->ypos, dpo_jean.ypos);
-					return true;
-				}
+	switch(spr_size) {
+	 	case SPR_SIZE_16x16:
+	 		box_x = 16; box_w = 16; box_y = 32; box_h = 16;
+			break;
+	 	case SPR_SIZE_16x32:
+			/** less strict to allow jumping over enemies */
+			box_x = 10; box_w = 10; box_y = 16; box_h = 10;
+	 		break;
+	 	case SPR_SIZE_32x16:
+			box_x = 10; box_w = 32; box_y = 32; box_h = 16;
+			break;
+	 	case SPR_SIZE_32x32:
+			box_x = 16; box_w = 32; box_y = 32; box_h = 32;
+			break;
+	}
+	if (coll_dpo->xpos < (dpo_jean.xpos + box_x) &&
+		(coll_dpo->xpos + box_w) > dpo_jean.xpos) {
+		if (dpo_jean.state == STATE_CROUCHING) {
+			// this depends on the height of the sprite as well
+			if (coll_dpo->ypos < (dpo_jean.ypos + 28) &&
+				(dpo->ypos + 16) > (dpo_jean.ypos + 16)) {
+				return true;
+			}
+		} else {
+			if (coll_dpo->ypos < (dpo_jean.ypos + box_y) &&
+				(coll_dpo->ypos + box_h) > dpo_jean.ypos + 8) {
+				return true;
 			}
 		}
 	}
@@ -317,10 +313,11 @@ void jean_collision_handler() __nonbanked
 		list_for_each(coll_elem, &display_list) {
 			coll_dpo = list_entry(coll_elem,
 				struct displ_object, list);
-			if (jean_check_collision(coll_dpo)) {
-				 dpo_jean.state = STATE_COLLISION;
-				 return;
-			}
+			if (coll_dpo->type == DISP_OBJECT_SPRITE && coll_dpo->check_collision)
+				if (jean_check_collision()) {
+					 dpo_jean.state = STATE_COLLISION;
+					 return;
+				}
 		}
 	}
 }
