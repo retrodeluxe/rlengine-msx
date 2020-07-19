@@ -445,6 +445,10 @@ void load_room(uint8_t room, bool reload)
 	clean_state();
 	vdp_screen_disable();
 
+	/** re-entrancy problem makes code below a critical section, as we cannot
+	    effectively disable interrupts, is only safe to stop music during room load **/
+	stop_music();
+
 	init_room_tilesets(room, reload);
 
 	ascii8_set_data(PAGE_MAP);
@@ -457,6 +461,8 @@ void load_room(uint8_t room, bool reload)
 	ascii8_set_data(PAGE_MAPOBJECTS);
 
 	//log_e("room : %d\n",room);
+
+
 
 	type = 0;
 	room_objs = map_object_layer[room];

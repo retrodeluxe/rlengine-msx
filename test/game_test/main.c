@@ -82,6 +82,8 @@ struct font_set score_font_set;
 /** current song **/
 uint8_t *current_song;
 
+bool init_music;
+
 uint16_t reftick;
 bool fps_stall;
 
@@ -141,6 +143,7 @@ void main() __nonbanked
 
 	sys_rand_init((uint8_t *)&main);
 
+	init_music = false;
 start:
 	current_song = NULL;
 	show_title_screen();
@@ -756,17 +759,32 @@ void show_score_panel()
 	refresh_score();
 }
 
+bool muted;
+
 void play_room_music() __nonbanked
 {
-	pt3_decode();
+	if(!muted) {
+		pt3_decode();
+	}
 	sfx_play();
 	pt3_play();
 }
 
 void stop_music() __nonbanked
 {
+	//sys_irq_unregister(play_room_music);
 	pt3_mute();
-	sys_irq_unregister(play_room_music);
+	muted = true;
+}
+
+void start_music2() __nonbanked
+{
+	pt3_init(data_buffer, 1);
+	if (!init_music) {
+		sys_irq_register(play_room_music);
+		init_music = true;
+	}
+	muted = false;
 }
 
 void start_music(uint8_t room)
@@ -832,16 +850,15 @@ void start_music(uint8_t room)
 
 	if (new_song != current_song) {
 		if (new_song != NULL) {
-			sys_irq_disable();
 			stop_music();
 			sys_memcpy(data_buffer, new_song, new_song_len);
-			pt3_init(data_buffer, 1);
-			sys_irq_register(play_room_music);
-			sys_irq_enable();
+			start_music2();
 		} else {
-			// FIXME: this stops sound effects as well
 			stop_music();
+			muted = true;
 		}
 		current_song = new_song;
+	} else {
+		muted = false;
 	}
 }
