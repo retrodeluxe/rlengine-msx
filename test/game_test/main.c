@@ -259,7 +259,6 @@ void show_game_over()
 
 	stop_music();
 	clear_room();
-	clean_state();
 
 	vdp_screen_disable();
 	vdp_clear(0);

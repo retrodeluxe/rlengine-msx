@@ -262,17 +262,6 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 		TILE_COLLISION_FULL, deadly_tile_handler, 0);
 }
 
-void clear_bullets() __nonbanked
-{
-	uint8_t idx;
-	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
-		if (dpo_bullet[idx].state != 255) {
-			spr_hide(&bullet_sprites[idx]);
-			list_del(&dpo_bullet[idx].list);
-		}
-	}
-}
-
 inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 {
 	uint8_t spr_size = dpo->spr->pattern_set->size;
@@ -284,20 +273,24 @@ inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 	}
 
 	if (dpo->type == DISP_OBJECT_SPRITE && dpo->check_collision) {
-
-		// switch(spr_size) {
-		// 	case SPR_SIZE_16x16:
-		// 		box_x = 10; box_w = 10; box_y = 16; box_h = 10;
-		// 	case SPR_SIZE_16x32:
+		switch(spr_size) {
+		 	case SPR_SIZE_16x16:
+		 		box_x = 16; box_w = 16; box_y = 32; box_h = 16;
+				break;
+		 	case SPR_SIZE_16x32:
+				/** less strict to allow jumping over enemies */
 				box_x = 10; box_w = 10; box_y = 16; box_h = 10;
-		// 		break;
-		// 	case SPR_SIZE_32x16:
-		// 	case SPR_SIZE_32x32:
-		// }
+		 		break;
+		 	case SPR_SIZE_32x16:
+				box_x = 10; box_w = 32; box_y = 32; box_h = 16;
+				break;
+		 	case SPR_SIZE_32x32:
+				box_x = 16; box_w = 32; box_y = 32; box_h = 32;
+				break;
+		}
 		if (dpo->xpos < (dpo_jean.xpos + box_x) &&
 			(dpo->xpos + box_w) > dpo_jean.xpos) {
-			//log_e("X C %d vs %d\n", dpo->xpos, dpo_jean.xpos);
-
+			log_e("X C %d vs %d\n", dpo->xpos, dpo_jean.xpos);
 			if (dpo_jean.state == STATE_CROUCHING) {
 				// this depends on the height of the sprite as well
 				if (dpo->ypos < (dpo_jean.ypos + 28) &&
@@ -307,7 +300,7 @@ inline bool jean_check_collision(struct displ_object *dpo) __nonbanked
 			} else {
 				if (dpo->ypos < (dpo_jean.ypos + box_y) &&
 					(dpo->ypos + box_h) > dpo_jean.ypos + 8) {
-					//log_e("Y C %d vx %d\n", dpo->ypos, dpo_jean.ypos);
+					log_e("Y C %d vx %d\n", dpo->ypos, dpo_jean.ypos);
 					return true;
 				}
 			}
@@ -342,7 +335,7 @@ void init_scene()
 	current_song = NULL;
 }
 
-void clear_room() __nonbanked
+void clear_room()
 {
 	uint8_t i;
 
@@ -367,15 +360,6 @@ void clear_room() __nonbanked
 	for (i = 0; i < SCENE_MAX_TOB_BULLET; i++) {
 		dpo_tob_bullet[i].state = 255;
 	}
-}
-
-/**
- * clean room ephemeral state
- */
-void clean_state() __nonbanked
-{
-	game_state.templar_delay = 0;
-	game_state.templar_ct = 0;
 }
 
 void load_intro_scene() __nonbanked
@@ -440,7 +424,7 @@ void load_room(uint8_t room, bool reload)
 	struct spr_pattern_set *ps;
 
 	clear_room();
-	clean_state();
+	game_state.templar_ct = 0;
 	vdp_screen_disable();
 
 	init_room_tilesets(room, reload);

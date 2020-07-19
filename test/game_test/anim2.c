@@ -24,13 +24,23 @@ extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
 extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 			uint8_t anim_id, uint8_t state, uint8_t dir,
 			uint8_t speed, struct displ_object *parent);
-extern void clear_bullets();
 
 extern struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 extern struct displ_object dpo_bullet[SCENE_MAX_BULLET];
 extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
 extern struct tile_set tileset[TILE_MAX];
 extern struct spr_sprite_def bullet_sprites[SCENE_MAX_BULLET];
+
+void clear_bullets()
+{
+	uint8_t idx;
+	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
+		if (dpo_bullet[idx].state != 255) {
+			spr_hide(&bullet_sprites[idx]);
+			list_del(&dpo_bullet[idx].list);
+		}
+	}
+}
 
 void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
 {
