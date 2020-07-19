@@ -54,6 +54,8 @@ _ascii8_restore:
 		;
 __sdcc_banked_call:
 		; save caller and current bank
+		ld	a,i
+		di
 		pop 	bc
 		ld	a,(cur_page)
 		ld	iy,#0
@@ -79,8 +81,13 @@ __sdcc_banked_call:
 
 		; switch bank and perform call
 		ld 	(ASCII8_PAGE2),a
+		jp	po, $1
+		ei
+$1:
 		jp	(hl)
 __sdcc_banked_ret:
+		ld	a,i
+		di
 		ld	iy,#0
 		add	iy,sp
 		ld 	sp, (banked_sp)
@@ -96,6 +103,8 @@ __sdcc_banked_ret:
 		inc	hl
 		inc	hl
 		push	hl
+		ret	po
+		ei
 		ret
 
 		; The following code sets bank 2 to the same slot as bank 1 and continues
