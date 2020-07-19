@@ -439,17 +439,12 @@ void load_room(uint8_t room, bool reload)
 	bool add_dpo;
 	struct spr_pattern_set *ps;
 
-	//sys_irq_disable();
-
 	clear_room();
 	clean_state();
 	vdp_screen_disable();
 
-	/** re-entrancy problem makes code below a critical section, as we cannot
-	    effectively disable interrupts, is only safe to stop music during room load **/
-	stop_music();
-
 	init_room_tilesets(room, reload);
+
 
 	ascii8_set_data(PAGE_MAP);
 	map_inflate(map_map_segment_dict[room], map_map_segment[room], scr_tile_buffer, 192, 32);
@@ -460,10 +455,6 @@ void load_room(uint8_t room, bool reload)
 
 	ascii8_set_data(PAGE_MAPOBJECTS);
 
-	//log_e("room : %d\n",room);
-
-
-
 	type = 0;
 	room_objs = map_object_layer[room];
 
@@ -473,7 +464,6 @@ void load_room(uint8_t room, bool reload)
 		type = map_object->type;
 		if (type == ACTIONITEM) {
 			uint8_t action_item_type = map_object->object.actionitem.type;
-			// log_e("action_item_type %d\n", action_item_type);
 			if (action_item_type == TYPE_SCROLL) {
 				id = map_object->object.actionitem.action_id;
 				if (id < 7) {

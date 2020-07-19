@@ -772,7 +772,6 @@ void play_room_music() __nonbanked
 
 void stop_music() __nonbanked
 {
-	//sys_irq_unregister(play_room_music);
 	pt3_mute();
 	muted = true;
 }
@@ -839,10 +838,6 @@ void start_music(uint8_t room)
 			new_song_len = evilfight_song_pt3_len;
 			break;
 		case ROOM_BONFIRE:
-			// replace with silence.
-			new_song = title_song_pt3;
-			new_song_len = title_song_pt3_len;
-			break;
 		case ROOM_HAGMAN_TREE:
 			new_song = NULL;
 			break;
