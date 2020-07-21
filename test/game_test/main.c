@@ -86,6 +86,8 @@ struct font_set score_font_set;
 uint8_t *current_song;
 
 bool init_music;
+bool muted;
+uint8_t play_frame;
 
 uint16_t reftick;
 bool fps_stall;
@@ -146,8 +148,8 @@ void main() __nonbanked
 
 	sys_rand_init((uint8_t *)&main);
 
-	init_music = false;
 start:
+	init_music = false;
 	current_song = NULL;
 	show_title_screen();
 
@@ -245,8 +247,15 @@ void animate_all() __nonbanked
 
 void play_music() __nonbanked
 {
-	pt3_decode();
-	pt3_play();
+	if(sys_is60Hz()) {
+		play_frame = ++play_frame % 6;
+	} else {
+		play_frame = 1;
+	}
+	if (play_frame != 0) {
+		pt3_decode();
+		pt3_play();
+	}
 }
 
 void show_logo()
@@ -761,15 +770,19 @@ void show_score_panel()
 	refresh_score();
 }
 
-bool muted;
-
 void play_room_music() __nonbanked
 {
-	if(!muted) {
-		pt3_decode();
+	if(sys_is60Hz()) {
+		play_frame = ++play_frame % 6;
+	} else {
+		play_frame = 1;
 	}
-	sfx_play();
-	pt3_play();
+	if (play_frame != 0) {
+		if(!muted)
+			pt3_decode();
+		sfx_play();
+		pt3_play();
+	}
 }
 
 void stop_music() __nonbanked
