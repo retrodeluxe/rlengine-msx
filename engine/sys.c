@@ -275,3 +275,9 @@ uint8_t sys_rand() __nonbanked
 	ld l,a
 	__endasm;
 }
+
+bool sys_is60Hz() __nonbanked
+{
+	uint8_t *info =(uint8_t *) SYS_INFO1;
+	return (*(info) & 128) == 0;
+}
