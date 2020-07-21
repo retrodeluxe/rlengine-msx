@@ -16,6 +16,7 @@
 #include "list.h"
 #include "font.h"
 #include "pt3.h"
+#include "sfx.h"
 
 #include "anim.h"
 #include "scene.h"
@@ -37,16 +38,18 @@
 void show_logo();
 void show_game_over();
 void show_title_screen();
-void show_intro_animation();
+void show_intro_animation() __nonbanked;
 void animate_all() __nonbanked;
 void show_score_panel();
 void refresh_score();
 void show_parchment(uint8_t id);
 
 void play_music() __nonbanked;
+void stop_music() __nonbanked;
 void load_room(uint8_t room, bool reload);
 void init_room_titles();
-void load_intro_scene();
+void load_intro_scene() __nonbanked;
+void change_room() __nonbanked;
 
 struct tile_set logo;
 struct tile_set tileset_intro;

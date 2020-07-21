@@ -16,7 +16,7 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifndef _RDL_LIST_H_
 #define _RDL_LIST_H_
 
@@ -48,8 +48,8 @@ struct list_head {
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos; pos = pos->next)
 
-extern void INIT_LIST_HEAD(struct list_head *list);
-extern void list_add(struct list_head *new, struct list_head *head);
-extern void list_del(struct list_head *entry);
+extern void INIT_LIST_HEAD(struct list_head *list) __nonbanked;
+extern void list_add(struct list_head *new, struct list_head *head) __nonbanked;
+extern void list_del(struct list_head *entry) __nonbanked;
 
 #endif
