@@ -448,14 +448,16 @@ void show_intro_animation() __nonbanked
 	sys_irq_init();
 	sys_irq_register(play_music);
 
-	reftick = sys_get_ticks();
 
 	do {
 		sys_irq_enable();
 		sys_wait_vsync();
 		spr_refresh();
+		reftick = sys_get_ticks();
 
 		animate_all();
+		while (sys_get_ticks() - reftick < 1);		
+
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 
 	} while (!trigger);
