@@ -707,7 +707,9 @@ void load_room(uint8_t room, bool reload)
 			} else if (id == 5) {
 				// church tower door
 				add_dpo = true;
-			} else if (id == 6 && game_state.cross_cnt == 12) {
+			} else if (id == 6
+				&& (game_state.cross_cnt == 12
+				|| game_state.final_fight)) {
 				/* satan door */
 				add_tileobject(dpo, tob_ct, TILE_DOOR);
 				dpo->visible = false;

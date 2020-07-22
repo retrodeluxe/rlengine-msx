@@ -89,7 +89,7 @@ void change_room() __nonbanked
 
 		/** final boss room is a checkpoint **/
 		if (game_state.room == ROOM_SATAN) {
-			game_state.checkpoint_x = game_state.jean_x;
+			game_state.checkpoint_x = 21;
 			game_state.checkpoint_y = game_state.jean_y;
 			game_state.checkpoint_room = game_state.room;
 		}
