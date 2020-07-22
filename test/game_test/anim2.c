@@ -37,7 +37,8 @@ void clear_bullets()
 	for (idx = 0; idx < SCENE_MAX_BULLET; idx++) {
 		if (dpo_bullet[idx].state != 255) {
 			spr_hide(&bullet_sprites[idx]);
-			list_del(&dpo_bullet[idx].list);
+			if (dpo_bullet[idx].state == 1)
+				list_del(&dpo_bullet[idx].list);
 		}
 	}
 }
@@ -257,7 +258,7 @@ void add_satan_bullets(uint8_t xpos, uint8_t ypos)
 	dpo_bullet[idx].spr = &bullet_sprites[idx];
 	dpo_bullet[idx].xpos = xpos;
 	dpo_bullet[idx].ypos = ypos;
-	dpo_bullet[idx].state = 0;
+	dpo_bullet[idx].state = 1;
 	dpo_bullet[idx+1].state = 0;
 	dpo_bullet[idx+2].state = 0; // save 3 spots
 	dpo_bullet[idx].collision_state = 0;

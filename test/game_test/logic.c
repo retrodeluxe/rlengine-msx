@@ -188,7 +188,7 @@ void deadly_tile_handler(struct displ_object *dpo, uint8_t data)
 
 void cup_handler(struct displ_object *dpo, uint8_t data)
 {
-        remove_tileobject(dpo);
+	remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 	game_state.cup_picked_up = true;
 }
