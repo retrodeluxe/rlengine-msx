@@ -81,22 +81,22 @@ void anim_intro_chase(struct displ_object *obj)
 	obj->aux++;
 	switch(obj->state) {
 		case STATE_MOVING_RIGHT:
-			dx = 1;
+			dx = 2;
 			break;
 		case STATE_OFF_SCREEN:
-			if (obj->aux > 20) {
+			if (obj->aux > 10) {
 				obj->state = STATE_MOVING_RIGHT;
 				obj->visible = true;
 				spr_show(obj->spr);
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_1S:
-			if (obj->aux > 39) {
+			if (obj->aux > 19) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
 		case STATE_OFF_SCREEN_DELAY_2S:
-			if (obj->aux > 59) {
+			if (obj->aux > 29) {
 				obj->state = STATE_OFF_SCREEN;
 			}
 			return;
@@ -124,7 +124,7 @@ void anim_intro_jean(struct displ_object *obj)
 	struct spr_sprite_def *sp = obj->spr;
 	struct spr_pattern_set *ps = sp->pattern_set;
 
-	obj->xpos += 1;
+	obj->xpos += 2;
 	sp->anim_ctr++;
 
 	if (sp->anim_ctr > sp->anim_ctr_treshold) {
