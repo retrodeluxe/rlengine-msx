@@ -49,6 +49,7 @@ void init_game_state()
 	game_state.start_bonfire_seq = false;
 	game_state.final_animation = false;
 	game_state.teletransport = false;
+	game_state.door_trigger = false;
 
 	// debug helpers
 	game_state.bell = true;
