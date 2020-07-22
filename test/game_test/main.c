@@ -35,9 +35,9 @@
 
 #include <stdlib.h>
 
-void show_logo();
 void show_game_over();
 void show_title_screen();
+void show_retrodeluxe_logo();
 void show_intro_animation() __nonbanked;
 void animate_all() __nonbanked;
 void show_score_panel();
@@ -148,6 +148,7 @@ void main() __nonbanked
 
 	sys_rand_init((uint8_t *)&main);
 
+	show_retrodeluxe_logo();
 start:
 	init_music = false;
 	current_song = NULL;
@@ -258,11 +259,25 @@ void play_music() __nonbanked
 	}
 }
 
-void show_logo()
+void show_retrodeluxe_logo()
 {
-	// TODO : add resources
-	do {
-	} while (sys_get_key(8) & 1);
+	uint8_t i, x ,y;
+
+	tile_init();
+	sys_irq_init();
+
+	ascii8_set_data(PAGE_INTRO);
+	INIT_TILE_SET(logo, retro_logo);
+	tile_set_to_vram(&logo, 0);
+
+	i = 0;
+	for (y=0; y < retro_logo_tile_h; y++)
+		for (x=0; x < retro_logo_tile_w; x++) {
+			vdp_write(vdp_base_names_grp1 + 11 + 9 * 32 + x + y * 32, i++);
+			sys_sleep_ms(50);
+		}
+
+	sys_sleep(3);
 }
 
 void show_game_over()
