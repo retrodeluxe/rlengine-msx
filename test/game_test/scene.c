@@ -451,21 +451,21 @@ void load_room(uint8_t room, bool reload)
 					if (game_state.scroll[id] == 0) {
 						add_tileobject(dpo, tob_ct, TILE_SCROLL);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL, pickup_scroll, id);
+							TILE_COLLISION_TRIGGER, pickup_scroll, id);
 					}
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_RED_SCROLL);
 					dpo->visible = false;
 					add_animator(dpo, ANIM_RED_PARCHMENT);
 					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, pickup_red_scroll, id);
+						TILE_COLLISION_TRIGGER, pickup_red_scroll, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
 				id = map_object->object.actionitem.action_id;
 				if (game_state.toggle[id] == 0) {
 					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
 					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, toggle_handler, id);
+						TILE_COLLISION_TRIGGER, toggle_handler, id);
 				} else {
 					add_tileobject(dpo, tob_ct, TILE_TOGGLE);
 				}
@@ -491,7 +491,7 @@ void load_room(uint8_t room, bool reload)
 						dpo->parent = tmp_dpo;
 						add_animator(dpo, ANIM_CROSS);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL
+							TILE_COLLISION_TRIGGER
 							| TILE_COLLISION_MULTIPLE, pickup_cross, id);
 					} else {
 						add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
@@ -504,7 +504,7 @@ void load_room(uint8_t room, bool reload)
 						dpo-> parent = tmp_dpo;
 						add_animator(dpo, ANIM_CROSS);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL
+							TILE_COLLISION_TRIGGER
 							| TILE_COLLISION_MULTIPLE, pickup_cross, id);
 						dpo->visible = false;
 					}
@@ -520,7 +520,7 @@ void load_room(uint8_t room, bool reload)
 						dpo->parent = tmp_dpo;
 						add_animator(dpo, ANIM_CROSS);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL
+							TILE_COLLISION_TRIGGER
 							|TILE_COLLISION_MULTIPLE, pickup_cross, id);
 						dpo->visible = false;
 					} else {
@@ -535,7 +535,7 @@ void load_room(uint8_t room, bool reload)
 						dpo->parent = tmp_dpo;
 						add_animator(dpo, ANIM_CROSS);
 						phys_set_colliding_tile_object(dpo,
-							TILE_COLLISION_FULL
+							TILE_COLLISION_TRIGGER
 							|TILE_COLLISION_MULTIPLE, pickup_cross, id);
 					}
 				}
@@ -555,7 +555,7 @@ void load_room(uint8_t room, bool reload)
 					add_tileobject(dpo, tob_ct, TILE_HEART);
 					add_animator(dpo, ANIM_CYCLE_TILE);
 					phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL
+						TILE_COLLISION_TRIGGER
 						|TILE_COLLISION_MULTIPLE, pickup_heart, id);
 				}
 			} else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
@@ -752,7 +752,7 @@ void load_room(uint8_t room, bool reload)
 				dpo->aux = 30;
 				add_animator(dpo, ANIM_ARCHER_SKELETON);
 				phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, deadly_tile_handler, 0);
+						TILE_COLLISION_TRIGGER, deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_ARROW);
 			} else if (map_object->object.shooter.type == TYPE_PLANT) {
@@ -761,7 +761,7 @@ void load_room(uint8_t room, bool reload)
 				add_tileobject(dpo, tob_ct, TILE_PLANT);
 				add_animator(dpo, ANIM_SHOOTER_PLANT);
 				phys_set_masked_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, 0, 1, 2, 1,
+						TILE_COLLISION_TRIGGER, 0, 1, 2, 1,
 						deadly_tile_handler, 0);
 				ascii8_set_data(PAGE_SPRITES);
 				spr_valloc_pattern_set(PATRN_SMALL_BULLET);
@@ -769,7 +769,7 @@ void load_room(uint8_t room, bool reload)
 				add_tileobject(dpo, tob_ct, TILE_FLAME);
 				add_animator(dpo, ANIM_DRAGON_FLAME);
 				phys_set_colliding_tile_object(dpo,
-						TILE_COLLISION_FULL, deadly_tile_handler, 0);
+						TILE_COLLISION_TRIGGER, deadly_tile_handler, 0);
 			}
 			room_objs += NEXT_OBJECT(struct map_object_shooter);
 		} else if (map_object->type == BLOCK) {
@@ -863,7 +863,7 @@ void load_room(uint8_t room, bool reload)
 				dpo->state = STATE_MOVING_DOWN;
 				add_animator(dpo, ANIM_HANGING_PRIEST);
 				phys_set_colliding_tile_object(dpo,
-					TILE_COLLISION_FULL, deadly_tile_handler, 0);
+					TILE_COLLISION_TRIGGER, deadly_tile_handler, 0);
 			} else if (map_object->object.movable.type == TYPE_FLY) {
 				add_sprite(dpo, spr_ct, PATRN_FLY);
 				add_animator(dpo, ANIM_UP_DOWN_BOUNDED);
