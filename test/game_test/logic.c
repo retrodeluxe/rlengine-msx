@@ -62,6 +62,7 @@ void handle_death()
 {
 	game_state.jean_x = game_state.checkpoint_x;
 	game_state.jean_y = game_state.checkpoint_y;
+	game_state.jean_state = STATE_IDLE;
 	game_state.room = game_state.checkpoint_room;
 	game_state.death = false;
 }
