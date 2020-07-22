@@ -117,6 +117,10 @@ void pickup_cross(struct displ_object *dpo, uint8_t data)
 
 void checkpoint_handler(struct displ_object *dpo, uint8_t data)
 {
+	/** clear all other checkpoints */
+	sys_memset(&game_state.checkpoint[0], 0, 8);
+
+	/** last checkpoint is the only active one */
 	game_state.checkpoint[data] = 1;
 	game_state.checkpoint_x = dpo->xpos;
 	game_state.checkpoint_y = dpo->ypos - 8;
