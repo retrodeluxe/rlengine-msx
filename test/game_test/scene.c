@@ -278,7 +278,7 @@ inline bool jean_check_collision() __nonbanked
 			break;
 	 	case SPR_SIZE_16x32:
 			/** less strict to allow jumping over enemies */
-			box_x = 10; box_w = 10; box_y = 16; box_h = 10;
+			box_x = 10; box_w = 10; box_y = 16; box_h = 32;
 	 		break;
 	 	case SPR_SIZE_32x16:
 			box_x = 10; box_w = 32; box_y = 32; box_h = 16;
@@ -290,9 +290,8 @@ inline bool jean_check_collision() __nonbanked
 	if (coll_dpo->xpos < (dpo_jean.xpos + box_x) &&
 		(coll_dpo->xpos + box_w) > dpo_jean.xpos) {
 		if (dpo_jean.state == STATE_CROUCHING) {
-			// this depends on the height of the sprite as well
-			if (coll_dpo->ypos < (dpo_jean.ypos + 28) &&
-				(dpo->ypos + 16) > (dpo_jean.ypos + 16)) {
+			if (coll_dpo->ypos < (dpo_jean.ypos + box_y) &&
+				(coll_dpo->ypos + box_h - 8) > (dpo_jean.ypos + 16)) {
 				return true;
 			}
 		} else {
