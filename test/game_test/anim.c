@@ -113,6 +113,11 @@ void anim_jean_death(struct displ_object *obj)
 	spr_update(sp);
 }
 
+#define JEAN_DX 2
+#define JEAN_DX_JUMP 3
+#define JEAN_DY_JUMP 8
+#define JEAN_DY_FALL 6
+
 void anim_jean(struct displ_object *obj)
 {
 	static uint8_t death_ct = 0;
@@ -155,10 +160,10 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (stick == STICK_LEFT) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
-				dx = -3;
+				dx = -JEAN_DX_JUMP;
 			} else if (stick == STICK_RIGHT) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
-				dx = 3;
+				dx = JEAN_DX_JUMP;
 			}
 			if (is_colliding_up(obj)) {
 				obj->state = STATE_FALLING;
@@ -168,7 +173,7 @@ void anim_jean(struct displ_object *obj)
 		case STATE_MOVING_LEFT:
 			sp->cur_state = JANE_STATE_LEFT;
 			if (stick == STICK_LEFT) {
-				dx = -2;
+				dx = -JEAN_DX;
 			} else if (stick == STICK_RIGHT) {
 				obj->state = STATE_MOVING_RIGHT;
 			} else if (stick == STICK_DOWN
@@ -181,7 +186,7 @@ void anim_jean(struct displ_object *obj)
 			if (trigger) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
 				obj->state = STATE_JUMPING;
-				jmp = -8;
+				jmp = -JEAN_DY_JUMP;
 				sfx_play_effect(SFX_JUMP, 0);
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
@@ -190,7 +195,7 @@ void anim_jean(struct displ_object *obj)
 		case STATE_MOVING_RIGHT:
 			sp->cur_state = JANE_STATE_RIGHT;
 			if (stick == STICK_RIGHT) {
-				dx = 2;
+				dx = JEAN_DX;
 			} else if (stick == STICK_LEFT) {
 				obj->state = STATE_MOVING_LEFT;
 			} else if (stick == STICK_DOWN
@@ -206,7 +211,7 @@ void anim_jean(struct displ_object *obj)
 			if (trigger) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
 				obj->state = STATE_JUMPING;
-				jmp = -8;
+				jmp = -JEAN_DY_JUMP;
 				sfx_play_effect(SFX_JUMP, 0);
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
@@ -215,14 +220,14 @@ void anim_jean(struct displ_object *obj)
 		case STATE_CROUCHING:
 			if (stick == STICK_DOWN ) {
 				if (is_colliding_down_ft(obj) && !is_colliding_down(obj)) {
-					dy = 8;
+					dy = JEAN_DY_JUMP;
 					fallthrough = 1;
 				}
 			} else if (stick == STICK_DOWN_LEFT) {
-				dx = -2;
+				dx = -JEAN_DX;
 				sp->cur_state = JANE_STATE_LEFT_CROUCH;
 			} else if (stick == STICK_DOWN_RIGHT) {
-				dx = 2;
+				dx = JEAN_DX;
 				sp->cur_state = JANE_STATE_RIGHT_CROUCH;
 			} else if (stick == STICK_CENTER && !is_colliding_up(obj)) {
 				if (sp->cur_state == JANE_STATE_LEFT_CROUCH)
@@ -234,13 +239,13 @@ void anim_jean(struct displ_object *obj)
 				obj->state = STATE_MOVING_LEFT;
 				sp->cur_state = JANE_STATE_LEFT;
 			} else if (stick == STICK_LEFT && is_colliding_up(obj)) {
-				dx = -2;
+				dx = -JEAN_DX;
 				sp->cur_state = JANE_STATE_LEFT_CROUCH;
 			} else if (stick == STICK_RIGHT && !is_colliding_up(obj)) {
 				obj->state = STATE_MOVING_RIGHT;
 				sp->cur_state = JANE_STATE_RIGHT;
 			} else if (stick == STICK_RIGHT && is_colliding_up(obj)) {
-				dx = 2;
+				dx = JEAN_DX;
 				sp->cur_state = JANE_STATE_RIGHT_CROUCH;
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
@@ -263,7 +268,7 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (trigger) {
 				obj->state = STATE_JUMPING;
-				jmp = -8;
+				jmp = -JEAN_DY_JUMP;
 				sfx_play_effect(SFX_JUMP, 0);
 			}
 			if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
@@ -271,7 +276,7 @@ void anim_jean(struct displ_object *obj)
 			break;
 		case STATE_FALLING:
 			dy = jmp;
-			if (jmp++ > 6) jmp = 6;
+			if (jmp++ > 6) jmp = JEAN_DY_FALL;
 			if (sp->cur_state == JANE_STATE_RIGHT
 				|| sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
 					sp->cur_state = JANE_STATE_RIGHT_JUMP;
@@ -281,10 +286,10 @@ void anim_jean(struct displ_object *obj)
 			}
 			if (stick == STICK_LEFT) {
 				sp->cur_state = JANE_STATE_LEFT_JUMP;
-				dx = -2;
+				dx = -JEAN_DX;
 			} else if (stick == STICK_RIGHT) {
 				sp->cur_state = JANE_STATE_RIGHT_JUMP;
-				dx = 2;
+				dx = JEAN_DX;
 			}
 			if (is_colliding_down(obj) || is_colliding_down_ft(obj)) {
 				if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
