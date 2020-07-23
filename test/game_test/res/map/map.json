@@ -4110,19 +4110,21 @@
                  "properties":
                     {
                      "delay":"0",
+                     "max":"58",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "type":"string"
                     },
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":1072,
-                 "y":536
+                 "x":1089,
+                 "y":535.666666666667
                 }, 
                 {
                  "height":16,
@@ -4130,12 +4132,14 @@
                  "name":"shooter",
                  "properties":
                     {
-                     "delay":"0.5",
+                     "delay":"1",
+                     "max":"58",
                      "type":"leak"
                     },
                  "propertytypes":
                     {
                      "delay":"string",
+                     "max":"string",
                      "type":"string"
                     },
                  "rotation":0,
