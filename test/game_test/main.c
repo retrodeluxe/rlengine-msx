@@ -40,6 +40,7 @@ void show_title_screen();
 void show_retrodeluxe_logo();
 void show_intro_animation() __nonbanked;
 void animate_all() __nonbanked;
+void animate_jean() __nonbanked;
 void show_score_panel();
 void refresh_score();
 void show_parchment(uint8_t id);
@@ -88,6 +89,8 @@ uint8_t *current_song;
 bool init_music;
 bool muted;
 uint8_t play_frame;
+
+uint8_t v_frame;
 
 uint16_t reftick;
 bool fps_stall;
@@ -208,11 +211,19 @@ start:
 			load_room(game_state.room, true);
 		}
 
-		animate_all();
 
-		/* framerate limiter 25/30fps */
-		while (sys_get_ticks() - reftick < 1);
-			// some work we can do in this loop?
+		/* adjust enemy speed at 60Hz */
+		if(sys_is60Hz()) v_frame = ++v_frame % 6;
+		else v_frame = 1;
+		if (v_frame)
+			animate_all();
+		animate_jean();
+
+		/* framerate limiter to 25/30fps */
+		fps_stall = true;
+		while (sys_get_ticks() - reftick < 1) {
+			fps_stall = false;
+		}
 
 		if (game_state.death) {
 			if(--game_state.live_cnt == 0) {
@@ -245,6 +256,16 @@ void animate_all() __nonbanked
 			anim->run(dpo);
 			ascii8_restore();
 		}
+	}
+}
+
+void animate_jean() __nonbanked
+{
+	list_for_each(elem2, &dpo_jean.animator_list) {
+		anim = list_entry(elem2, struct animator, list);
+		ascii8_set_code(anim->page);
+		anim->run(&dpo_jean);
+		ascii8_restore();
 	}
 }
 
@@ -473,7 +494,7 @@ void show_intro_animation() __nonbanked
 		reftick = sys_get_ticks();
 
 		animate_all();
-		while (sys_get_ticks() - reftick < 1);		
+		while (sys_get_ticks() - reftick < 1);
 
 		trigger = sys_get_trigger(0) | sys_get_trigger(1);
 

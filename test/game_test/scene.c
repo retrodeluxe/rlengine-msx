@@ -158,8 +158,6 @@ void add_jean() __nonbanked
 	dpo_jean.collision_state = game_state.jean_collision_state;
 	dpo_jean.check_collision = false;
 	spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
-	INIT_LIST_HEAD(&dpo_jean.list);
-	list_add(&dpo_jean.list, &display_list);
 	INIT_LIST_HEAD(&dpo_jean.animator_list);
 
 	if (game_state.room == ROOM_BONFIRE) {
@@ -929,6 +927,8 @@ void load_room(uint8_t room, bool reload)
 			tile_object_show(dpo->tob, scr_tile_buffer, false);
 		}
 	}
+
+	spr_show(dpo_jean.spr);
 
 	if (room != ROOM_EVIL_CHAMBER && room != ROOM_BONFIRE) {
 		show_room_title(game_state.room);
