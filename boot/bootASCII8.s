@@ -49,6 +49,24 @@ _ascii8_restore:
 		ld	(ASCII8_PAGE2),a
 		pop	ix
 		ret
+
+		; workaround for LD A,I failing to set P/V if an interrupt occurs during the
+		; instruction. We detect this by examining if (sp - 1) was overwritten.
+		; f: pe <- interrupts enabled
+		; Modifies: af
+check_ei:
+		xor	a
+		push	af  ; set (sp - 1) to 0
+		pop	af
+		ld	a,i
+		ret	pe  ; interrupts enabled? return with pe
+		dec	sp
+		dec	sp  ; check whether the Z80 lied about ints being disabled
+		pop	af  ; (sp - 1) is overwritten w/ MSB of ret address if an ISR occurred
+		sub	#1
+		sbc	a,a
+		and	#1  ; (sp - 1) is not 0? return with pe, otherwise po
+		ret
 		;
 		; Support for SDCC baked calls
 		;
