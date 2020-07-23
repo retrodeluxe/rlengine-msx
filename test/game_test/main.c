@@ -146,6 +146,7 @@ void main() __nonbanked
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 
+	sys_disable_kbd_click();
 	sys_rand_init((uint8_t *)&main);
 
 	show_retrodeluxe_logo();

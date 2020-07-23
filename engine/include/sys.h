@@ -67,6 +67,7 @@ extern uint16_t sys_get_ticks() __nonbanked;
 extern uint8_t sys_rand_init(uint8_t *seed) __nonbanked;
 extern uint8_t sys_rand() __nonbanked;
 extern bool sys_is60Hz() __nonbanked;
+extern void sys_disable_kbd_click();
 
 extern void ascii8_set_data(uint8_t page) __nonbanked;
 extern void ascii8_set_code(uint8_t page) __nonbanked;

@@ -40,6 +40,14 @@ void sys_reboot()
         __endasm;
 }
 
+void sys_disable_kbd_click()
+{
+	__asm
+	xor a
+	ld (SYS_CLIKSW),a
+	__endasm;
+}
+
 uint8_t sys_get_key(uint8_t line) __nonbanked
 {
         line;
