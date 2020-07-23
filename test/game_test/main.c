@@ -191,6 +191,7 @@ start:
 		}
 		if (game_state.show_parchment) {
 			show_parchment(game_state.show_parchment);
+			game_state.jean_state = STATE_IDLE;
 			load_room(game_state.room, true);
 			game_state.show_parchment = 0;
 		} else if (game_state.final_animation) {
