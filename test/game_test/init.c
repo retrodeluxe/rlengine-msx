@@ -115,23 +115,57 @@ void clear_map_tilesets()
 	}
 }
 
+/**
+ * ROOM_PRAYER_OF_HOPE, ROOM_BONFIRE, ROOM_FOREST, ROOM_GRAVEYARD, ROOM_HAGMAN_TREE
+ */
 static void init_tiles_zone_1()
 {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_TREES_1], MAP_TILESET_TREES_1_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST_2], MAP_TILESET_FOREST_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO], MAP_TILESET_CHURCH_DECO_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_GRAVES], MAP_TILESET_GRAVES_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_1], MAP_TILESET_CHURCH_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_X], MAP_TILESET_X_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO], MAP_TILESET_CHURCH_DECO_POS);
+}
+
+/**
+ * ROOM_HAGMAN_TREE
+ */
+static void init_tiles_zone_1_2()
+{
+	// this is very problematic, too many tilesets; the cross doesn't fit
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_1], MAP_TILESET_CHURCH_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_TREES_1], MAP_TILESET_TREES_1_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST_2], MAP_TILESET_FOREST_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO_2], MAP_TILESET_CHURCH_DECO_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL], MAP_TILESET_SKULL_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_ROPE], MAP_TILESET_ROPE_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO], MAP_TILESET_CHURCH_DECO_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_X], MAP_TILESET_X_POS);
+}
+
+/**
+ * ROOM_CHURCH_ENTRANCE, ROOM_CHURCH_ALTAR, ROOM_CHURCH_TOWER, ROOM_CHURCH_WINE_SUPPLIES
+ */
+static void init_tiles_zone_1_3()
+{
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO], MAP_TILESET_CHURCH_DECO_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_1], MAP_TILESET_CHURCH_1_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO_2], MAP_TILESET_CHURCH_DECO_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_X], MAP_TILESET_X_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL], MAP_TILESET_SKULL_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_ROPE], MAP_TILESET_ROPE_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_GRAVES], MAP_TILESET_GRAVES_POS);
 }
 
+/**
+ * ROOM_CATACOMBS, ROOM_CATACOMBS_FLIES, ROOM_CATACOMBS_WHEEL
+ */
 static void init_tiles_zone_2()
 {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CATACOMBS_1], MAP_TILESET_CATACOMBS_1_POS);
@@ -141,6 +175,9 @@ static void init_tiles_zone_2()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_STONE], MAP_TILESET_STONE_POS);
 }
 
+/**
+ * ROOM_CAVE_GHOST, ROOM_HIDDEN_GARDEN, ROOM_HIDDEN_RIVER, ROOM_CAVE_LAKE
+ */
 static void init_tiles_zone_3()
 {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
@@ -149,24 +186,27 @@ static void init_tiles_zone_3()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_2], MAP_TILESET_CAVE_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS);
 }
 
+/**
+ * ROOM_CAVE_TUNNEL, ROOM_CAVE_GATE
+ */
 static void init_tiles_zone_4()
 {
-	// XXX: Way to big, need to split in smaller chunks
-	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_1], MAP_TILESET_CAVE_1_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_PLANT], MAP_TILESET_PLANT_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_BEAM], MAP_TILESET_BEAM_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS], MAP_TILESET_BRICKS_POS);
-	tile_set_to_vram(&tileset_map[MAP_TILESET_FLAMES], MAP_TILESET_FLAMES_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CAVE_2], MAP_TILESET_CAVE_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS); // cave gate
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS); //barrel
+	tile_set_to_vram(&tileset_map[MAP_TILESET_BEAM], MAP_TILESET_BEAM_POS); // tunnel beam
+	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS], MAP_TILESET_BRICKS_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_FLAMES], MAP_TILESET_FLAMES_POS); // invisible bridge
 }
 
+/**
+ * ROOM_EVIL_CHURCH, ROOM_EVIL_CHURCH_2, ROOM_EVIL_CHURCH_3, ROOM_EVIL_CHAMBER
+ */
 static void init_tiles_zone_5()
 {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS], MAP_TILESET_BRICKS_POS);
@@ -176,6 +216,9 @@ static void init_tiles_zone_5()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
 }
 
+/**
+ * ROOM_DEATH
+ */
 static void init_tiles_zone_6() {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_DEATH_DECO], MAP_TILESET_DEATH_DECO_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_SKULL_2], MAP_TILESET_SKULL_2_POS);
@@ -183,13 +226,18 @@ static void init_tiles_zone_6() {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_STONE], MAP_TILESET_STONE_POS);
 }
 
+/**
+ * ROOM_SATAN
+ */
 static void init_tiles_zone_7() {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS], MAP_TILESET_BRICKS_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_BRICKS_2], MAP_TILESET_BRICKS_2_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FLAMES], MAP_TILESET_FLAMES_POS);
 }
 
-// dragon
+/**
+ * ROOM_CAVE_DRAGON
+ */
 static void init_tiles_zone_8() {
 	tile_set_to_vram(&tileset_map[MAP_TILESET_FOREST], MAP_TILESET_FOREST_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
@@ -208,16 +256,41 @@ void init_room_tilesets(uint8_t room, bool reload)
 	tile_set_to_vram(&tileset_map[MAP_TILESET_DEBUG], 254);
 
 	// zone 1: forest and church
-	if (room > ROOM_EVIL_CHAMBER && room < ROOM_CAVE_DRAGON) {
-		if (prev_room > ROOM_HAGMAN_TREE || reload) {
+	if (room == ROOM_PRAYER_OF_HOPE || room == ROOM_BONFIRE
+		|| room == ROOM_FOREST || room == ROOM_GRAVEYARD) {
+		if (prev_room == ROOM_CHURCH_TOWER
+			|| prev_room == ROOM_CHURCH_ENTRANCE
+			|| prev_room == ROOM_SATAN
+			|| prev_room == ROOM_CHURCH_ALTAR
+			|| prev_room == ROOM_HAGMAN_TREE || reload) {
 			clear_map_tilesets();
 			init_tiles_zone_1();
 		}
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_FOREST]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_TREES_1]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_1]);
-		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_2]);
 
+		phys_clear_colliding_tile(16); // step brown
+		phys_set_down_colliding_tile(16);
+	} else if (room == ROOM_HAGMAN_TREE) {
+		clear_map_tilesets();
+		init_tiles_zone_1_2();
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_FOREST]);
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_TREES_1]);
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_1]);
+		phys_clear_colliding_tile(16); // step brown
+		phys_set_down_colliding_tile(16);
+
+	} else if (room == ROOM_CHURCH_ENTRANCE || room == ROOM_CHURCH_ALTAR
+		|| room == ROOM_CHURCH_TOWER || room == ROOM_CHURCH_WINE_SUPPLIES) {
+		if (prev_room == ROOM_GRAVEYARD || prev_room == ROOM_HAGMAN_TREE
+			|| prev_room == ROOM_PRAYER_OF_HOPE
+			|| prev_room == ROOM_CATACOMBS || reload) {
+			clear_map_tilesets();
+			init_tiles_zone_1_3();
+		}
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_1]);
+		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_2]);
 		phys_clear_colliding_tile(16); // step brown
 		phys_set_down_colliding_tile(16);
 
@@ -239,11 +312,13 @@ void init_room_tilesets(uint8_t room, bool reload)
 
 	// zone 3: cave gardens
 	} else if (room == ROOM_CAVE_GHOST
-		|| room == ROOM_HIDDEN_RIVER || room == ROOM_HIDDEN_GARDEN) {
+		|| room == ROOM_HIDDEN_RIVER || room == ROOM_HIDDEN_GARDEN
+		|| room == ROOM_CAVE_LAKE) {
 		if (prev_room == ROOM_CATACOMBS_FLIES || prev_room == ROOM_CAVE_DRAGON
-			|| prev_room == ROOM_CAVE_LAKE
 			|| prev_room == ROOM_CATACOMBS
-			|| prev_room == ROOM_CAVE_TUNNEL || reload) {
+			|| prev_room == ROOM_CAVE_TUNNEL
+			|| prev_room == ROOM_CATACOMBS_WHEEL
+			|| prev_room == ROOM_DEATH || reload) {
 				clear_map_tilesets();
 				init_tiles_zone_3();
 			}
@@ -260,10 +335,9 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS_2]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_STONE]);
 	// zone 4: other cave rooms
-	} else if (room == ROOM_CAVE_TUNNEL || room == ROOM_CAVE_LAKE
-		|| room == ROOM_CAVE_GATE) {
-		if (prev_room == ROOM_CATACOMBS_WHEEL || prev_room == ROOM_CAVE_DRAGON
-			|| prev_room == ROOM_CAVE_GHOST
+	} else if (room == ROOM_CAVE_TUNNEL || room == ROOM_CAVE_GATE) {
+		if (prev_room == ROOM_CAVE_DRAGON
+			|| prev_room == ROOM_CAVE_LAKE
 			|| prev_room == ROOM_EVIL_CHURCH || reload) {
 				clear_map_tilesets();
 				init_tiles_zone_4();
@@ -272,7 +346,6 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CHURCH_2]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BRICKS_2]);
-		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_FOREST]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_FLAMES]);
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_BEAM]);
 

@@ -205,7 +205,8 @@ start:
 			load_room(game_state.room, false);
 			spr_refresh();
 			// hack: ensure font digits not overwritten by pentagram
-			if (game_state.room == ROOM_SATAN)
+			if (game_state.room == ROOM_SATAN
+				|| game_state.room == ROOM_HAGMAN_TREE)
 				reload_font_digits();
 		} else if (game_state.teletransport) {
 			load_room(game_state.room, true);

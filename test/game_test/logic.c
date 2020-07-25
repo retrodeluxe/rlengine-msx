@@ -28,7 +28,7 @@ void init_game_state()
 	game_state.jean_state = STATE_IDLE;
 	game_state.jean_collision_state = 0;
 	game_state.jean_anim_state = JANE_STATE_LEFT;
-	game_state.room = ROOM_CHURCH_ALTAR;
+	game_state.room = ROOM_FOREST;
 
 	game_state.checkpoint_x = game_state.jean_x;
 	game_state.checkpoint_y = game_state.jean_y;
