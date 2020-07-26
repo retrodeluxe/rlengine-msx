@@ -372,6 +372,7 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CAVE_1]);
 
 		phys_clear_colliding_tile(38); // step white
+		phys_clear_colliding_tile(37); // stalactite 
 		phys_set_down_colliding_tile(38);
 	}
 

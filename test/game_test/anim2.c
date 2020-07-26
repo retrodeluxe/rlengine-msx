@@ -440,8 +440,10 @@ void anim_dragon_flame(struct displ_object *obj)
 void anim_dragon_bullets(struct displ_object *obj)
 {
 	uint8_t offset_before, offset_after;
+	int16_t base_offset;
 	int8_t dx;
 
+	base_offset = (obj->ypos/8) * 32;
 	offset_before = obj->xpos/8;
 
 	dx = 1;
@@ -451,8 +453,11 @@ void anim_dragon_bullets(struct displ_object *obj)
 
 	offset_after = (obj->xpos + dx)/8;
 
-	if (offset_before != offset_after) {
-		tile_object_hide(obj->tob, scr_tile_buffer, true);
+	if (offset_before != offset_after){
+		vdp_write(vdp_base_names_grp1 + base_offset + offset_before + 1, 0);
+		vdp_write(vdp_base_names_grp1 + base_offset + offset_before - 1, 0);
+		*(scr_tile_buffer + base_offset + offset_before + 1) = 0;
+		*(scr_tile_buffer + base_offset + offset_before - 1) = 0;
 	}
 
 	obj->xpos += dx;
@@ -466,6 +471,10 @@ void anim_dragon_bullets(struct displ_object *obj)
 	}
 	if (obj->xpos < 48 || obj->xpos > 250) {
 		tile_object_hide(obj->tob, scr_tile_buffer, true);
+		vdp_write(vdp_base_names_grp1 + base_offset + offset_before, 0);
+		vdp_write(vdp_base_names_grp1 + base_offset + offset_before - 1, 0);
+		*(scr_tile_buffer + base_offset + offset_before) = 0;
+		*(scr_tile_buffer + base_offset + offset_before - 1) = 0;
 		list_del(&obj->list);
 		obj->state = 255;
 	}

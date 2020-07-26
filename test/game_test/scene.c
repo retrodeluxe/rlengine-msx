@@ -258,7 +258,7 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id
 	add_animator(&dpo_tob_bullet[idx], anim_id);
 	tile_object_show(dpo_tob_bullet[idx].tob, scr_tile_buffer, true);
 	phys_set_colliding_tile_object(&dpo_tob_bullet[idx],
-		TILE_COLLISION_FULL, deadly_tile_handler, 0);
+		TILE_COLLISION_TRIGGER, deadly_tile_handler, 0);
 }
 
 inline bool jean_check_collision() __nonbanked
