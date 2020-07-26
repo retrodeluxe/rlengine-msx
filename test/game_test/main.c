@@ -743,6 +743,9 @@ void show_room_title(uint8_t room)
 		vdp_write(vram_offset - w + i, tile + i);
 		vdp_write(vram_offset - w + i + SCR_WIDTH, tile + i + w);
 	}
+
+	// we can free after use
+	tile_set_vfree(&tileset_room_title[room]);
 }
 
 void refresh_score()
