@@ -129,6 +129,7 @@ static void init_tiles_zone_1()
 	tile_set_to_vram(&tileset_map[MAP_TILESET_HANGING_PLANT], MAP_TILESET_HANGING_PLANT_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_X], MAP_TILESET_X_POS);
 	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_DECO], MAP_TILESET_CHURCH_DECO_POS);
+	tile_set_to_vram(&tileset_map[MAP_TILESET_CHURCH_2], MAP_TILESET_CHURCH_2_POS);
 }
 
 /**
@@ -372,7 +373,7 @@ void init_room_tilesets(uint8_t room, bool reload)
 		phys_set_colliding_tile_set(&tileset_map[MAP_TILESET_CAVE_1]);
 
 		phys_clear_colliding_tile(38); // step white
-		phys_clear_colliding_tile(37); // stalactite 
+		phys_clear_colliding_tile(37); // stalactite
 		phys_set_down_colliding_tile(38);
 	}
 
