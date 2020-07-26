@@ -345,9 +345,9 @@ void clear_room()
 	}
 
 	/* free dragon bullets */
-	//for (i = 0; i < SCENE_MAX_TOB_BULLET; i++) {
-	//	tile_set_vfree(bullet_tob[i].ts);
-	//}
+	for (i = 0; i < SCENE_MAX_TOB_BULLET; i++) {
+		tile_set_vfree(bullet_tob[i].ts);
+	}
 
 	spr_ct = 0;
 	tob_ct = 0;
