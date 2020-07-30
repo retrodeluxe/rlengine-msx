@@ -394,7 +394,7 @@ void show_title_screen()
 	do {
 		sys_wait_vsync();
 
-		if (sys_get_trigger(0)) {
+		if (sys_get_trigger(0) | sys_get_trigger(1) | sys_get_trigger(2)) {
 			if (showing_instr) {
 				load_intro_scr();
 				showing_instr = false;
@@ -403,9 +403,11 @@ void show_title_screen()
 				showing_instr = true;
 			}
 		}
+		trigger = sys_get_trigger(3) | sys_get_trigger(4);
 
-	} while (sys_get_key(7) & 128);
+	} while (!trigger && (sys_get_key(7) & 128));
 
+	trigger = 0;
 	vdp_screen_disable();
 	sys_irq_unregister(play_music);
 	pt3_mute();
