@@ -34,7 +34,9 @@ uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 // spr pattern sets
 struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
 
+// spr pattern attr
 struct vdp_hw_sprite spr_attr[vdp_hw_max_sprites];
+
 /**
  * spr_init: initialize vdp sprites and allocation tables
  */

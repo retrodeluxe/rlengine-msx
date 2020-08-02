@@ -52,10 +52,11 @@ void init_game_state()
 	game_state.door_trigger = false;
 
 	// debug helpers
-	game_state.bell = true;
-	game_state.toggle[0] = 1;
-	game_state.toggle[1] = 1;
-	game_state.toggle[2] = 1;
+	// game_state.bell = true;
+	// game_state.toggle[0] = 1;
+	// game_state.toggle[1] = 1;
+	// game_state.toggle[2] = 1;
+	// game_state.cross_switch = true;
 	//game_state.cross_cnt = 12;
 }
 
