@@ -87,7 +87,7 @@ void main()
 	bee_hw.y = 100;
 	bee_hw.pattern = 0;
 	bee_hw.color = 15;
-	vdp_set_hw_sprite(&bee_hw, 0);
+	//vdp_set_hw_sprite(&bee_hw, 0);
 
 
 	do {
