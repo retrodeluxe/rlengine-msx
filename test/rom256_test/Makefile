@@ -1,3 +1,5 @@
+include ../build.mk
+include $(SETUP_BUILD)
 #
 # ASCII8 banked ROM test (up to 2048K)
 include $(CONFIG_ROM)

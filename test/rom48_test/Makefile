@@ -1,3 +1,5 @@
+include ../build.mk
+include $(SETUP_BUILD)
 #
 # 48k test rom
 include $(CONFIG_ROM)

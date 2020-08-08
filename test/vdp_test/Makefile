@@ -1,3 +1,5 @@
+include ../build.mk
+include $(SETUP_BUILD)
 
 include $(CONFIG_ROM)
 

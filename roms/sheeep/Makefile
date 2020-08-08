@@ -1,3 +1,5 @@
+include ../build.mk
+include $(SETUP_BUILD)
 #
 # hello msx rom
 include $(CONFIG_ROM)

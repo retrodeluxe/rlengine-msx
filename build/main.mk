@@ -1,5 +1,6 @@
 #
 # Common definitions
+export TOP := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/../
 export BUILD_SYSTEM := $(TOP)/build
 export RLE_TEST  = $(TOP)test
 export RLE_ROMS = $(TOP)roms
@@ -14,7 +15,7 @@ export BUILD_OUT_TOOLS = $(BUILD_OUT)/tools
 
 # Set default target
 .PHONY: rle
-DEFAULT_GOAL := rle
+DEFAULT_GOAL := all
 $(DEFAULT_GOAL):
 
 export MAKEFLAGS :=
@@ -69,21 +70,21 @@ outdirs:
 	@mkdir -p $(BUILD_OUT)
 	@mkdir -p $(BUILD_OUT_BIN)
 	@mkdir -p $(BUILD_OUT_TOOLS)
-rle: outdirs
+all: outdirs
 
 # Build tests
 #
 .PHONY: test
 test:
 	$(MAKE) -C $(RLE_TEST) all
-rle: test
+rle: #test
 
 # Build ROMS
 #
 .PHONY: roms
 roms:
 	$(MAKE) -C $(RLE_ROMS) all
-rle: roms
+rle: #roms
 
 clean:
 	rm -Rf $(TOP)/out

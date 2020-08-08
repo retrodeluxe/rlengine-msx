@@ -1,3 +1,6 @@
+include ../build.mk
+include $(SETUP_BUILD)
+
 include $(CONFIG_ROM)
 
 LOCAL_RES_DIR := ./res
