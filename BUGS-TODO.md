@@ -1,31 +1,15 @@
-# TODO and BUGS
+# TODO
 
-## build system
-- add rules for each test/rom
-
-## engine
-- sfx: add sound effects
+#engine
+- vdp: add vdp2 module with msx2 specific api
 - sys: add timers with callbacks
+- dpo: extend to support blit objects
+- spr: add support for msx2 sprites
+- perf: add optimization tools
+- pt3: refactor module and cleanup code
+- ttr: trilo-tracker player
+- fm: msx-music player
 
-## Tests / Samples
-- game_test:
-  - sound effects
-  - tweak jump (x velocity)
-  - fine tune collision
-  - game over screen
-  - checkpoints
-  - fix broken animations
-  - but with sprite allocation when changing screens
-  - show room titles in status bar?
-  - show parchments
-  - room by room fit and finish
-
-
-# Map2Header - Tiled Map compiler
-- Support multiple tile layers?
-- add number of objects per room variables
-- document the interface
-- port to python3
-
-# Tga2Header - Graphic Assets compiler
-- Add PNG support
+#tools
+- png2header: add png asset compiler
+- sdcc: fix issues with banked calls/pointers

@@ -19,29 +19,8 @@ RLE is a work in progress, but mature enough for development (see the tests fold
 
 # How to Build
 
-Just run make.
+Currently supported platforms are MacOS and Ubuntu.
 
-Currently supported platforms are MacOS (tested in Sierra) and Ubuntu (tested in 17.04)
+Just run 'make test' or 'make rom', this build run everything inside the test and roms folders.
 
-Makefiles inside subdirectories will be found and built. Check the test directory for examples on how to write makefiles for individual ROMs.
-
-
-# Documentation (WIP)
-
-[How To Create a 32K ROM](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Create_32K_ROM.md)
-
-[How To Create a 48K ROM](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Create_48K_ROM.md)
-
-[How To Create a 2M ROM](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Create_2M_ROM.md)
-
-[Tile Resources](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Use_Tile_Resources.md)
-
-[Sprite Resources](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Use_Sprite_Resources.md)
-
-[Dynamic Tiles]
-
-[Tile Map resources](https://github.com/retrodeluxe/rlengine-msx1/blob/master/docs/HOWTO_Use_Tile_Map_Resources.md)
-
-[Display Lists]
-
-[Full API]
+You can also build individual roms from their root folder.
