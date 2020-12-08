@@ -34,7 +34,7 @@ void main()
 	uint8_t *src;
 	unsigned int ct;
 
-	vdp_set_mode(vdp_grp2);
+	vdp_set_mode(MODE_GRP2);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 	sys_irq_init();

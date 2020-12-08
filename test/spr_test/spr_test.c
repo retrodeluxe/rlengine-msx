@@ -49,7 +49,7 @@ void main()
 	uint8_t four_states[] = {3,3,3,3};
 	uint8_t monk_states[] = {3,3};
 
-	vdp_set_mode(vdp_grp1);
+	vdp_set_mode(MODE_GRP1);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 

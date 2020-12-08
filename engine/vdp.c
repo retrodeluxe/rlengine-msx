@@ -39,7 +39,7 @@ void vdp_screen_enable(void)
 	__endasm;
 }
 
-void vdp_set_mode(char mode)
+void vdp_set_mode(VdpMode mode)
 {
 	mode;
 

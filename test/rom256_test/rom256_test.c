@@ -18,7 +18,7 @@ void main()
 {
 
 	log_w("we are running");
-	vdp_set_mode(vdp_grp1);
+	vdp_set_mode(MODE_GRP1);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 

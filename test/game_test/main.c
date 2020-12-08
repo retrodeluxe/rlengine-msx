@@ -146,7 +146,7 @@ extern const char str_ending_4[];
 void main() __nonbanked {
   sys_memset((uint8_t *)0xC000, 0, 0x2000);
 
-  vdp_set_mode(vdp_grp2);
+  vdp_set_mode(MODE_GRP2);
   vdp_set_color(vdp_white, vdp_black);
   vdp_clear(0);
 

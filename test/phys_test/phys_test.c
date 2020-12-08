@@ -169,7 +169,7 @@ void main()
 	uint8_t i,d, x, y;
 	enum map_object_property_type spr_type;
 
-	vdp_set_mode(vdp_grp2);
+	vdp_set_mode(MODE_GRP2);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear_grp1(0);
 	spr_init();

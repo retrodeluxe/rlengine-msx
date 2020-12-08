@@ -26,7 +26,7 @@ void main()
 	uint8_t x,y;
   uint16_t i;
 
-	vdp_set_mode(vdp_grp2);
+	vdp_set_mode(MODE_GRP2);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 

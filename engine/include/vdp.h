@@ -22,10 +22,12 @@
 #ifndef _VDP_H_
 #define _VDP_H_
 
-#define vdp_txt 0
-#define vdp_grp1 1
-#define vdp_grp2 2
-#define vdp_mult 3
+typedef enum {
+  MODE_TXT,
+  MODE_GRP1,
+  MODE_GRP2,
+  MODE_MULT
+} VdpMode;
 
 #define vdp_trasnp 0
 #define vdp_black 1
@@ -67,7 +69,7 @@ extern void vdp_clear(uint8_t color);
 extern void vdp_puts(char x, char y, char *msg);
 extern void vdp_screen_disable(void);
 extern void vdp_screen_enable(void);
-extern void vdp_set_mode(char mode);
+extern void vdp_set_mode(VdpMode mode);
 extern void vdp_set_color(char ink, char border);
 extern void vdp_write(uint16_t address, uint8_t value) __nonbanked;
 extern void vdp_memset(uint16_t vaddress, uint16_t size,

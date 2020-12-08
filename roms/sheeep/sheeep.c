@@ -51,7 +51,7 @@ void main()
 
 	uint8_t state_steps[] = {3, 5, 5, 3, 8, 8, 4, 4};
 
-	vdp_set_mode(vdp_grp2);
+	vdp_set_mode(MODE_GRP2);
 	vdp_set_color(vdp_white, vdp_black);
 	vdp_clear(0);
 	spr_init();
