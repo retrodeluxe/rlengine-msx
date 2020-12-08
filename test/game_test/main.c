@@ -16,7 +16,6 @@
 #include "sys.h"
 #include "tile.h"
 #include "vdp.h"
-#include "wq.h"
 
 #include "anim.h"
 #include "banks.h"
@@ -488,8 +487,7 @@ void show_intro_animation() __nonbanked {
     reftick = sys_get_ticks();
 
     animate_all();
-    while (sys_get_ticks() - reftick < 1)
-      ;
+    while (sys_get_ticks() - reftick < 1);
 
     trigger = sys_get_trigger(0) | sys_get_trigger(1);
 

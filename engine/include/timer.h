@@ -18,32 +18,25 @@
  */
 #include <stdint.h>
 #include <stdbool.h>
+#include "list.h"
 
-#ifndef _WQ_H_
-#define _WQ_H_
+#ifndef _TIMER_H_
+#define _TIMER_H_
 
-#define INIT_WORK(WORK, FUNC)                                                  \
-  (WORK).func = (FUNC);                                                        \
-  (WORK).pending = 0;
+typedef struct Timer Timer;
+struct Timer {
+  List list;
 
-#define WQ_BUF_SIZE 20
+  /* callback and data */
+  void (*func)(uint8_t data);
+  uint8_t data;
 
-struct work_struct {
-  void (*func)();
-  unsigned char data;
-  unsigned char pending;
-  uint16_t alarm_secs;
-  uint16_t alarm_msec;
+  /* expiration time in sys_ticks (1/50 or 1/60 secs) */
+  uint16_t expires;
 };
 
-struct work_queue {
-  uint8_t head;
-  uint8_t tail;
-  struct work_struct *cq[WQ_BUF_SIZE];
-};
-
-extern void wq_start();
-extern int queue_work(struct work_struct *work);
-extern int queue_delayed_work(struct work_struct *work, uint16_t delay_secs,
-                              uint16_t delay_msec);
+extern void timer_init();
+extern void timer_define(Timer *timer, void (*func)(), uint16_t expires);
+extern void timer_add(Timer *timer, uint8_t data);
+extern void timer_del(Timer *timer);
 #endif

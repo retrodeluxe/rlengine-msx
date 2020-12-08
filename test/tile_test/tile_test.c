@@ -10,7 +10,6 @@
 #include "sys.h"
 #include "vdp.h"
 #include "sprite.h"
-#include "wq.h"
 #include "tile.h"
 #include "gen/tile_test.h"
 #include <stdlib.h>
