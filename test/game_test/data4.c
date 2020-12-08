@@ -1,23 +1,23 @@
 #pragma DATA_PAGE 11
 
 // font used for parchment and intro
-#include "gen/big_font_upper.h"
 #include "gen/big_font_lower.h"
-#include "gen/font_big_digits.h"
 #include "gen/big_font_symbols.h"
+#include "gen/big_font_upper.h"
+#include "gen/font_big_digits.h"
 
 // parchment
-#include "gen/parchment_yelow.h"
-#include "gen/parchment_red.h"
 #include "gen/parchment_blue.h"
 #include "gen/parchment_map.h"
+#include "gen/parchment_red.h"
+#include "gen/parchment_yelow.h"
 
 // intro strings
-const char str_intro_1[]= "13thCentury.TheCatars were";
-const char str_intro_2[]= "being expelled by theCatolic";
-const char str_intro_3[]= "Church out of theLanguedoc.";
-const char str_intro_4[]= "TheCatarJeanRaymond";
-const char str_intro_5[]= "runs to escape the crusaders...";
+const char str_intro_1[] = "13thCentury.TheCatars were";
+const char str_intro_2[] = "being expelled by theCatolic";
+const char str_intro_3[] = "Church out of theLanguedoc.";
+const char str_intro_4[] = "TheCatarJeanRaymond";
+const char str_intro_5[] = "runs to escape the crusaders...";
 
 // parchment strings
 const char str_parchment_1_1[] = "Twelve crosses";
