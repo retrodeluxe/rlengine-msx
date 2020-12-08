@@ -24,13 +24,13 @@
 
 #include <stddef.h>
 
-#define container_of(_ptr, _type, _member) \
-       ((_type *)( (char *)_ptr - offsetof(_type,_member)))
+#define container_of(_ptr, _type, _member)                                     \
+  ((_type *)((char *)_ptr - offsetof(_type, _member)))
 
 typedef struct List List;
 struct List {
-	List *next;
-	List *prev;
+  List *next;
+  List *prev;
 };
 
 /**
@@ -46,8 +46,7 @@ struct List {
  * @pos:	the &List to use as a loop cursor.
  * @head:	the head for your list.
  */
-#define list_for_each(pos, head) \
-	for (pos = (head)->next; pos; pos = pos->next)
+#define list_for_each(pos, head) for (pos = (head)->next; pos; pos = pos->next)
 
 extern void INIT_LIST_HEAD(List *list) __nonbanked;
 extern void list_add(List *new, List *head) __nonbanked;

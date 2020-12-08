@@ -23,20 +23,20 @@
 #include <msx.h>
 
 struct ay_reg_map {
-	uint8_t A_tone_fine;
-	uint8_t A_tone_coarse;
-	uint8_t B_tone_fine;
-	uint8_t B_tone_coarse;
-	uint8_t C_tone_fine;
-	uint8_t C_tone_coarse;
-	uint8_t Noise_period;
-	uint8_t Mixer_Ctl;
-	uint8_t A_Amp_Ctl;
-	uint8_t B_Amp_Ctl;
-	uint8_t C_Amp_Ctl;
-	uint8_t Env_period_fine;
-	uint8_t Env_period_coarse;
-	uint8_t Env_shape;
+  uint8_t A_tone_fine;
+  uint8_t A_tone_coarse;
+  uint8_t B_tone_fine;
+  uint8_t B_tone_coarse;
+  uint8_t C_tone_fine;
+  uint8_t C_tone_coarse;
+  uint8_t Noise_period;
+  uint8_t Mixer_Ctl;
+  uint8_t A_Amp_Ctl;
+  uint8_t B_Amp_Ctl;
+  uint8_t C_Amp_Ctl;
+  uint8_t Env_period_fine;
+  uint8_t Env_period_coarse;
+  uint8_t Env_shape;
 };
 
 extern void psg_write(uint8_t reg, uint8_t val);

@@ -23,20 +23,20 @@
 #include "tile.h"
 
 typedef enum {
-	FONT_UPPERCASE,
-	FONT_LOWERCASE,
-	FONT_NUMERIC,
-	FONT_SYMBOLS,
+  FONT_UPPERCASE,
+  FONT_LOWERCASE,
+  FONT_NUMERIC,
+  FONT_SYMBOLS,
 } FontType;
 
 typedef struct Font Font;
 struct Font {
-	TileSet tiles;
-	uint8_t type;
-	uint8_t num_glyphs;
-	uint8_t glyph_w;
-	uint8_t glyph_h;
-	uint8_t idx;
+  TileSet tiles;
+  uint8_t type;
+  uint8_t num_glyphs;
+  uint8_t glyph_w;
+  uint8_t glyph_h;
+  uint8_t idx;
 };
 
 /**
@@ -48,10 +48,10 @@ struct Font {
  */
 typedef struct FontSet FontSet;
 struct FontSet {
-	Font *upper;
-	Font *lower;
-	Font *numeric;
-	Font *symbols;
+  Font *upper;
+  Font *lower;
+  Font *numeric;
+  Font *symbols;
 };
 
 #define CHR_SPC 32
@@ -64,23 +64,25 @@ struct FontSet {
 #define CHR_EXCL 33
 #define CHR_SLASH 47
 
-#define INIT_FONT(FONT, TILES, TYPE, GLYPHS, W, H)	(FONT).tiles.w = TILES ## _tile_w;\
-							(FONT).tiles.h = TILES ## _tile_h;\
-							(FONT).tiles.pattern = TILES ## _tile;\
-							(FONT).tiles.color = TILES ## _tile_color; \
-							(FONT).tiles.allocated = false; \
-							(FONT).type = (TYPE); \
-							(FONT).num_glyphs = (GLYPHS); \
-							(FONT).glyph_w = (W); \
-							(FONT).glyph_h = (H);
+#define INIT_FONT(FONT, TILES, TYPE, GLYPHS, W, H)                             \
+  (FONT).tiles.w = TILES##_tile_w;                                             \
+  (FONT).tiles.h = TILES##_tile_h;                                             \
+  (FONT).tiles.pattern = TILES##_tile;                                         \
+  (FONT).tiles.color = TILES##_tile_color;                                     \
+  (FONT).tiles.allocated = false;                                              \
+  (FONT).type = (TYPE);                                                        \
+  (FONT).num_glyphs = (GLYPHS);                                                \
+  (FONT).glyph_w = (W);                                                        \
+  (FONT).glyph_h = (H);
 
 void init_font(Font *f, uint8_t *tile_pattern, uint8_t *tile_color,
-	uint8_t tile_w, uint8_t tile_h, FontType type,
-	uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h);
+               uint8_t tile_w, uint8_t tile_h, FontType type,
+               uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h);
 void font_to_vram(Font *f, uint8_t pos);
 void font_to_vram_bank(Font *f, uint8_t bank, uint8_t pos);
 void font_vprintf(FontSet *fs, uint8_t x, uint8_t y, char *text);
-void font_printf(FontSet *fs, uint8_t x, uint8_t y, uint8_t *buffer, char *text);
+void font_printf(FontSet *fs, uint8_t x, uint8_t y, uint8_t *buffer,
+                 char *text);
 void font_color_mask(Font *f, uint8_t color);
 void font_set_color_mask(FontSet *fs, uint8_t color);
 void font_vfree(Font *f);

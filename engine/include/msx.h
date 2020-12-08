@@ -22,24 +22,23 @@
 
 #define DEBUG
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-#define VDP_DR		0x0006
-#define VDP_DW		0x0007
-#define SYS_INFO1	0x002B
-#define SYS_INFO2	0x002C
-#define SYS_INFO3	0x002D
-#define SYS_CLIKSW	0xF3DB
+#define VDP_DR 0x0006
+#define VDP_DW 0x0007
+#define SYS_INFO1 0x002B
+#define SYS_INFO2 0x002C
+#define SYS_INFO3 0x002D
+#define SYS_CLIKSW 0xF3DB
 
-#define BIOS_DISSCR 	0x0041
-#define BIOS_ENASCR 	0x0044
-#define BIOS_CHGMOD 	0x005F
-#define BIOS_WRTPSG	0x0093
-#define BIOS_RDPSG	0x0096
+#define BIOS_DISSCR 0x0041
+#define BIOS_ENASCR 0x0044
+#define BIOS_CHGMOD 0x005F
+#define BIOS_WRTPSG 0x0093
+#define BIOS_RDPSG 0x0096
 
-
-#define sys_irq_disable()                 __asm di __endasm
-#define sys_irq_enable()                 __asm ei __endasm
-#define sys_wait_vsync()		__asm halt __endasm
-#endif				/* _MSX_H_ */
+#define sys_irq_disable() __asm di __endasm
+#define sys_irq_enable() __asm ei __endasm
+#define sys_wait_vsync() __asm halt __endasm
+#endif /* _MSX_H_ */

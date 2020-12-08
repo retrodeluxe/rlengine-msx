@@ -16,38 +16,38 @@
  * this program; If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include "msx.h"
 #include "dpo.h"
+#include "msx.h"
 #include "phys.h"
 #include "sprite.h"
 #define DEBUG
 #include "log.h"
- /**
-  * Handle sprite animation for simple cases of 2 and 4 states with collision
-  */
- void dpo_simple_animate(DisplayObject *dpo, signed char dx, signed char dy) __nonbanked
- {
- 	uint8_t old_dir;
-	int16_t x, y;
-	SpriteDef *sp = dpo->spr;
+/**
+ * Handle sprite animation for simple cases of 2 and 4 states with collision
+ */
+void dpo_simple_animate(DisplayObject *dpo, signed char dx,
+                        signed char dy) __nonbanked {
+  uint8_t old_dir;
+  int16_t x, y;
+  SpriteDef *sp = dpo->spr;
 
-	x = dpo->xpos;
-	y = dpo->ypos;
+  x = dpo->xpos;
+  y = dpo->ypos;
 
-	if (dpo-> type == DISP_OBJECT_SPRITE) {
-		spr_animate(sp, dx, dy);
+  if (dpo->type == DISP_OBJECT_SPRITE) {
+    spr_animate(sp, dx, dy);
 
-		if (!is_colliding_x(dpo)) {
-    			dpo->xpos += dx;
-			x += dx;
-		}
+    if (!is_colliding_x(dpo)) {
+      dpo->xpos += dx;
+      x += dx;
+    }
 
-		if (!is_colliding_y(dpo)) {
-			dpo->ypos += dy;
-			y += dy;
-		}
+    if (!is_colliding_y(dpo)) {
+      dpo->ypos += dy;
+      y += dy;
+    }
 
- 		spr_set_pos(sp, x, y);
- 		spr_update(sp);
-	}
- }
+    spr_set_pos(sp, x, y);
+    spr_update(sp);
+  }
+}

@@ -24,46 +24,47 @@
 #include "sprite.h"
 #include "tile.h"
 
-#define DISP_OBJECT_SPRITE 	1
-#define DISP_OBJECT_TILE 	2
-#define DISP_OBJECT_COMBO 	3
+#define DISP_OBJECT_SPRITE 1
+#define DISP_OBJECT_TILE 2
+#define DISP_OBJECT_COMBO 3
 
 typedef struct DisplayObject DisplayObject;
 typedef struct Animator Animator;
 
 struct Animator {
-	List list;
-	uint8_t page;		// HACK: store animator page to allow switching
-	void (*run)(DisplayObject *obj);
+  List list;
+  uint8_t page; // HACK: store animator page to allow switching
+  void (*run)(DisplayObject *obj);
 };
 
 struct DisplayObject {
-	uint8_t type; 	/*< sprite or dynamic tile */
+  uint8_t type; /*< sprite or dynamic tile */
 
-	/* static animation data */
-	uint8_t max;	/*<  max coordinate */
-	uint8_t min;	/*<  min coordinate */
-	uint8_t speed;	/*<  speed */
-	uint8_t color;
-	bool visible;
+  /* static animation data */
+  uint8_t max;   /*<  max coordinate */
+  uint8_t min;   /*<  min coordinate */
+  uint8_t speed; /*<  speed */
+  uint8_t color;
+  bool visible;
 
-	/* collision detection flags */
-	bool check_collision;
+  /* collision detection flags */
+  bool check_collision;
 
-	/* dynamic animation data */
-	uint8_t state;
-	uint8_t aux;		// per object auxiliary data
-	uint8_t aux2;
-	int16_t xpos;
-	int16_t ypos;
-	uint8_t collision_state;
-	SpriteDef *spr;
-	TileObject *tob;
-	DisplayObject *parent;
-	List list;
-	List animator_list;
+  /* dynamic animation data */
+  uint8_t state;
+  uint8_t aux; // per object auxiliary data
+  uint8_t aux2;
+  int16_t xpos;
+  int16_t ypos;
+  uint8_t collision_state;
+  SpriteDef *spr;
+  TileObject *tob;
+  DisplayObject *parent;
+  List list;
+  List animator_list;
 };
 
-void dpo_simple_animate(DisplayObject *dpo, signed char dx, signed char dy) __nonbanked;
+void dpo_simple_animate(DisplayObject *dpo, signed char dx,
+                        signed char dy) __nonbanked;
 
 #endif

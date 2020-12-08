@@ -23,20 +23,21 @@
 #include "dpo.h"
 #include "tile.h"
 
-#define COLLISION_LEFT 	1
-#define COLLISION_RIGHT	2
-#define COLLISION_UP		4
-#define COLLISION_DOWN		8
-#define COLLISION_DOWN_FT	16  // fallthrough
+#define COLLISION_LEFT 1
+#define COLLISION_RIGHT 2
+#define COLLISION_UP 4
+#define COLLISION_DOWN 8
+#define COLLISION_DOWN_FT 16 // fallthrough
 
-#define is_colliding_left(x)	(((x)->collision_state & COLLISION_LEFT) != 0)
-#define is_colliding_right(x)	(((x)->collision_state & COLLISION_RIGHT) != 0)
-#define is_colliding_down(x)	(((x)->collision_state & COLLISION_DOWN) != 0)
-#define is_colliding_down_ft(x) (((x)->collision_state & COLLISION_DOWN_FT) != 0)
-#define is_colliding_up(x)	(((x)->collision_state & COLLISION_UP) != 0)
-#define is_colliding_x(x)	(is_colliding_left((x)) || is_colliding_right((x)))
-#define is_colliding_y(x)	(is_colliding_up((x)) || is_colliding_down((x)))
-#define is_colliding(x)		(((x)->collision_state) != 0)
+#define is_colliding_left(x) (((x)->collision_state & COLLISION_LEFT) != 0)
+#define is_colliding_right(x) (((x)->collision_state & COLLISION_RIGHT) != 0)
+#define is_colliding_down(x) (((x)->collision_state & COLLISION_DOWN) != 0)
+#define is_colliding_down_ft(x)                                                \
+  (((x)->collision_state & COLLISION_DOWN_FT) != 0)
+#define is_colliding_up(x) (((x)->collision_state & COLLISION_UP) != 0)
+#define is_colliding_x(x) (is_colliding_left((x)) || is_colliding_right((x)))
+#define is_colliding_y(x) (is_colliding_up((x)) || is_colliding_down((x)))
+#define is_colliding(x) (((x)->collision_state) != 0)
 
 #define MAX_CROUPS 12
 
@@ -50,32 +51,35 @@ struct tile_collision_group {
 };
 
 enum tile_collision_type {
-	TILE_COLLISION_FULL = 1,
-	TILE_COLLISION_DOWN = 2,
-	TILE_COLLISION_TRIGGER = 4,
-	TILE_COLLISION_MULTIPLE = 8,	// indicates multiple objects may
-					// share same tiles on screen and have
-					// different handlers
+  TILE_COLLISION_FULL = 1,
+  TILE_COLLISION_DOWN = 2,
+  TILE_COLLISION_TRIGGER = 4,
+  TILE_COLLISION_MULTIPLE = 8, // indicates multiple objects may
+                               // share same tiles on screen and have
+                               // different handlers
 };
 
 void phys_init();
-void phys_set_sprite_collision_handler(void (*handler));
+void phys_set_sprite_collision_handler(void(*handler));
 void phys_clear_sprite_collision_handler() __nonbanked;
 void phys_set_tile_collision_handler(enum tile_collision_type type,
-	DisplayObject *dpo, void (*handler), uint8_t data);
+                                     DisplayObject *dpo, void(*handler),
+                                     uint8_t data);
 void phys_set_colliding_tile_object(DisplayObject *dpo,
-	enum tile_collision_type type, void (*handler), uint8_t data);
+                                    enum tile_collision_type type,
+                                    void(*handler), uint8_t data);
 void phys_clear_colliding_tile_object(DisplayObject *dpo);
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
 void phys_set_trigger_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);
-void phys_detect_tile_collisions(DisplayObject *obj, uint8_t *map,
-	int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked;
+void phys_detect_tile_collisions(DisplayObject *obj, uint8_t *map, int8_t dx,
+                                 int8_t dy, bool duck, bool notify) __nonbanked;
 void phys_detect_fall(DisplayObject *obj, uint8_t *map, int8_t dx) __nonbanked;
 void phys_set_colliding_tile_set(TileSet *ts);
 void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
-	enum tile_collision_type type, uint8_t x, uint8_t y,
-	uint8_t w, uint8_t h,
-	void (*handler), uint8_t data);
+                                           enum tile_collision_type type,
+                                           uint8_t x, uint8_t y, uint8_t w,
+                                           uint8_t h, void(*handler),
+                                           uint8_t data);
 #endif

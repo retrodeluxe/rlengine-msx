@@ -20,13 +20,14 @@
 #ifndef _BITMAP_H_
 #define _BITMAP_H_
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-uint8_t bitmap_get  (uint8_t *bitmap, uint8_t index);
-void bitmap_set   (uint8_t *bitmap, uint8_t index);
-void bitmap_reset (uint8_t *bitmap, uint8_t index);
-bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size, uint8_t *pos);
+uint8_t bitmap_get(uint8_t *bitmap, uint8_t index);
+void bitmap_set(uint8_t *bitmap, uint8_t index);
+void bitmap_reset(uint8_t *bitmap, uint8_t index);
+bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size,
+                     uint8_t *pos);
 void bitmap_dump(uint8_t *bitmap, uint8_t bitmap_size);
 
 #endif
