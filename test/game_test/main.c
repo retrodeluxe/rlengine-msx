@@ -57,11 +57,11 @@ TileSet tileset_intro;
 TileSet tileset_ending;
 TileSet tileset_gameover;
 TileSet parchment;
-struct font font_upper;
-struct font font_lower;
-struct font font_digits;
-struct font font_symbols;
-struct font_set intro_font_set;
+Font font_upper;
+Font font_lower;
+Font font_digits;
+Font font_symbols;
+FontSet intro_font_set;
 Animator *anim;
 DisplayObject *dpo;
 struct list_head *elem,*elem2;
@@ -80,8 +80,8 @@ uint8_t sfx_buffer[431];
 
 /** score panel primitives **/
 struct tile_object score;
-struct font big_digits;
-struct font_set score_font_set;
+Font big_digits;
+FontSet score_font_set;
 
 /** current song **/
 uint8_t *current_song;

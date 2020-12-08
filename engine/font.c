@@ -29,8 +29,8 @@
 #define BANK1_OFFSET 256 * 8
 #define BANK2_OFFSET BANK1_OFFSET * 2
 
-void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8_t tile_w,
-	uint8_t tile_h, enum font_type type, uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h)
+void init_font(Font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8_t tile_w,
+	uint8_t tile_h, FontType type, uint8_t num_glyphs, uint8_t glyph_w, uint8_t glyph_h)
 {
 	f->tiles.w = tile_w;
 	f->tiles.h = tile_h;
@@ -45,7 +45,7 @@ void init_font(struct font *f, uint8_t *tile_pattern, uint8_t *tile_color, uint8
 /**
  *
  */
-void font_to_vram(struct font *f, uint8_t pos)
+void font_to_vram(Font *f, uint8_t pos)
 {
 	if (&f->tiles != NULL) {
 		tile_set_to_vram_raw(&f->tiles, pos);
@@ -56,7 +56,7 @@ void font_to_vram(struct font *f, uint8_t pos)
 /**
  * Uploads a font to vram
  */
-void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos)
+void font_to_vram_bank(Font *f, uint8_t bank, uint8_t pos)
 {
 	if (&f->tiles != NULL) {
 		tile_set_to_vram_bank_raw(&f->tiles, bank, pos);
@@ -64,14 +64,14 @@ void font_to_vram_bank(struct font *f, uint8_t bank, uint8_t pos)
 	}
 }
 
-void font_vfree(struct font *f)
+void font_vfree(Font *f)
 {
 	if (f != NULL) {
 		tile_set_vfree(&f->tiles);
 	}
 }
 
-void font_set_vfree(struct font_set *fs)
+void font_set_vfree(FontSet *fs)
 {
 	if (fs->upper != NULL)
 		tile_set_vfree(&fs->upper->tiles);
@@ -86,7 +86,7 @@ void font_set_vfree(struct font_set *fs)
 /**
  * Applies a color mask to a font already allocated in vram
  */
-void font_color_mask(struct font *f, uint8_t color)
+void font_color_mask(Font *f, uint8_t color)
 {
 	uint16_t offset, size;
 	TileSet *ts;
@@ -104,7 +104,7 @@ void font_color_mask(struct font *f, uint8_t color)
 /**
  * Apply color mask to a font set already allocated in vram
  */
-void font_set_color_mask(struct font_set *fs, uint8_t color)
+void font_set_color_mask(FontSet *fs, uint8_t color)
 {
 	if (fs->upper != NULL)
 		font_color_mask(fs->upper, color);
@@ -117,7 +117,7 @@ void font_set_color_mask(struct font_set *fs, uint8_t color)
 }
 
 
-static uint8_t font_emit_glyph(struct font *f, uint8_t *addr, char tc)
+static uint8_t font_emit_glyph(Font *f, uint8_t *addr, char tc)
 {
 	uint8_t c, base_tile;
 	c = tc * f->glyph_w;
@@ -142,7 +142,7 @@ static uint8_t font_emit_glyph(struct font *f, uint8_t *addr, char tc)
 	return 1;
 }
 
-static uint8_t font_emit_glyph_vram(struct font *f, uint16_t addr, char tc)
+static uint8_t font_emit_glyph_vram(Font *f, uint16_t addr, char tc)
 {
 	uint8_t c, base_tile;
 	c = tc * f->glyph_w;
@@ -171,7 +171,7 @@ static uint8_t font_emit_glyph_vram(struct font *f, uint16_t addr, char tc)
  * print a complex string to a buffer using a font_set
  *
  */
-void font_printf(struct font_set *fs, uint8_t x, uint8_t y, uint8_t *buffer, char *text)
+void font_printf(FontSet *fs, uint8_t x, uint8_t y, uint8_t *buffer, char *text)
 {
 	char c, tc, base;
 	uint8_t *addr = buffer + y * 32 + x;
@@ -200,7 +200,7 @@ void font_printf(struct font_set *fs, uint8_t x, uint8_t y, uint8_t *buffer, cha
 /**
  * prints a complex string directly to vram
  */
-void font_vprintf(struct font_set *fs, uint8_t x, uint8_t y, char *text)
+void font_vprintf(FontSet *fs, uint8_t x, uint8_t y, char *text)
 {
 	char c, tc, base;
 	uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
