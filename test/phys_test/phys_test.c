@@ -69,7 +69,7 @@ struct displ_object dpo_bullet[2];
 struct displ_object dpo_monk;
 struct list_head display_list;
 struct animator animators[9];
-struct tile_set tileset_kv;
+TileSet tileset_kv;
 struct map_object_item *map_object;
 struct list_head *elem, *elem2, *elem3;
 struct animator *anim;

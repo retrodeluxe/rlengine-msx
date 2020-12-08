@@ -52,11 +52,11 @@ void init_room_titles();
 void load_intro_scene() __nonbanked;
 void change_room() __nonbanked;
 
-struct tile_set logo;
-struct tile_set tileset_intro;
-struct tile_set tileset_ending;
-struct tile_set tileset_gameover;
-struct tile_set parchment;
+TileSet logo;
+TileSet tileset_intro;
+TileSet tileset_ending;
+TileSet tileset_gameover;
+TileSet parchment;
 struct font font_upper;
 struct font font_lower;
 struct font font_digits;
@@ -95,8 +95,8 @@ uint8_t v_frame;
 uint16_t reftick;
 bool fps_stall;
 
-extern struct tile_set tileset_room_title[ROOM_MAX];
-extern struct tile_set tileset[TILE_MAX];
+extern TileSet tileset_room_title[ROOM_MAX];
+extern TileSet tileset[TILE_MAX];
 
 extern const unsigned char title_song_pt3[];
 extern const unsigned int title_song_pt3_len;

@@ -73,7 +73,7 @@ void phys_clear_colliding_tile(uint8_t tile);
 void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
 	int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked;
 void phys_detect_fall(struct displ_object *obj, uint8_t *map, int8_t dx) __nonbanked;
-void phys_set_colliding_tile_set(struct tile_set *ts);
+void phys_set_colliding_tile_set(TileSet *ts);
 void phys_set_masked_colliding_tile_object(struct displ_object *dpo,
 	enum tile_collision_type type, uint8_t x, uint8_t y,
 	uint8_t w, uint8_t h,

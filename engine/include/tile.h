@@ -28,7 +28,8 @@
 #define BANK2 2
 #define ALLBANKS 3
 
-struct tile_set {
+typedef struct TileSet TileSet;
+struct TileSet {
 	uint8_t w;
 	uint8_t h;
 	uint8_t *pattern;
@@ -56,7 +57,7 @@ struct tile_object {
 	uint8_t y;
 	uint8_t cur_dir;
 	uint8_t cur_anim_step;
-	struct tile_set *ts;
+	TileSet *ts;
 	uint8_t idx; /*< index of first tile in the tile set */
 };
 
@@ -97,12 +98,12 @@ struct tile_object {
 							(SET).raw = true;
 
 extern void tile_init();
-extern bool tile_set_valloc(struct tile_set *ts);
-extern void tile_set_vfree(struct tile_set *ts);
-extern void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t offset);
-extern void tile_set_to_vram(struct tile_set *ts, uint8_t pos);
-extern void tile_set_to_vram_bank_raw(struct tile_set *ts, uint8_t bank, uint8_t offset);
-extern void tile_set_to_vram_raw(struct tile_set *ts, uint8_t pos);
+extern bool tile_set_valloc(TileSet *ts);
+extern void tile_set_vfree(TileSet *ts);
+extern void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t offset);
+extern void tile_set_to_vram(TileSet *ts, uint8_t pos);
+extern void tile_set_to_vram_bank_raw(TileSet *ts, uint8_t bank, uint8_t offset);
+extern void tile_set_to_vram_raw(TileSet *ts, uint8_t pos);
 extern void tile_map_clip(struct tile_map *tm, struct gfx_viewport *vp,
 			     uint8_t * scrbuf, struct gfx_map_pos *p);
 

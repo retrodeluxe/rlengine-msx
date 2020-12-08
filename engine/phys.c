@@ -199,7 +199,7 @@ void phys_clear_colliding_tile_object(struct displ_object *dpo)
 /**
  * registers tiles from a plain tile_set as colliding
  */
-void phys_set_colliding_tile_set(struct tile_set *ts)
+void phys_set_colliding_tile_set(TileSet *ts)
 {
 	uint8_t i;
 	uint8_t base_tile = ts->pidx;

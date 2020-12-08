@@ -27,13 +27,13 @@
 #pragma CODE_PAGE 4
 
 /** map tilesets **/
-struct tile_set tileset_map[MAP_TILESET_MAX];
+TileSet tileset_map[MAP_TILESET_MAX];
 
 /** room title tilesets **/
-struct tile_set tileset_room_title[ROOM_MAX];
+TileSet tileset_room_title[ROOM_MAX];
 
 /** object tilesets **/
-struct tile_set tileset[TILE_MAX];
+TileSet tileset[TILE_MAX];
 
 /** scene primitives **/
 struct tile_object tileobject[SCENE_MAX_DPO];

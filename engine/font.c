@@ -89,7 +89,7 @@ void font_set_vfree(struct font_set *fs)
 void font_color_mask(struct font *f, uint8_t color)
 {
 	uint16_t offset, size;
-	struct tile_set *ts;
+	TileSet *ts;
 
 	ts = &f->tiles;
 	if (ts->allocated) {

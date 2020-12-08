@@ -8,7 +8,7 @@
 #include "gen/vdp_test.h"
 
 
-struct tile_set tileset_kv;
+TileSet tileset_kv;
 
 uint8_t buffer[768];
 

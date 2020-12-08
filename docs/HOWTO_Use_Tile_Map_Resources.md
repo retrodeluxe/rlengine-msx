@@ -146,7 +146,7 @@ WIP
 #include "tile.h"
 #include "vdp.h"
 
-struct tile_set tileset;
+TileSet tileset;
 
 void main()
 {

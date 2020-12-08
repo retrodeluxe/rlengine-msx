@@ -30,7 +30,7 @@ enum font_type {
 };
 
 struct font {
-	struct tile_set tiles;
+	TileSet tiles;
 	uint8_t type;
 	uint8_t num_glyphs;
 	uint8_t glyph_w;

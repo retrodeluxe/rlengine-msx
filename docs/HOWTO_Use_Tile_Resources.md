@@ -63,7 +63,7 @@ tile data is available for initialisation.
 You can use the macro _INIT_TILE_SET_ to assign a tile resource to a tile_set structure.
 
 ```
-struct tile_set my_tileset;
+TileSet my_tileset;
 
 INIT_TILE_SET(my_tileset, <tile_resource_name>);
 ```

@@ -53,9 +53,9 @@
 
 #include <stdlib.h>
 
-extern struct tile_set tileset[TILE_MAX];
-extern struct tile_set tileset_map[MAP_TILESET_MAX];
-extern struct tile_set tileset_room_title[ROOM_MAX];
+extern TileSet tileset[TILE_MAX];
+extern TileSet tileset_map[MAP_TILESET_MAX];
+extern TileSet tileset_room_title[ROOM_MAX];
 
 extern struct font big_digits;
 

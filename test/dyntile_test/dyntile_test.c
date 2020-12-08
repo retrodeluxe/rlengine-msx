@@ -21,8 +21,8 @@
 
 #include "gen/dyntile_test.h"
 
-struct tile_set giant_ts;
-struct tile_set tileset_kv;
+TileSet giant_ts;
+TileSet tileset_kv;
 struct tile_object giant_tobj;
 
 uint8_t scr_buf[768];

@@ -28,7 +28,7 @@ extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 extern struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 extern struct displ_object dpo_bullet[SCENE_MAX_BULLET];
 extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
-extern struct tile_set tileset[TILE_MAX];
+extern TileSet tileset[TILE_MAX];
 extern SpriteDef bullet_sprites[SCENE_MAX_BULLET];
 
 void clear_bullets()

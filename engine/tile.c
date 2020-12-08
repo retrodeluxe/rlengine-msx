@@ -47,7 +47,7 @@ void tile_init()
 /**
  * set a tileset in a fixed position.
  */
-void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
+void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t pos)
 {
 	uint16_t size, offset, i;
 	offset = pos * 8;
@@ -70,7 +70,7 @@ void tile_set_to_vram_bank(struct tile_set *ts, uint8_t bank, uint8_t pos)
 	ts->pidx = pos;
 }
 
-void tile_set_to_vram_bank_raw(struct tile_set *ts, uint8_t bank, uint8_t pos)
+void tile_set_to_vram_bank_raw(TileSet *ts, uint8_t bank, uint8_t pos)
 {
 	uint16_t size, offset, i;
 	offset = pos * 8;
@@ -100,7 +100,7 @@ void tile_set_to_vram_bank_raw(struct tile_set *ts, uint8_t bank, uint8_t pos)
  * params:
  * return: true if success, false if failure
  */
-bool tile_set_valloc(struct tile_set *ts)
+bool tile_set_valloc(TileSet *ts)
 {
 	uint16_t offset, vsize;
 	uint8_t i, pos, size;
@@ -149,7 +149,7 @@ bool tile_set_valloc(struct tile_set *ts)
  *   this is useful when we have a map whose tiles are static and depend
  *   on the tiles to be in a specific location.
  */
-void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
+void tile_set_to_vram(TileSet *ts, uint8_t pos)
 {
 	if (ts->allocated)
 		return;
@@ -160,7 +160,7 @@ void tile_set_to_vram(struct tile_set *ts, uint8_t pos)
 		tile_set_to_vram_bank(ts, ALLBANKS, pos);
 }
 
-void tile_set_to_vram_raw(struct tile_set *ts, uint8_t pos)
+void tile_set_to_vram_raw(TileSet *ts, uint8_t pos)
 {
 	if (ts->allocated)
 		return;
@@ -168,7 +168,7 @@ void tile_set_to_vram_raw(struct tile_set *ts, uint8_t pos)
 	tile_set_to_vram_bank_raw(ts, ALLBANKS, pos);
 }
 
-void tile_set_vfree(struct tile_set *ts)
+void tile_set_vfree(TileSet *ts)
 {
 	uint8_t i, size;
 

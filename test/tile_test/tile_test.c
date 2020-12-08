@@ -16,8 +16,8 @@
 #include <stdlib.h>
 #include "map.h"
 
-struct tile_set tileset_logo;
-struct tile_set tileset_kv;
+TileSet tileset_logo;
+TileSet tileset_kv;
 
 uint8_t map_buf[768];
 

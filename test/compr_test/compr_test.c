@@ -17,10 +17,10 @@
 
 #include "gen/compr_test.h"
 
-struct tile_set tileset_palette;
-struct tile_set tileset_logo;
-struct tile_set tileset_kv;
-struct tile_set tileset_intro;
+TileSet tileset_palette;
+TileSet tileset_logo;
+TileSet tileset_kv;
+TileSet tileset_intro;
 
 uint8_t map_buf[768];
 

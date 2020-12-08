@@ -17,8 +17,8 @@
 #include "gen/map_test.h"
 #include <stdlib.h>
 
-struct tile_set logo;
-struct tile_set ts;
+TileSet logo;
+TileSet ts;
 
 uint8_t fb[768];
 uint8_t map_buf[8000];
