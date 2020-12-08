@@ -46,15 +46,15 @@ SpriteDef jean_sprite;
 //        because rearranging them in the wrong order leads to a hang on start
 
 /** scene display objects **/
-struct displ_object display_object[SCENE_MAX_DPO];
-struct displ_object dpo_bullet[SCENE_MAX_BULLET];
-struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
+DisplayObject display_object[SCENE_MAX_DPO];
+DisplayObject dpo_bullet[SCENE_MAX_BULLET];
+DisplayObject dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 
 /** main character display object **/
-struct displ_object dpo_jean;
+DisplayObject dpo_jean;
 
 /** temporary dpo **/
-struct displ_object *tmp_dpo;
+DisplayObject *tmp_dpo;
 
 /** main display list **/
 struct list_head display_list;
@@ -64,7 +64,7 @@ struct map_object_item *map_object;
 
 /** iterators to check for sprite collisions **/
 struct list_head *coll_elem;
-struct displ_object *coll_dpo;
+DisplayObject *coll_dpo;
 
 /** tile object and sprite counters **/
 uint8_t spr_ct, tob_ct, bullet_ct;
@@ -77,7 +77,7 @@ extern void init_sfx();
 extern void show_room_title(uint8_t room);
 extern void start_music(uint8_t room);
 
-static void add_tileobject(struct displ_object *dpo, uint8_t objidx,
+static void add_tileobject(DisplayObject *dpo, uint8_t objidx,
 	enum tile_sets_t tileidx)
 {
 	if (tileset[tileidx].raw)
@@ -107,18 +107,18 @@ static void add_tileobject(struct displ_object *dpo, uint8_t objidx,
 	tob_ct++;
 }
 
-void remove_tileobject(struct displ_object *dpo)
+void remove_tileobject(DisplayObject *dpo)
 {
 	list_del(&dpo->list);
 	tile_object_hide(dpo->tob, scr_tile_buffer, true);
 }
 
-void update_tileobject(struct displ_object *dpo)
+void update_tileobject(DisplayObject *dpo)
 {
 	tile_object_show(dpo->tob, scr_tile_buffer, true);
 }
 
-static void add_sprite(struct displ_object *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
+static void add_sprite(DisplayObject *dpo, uint8_t objidx, enum spr_patterns_t pattidx)
 {
 	ascii8_set_data(PAGE_SPRITES);
 	spr_valloc_pattern_set(pattidx);
@@ -179,7 +179,7 @@ void add_jean() __nonbanked
  * Add bullet generic
  */
 void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent)
+	uint8_t state, uint8_t dir, uint8_t speed, DisplayObject *parent)
 {
 	uint8_t idx;
 
@@ -220,7 +220,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
  * Add dragon flame
  */
 void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx, uint8_t anim_id,
-	uint8_t state, uint8_t dir, uint8_t speed, struct displ_object *parent)
+	uint8_t state, uint8_t dir, uint8_t speed, DisplayObject *parent)
 {
 	uint8_t idx;
 
@@ -309,7 +309,7 @@ void jean_collision_handler() __nonbanked
 		/** calculate box intersection on all active sprites **/
 		list_for_each(coll_elem, &display_list) {
 			coll_dpo = list_entry(coll_elem,
-				struct displ_object, list);
+				DisplayObject, list);
 			if (coll_dpo->type == DISP_OBJECT_SPRITE && coll_dpo->check_collision)
 				if (jean_check_collision()) {
 					 dpo_jean.state = STATE_COLLISION;
@@ -408,7 +408,7 @@ void load_intro_scene() __nonbanked
 	add_animator(&dpo_jean, ANIM_INTRO_JEAN);
 
 	list_for_each(elem, &display_list) {
-		dpo = list_entry(elem, struct displ_object, list);
+		dpo = list_entry(elem, DisplayObject, list);
 		if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
 			spr_show(dpo->spr);
 		}
@@ -925,7 +925,7 @@ void load_room(uint8_t room, bool reload)
 
 	// show all elements
 	list_for_each(elem, &display_list) {
-		dpo = list_entry(elem, struct displ_object, list);
+		dpo = list_entry(elem, DisplayObject, list);
 		if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
 			spr_show(dpo->spr);
 		} else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {

@@ -25,7 +25,7 @@
  /**
   * Handle sprite animation for simple cases of 2 and 4 states with collision
   */
- void dpo_simple_animate(struct displ_object *dpo, signed char dx, signed char dy) __nonbanked
+ void dpo_simple_animate(DisplayObject *dpo, signed char dx, signed char dy) __nonbanked
  {
  	uint8_t old_dir;
 	int16_t x, y;

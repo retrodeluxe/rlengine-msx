@@ -96,7 +96,7 @@ void phys_clear_sprite_collision_handler() __nonbanked
  * set callbacks for specific tiles
  */
 void phys_set_tile_collision_handler(enum tile_collision_type type,
-	struct displ_object *dpo, void (*handler), uint8_t data)
+	DisplayObject *dpo, void (*handler), uint8_t data)
 {
 	uint8_t i;
 	uint8_t base_tile = dpo->tob->ts->pidx;
@@ -129,7 +129,7 @@ void phys_set_tile_collision_handler(enum tile_collision_type type,
 /**
  * Sets all the tiles composing an object as coliding tiles
  */
-void phys_set_colliding_tile_object(struct displ_object *dpo,
+void phys_set_colliding_tile_object(DisplayObject *dpo,
 	enum tile_collision_type type, void (*handler), uint8_t data)
 {
 	uint8_t i;
@@ -149,7 +149,7 @@ void phys_set_colliding_tile_object(struct displ_object *dpo,
 	phys_set_tile_collision_handler(type, dpo, handler, data);
 }
 
-void phys_set_masked_colliding_tile_object(struct displ_object *dpo,
+void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
 	enum tile_collision_type type, uint8_t x, uint8_t y,
 	uint8_t w, uint8_t h,
 	void (*handler), uint8_t data)
@@ -182,7 +182,7 @@ void phys_set_masked_colliding_tile_object(struct displ_object *dpo,
 }
 
 
-void phys_clear_colliding_tile_object(struct displ_object *dpo)
+void phys_clear_colliding_tile_object(DisplayObject *dpo)
 {
 	uint8_t i;
 	uint8_t base_tile = dpo->tob->ts->pidx;
@@ -296,7 +296,7 @@ static bool is_coliding_trigger_tile_pair(uint8_t tile1, uint8_t tile2) __nonban
 /**
  * Update dpo collision_state
  */
-static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
+static void phys_detect_tile_collisions_16x32(DisplayObject *obj,
         uint8_t *map, int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked
 {
 	int16_t x, y;
@@ -402,7 +402,7 @@ static void phys_detect_tile_collisions_16x32(struct displ_object *obj,
  * compute tile colision based on future position
  * XXX: Enemies do not trigger collision callbacks with tob, need a flag.
  */
-static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
+static void phys_detect_tile_collisions_16x16(DisplayObject *obj,
         uint8_t *map, int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked
 {
 	uint8_t x,y, c;
@@ -450,7 +450,7 @@ static void phys_detect_tile_collisions_16x16(struct displ_object *obj,
 /*
  * Update collision state of a display object 16x16
  */
-void phys_detect_tile_collisions(struct displ_object *obj, uint8_t *map,
+void phys_detect_tile_collisions(DisplayObject *obj, uint8_t *map,
 				int8_t dx, int8_t dy, bool duck, bool notify) __nonbanked
 {
 	uint8_t size = obj->spr->pattern_set->size;

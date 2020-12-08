@@ -62,8 +62,8 @@ struct font font_lower;
 struct font font_digits;
 struct font font_symbols;
 struct font_set intro_font_set;
-struct animator *anim;
-struct displ_object *dpo;
+Animator *anim;
+DisplayObject *dpo;
 struct list_head *elem,*elem2;
 SpriteDef score_hearth_mask;
 SpriteDef score_cross_mask;
@@ -250,9 +250,9 @@ start:
 void animate_all() __nonbanked
 {
 	list_for_each(elem, &display_list) {
-		dpo = list_entry(elem, struct displ_object, list);
+		dpo = list_entry(elem, DisplayObject, list);
 		list_for_each(elem2, &dpo->animator_list) {
-			anim = list_entry(elem2, struct animator, list);
+			anim = list_entry(elem2, Animator, list);
 			/** XXX: hack for banked function pointers **/
 			//log_e("dpo aidx:%d n:%d\n",dpo->spr->aidx, dpo->spr->pattern_set->n_planes);
 			ascii8_set_code(anim->page);
@@ -265,7 +265,7 @@ void animate_all() __nonbanked
 void animate_jean() __nonbanked
 {
 	list_for_each(elem2, &dpo_jean.animator_list) {
-		anim = list_entry(elem2, struct animator, list);
+		anim = list_entry(elem2, Animator, list);
 		ascii8_set_code(anim->page);
 		anim->run(&dpo_jean);
 		ascii8_restore();

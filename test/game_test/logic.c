@@ -69,13 +69,13 @@ void handle_death()
 	game_state.death = false;
 }
 
-void null_handler(struct displ_object *dpo, uint8_t data)
+void null_handler(DisplayObject *dpo, uint8_t data)
 {
 	// empty handler
 }
 
 
-void pickup_heart(struct displ_object *dpo, uint8_t data)
+void pickup_heart(DisplayObject *dpo, uint8_t data)
 {
 	/** we may have multiple calls due to multiple colliding tiles,
 	    ensure no double counting happens **/
@@ -88,7 +88,7 @@ void pickup_heart(struct displ_object *dpo, uint8_t data)
 	}
 }
 
-void pickup_scroll(struct displ_object *dpo, uint8_t data)
+void pickup_scroll(DisplayObject *dpo, uint8_t data)
 {
 	game_state.scroll[data] = 1;
 	remove_tileobject(dpo);
@@ -96,7 +96,7 @@ void pickup_scroll(struct displ_object *dpo, uint8_t data)
 	game_state.show_parchment = data;
 }
 
-void pickup_red_scroll(struct displ_object *dpo, uint8_t data)
+void pickup_red_scroll(DisplayObject *dpo, uint8_t data)
 {
 	remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
@@ -104,7 +104,7 @@ void pickup_red_scroll(struct displ_object *dpo, uint8_t data)
 	game_state.start_ending_seq = true;
 }
 
-void pickup_cross(struct displ_object *dpo, uint8_t data)
+void pickup_cross(DisplayObject *dpo, uint8_t data)
 {
 	/** we may have multiple calls due to multiple colliding tiles,
 	    ensure no double counting happens **/
@@ -118,7 +118,7 @@ void pickup_cross(struct displ_object *dpo, uint8_t data)
 	}
 }
 
-void checkpoint_handler(struct displ_object *dpo, uint8_t data)
+void checkpoint_handler(DisplayObject *dpo, uint8_t data)
 {
 	/** clear all other checkpoints */
 	sys_memset(&game_state.checkpoint[0], 0, 8);
@@ -134,7 +134,7 @@ void checkpoint_handler(struct displ_object *dpo, uint8_t data)
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 }
 
-void toggle_handler(struct displ_object *dpo, uint8_t data)
+void toggle_handler(DisplayObject *dpo, uint8_t data)
 {
 	game_state.toggle[data] = 1;
 	dpo->tob->cur_anim_step = 1;
@@ -143,7 +143,7 @@ void toggle_handler(struct displ_object *dpo, uint8_t data)
 	sfx_play_effect(SFX_SWITCH, 0);
 }
 
-void bell_handler(struct displ_object *dpo, uint8_t data)
+void bell_handler(DisplayObject *dpo, uint8_t data)
 {
 	game_state.bell = true;
 	dpo->tob->cur_anim_step = 1;
@@ -154,7 +154,7 @@ void bell_handler(struct displ_object *dpo, uint8_t data)
 	sfx_play_effect(SFX_SWITCH, 0);
 }
 
-void crosswitch_handler(struct displ_object *dpo, uint8_t data)
+void crosswitch_handler(DisplayObject *dpo, uint8_t data)
 {
 	/** switch is only active once every time it appears **/
 	phys_clear_colliding_tile_object(dpo);
@@ -173,14 +173,14 @@ void crosswitch_handler(struct displ_object *dpo, uint8_t data)
 }
 
 
-void trigger_handler(struct displ_object *dpo, uint8_t data)
+void trigger_handler(DisplayObject *dpo, uint8_t data)
 {
 	if (data == TRIGGER_ENTRANCE_DOOR) {
 		game_state.door_trigger = true;
 	}
 }
 
-void deadly_tile_handler(struct displ_object *dpo, uint8_t data)
+void deadly_tile_handler(DisplayObject *dpo, uint8_t data)
 {
 	if (dpo_jean.state != STATE_COLLISION
 		&& dpo_jean.state != STATE_DEATH) {
@@ -188,14 +188,14 @@ void deadly_tile_handler(struct displ_object *dpo, uint8_t data)
 	}
 }
 
-void cup_handler(struct displ_object *dpo, uint8_t data)
+void cup_handler(DisplayObject *dpo, uint8_t data)
 {
 	remove_tileobject(dpo);
 	sfx_play_effect(SFX_PICKUP_ITEM, 0);
 	game_state.cup_picked_up = true;
 }
 
-void teletransport(struct displ_object *dpo, uint8_t data)
+void teletransport(DisplayObject *dpo, uint8_t data)
 {
 	if (game_state.teletransport)
 		return;

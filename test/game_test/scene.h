@@ -178,9 +178,9 @@ enum rooms_t {
 
 extern struct list_head display_list;
 extern SpriteDef jean_sprite;
-extern struct displ_object dpo_jean;
+extern DisplayObject dpo_jean;
 extern struct list_head *elem;
-extern struct displ_object *dpo;
+extern DisplayObject *dpo;
 
 extern uint8_t scr_tile_buffer[768];
 extern uint8_t data_buffer[2100];
@@ -208,8 +208,8 @@ extern const unsigned int evilfight_song_pt3_len;
 extern const char abbaye_sfx_afb[];
 extern const unsigned int abbaye_sfx_afb_len;
 
-extern void remove_tileobject(struct displ_object *dpo);
-extern void update_tileobject(struct displ_object *dpo);
+extern void remove_tileobject(DisplayObject *dpo);
+extern void update_tileobject(DisplayObject *dpo);
 void init_scene();
 
 #endif

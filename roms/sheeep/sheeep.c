@@ -33,7 +33,7 @@ enum spr_states {
 SpriteDef sheep;
 SpriteDef indust;
 TileSet tilest_map;
-struct displ_object dpo_main;
+DisplayObject dpo_main;
 
 // credits for robert norenberg (art)
 

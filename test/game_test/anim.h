@@ -73,8 +73,8 @@ enum obj_state {
 	STATE_OFF_SCREEN_DELAY_3S
 };
 
-extern struct animator animators[MAX_ANIMATORS];
+extern Animator animators[MAX_ANIMATORS];
 
-void add_animator(struct displ_object *dpo, enum anim_t animidx);
+void add_animator(DisplayObject *dpo, enum anim_t animidx);
 
 #endif

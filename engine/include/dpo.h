@@ -27,15 +27,16 @@
 #define DISP_OBJECT_TILE 	2
 #define DISP_OBJECT_COMBO 	3
 
-struct displ_object;
+typedef struct DisplayObject DisplayObject;
+typedef struct Animator Animator;
 
-struct animator {
+struct Animator {
 	struct list_head list;
 	uint8_t page;		// HACK: store animator page to allow switching
-	void (*run)(struct displ_object *obj);
+	void (*run)(DisplayObject *obj);
 };
 
-struct displ_object {
+struct DisplayObject {
 	uint8_t type; 	/*< sprite or dynamic tile */
 
 	/* static animation data */
@@ -57,11 +58,11 @@ struct displ_object {
 	uint8_t collision_state;
 	SpriteDef *spr;
 	struct tile_object *tob;
-	struct displ_object *parent;
+	DisplayObject *parent;
 	struct list_head list;
 	struct list_head animator_list;
 };
 
-void dpo_simple_animate(struct displ_object *dpo, signed char dx, signed char dy) __nonbanked;
+void dpo_simple_animate(DisplayObject *dpo, signed char dx, signed char dy) __nonbanked;
 
 #endif

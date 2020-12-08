@@ -61,17 +61,17 @@ enum trigger_ids {
 
 extern struct game_state_t game_state;
 
-void null_handler(struct displ_object *dpo, uint8_t data);
-void pickup_heart(struct displ_object *dpo, uint8_t data);
-void pickup_scroll(struct displ_object *dpo, uint8_t data);
-void pickup_red_scroll(struct displ_object *dpo, uint8_t data);
-void pickup_cross(struct displ_object *dpo, uint8_t data);
-void checkpoint_handler(struct displ_object *dpo, uint8_t data);
-void toggle_handler(struct displ_object *dpo, uint8_t data);
-void bell_handler(struct displ_object *dpo, uint8_t data);
-void crosswitch_handler(struct displ_object *dpo, uint8_t data);
-void trigger_handler(struct displ_object *dpo, uint8_t data);
-void deadly_tile_handler(struct displ_object *dpo, uint8_t data);
-void cup_handler(struct displ_object *dpo, uint8_t data);
-void teletransport(struct displ_object *dpo, uint8_t data);
+void null_handler(DisplayObject *dpo, uint8_t data);
+void pickup_heart(DisplayObject *dpo, uint8_t data);
+void pickup_scroll(DisplayObject *dpo, uint8_t data);
+void pickup_red_scroll(DisplayObject *dpo, uint8_t data);
+void pickup_cross(DisplayObject *dpo, uint8_t data);
+void checkpoint_handler(DisplayObject *dpo, uint8_t data);
+void toggle_handler(DisplayObject *dpo, uint8_t data);
+void bell_handler(DisplayObject *dpo, uint8_t data);
+void crosswitch_handler(DisplayObject *dpo, uint8_t data);
+void trigger_handler(DisplayObject *dpo, uint8_t data);
+void deadly_tile_handler(DisplayObject *dpo, uint8_t data);
+void cup_handler(DisplayObject *dpo, uint8_t data);
+void teletransport(DisplayObject *dpo, uint8_t data);
 #endif

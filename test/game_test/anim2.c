@@ -20,13 +20,13 @@
 
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
 			uint8_t anim_id, uint8_t state, uint8_t dir,
-			uint8_t speed, struct displ_object *parent);
+			uint8_t speed, DisplayObject *parent);
 extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 			uint8_t anim_id, uint8_t state, uint8_t dir,
-			uint8_t speed, struct displ_object *parent);
+			uint8_t speed, DisplayObject *parent);
 
-extern struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
-extern struct displ_object dpo_bullet[SCENE_MAX_BULLET];
+extern DisplayObject dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
+extern DisplayObject dpo_bullet[SCENE_MAX_BULLET];
 extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
 extern TileSet tileset[TILE_MAX];
 extern SpriteDef bullet_sprites[SCENE_MAX_BULLET];
@@ -74,7 +74,7 @@ void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
 /**
  * Simplified animation for a Templar chasing Jean in intro screen
  */
-void anim_intro_chase(struct displ_object *obj)
+void anim_intro_chase(DisplayObject *obj)
 {
 	int8_t dx = 0, dy = 0;
 	SpriteDef *sp = obj->spr;
@@ -120,7 +120,7 @@ void anim_intro_chase(struct displ_object *obj)
 /**
  * Simplified Jean animation for intro screen
  */
-void anim_intro_jean(struct displ_object *obj)
+void anim_intro_jean(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	SpritePattern *ps = sp->pattern_set;
@@ -147,7 +147,7 @@ void anim_intro_jean(struct displ_object *obj)
 /**
  * Animation Death Boss
  */
-void anim_death(struct displ_object *obj)
+void anim_death(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	int8_t dx = 0;
@@ -188,7 +188,7 @@ void anim_death(struct displ_object *obj)
  *  bullets are deleted when reaching screen borders; shouldn't have more than
  *  3 active simultaneously
  */
-void anim_scythe(struct displ_object *obj)
+void anim_scythe(DisplayObject *obj)
 {
 	int8_t dx, dy;
 	SpriteDef *sp = obj->spr;
@@ -276,7 +276,7 @@ void add_satan_bullets(uint8_t xpos, uint8_t ypos)
  * Final Boss animation, big tile object that moves vertically and
  *  spits clusters of 3 bullets
  */
-void anim_satan(struct displ_object *obj)
+void anim_satan(DisplayObject *obj)
 {
 	uint8_t x, ty;
 	static uint8_t delay = 0;
@@ -360,7 +360,7 @@ void anim_satan(struct displ_object *obj)
  *
  * Hack to handle sets of 3 bullets in a bundle for performance
  */
-void anim_satan_bullets(struct displ_object *obj)
+void anim_satan_bullets(DisplayObject *obj)
 {
 	SpriteDef *sp;
 	uint8_t idx, i;
@@ -410,7 +410,7 @@ void anim_satan_bullets(struct displ_object *obj)
  *  it flames for alternating frames for ~4 seconds then stops and
  *  spits bullets (flames) on the ground in two directions
  */
-void anim_dragon_flame(struct displ_object *obj)
+void anim_dragon_flame(DisplayObject *obj)
 {
 	obj->state++;
 	if (obj->state < 30) {
@@ -437,7 +437,7 @@ void anim_dragon_flame(struct displ_object *obj)
 /**
  * Animation of dragon flame bullets, horizontal translation
  */
-void anim_dragon_bullets(struct displ_object *obj)
+void anim_dragon_bullets(DisplayObject *obj)
 {
 	uint8_t offset_before, offset_after;
 	int16_t base_offset;
@@ -484,7 +484,7 @@ void anim_dragon_bullets(struct displ_object *obj)
  * Animation for priests hanging from tree, length of rope
  *  needs to be adjusted as priests move up and down.
  */
-void anim_hanging_priest(struct displ_object *obj)
+void anim_hanging_priest(DisplayObject *obj)
 {
 	int8_t dy;
 	uint8_t ty;
@@ -537,7 +537,7 @@ void anim_hanging_priest(struct displ_object *obj)
 	}
 }
 
-void anim_explosion(struct displ_object *obj)
+void anim_explosion(DisplayObject *obj)
 {
 	if (obj->state++ < 20) {
 		if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
@@ -553,7 +553,7 @@ void anim_explosion(struct displ_object *obj)
 	}
 }
 
-void anim_red_parchment(struct displ_object *obj)
+void anim_red_parchment(DisplayObject *obj)
 {
 	if (game_state.red_parchment) {
 		obj->visible = true;
@@ -561,7 +561,7 @@ void anim_red_parchment(struct displ_object *obj)
 	}
 }
 
-void anim_evil_chamber(struct displ_object *obj)
+void anim_evil_chamber(DisplayObject *obj)
 {
 	int8_t dx = 0, dy = 0;
 	SpriteDef *sp = obj->spr;
@@ -611,7 +611,7 @@ void anim_evil_chamber(struct displ_object *obj)
  * Animation for the bonfire ending sequence
  *  jean shakes left and right 3 times then dies.
  */
-void anim_jean_bonfire(struct displ_object *obj)
+void anim_jean_bonfire(DisplayObject *obj)
 {
 	// needs to last a bit longer....
 	// and is not showing templar sprites...
@@ -652,7 +652,7 @@ void anim_jean_bonfire(struct displ_object *obj)
  */
 // compiler issue, ct2 fails to initialize properly
 
-void anim_block_crosses(struct displ_object *obj)
+void anim_block_crosses(DisplayObject *obj)
 {
 	static uint8_t ct1 = 0;
 	static uint8_t ct2 = 0;
@@ -687,7 +687,7 @@ void anim_block_crosses(struct displ_object *obj)
 /**
  * Animation for crosses with dynamic switch
  */
-void anim_cross(struct displ_object *obj)
+void anim_cross(DisplayObject *obj)
 {
 	if (game_state.cross_switch) {
 		if(obj->aux == 1)
@@ -713,13 +713,13 @@ void anim_cross(struct displ_object *obj)
 	}
 }
 
-void anim_templar_bonfire(struct displ_object *obj)
+void anim_templar_bonfire(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	spr_update(sp);
 }
 
-void anim_close_door_satan(struct displ_object *obj)
+void anim_close_door_satan(DisplayObject *obj)
 {
 	if (!obj->visible && dpo_jean.xpos > 20) {
 		obj->visible = true;

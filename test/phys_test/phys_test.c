@@ -63,32 +63,32 @@ SpriteDef enemy_sprites[32];
 SpriteDef arrow_sprite;
 SpriteDef bullet_sprite[2];
 SpriteDef monk_sprite;
-struct displ_object display_object[32];
-struct displ_object dpo_arrow;
-struct displ_object dpo_bullet[2];
-struct displ_object dpo_monk;
+DisplayObject display_object[32];
+DisplayObject dpo_arrow;
+DisplayObject dpo_bullet[2];
+DisplayObject dpo_monk;
 struct list_head display_list;
-struct animator animators[9];
+Animator animators[9];
 TileSet tileset_kv;
 struct map_object_item *map_object;
 struct list_head *elem, *elem2, *elem3;
-struct animator *anim;
-struct displ_object *dpo;
+Animator *anim;
+DisplayObject *dpo;
 
 uint8_t stick;
 uint8_t music_ready;
 struct map_object_item *room_objs;
 
 void play_music();
-void anim_up_down(struct displ_object *obj);
-void anim_drop(struct displ_object *obj);
-void anim_falling_bullets(struct displ_object *obj);
-void anim_left_right(struct displ_object *obj);
-void anim_throw_arrow(struct displ_object *obj);
-void anim_spit_bullets(struct displ_object *obj);
-void anim_horizontal_projectile(struct displ_object *obj);
-void anim_joystick(struct displ_object *obj);
-void anim_jump(struct displ_object *obj);
+void anim_up_down(DisplayObject *obj);
+void anim_drop(DisplayObject *obj);
+void anim_falling_bullets(DisplayObject *obj);
+void anim_left_right(DisplayObject *obj);
+void anim_throw_arrow(DisplayObject *obj);
+void anim_spit_bullets(DisplayObject *obj);
+void anim_horizontal_projectile(DisplayObject *obj);
+void anim_joystick(DisplayObject *obj);
+void anim_jump(DisplayObject *obj);
 void animate_all();
 void spr_colision_handler();
 void init_monk();
@@ -131,7 +131,7 @@ void init_animators()
 	animators[ANIM_SPIT_BULLETS].run = anim_spit_bullets;
 }
 
-static void add_animator(struct displ_object *dpo, enum anim_t animidx)
+static void add_animator(DisplayObject *dpo, enum anim_t animidx)
 {
 	list_add(&animators[animidx].list, &dpo->animator_list);
 }
@@ -140,7 +140,7 @@ static void add_animator(struct displ_object *dpo, enum anim_t animidx)
  * displ_add_sprite
  *   - requires display_list, spr_pattern, displ_sprites?
  */
-static void add_sprite(struct displ_object *dpo, uint8_t objidx,
+static void add_sprite(DisplayObject *dpo, uint8_t objidx,
 	enum spr_patterns_t pattidx, uint8_t x, uint8_t y)
 {
 	spr_valloc_pattern_set(pattidx);
@@ -245,7 +245,7 @@ void main()
 
 	/* Show them all */
 	list_for_each(elem, &display_list) {
-		dpo = list_entry(elem, struct displ_object, list);
+		dpo = list_entry(elem, DisplayObject, list);
 		if (dpo->type == DISP_OBJECT_SPRITE) {
 			spr_show(dpo->spr);
 		}
@@ -280,9 +280,9 @@ void main()
 void animate_all()
 {
     list_for_each(elem, &display_list) {
-        dpo = list_entry(elem, struct displ_object, list);
+        dpo = list_entry(elem, DisplayObject, list);
         list_for_each(elem2, &dpo->animator_list) {
-            anim = list_entry(elem2, struct animator, list);
+            anim = list_entry(elem2, Animator, list);
             anim->run(dpo);
         }
     }
@@ -312,7 +312,7 @@ void monk_death_anim()
  */
 void spr_colision_handler() {
 	list_for_each(elem3, &display_list) {
-		dpo = list_entry(elem3, struct displ_object, list);
+		dpo = list_entry(elem3, DisplayObject, list);
 		// XXX: optimize with bitwise operations
 		if (((dpo->xpos > dpo_monk.xpos) && (dpo->xpos < dpo_monk.xpos + 16)) ||
 			((dpo->xpos + 16 > dpo_monk.xpos) && (dpo->xpos + 16 < dpo_monk.xpos + 16))) {
@@ -348,7 +348,7 @@ void throw_arrow(uint8_t xpos, uint8_t ypos)
 /**
  * Animation for Skeleton to throw an arrow periodically
  */
-void anim_throw_arrow(struct displ_object *obj)
+void anim_throw_arrow(DisplayObject *obj)
 {
     static uint8_t frame_ct;
     static uint16_t time_throw;
@@ -400,7 +400,7 @@ void throw_bullets(uint8_t xpos, uint8_t ypos)
 /**
  * Animation for plant to spit bullets periodically
  */
-void anim_spit_bullets(struct displ_object *obj)
+void anim_spit_bullets(DisplayObject *obj)
 {
     static uint8_t frame_ct;
     static uint16_t time_throw;
@@ -432,7 +432,7 @@ void anim_spit_bullets(struct displ_object *obj)
  * Jump animation
  *
  */
-void anim_jump(struct displ_object *obj)
+void anim_jump(DisplayObject *obj)
 {
 	static uint8_t jmp_ct;
 
@@ -471,7 +471,7 @@ void anim_jump(struct displ_object *obj)
 /**
  * Animate on user input
  */
-void anim_joystick(struct displ_object *obj)
+void anim_joystick(DisplayObject *obj)
 {
 	int8_t dx = 0,dy = 0;
 
@@ -502,7 +502,7 @@ void anim_joystick(struct displ_object *obj)
 /**
  * Horizontal projectile that disapears on wall
  */
-void anim_horizontal_projectile(struct displ_object *obj)
+void anim_horizontal_projectile(DisplayObject *obj)
 {
 	int8_t dx = 0;
 
@@ -527,7 +527,7 @@ void anim_horizontal_projectile(struct displ_object *obj)
  *  Horizontal translation staying on solid ground without fall,
  *      switching direction on walls
  */
-void anim_left_right(struct displ_object *obj)
+void anim_left_right(DisplayObject *obj)
 {
 	int8_t dx = 0;
 
@@ -557,7 +557,7 @@ void anim_left_right(struct displ_object *obj)
 /**
  * Animation for water droplet
  */
-void anim_drop(struct displ_object *obj) {
+void anim_drop(DisplayObject *obj) {
 	static uint8_t start_y;
 	static uint8_t frame_ct;
 
@@ -605,7 +605,7 @@ void anim_drop(struct displ_object *obj) {
  * Two state vertical translation with direction switch on collision
  *
  */
-void anim_up_down(struct displ_object *obj)
+void anim_up_down(DisplayObject *obj)
 {
 	int8_t dy;
 
@@ -632,7 +632,7 @@ void anim_up_down(struct displ_object *obj)
  * Animation for bullets thrown up and to one side,
  *      following an inverted parabolic trajectory
  */
-void anim_falling_bullets(struct displ_object *obj)
+void anim_falling_bullets(DisplayObject *obj)
 {
 	static uint8_t frame_cnt_a = 0;
 	static uint8_t frame_cnt_b = 0;

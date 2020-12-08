@@ -17,34 +17,34 @@
 
 #pragma CODE_PAGE 6
 
-struct animator animators[MAX_ANIMATORS];
+Animator animators[MAX_ANIMATORS];
 
-extern struct displ_object dpo_jean;
+extern DisplayObject dpo_jean;
 
 extern void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id,
 			uint8_t anim_id, uint8_t state, uint8_t dir,
-			uint8_t speed, struct displ_object *parent);
+			uint8_t speed, DisplayObject *parent);
 
-extern void anim_gargolyne(struct displ_object *obj);
-extern void anim_death(struct displ_object *obj);
-extern void anim_scythe(struct displ_object *obj);
-extern void anim_satan(struct displ_object *obj);
-extern void anim_satan_bullets(struct displ_object *obj);
-extern void anim_dragon_flame(struct displ_object *obj);
-extern void anim_dragon_bullets(struct displ_object *obj);
-extern void anim_hanging_priest(struct displ_object *obj);
-extern void anim_intro_chase(struct displ_object *obj);
-extern void anim_intro_jean(struct displ_object *obj);
-extern void anim_explosion(struct displ_object *obj);
-extern void anim_red_parchment(struct displ_object *obj);
-extern void anim_evil_chamber(struct displ_object *obj);
-extern void anim_jean_bonfire(struct displ_object *obj);
-extern void anim_block_crosses(struct displ_object *obj);
-extern void anim_cross(struct displ_object *obj);
-extern void anim_templar_bonfire(struct displ_object *obj);
-extern void anim_close_door_satan(struct displ_object *obj);
+extern void anim_gargolyne(DisplayObject *obj);
+extern void anim_death(DisplayObject *obj);
+extern void anim_scythe(DisplayObject *obj);
+extern void anim_satan(DisplayObject *obj);
+extern void anim_satan_bullets(DisplayObject *obj);
+extern void anim_dragon_flame(DisplayObject *obj);
+extern void anim_dragon_bullets(DisplayObject *obj);
+extern void anim_hanging_priest(DisplayObject *obj);
+extern void anim_intro_chase(DisplayObject *obj);
+extern void anim_intro_jean(DisplayObject *obj);
+extern void anim_explosion(DisplayObject *obj);
+extern void anim_red_parchment(DisplayObject *obj);
+extern void anim_evil_chamber(DisplayObject *obj);
+extern void anim_jean_bonfire(DisplayObject *obj);
+extern void anim_block_crosses(DisplayObject *obj);
+extern void anim_cross(DisplayObject *obj);
+extern void anim_templar_bonfire(DisplayObject *obj);
+extern void anim_close_door_satan(DisplayObject *obj);
 
-void add_animator(struct displ_object *dpo, enum anim_t animidx)
+void add_animator(DisplayObject *dpo, enum anim_t animidx)
 {
 	list_add(&animators[animidx].list, &dpo->animator_list);
 }
@@ -96,7 +96,7 @@ void change_room() __nonbanked
 	}
 }
 
-void anim_jean_death(struct displ_object *obj)
+void anim_jean_death(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	SpritePattern *ps = sp->pattern_set;
@@ -118,7 +118,7 @@ void anim_jean_death(struct displ_object *obj)
 #define JEAN_DY_JUMP 8
 #define JEAN_DY_FALL 6
 
-void anim_jean(struct displ_object *obj)
+void anim_jean(DisplayObject *obj)
 {
 	static uint8_t death_ct = 0;
 	int8_t dx, dy;
@@ -349,7 +349,7 @@ void anim_jean(struct displ_object *obj)
 	//log_e("state %d pos %d %d col %d dx %d dy %d jmp %d\n", obj->state, obj->xpos, obj->ypos, obj->collision_state, dx ,dy, jmp);
 }
 
-void anim_cycle_tile(struct displ_object *dpo)
+void anim_cycle_tile(DisplayObject *dpo)
 {
 	if (dpo->state++ == 5) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
@@ -368,7 +368,7 @@ void anim_cycle_tile(struct displ_object *dpo)
 /**
  * tile cycling for lava
  */
-void anim_lava(struct displ_object *dpo)
+void anim_lava(DisplayObject *dpo)
 {
 	if (dpo->state++ == 10) {
 		if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
@@ -384,7 +384,7 @@ void anim_lava(struct displ_object *dpo)
 /**
  * Simple up-down animation bounded by max/min coordinates
  */
-void anim_up_down_bounded(struct displ_object *obj)
+void anim_up_down_bounded(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	int8_t dy = 0;
@@ -419,7 +419,7 @@ void anim_up_down_bounded(struct displ_object *obj)
 /**
  * Simple left-right animation bounded by max/min coordinates
  */
-void anim_left_right_bounded(struct displ_object *obj)
+void anim_left_right_bounded(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	int8_t dx = 0;
@@ -453,7 +453,7 @@ void anim_left_right_bounded(struct displ_object *obj)
 /**
  * Animation for a Templar chasing Jean in the forest
  */
-void anim_chase_forest(struct displ_object *obj)
+void anim_chase_forest(DisplayObject *obj)
 {
 	int8_t dx = 0, dy = 0;
 	SpriteDef *sp = obj->spr;
@@ -517,7 +517,7 @@ void anim_chase_forest(struct displ_object *obj)
 /**
  * Animation for a Templar chasing Jean in the forest
  */
-void anim_chase_graveyard(struct displ_object *obj)
+void anim_chase_graveyard(DisplayObject *obj)
 {
 	int8_t dx = 0, dy = 0;
 	SpriteDef *sp = obj->spr;
@@ -590,7 +590,7 @@ void anim_chase_graveyard(struct displ_object *obj)
  * Animation to show the door closing after jeans enters the church, then the
  * templars keep banging on it
  */
-void anim_close_door(struct displ_object *obj)
+void anim_close_door(DisplayObject *obj)
 {
 	if (game_state.door_trigger) {
 		if (!obj->visible) {
@@ -618,7 +618,7 @@ void anim_close_door(struct displ_object *obj)
 	}
 }
 
-void anim_open_door(struct displ_object *obj)
+void anim_open_door(DisplayObject *obj)
 {
 	if (game_state.toggle[2] != 0) {
 		tile_object_hide(obj->tob, scr_tile_buffer, true);
@@ -629,7 +629,7 @@ void anim_open_door(struct displ_object *obj)
  * Animation for bullets thrown up and to one side,
  *      following an inverted parabolic trajectory
  */
-void anim_falling_bullets(struct displ_object *obj)
+void anim_falling_bullets(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	int8_t dx = 0, dy = 0;
@@ -660,7 +660,7 @@ void anim_falling_bullets(struct displ_object *obj)
 /**
  * Animation of plants throwing bullets
  */
-void anim_plant(struct displ_object *obj)
+void anim_plant(DisplayObject *obj)
 {
 	// obj->aux contains delay in cycles, state rolls over at 200
 	if (obj->state == obj->aux) {
@@ -686,7 +686,7 @@ void anim_plant(struct displ_object *obj)
 /**
  * Animation of a water dropping from the ceiling
  */
-void anim_waterdrop(struct displ_object *obj)
+void anim_waterdrop(DisplayObject *obj)
 {
 	uint8_t max = obj->max;
 	// here we assume all drops start at the same position
@@ -732,7 +732,7 @@ void anim_waterdrop(struct displ_object *obj)
 /**
  * Animation of a fish jumping from the water
  */
-void anim_fish_jump(struct displ_object *obj)
+void anim_fish_jump(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	int8_t dx = 0, dy = 0;
@@ -762,7 +762,7 @@ void anim_fish_jump(struct displ_object *obj)
 /**
  * 3-frame animation of a splash of water produced by a fish
  */
-void anim_splash(struct displ_object *obj)
+void anim_splash(DisplayObject *obj)
 {
 	if (obj->aux2 == SPLASH_LAUNCH) {
 		obj->state++;
@@ -805,7 +805,7 @@ void anim_splash(struct displ_object *obj)
 /**
  * The Ghost moves slowly towards jean, taking into account collisions
  */
-void anim_ghost(struct displ_object *obj)
+void anim_ghost(DisplayObject *obj)
 {
 	static int8_t dx, dy;
 	SpriteDef *sp = obj->spr;
@@ -851,7 +851,7 @@ void anim_ghost(struct displ_object *obj)
 /**
  * Archer skeleton throws arrows and switches direction based on jean's position
  */
-void anim_archer_skeleton(struct displ_object *obj)
+void anim_archer_skeleton(DisplayObject *obj)
 {
 	uint8_t arrow_xpos;
 
@@ -884,7 +884,7 @@ void anim_archer_skeleton(struct displ_object *obj)
 /**
  * animation for arrows and other horizontal projectiles
  */
-void anim_horizontal_projectile(struct displ_object *obj)
+void anim_horizontal_projectile(DisplayObject *obj)
 {
 	SpriteDef *sp = obj->spr;
 	int8_t dx;
@@ -907,7 +907,7 @@ void anim_horizontal_projectile(struct displ_object *obj)
 /**
  * Animation of wall mounted gargolyne that spits a fireball
  */
-void anim_gargolyne(struct displ_object *obj)
+void anim_gargolyne(DisplayObject *obj)
 {
 	uint8_t spit_xpos;
 
@@ -932,7 +932,7 @@ void anim_gargolyne(struct displ_object *obj)
 /**
  * Water animation by tileobject shift
  */
-void anim_water(struct displ_object *obj)
+void anim_water(DisplayObject *obj)
 {
 	if (dpo->state++ == 10) {
 		dpo->tob->idx++;
