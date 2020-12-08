@@ -65,8 +65,8 @@ struct font_set intro_font_set;
 struct animator *anim;
 struct displ_object *dpo;
 struct list_head *elem,*elem2;
-struct spr_sprite_def score_hearth_mask;
-struct spr_sprite_def score_cross_mask;
+SpriteDef score_hearth_mask;
+SpriteDef score_cross_mask;
 
 uint8_t stick;
 uint8_t trigger;

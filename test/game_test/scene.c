@@ -38,9 +38,9 @@ struct tile_set tileset[TILE_MAX];
 /** scene primitives **/
 struct tile_object tileobject[SCENE_MAX_DPO];
 struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
-struct spr_sprite_def enemy_sprites[SCENE_MAX_DPO];
-struct spr_sprite_def bullet_sprites[SCENE_MAX_BULLET];
-struct spr_sprite_def jean_sprite;
+SpriteDef enemy_sprites[SCENE_MAX_DPO];
+SpriteDef bullet_sprites[SCENE_MAX_BULLET];
+SpriteDef jean_sprite;
 
 // FIXME: there appears to be a buffer overrun in one of this structures,
 //        because rearranging them in the wrong order leads to a hang on start

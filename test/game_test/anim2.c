@@ -29,7 +29,7 @@ extern struct displ_object dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 extern struct displ_object dpo_bullet[SCENE_MAX_BULLET];
 extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
 extern struct tile_set tileset[TILE_MAX];
-extern struct spr_sprite_def bullet_sprites[SCENE_MAX_BULLET];
+extern SpriteDef bullet_sprites[SCENE_MAX_BULLET];
 
 void clear_bullets()
 {
@@ -77,7 +77,7 @@ void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id)
 void anim_intro_chase(struct displ_object *obj)
 {
 	int8_t dx = 0, dy = 0;
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 
 	obj->aux++;
 	switch(obj->state) {
@@ -122,7 +122,7 @@ void anim_intro_chase(struct displ_object *obj)
  */
 void anim_intro_jean(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	SpritePattern *ps = sp->pattern_set;
 
 	obj->xpos += 2;
@@ -149,7 +149,7 @@ void anim_intro_jean(struct displ_object *obj)
  */
 void anim_death(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	int8_t dx = 0;
 
 	dx = obj->speed;
@@ -191,7 +191,7 @@ void anim_death(struct displ_object *obj)
 void anim_scythe(struct displ_object *obj)
 {
 	int8_t dx, dy;
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 
 	dx = obj->aux;
 	dy = 1;
@@ -362,7 +362,7 @@ void anim_satan(struct displ_object *obj)
  */
 void anim_satan_bullets(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp;
+	SpriteDef *sp;
 	uint8_t idx, i;
 	int16_t x,y;
 	int8_t dx, dy;
@@ -564,7 +564,7 @@ void anim_red_parchment(struct displ_object *obj)
 void anim_evil_chamber(struct displ_object *obj)
 {
 	int8_t dx = 0, dy = 0;
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 
 	obj->aux++;
 	switch(obj->state) {
@@ -615,7 +615,7 @@ void anim_jean_bonfire(struct displ_object *obj)
 {
 	// needs to last a bit longer....
 	// and is not showing templar sprites...
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	SpritePattern *ps = sp->pattern_set;
 
 	if (obj->state == 0) {
@@ -715,7 +715,7 @@ void anim_cross(struct displ_object *obj)
 
 void anim_templar_bonfire(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	spr_update(sp);
 }
 

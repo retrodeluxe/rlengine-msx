@@ -29,7 +29,7 @@
  {
  	uint8_t old_dir;
 	int16_t x, y;
-	struct spr_sprite_def *sp = dpo->spr;
+	SpriteDef *sp = dpo->spr;
 
 	x = dpo->xpos;
 	y = dpo->ypos;

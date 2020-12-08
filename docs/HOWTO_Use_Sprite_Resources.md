@@ -107,8 +107,8 @@ spr_valloc_pattern_set(&egg_patt);
 Once the patterns are in video memory, they can be linked to a sprite:
 
 ```
-struct spr_sprite_def eggspr;
-struct spr_sprite_def monk;
+SpriteDef eggspr;
+SpriteDef monk;
 SPR_DEFINE_SPRITE(bee[i], &bee_patt, 10, bee1_color);
 SPR_DEFINE_SPRITE(rats[i], &rat_patt, 10, rat_color);
 ```

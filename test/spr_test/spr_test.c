@@ -24,13 +24,13 @@
  	PATRN_MONK,
  };
 
-struct spr_sprite_def eggspr;
-struct spr_sprite_def monk;
+SpriteDef eggspr;
+SpriteDef monk;
 
 struct vdp_hw_sprite bee_hw;
 
-struct spr_sprite_def bee[10];
-struct spr_sprite_def rats[10];
+SpriteDef bee[10];
+SpriteDef rats[10];
 
 /**
  * NOTE : any initialized global data must be constant.

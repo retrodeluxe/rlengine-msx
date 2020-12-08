@@ -59,10 +59,10 @@ enum obj_state {
 
 // SpritePattern spr_pattern[PATRN_MAX];
 
-struct spr_sprite_def enemy_sprites[32];
-struct spr_sprite_def arrow_sprite;
-struct spr_sprite_def bullet_sprite[2];
-struct spr_sprite_def monk_sprite;
+SpriteDef enemy_sprites[32];
+SpriteDef arrow_sprite;
+SpriteDef bullet_sprite[2];
+SpriteDef monk_sprite;
 struct displ_object display_object[32];
 struct displ_object dpo_arrow;
 struct displ_object dpo_bullet[2];

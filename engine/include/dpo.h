@@ -55,7 +55,7 @@ struct displ_object {
 	int16_t xpos;
 	int16_t ypos;
 	uint8_t collision_state;
-	struct spr_sprite_def *spr;
+	SpriteDef *spr;
 	struct tile_object *tob;
 	struct displ_object *parent;
 	struct list_head list;

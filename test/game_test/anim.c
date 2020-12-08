@@ -98,7 +98,7 @@ void change_room() __nonbanked
 
 void anim_jean_death(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	SpritePattern *ps = sp->pattern_set;
 
 	sp->cur_state = JANE_STATE_DEATH;
@@ -127,7 +127,7 @@ void anim_jean(struct displ_object *obj)
 
 	#define CROUCH_OFFSET 8
 
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	SpritePattern *ps = sp->pattern_set;
 
 	dx = 0;
@@ -386,7 +386,7 @@ void anim_lava(struct displ_object *dpo)
  */
 void anim_up_down_bounded(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	int8_t dy = 0;
 
 	dy = obj->speed;
@@ -421,7 +421,7 @@ void anim_up_down_bounded(struct displ_object *obj)
  */
 void anim_left_right_bounded(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	int8_t dx = 0;
 
 	dx = obj->speed;
@@ -456,7 +456,7 @@ void anim_left_right_bounded(struct displ_object *obj)
 void anim_chase_forest(struct displ_object *obj)
 {
 	int8_t dx = 0, dy = 0;
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 
 	dx = 2;
 	switch(obj->state) {
@@ -520,7 +520,7 @@ void anim_chase_forest(struct displ_object *obj)
 void anim_chase_graveyard(struct displ_object *obj)
 {
 	int8_t dx = 0, dy = 0;
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 
 	dx = 2;
 	switch(obj->state) {
@@ -631,7 +631,7 @@ void anim_open_door(struct displ_object *obj)
  */
 void anim_falling_bullets(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	int8_t dx = 0, dy = 0;
 
 	if (obj->aux2 == 1) {
@@ -734,7 +734,7 @@ void anim_waterdrop(struct displ_object *obj)
  */
 void anim_fish_jump(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	int8_t dx = 0, dy = 0;
 
 	// inverted parabola with slope derivative = -0.33
@@ -808,7 +808,7 @@ void anim_splash(struct displ_object *obj)
 void anim_ghost(struct displ_object *obj)
 {
 	static int8_t dx, dy;
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 
 	if (obj->aux == 10) {
 		dx = obj->speed;
@@ -886,7 +886,7 @@ void anim_archer_skeleton(struct displ_object *obj)
  */
 void anim_horizontal_projectile(struct displ_object *obj)
 {
-	struct spr_sprite_def *sp = obj->spr;
+	SpriteDef *sp = obj->spr;
 	int8_t dx;
 
 	if (obj->aux == 0) dx = -obj->aux2;

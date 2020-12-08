@@ -177,7 +177,7 @@ enum rooms_t {
 };
 
 extern struct list_head display_list;
-extern struct spr_sprite_def jean_sprite;
+extern SpriteDef jean_sprite;
 extern struct displ_object dpo_jean;
 extern struct list_head *elem;
 extern struct displ_object *dpo;

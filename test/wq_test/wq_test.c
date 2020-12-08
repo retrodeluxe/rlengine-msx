@@ -22,12 +22,12 @@
  	PATRN_RAT,
  	PATRN_EGG,
  };
-struct spr_sprite_def eggspr;
+SpriteDef eggspr;
 
 struct vdp_hw_sprite bee_hw;
 
-struct spr_sprite_def bee[10];
-struct spr_sprite_def rats[10];
+SpriteDef bee[10];
+SpriteDef rats[10];
 
 struct work_struct work1;
 struct work_struct work2;

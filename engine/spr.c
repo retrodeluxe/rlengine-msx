@@ -68,7 +68,7 @@ void spr_clear(void)
 		spr_vfree_pattern_set(i);
 }
 
-void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx)
+void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx)
 {
 	sp->pattern_set = &spr_pattern[patrn_idx];
 	sp->cur_anim_step = 0;
@@ -144,7 +144,7 @@ bool spr_is_allocated(uint8_t patrn_idx)
 	return ps->allocated;
 }
 
-static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
+static void spr_calc_patterns(SpriteDef *sp) __nonbanked
 {
 	uint8_t i, color_frame, base = 0, base2, frame;
 
@@ -205,7 +205,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 	}
 }
 
-void spr_update(struct spr_sprite_def *sp) __nonbanked
+void spr_update(SpriteDef *sp) __nonbanked
 {
 	uint8_t i;
 	spr_calc_patterns(sp);
@@ -225,7 +225,7 @@ void spr_update(struct spr_sprite_def *sp) __nonbanked
 /**
  * spr_show: finds a gap to allocate the attribute set
  */
-uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
+uint8_t spr_show(SpriteDef *sp) __nonbanked
 {
 	uint8_t i, idx = 7, n, f = 0;
 	n = sp->pattern_set->n_planes;
@@ -247,7 +247,7 @@ uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked
 	return false;
 }
 
-void spr_hide(struct spr_sprite_def *sp) __nonbanked
+void spr_hide(SpriteDef *sp) __nonbanked
 {
 	uint8_t n, idx;
 	struct vdp_hw_sprite null_spr;
@@ -280,7 +280,7 @@ void spr_hide(struct spr_sprite_def *sp) __nonbanked
 /**
  * Set sprite position taking into account off-screen coordinates
  */
-void spr_set_pos(struct spr_sprite_def *sp, int16_t xp, int16_t yp) __nonbanked
+void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked
 {
 	uint8_t i, x, y, ec = 0;
 
@@ -318,7 +318,7 @@ void spr_set_pos(struct spr_sprite_def *sp, int16_t xp, int16_t yp) __nonbanked
 	}
 }
 
-void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors) __nonbanked
+void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked
 {
 	uint8_t i;
 	for (i = 0; i < sp->pattern_set->n_planes; i++) {
@@ -337,7 +337,7 @@ void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors) __nonbanke
 /**
  * Handle sprite animation for simple cases of 2 and 4 states with collision
  */
-void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy) __nonbanked
+void spr_animate(SpriteDef *sp, signed char dx, signed char dy) __nonbanked
 {
 	uint8_t old_dir, x, y;
 	SpritePattern *ps = sp->pattern_set;

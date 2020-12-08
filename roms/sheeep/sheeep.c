@@ -30,8 +30,8 @@ enum spr_states {
 	LEFT_ACTION,
 };
 
-struct spr_sprite_def sheep;
-struct spr_sprite_def indust;
+SpriteDef sheep;
+SpriteDef indust;
 struct tile_set tilest_map;
 struct displ_object dpo_main;
 
@@ -39,7 +39,7 @@ struct displ_object dpo_main;
 
 uint8_t screen_buffer[768];
 
-void my_spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy, char collision);
+void my_spr_animate(SpriteDef *sp, signed char dx, signed char dy, char collision);
 
 void main()
 {

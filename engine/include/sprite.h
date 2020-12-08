@@ -74,7 +74,8 @@ struct SpritePattern {
  * spr_sprite_def:
  *		copy of sprite attributes as in vram plus animation status
  */
-struct spr_sprite_def {
+typedef struct SpriteDef SpriteDef;
+struct SpriteDef {
 	uint8_t aidx;
 	struct vdp_hw_sprite planes[6];
 	SpritePattern *pattern_set;
@@ -84,7 +85,6 @@ struct spr_sprite_def {
 	uint8_t anim_ctr;
 	uint8_t anim_ctr_treshold;
 };
-
 
 struct spr_delta_pos {
 	char dx;
@@ -107,15 +107,15 @@ extern void spr_clear();
 extern void spr_copy_pattern_set(uint8_t index, uint8_t *patterns, uint8_t *colors);
 extern void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
 	uint8_t num_states, uint8_t *state_steps);
-extern void spr_init_sprite(struct spr_sprite_def *sp, uint8_t patrn_idx);
+extern void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
 extern void spr_vfree_pattern_set(uint8_t patrn_idx);
-extern void spr_set_pos(struct spr_sprite_def *sp, int16_t xp, int16_t yp) __nonbanked;
-extern void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t * colors) __nonbanked;
-extern uint8_t spr_show(struct spr_sprite_def *sp) __nonbanked;
-extern void spr_update(struct spr_sprite_def *sp) __nonbanked;
-extern void spr_hide(struct spr_sprite_def *sp) __nonbanked;
-extern void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy) __nonbanked;
+extern void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked;
+extern void spr_set_plane_colors(SpriteDef *sp, uint8_t * colors) __nonbanked;
+extern uint8_t spr_show(SpriteDef *sp) __nonbanked;
+extern void spr_update(SpriteDef *sp) __nonbanked;
+extern void spr_hide(SpriteDef *sp) __nonbanked;
+extern void spr_animate(SpriteDef *sp, signed char dx, signed char dy) __nonbanked;
 extern bool spr_is_allocated(uint8_t patrn_idx);
 extern void spr_refresh(void);
 #endif
