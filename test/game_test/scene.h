@@ -176,10 +176,10 @@ enum rooms_t {
 	ROOM_MAX,
 };
 
-extern struct list_head display_list;
+extern List display_list;
 extern SpriteDef jean_sprite;
 extern DisplayObject dpo_jean;
-extern struct list_head *elem;
+extern List *elem;
 extern DisplayObject *dpo;
 
 extern uint8_t scr_tile_buffer[768];

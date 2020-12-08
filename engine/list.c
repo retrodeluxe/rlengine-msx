@@ -19,7 +19,7 @@
 
 #include "list.h"
 
-void INIT_LIST_HEAD(struct list_head *list) __nonbanked
+void INIT_LIST_HEAD(List *list) __nonbanked
 {
 	list->next = 0;
 	list->prev = 0;
@@ -33,10 +33,10 @@ void INIT_LIST_HEAD(struct list_head *list) __nonbanked
  * Insert a new entry after the specified head.
  * This is good for implementing stacks.
  */
-void list_add(struct list_head *new, struct list_head *head) __nonbanked
+void list_add(List *new, List *head) __nonbanked
 {
-	struct list_head *next = head->next;
-	struct list_head *prev = head;
+	List *next = head->next;
+	List *prev = head;
 	next->prev = new;
 	new->next = next;
 	new->prev = prev;
@@ -49,7 +49,7 @@ void list_add(struct list_head *new, struct list_head *head) __nonbanked
  * Note: list_empty() on entry does not return true after this, the entry is
  * in an undefined state.
  */
-void list_del(struct list_head *entry) __nonbanked
+void list_del(List *entry) __nonbanked
 {
 	entry->next->prev = entry->prev;
 	entry->prev->next = entry->next;

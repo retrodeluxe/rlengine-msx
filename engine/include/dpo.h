@@ -22,6 +22,7 @@
 
 #include "list.h"
 #include "sprite.h"
+#include "tile.h"
 
 #define DISP_OBJECT_SPRITE 	1
 #define DISP_OBJECT_TILE 	2
@@ -31,7 +32,7 @@ typedef struct DisplayObject DisplayObject;
 typedef struct Animator Animator;
 
 struct Animator {
-	struct list_head list;
+	List list;
 	uint8_t page;		// HACK: store animator page to allow switching
 	void (*run)(DisplayObject *obj);
 };
@@ -59,8 +60,8 @@ struct DisplayObject {
 	SpriteDef *spr;
 	TileObject *tob;
 	DisplayObject *parent;
-	struct list_head list;
-	struct list_head animator_list;
+	List list;
+	List animator_list;
 };
 
 void dpo_simple_animate(DisplayObject *dpo, signed char dx, signed char dy) __nonbanked;

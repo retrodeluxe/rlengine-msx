@@ -67,11 +67,11 @@ DisplayObject display_object[32];
 DisplayObject dpo_arrow;
 DisplayObject dpo_bullet[2];
 DisplayObject dpo_monk;
-struct list_head display_list;
+List display_list;
 Animator animators[9];
 TileSet tileset_kv;
 struct map_object_item *map_object;
-struct list_head *elem, *elem2, *elem3;
+List *elem, *elem2, *elem3;
 Animator *anim;
 DisplayObject *dpo;
 

@@ -64,7 +64,7 @@ Font font_symbols;
 FontSet intro_font_set;
 Animator *anim;
 DisplayObject *dpo;
-struct list_head *elem,*elem2;
+List *elem,*elem2;
 SpriteDef score_hearth_mask;
 SpriteDef score_cross_mask;
 

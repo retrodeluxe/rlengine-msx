@@ -57,13 +57,13 @@ DisplayObject dpo_jean;
 DisplayObject *tmp_dpo;
 
 /** main display list **/
-struct list_head display_list;
+List display_list;
 
 /** current map object **/
 struct map_object_item *map_object;
 
 /** iterators to check for sprite collisions **/
-struct list_head *coll_elem;
+List *coll_elem;
 DisplayObject *coll_dpo;
 
 /** tile object and sprite counters **/
