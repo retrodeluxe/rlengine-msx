@@ -49,7 +49,7 @@ void vdp_set_mode(VdpMode mode)
 	__endasm;
 }
 
-void vdp_set_color(char ink, char border)
+void vdp_set_color(VdpColor ink, VdpColor border)
 {
 	ink;
 	border;
@@ -395,7 +395,7 @@ end_rle:
 /**
  * Fills name table with zeros and define zero char color in all banks
  */
-void vdp_clear(uint8_t color)
+void vdp_clear(VdpColor color)
 {
 	vdp_memset(vdp_base_names_grp1, 256 * 3, 0);
 	vdp_memset(vdp_base_color_grp1, 8, color);

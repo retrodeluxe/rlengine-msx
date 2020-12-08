@@ -29,22 +29,24 @@ typedef enum {
   MODE_MULT
 } VdpMode;
 
-#define vdp_trasnp 0
-#define vdp_black 1
-#define vdp_green 2
-#define vdp_lgreen 3
-#define vdp_dblue 4
-#define vdp_blue 5
-#define vdp_dred 6
-#define vdp_lblue 7
-#define vdp_red 8
-#define vdp_lred 9
-#define vdp_yellow 10
-#define vdp_lyellow 11
-#define vdp_dgreen 12
-#define vdp_magenta 13
-#define vdp_grey 14
-#define vdp_white 15
+typedef enum {
+  COLOR_TRANSPARENT,
+  COLOR_BLACK,
+  COLOR_GREEN,
+  COLOR_LIGHTGREEN,
+  COLOR_DIMBLUE,
+  COLOR_BLUE,
+  COLOR_DIMRED,
+  COLOR_LIGHTBLUE,
+  COLOR_RED,
+  COLOR_LIGHTRED,
+  COLOR_YELLOW,
+  COLOR_LIGHTYELLOW,
+  COLOR_DIMGREEN,
+  COLOR_MAGENTA,
+  COLOR_GREY,
+  COLOR_WHITE
+} VdpColor;
 
 #define vdp_base_names_grp1 0x1800
 #define vdp_base_color_grp1 0x2000
@@ -65,12 +67,12 @@ struct vdp_hw_sprite {
 #define vdp_poke_names(OFFSET, PATTERN)                                        \
   vdp_write(vdp_base_names_grp1 + (OFFSET), PATTERN)
 
-extern void vdp_clear(uint8_t color);
+extern void vdp_clear(VdpColor color);
 extern void vdp_puts(char x, char y, char *msg);
 extern void vdp_screen_disable(void);
 extern void vdp_screen_enable(void);
 extern void vdp_set_mode(VdpMode mode);
-extern void vdp_set_color(char ink, char border);
+extern void vdp_set_color(VdpColor ink, VdpColor border);
 extern void vdp_write(uint16_t address, uint8_t value) __nonbanked;
 extern void vdp_memset(uint16_t vaddress, uint16_t size,
                        uint8_t value) __nonbanked;

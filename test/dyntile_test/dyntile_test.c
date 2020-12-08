@@ -30,7 +30,7 @@ uint8_t scr_buf[768];
 void main()
 {
 	vdp_set_mode(MODE_GRP2);
-	vdp_set_color(vdp_white, vdp_black);
+	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
 	vdp_clear(0);
 	sys_irq_init();
 

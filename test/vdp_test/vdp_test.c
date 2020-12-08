@@ -17,7 +17,7 @@ void main()
   uint16_t i;
 
 	vdp_set_mode(MODE_GRP2);
-	vdp_set_color(vdp_white, vdp_black);
+	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
 	vdp_clear(0);
 
 	INIT_TILE_SET(tileset_kv, kingsvalley);

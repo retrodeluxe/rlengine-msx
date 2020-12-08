@@ -50,7 +50,7 @@ void main()
 	uint8_t monk_states[] = {3,3};
 
 	vdp_set_mode(MODE_GRP1);
-	vdp_set_color(vdp_white, vdp_black);
+	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
 	vdp_clear(0);
 
 	spr_init();

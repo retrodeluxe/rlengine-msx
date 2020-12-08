@@ -170,7 +170,7 @@ void main()
 	enum map_object_property_type spr_type;
 
 	vdp_set_mode(MODE_GRP2);
-	vdp_set_color(vdp_white, vdp_black);
+	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
 	vdp_clear_grp1(0);
 	spr_init();
 

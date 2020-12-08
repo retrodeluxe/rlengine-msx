@@ -19,7 +19,7 @@ void main()
 {
 
 	vdp_set_mode(MODE_GRP1);
-	vdp_set_color(vdp_white, vdp_black);
+	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
 	vdp_clear(0);
 
 	sys_set_rom();
