@@ -123,7 +123,7 @@ void anim_intro_chase(struct displ_object *obj)
 void anim_intro_jean(struct displ_object *obj)
 {
 	struct spr_sprite_def *sp = obj->spr;
-	struct spr_pattern_set *ps = sp->pattern_set;
+	SpritePattern *ps = sp->pattern_set;
 
 	obj->xpos += 2;
 	sp->anim_ctr++;
@@ -616,7 +616,7 @@ void anim_jean_bonfire(struct displ_object *obj)
 	// needs to last a bit longer....
 	// and is not showing templar sprites...
 	struct spr_sprite_def *sp = obj->spr;
-	struct spr_pattern_set *ps = sp->pattern_set;
+	SpritePattern *ps = sp->pattern_set;
 
 	if (obj->state == 0) {
 		sp->cur_state = JANE_STATE_LEFT_JUMP;

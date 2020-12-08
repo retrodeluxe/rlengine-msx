@@ -772,7 +772,7 @@ void refresh_score()
 void show_score_panel()
 {
 	uint8_t i;
-	struct spr_pattern_set *ps = &spr_pattern[PATRN_HEARTH_MASK];
+	SpritePattern *ps = &spr_pattern[PATRN_HEARTH_MASK];
 
 	ascii8_set_data(PAGE_DYNTILES);
 	tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);

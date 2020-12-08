@@ -99,7 +99,7 @@ void change_room() __nonbanked
 void anim_jean_death(struct displ_object *obj)
 {
 	struct spr_sprite_def *sp = obj->spr;
-	struct spr_pattern_set *ps = sp->pattern_set;
+	SpritePattern *ps = sp->pattern_set;
 
 	sp->cur_state = JANE_STATE_DEATH;
 	sp->anim_ctr++;
@@ -128,7 +128,7 @@ void anim_jean(struct displ_object *obj)
 	#define CROUCH_OFFSET 8
 
 	struct spr_sprite_def *sp = obj->spr;
-	struct spr_pattern_set *ps = sp->pattern_set;
+	SpritePattern *ps = sp->pattern_set;
 
 	dx = 0;
 	dy = 0;

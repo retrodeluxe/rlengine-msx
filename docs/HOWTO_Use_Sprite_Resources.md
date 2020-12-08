@@ -88,8 +88,8 @@ First step is to define sprite patterns structures
 
 
 ```
-struct spr_pattern_set bee_patt;
-struct spr_pattern_set rat_patt;
+SpritePattern bee_patt;
+SpritePattern rat_patt;
 
 SPR_DEFINE_PATTERN_SET(bee_patt, SPR_SIZE_16x16, 1, 2, 2, bee1);
 SPR_DEFINE_PATTERN_SET(rat_patt, SPR_SIZE_16x16, 1, 2, 2, rat);

@@ -57,7 +57,7 @@ enum obj_state {
 	STATE_MOVING_UP
 };
 
-// struct spr_pattern_set spr_pattern[PATRN_MAX];
+// SpritePattern spr_pattern[PATRN_MAX];
 
 struct spr_sprite_def enemy_sprites[32];
 struct spr_sprite_def arrow_sprite;

@@ -420,7 +420,7 @@ void load_room(uint8_t room, bool reload)
 {
 	uint8_t i, id, type, delay, offset, damage;
 	bool add_dpo;
-	struct spr_pattern_set *ps;
+	SpritePattern *ps;
 
 	clear_room();
 	game_state.templar_ct = 0;

@@ -32,7 +32,7 @@ uint8_t spr_attr_valloc[vdp_hw_max_sprites];
 uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 
 // spr pattern sets
-struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
+SpritePattern spr_pattern[SPR_PATRN_MAX];
 
 // spr pattern attr
 struct vdp_hw_sprite spr_attr[vdp_hw_max_sprites];
@@ -43,7 +43,7 @@ struct vdp_hw_sprite spr_attr[vdp_hw_max_sprites];
 void spr_init(void)
 {
 	spr_clear();
-	sys_memset(spr_pattern, 0,  sizeof(struct spr_pattern_set) * SPR_PATRN_MAX);
+	sys_memset(spr_pattern, 0,  sizeof(SpritePattern) * SPR_PATRN_MAX);
 }
 
 void spr_refresh(void)
@@ -88,7 +88,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx)
 	uint8_t i, idx, size, f = 0;
 	uint8_t n_steps = 0;
 
-	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
+	SpritePattern *ps = &spr_pattern[patrn_idx];
 
 	if (ps->allocated)
 		return true;
@@ -125,7 +125,7 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 {
 	uint8_t npat, size;
 
-	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
+	SpritePattern *ps = &spr_pattern[patrn_idx];
 
 	size = ps->size;
 	if (ps->size == SPR_SIZE_32x16)
@@ -140,7 +140,7 @@ void spr_vfree_pattern_set(uint8_t patrn_idx)
 
 bool spr_is_allocated(uint8_t patrn_idx)
 {
-	struct spr_pattern_set *ps = &spr_pattern[patrn_idx];
+	SpritePattern *ps = &spr_pattern[patrn_idx];
 	return ps->allocated;
 }
 
@@ -148,7 +148,7 @@ static void spr_calc_patterns(struct spr_sprite_def *sp) __nonbanked
 {
 	uint8_t i, color_frame, base = 0, base2, frame;
 
-	struct spr_pattern_set *ps = sp->pattern_set;
+	SpritePattern *ps = sp->pattern_set;
 	for (i = 0; i < sp->cur_state; i++) {
 		base += ps->state_steps[i];
 	}
@@ -340,7 +340,7 @@ void spr_set_plane_colors(struct spr_sprite_def *sp, uint8_t *colors) __nonbanke
 void spr_animate(struct spr_sprite_def *sp, signed char dx, signed char dy) __nonbanked
 {
 	uint8_t old_dir, x, y;
-	struct spr_pattern_set *ps = sp->pattern_set;
+	SpritePattern *ps = sp->pattern_set;
 
 	old_dir = sp->cur_state;
 

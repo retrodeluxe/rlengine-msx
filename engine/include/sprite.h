@@ -56,7 +56,8 @@ enum spr_state {
  * spr_pattern_set:
  *		a set of sprite patterns plus data used for animation
  */
-struct spr_pattern_set {
+typedef struct SpritePattern SpritePattern;
+struct SpritePattern {
 	uint8_t pidx;
 	bool allocated;
 	uint8_t size;
@@ -76,7 +77,7 @@ struct spr_pattern_set {
 struct spr_sprite_def {
 	uint8_t aidx;
 	struct vdp_hw_sprite planes[6];
-	struct spr_pattern_set *pattern_set;
+	SpritePattern *pattern_set;
 	uint8_t cur_state;
 	uint8_t cur_anim_step;
 	uint8_t state_anim_ctr[SPR_STATES_MAX];
@@ -91,7 +92,7 @@ struct spr_delta_pos {
 };
 
 
-extern struct spr_pattern_set spr_pattern[SPR_PATRN_MAX];
+extern SpritePattern spr_pattern[SPR_PATRN_MAX];
 
 #define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, STATES, STEPS, PATTERNS) 	spr_pattern[(X)].size = (SIZE);\
 									spr_pattern[(X)].n_planes = (PLANES);\
