@@ -27,7 +27,7 @@ extern void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 
 extern DisplayObject dpo_tob_bullet[SCENE_MAX_TOB_BULLET];
 extern DisplayObject dpo_bullet[SCENE_MAX_BULLET];
-extern struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
+extern TileObject bullet_tob[SCENE_MAX_TOB_BULLET];
 extern TileSet tileset[TILE_MAX];
 extern SpriteDef bullet_sprites[SCENE_MAX_BULLET];
 
@@ -280,7 +280,7 @@ void anim_satan(DisplayObject *obj)
 {
 	uint8_t x, ty;
 	static uint8_t delay = 0;
-	struct tile_object *to = obj->tob;
+	TileObject *to = obj->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
 
@@ -488,7 +488,7 @@ void anim_hanging_priest(DisplayObject *obj)
 {
 	int8_t dy;
 	uint8_t ty;
-	struct tile_object *to = obj->tob;
+	TileObject *to = obj->tob;
 	uint16_t offset_bottom = to->x/8 + to->y/8 * 32 + (to->ts->frame_h - 1) * 32;
 	uint16_t offset_top = to->x/8 + to->y/8 * 32;
 

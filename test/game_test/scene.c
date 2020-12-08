@@ -36,8 +36,8 @@ TileSet tileset_room_title[ROOM_MAX];
 TileSet tileset[TILE_MAX];
 
 /** scene primitives **/
-struct tile_object tileobject[SCENE_MAX_DPO];
-struct tile_object bullet_tob[SCENE_MAX_TOB_BULLET];
+TileObject tileobject[SCENE_MAX_DPO];
+TileObject bullet_tob[SCENE_MAX_TOB_BULLET];
 SpriteDef enemy_sprites[SCENE_MAX_DPO];
 SpriteDef bullet_sprites[SCENE_MAX_BULLET];
 SpriteDef jean_sprite;

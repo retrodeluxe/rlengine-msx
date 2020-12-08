@@ -41,12 +41,12 @@
 #define MAX_CROUPS 12
 
 struct tile_collision_group {
-        uint8_t start;
-        uint8_t end;
-        uint8_t data;
-	uint8_t type;
-        DisplayObject *dpo;
-        void (*handler)(DisplayObject *dpo, uint8_t data);
+  uint8_t start;
+  uint8_t end;
+  uint8_t data;
+  uint8_t type;
+  DisplayObject *dpo;
+  void (*handler)(DisplayObject *dpo, uint8_t data);
 };
 
 enum tile_collision_type {

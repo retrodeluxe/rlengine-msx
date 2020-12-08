@@ -44,7 +44,8 @@ struct TileSet {
 	bool raw;	/** indicates if the tileset is compressed */
 };
 
-struct tile_map {
+typedef struct TileMap TileMap;
+struct TileMap {
 	uint16_t cur_x;
 	uint16_t cur_y;
 	uint8_t w;
@@ -52,7 +53,8 @@ struct tile_map {
 	uint8_t *map;
 };
 
-struct tile_object {
+typedef struct TileObject TileObject;
+struct TileObject {
 	uint8_t x;
 	uint8_t y;
 	uint8_t cur_dir;
@@ -104,12 +106,12 @@ extern void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t offset);
 extern void tile_set_to_vram(TileSet *ts, uint8_t pos);
 extern void tile_set_to_vram_bank_raw(TileSet *ts, uint8_t bank, uint8_t offset);
 extern void tile_set_to_vram_raw(TileSet *ts, uint8_t pos);
-extern void tile_map_clip(struct tile_map *tm, struct gfx_viewport *vp,
+extern void tile_map_clip(TileMap *tm, struct gfx_viewport *vp,
 			     uint8_t * scrbuf, struct gfx_map_pos *p);
 
 
-extern void tile_object_show(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram) __nonbanked;
-extern void tile_object_hide(struct tile_object *to, uint8_t * scrbuf, bool refresh_vram) __nonbanked;
+extern void tile_object_show(TileObject *to, uint8_t * scrbuf, bool refresh_vram) __nonbanked;
+extern void tile_object_hide(TileObject *to, uint8_t * scrbuf, bool refresh_vram) __nonbanked;
 #define     set_tile_vram(_x,_y,_tile) vdp_poke(vdp_base_names_grp1+32*_y+_x, _tile)
 
 #endif

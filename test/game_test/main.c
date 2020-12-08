@@ -79,7 +79,7 @@ uint8_t data_buffer[2100];
 uint8_t sfx_buffer[431];
 
 /** score panel primitives **/
-struct tile_object score;
+TileObject score;
 Font big_digits;
 FontSet score_font_set;
 

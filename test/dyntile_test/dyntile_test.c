@@ -23,7 +23,7 @@
 
 TileSet giant_ts;
 TileSet tileset_kv;
-struct tile_object giant_tobj;
+TileObject giant_tobj;
 
 uint8_t scr_buf[768];
 

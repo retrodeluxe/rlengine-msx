@@ -57,7 +57,7 @@ struct DisplayObject {
 	int16_t ypos;
 	uint8_t collision_state;
 	SpriteDef *spr;
-	struct tile_object *tob;
+	TileObject *tob;
 	DisplayObject *parent;
 	struct list_head list;
 	struct list_head animator_list;
