@@ -35,7 +35,7 @@ uint8_t spr_patt_valloc[vdp_hw_max_patterns];
 SpritePattern spr_pattern[SPR_PATRN_MAX];
 
 // spr pattern attr
-struct vdp_hw_sprite spr_attr[vdp_hw_max_sprites];
+VdpSpriteAttr spr_attr[vdp_hw_max_sprites];
 
 /**
  * spr_init: initialize vdp sprites and allocation tables
@@ -47,7 +47,7 @@ void spr_init(void) {
 
 void spr_refresh(void) {
   vdp_memcpy(vdp_base_spatr_grp1, (uint8_t *)&spr_attr,
-             sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites);
+             sizeof(VdpSpriteAttr) * vdp_hw_max_sprites);
 }
 
 void spr_clear(void) {
@@ -56,7 +56,7 @@ void spr_clear(void) {
   vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 
   /** entirely disable sprites by setting y=208 **/
-  sys_memset(spr_attr, 208, sizeof(struct vdp_hw_sprite) * vdp_hw_max_sprites);
+  sys_memset(spr_attr, 208, sizeof(VdpSpriteAttr) * vdp_hw_max_sprites);
   sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
   sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
 
@@ -246,7 +246,7 @@ uint8_t spr_show(SpriteDef *sp) __nonbanked {
 
 void spr_hide(SpriteDef *sp) __nonbanked {
   uint8_t n, idx;
-  struct vdp_hw_sprite null_spr;
+  VdpSpriteAttr null_spr;
 
   n = sp->pattern_set->n_planes;
   if (sp->pattern_set->size == SPR_SIZE_16x32 ||
@@ -265,11 +265,11 @@ void spr_hide(SpriteDef *sp) __nonbanked {
 
   // FIXME: still wrong handling of multiple planes
   sys_memcpy((uint8_t *)&spr_attr[sp->aidx], (uint8_t *)&null_spr,
-             sizeof(struct vdp_hw_sprite));
+             sizeof(VdpSpriteAttr));
   if (sp->pattern_set->size == SPR_SIZE_16x32 ||
       sp->pattern_set->size == SPR_SIZE_32x16) {
     sys_memcpy((uint8_t *)&spr_attr[sp->aidx + 1], (uint8_t *)&null_spr,
-               sizeof(struct vdp_hw_sprite));
+               sizeof(VdpSpriteAttr));
   } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
     // TODO
   }

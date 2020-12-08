@@ -77,7 +77,7 @@ struct SpritePattern {
 typedef struct SpriteDef SpriteDef;
 struct SpriteDef {
   uint8_t aidx;
-  struct vdp_hw_sprite planes[6];
+  VdpSpriteAttr planes[6];
   SpritePattern *pattern_set;
   uint8_t cur_state;
   uint8_t cur_anim_step;

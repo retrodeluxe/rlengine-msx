@@ -27,7 +27,7 @@
 SpriteDef eggspr;
 SpriteDef monk;
 
-struct vdp_hw_sprite bee_hw;
+VdpSpriteAttr bee_hw;
 
 SpriteDef bee[10];
 SpriteDef rats[10];

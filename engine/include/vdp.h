@@ -57,7 +57,8 @@ typedef enum {
 #define vdp_hw_max_sprites 32
 #define vdp_hw_max_patterns 255
 
-struct vdp_hw_sprite {
+typedef struct VdpSpriteAttr VdpSpriteAttr;
+struct VdpSpriteAttr {
   uint8_t y;
   uint8_t x;
   uint8_t pattern;
