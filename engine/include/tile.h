@@ -22,13 +22,12 @@
 #ifndef _TILE_H_
 #define _TILE_H_
 
-#define gfx_screen_tile_w 32
-#define gfx_screen_tile_h 24
-
-#define BANK0 0
-#define BANK1 1
-#define BANK2 2
-#define ALLBANKS 3
+typedef enum {
+  BANK0,
+  BANK1,
+  BANK2,
+  ALLBANKS
+} TileBank;
 
 typedef struct TileSet TileSet;
 struct TileSet {
@@ -36,14 +35,15 @@ struct TileSet {
   uint8_t h;
   uint8_t *pattern;
   uint8_t *color;
-  uint8_t pidx; /*< index of this tileset in vram pattern bank */
+  uint8_t pidx;        // index of this tileset in vram pattern bank
+
   bool allocated;
-  /* dynamic tile data */
-  uint8_t frame_w; /*< width of each tile object inside the set */
-  uint8_t frame_h; /*< height of each tile object inside the set */
+  bool raw;            // raw tilesets are uncompressed
+
+  uint8_t frame_w;    // frame width of each tile object inside the set
+  uint8_t frame_h;    // frame height of each tile object inside the set
   uint8_t n_frames;
   uint8_t n_dirs;
-  bool raw; /** indicates if the tileset is compressed */
 };
 
 typedef struct TileMap TileMap;
@@ -108,9 +108,9 @@ struct TileObject {
 extern void tile_init();
 extern bool tile_set_valloc(TileSet *ts);
 extern void tile_set_vfree(TileSet *ts);
-extern void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t offset);
+extern void tile_set_to_vram_bank(TileSet *ts, TileBank bank, uint8_t offset);
 extern void tile_set_to_vram(TileSet *ts, uint8_t pos);
-extern void tile_set_to_vram_bank_raw(TileSet *ts, uint8_t bank,
+extern void tile_set_to_vram_bank_raw(TileSet *ts, TileBank bank,
                                       uint8_t offset);
 extern void tile_set_to_vram_raw(TileSet *ts, uint8_t pos);
 extern void tile_map_clip(TileMap *tm, struct gfx_viewport *vp, uint8_t *scrbuf,

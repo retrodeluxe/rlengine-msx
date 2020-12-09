@@ -29,8 +29,6 @@
 #define BANK1_OFFSET 256 * 8
 #define BANK2_OFFSET BANK1_OFFSET * 2
 
-#define RLE_BUFSIZE 255
-
 #define BITMAP_TILEBANK_SIZE 32 /* 32 * 8 tiles */
 
 uint8_t bitmap_tile_bank[BITMAP_TILEBANK_SIZE];
@@ -46,7 +44,7 @@ void tile_init() {
 /**
  * set a tileset in a fixed position.
  */
-void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t pos) {
+void tile_set_to_vram_bank(TileSet *ts, TileBank bank, uint8_t pos) {
   uint16_t size, offset, i;
   offset = pos * 8;
   size = ts->w * ts->h * 8;
@@ -68,7 +66,7 @@ void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t pos) {
   ts->pidx = pos;
 }
 
-void tile_set_to_vram_bank_raw(TileSet *ts, uint8_t bank, uint8_t pos) {
+void tile_set_to_vram_bank_raw(TileSet *ts, TileBank bank, uint8_t pos) {
   uint16_t size, offset, i;
   offset = pos * 8;
   size = ts->w * ts->h * 8;
