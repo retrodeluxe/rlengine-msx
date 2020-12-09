@@ -28,11 +28,6 @@
 #define SPR_SIZE_32x16 16
 #define SPR_SIZE_32x32 32
 
-#define spr_dir_lr 1
-#define spr_dir_lrud 2
-#define spr_dir_lrudc 3
-#define spr_dir_all 4
-
 #define SPR_SHOW_8x8 0
 #define SPR_SHOW_16x16 1
 #define SPR_ZOOM_OFF 0
@@ -84,11 +79,6 @@ struct SpriteDef {
   uint8_t state_anim_ctr[SPR_STATES_MAX];
   uint8_t anim_ctr;
   uint8_t anim_ctr_treshold;
-};
-
-struct spr_delta_pos {
-  char dx;
-  char dy;
 };
 
 extern SpritePattern spr_pattern[SPR_PATRN_MAX];

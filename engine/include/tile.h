@@ -120,7 +120,4 @@ extern void tile_object_show(TileObject *to, uint8_t *scrbuf,
                              bool refresh_vram) __nonbanked;
 extern void tile_object_hide(TileObject *to, uint8_t *scrbuf,
                              bool refresh_vram) __nonbanked;
-#define set_tile_vram(_x, _y, _tile)                                           \
-  vdp_poke(VRAM_BASE_NAME + 32 * _y + _x, _tile)
-
 #endif
