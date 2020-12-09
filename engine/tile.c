@@ -55,16 +55,12 @@ void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t pos) {
     vdp_rle_inflate(VRAM_BASE_COLR + offset, ts->color, size);
   }
   if (bank == BANK1 || bank == ALLBANKS) {
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern,
-                    size);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color,
-                    size);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, size);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, size);
   }
   if (bank == BANK2 || bank == ALLBANKS) {
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern,
-                    size);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color,
-                    size);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, size);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, size);
   }
   for (i = pos; i < pos + (size / 8); i++)
     bitmap_reset(bitmap_tile_bank, i);
@@ -135,14 +131,10 @@ bool tile_set_valloc(TileSet *ts) {
   } else {
     vdp_rle_inflate(VRAM_BASE_PTRN + offset, ts->pattern, vsize);
     vdp_rle_inflate(VRAM_BASE_COLR + offset, ts->color, vsize);
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern,
-                    vsize);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color,
-                    vsize);
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern,
-                    vsize);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color,
-                    vsize);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, vsize);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, vsize);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, vsize);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, vsize);
   }
   ts->allocated = true;
   ts->pidx = pos;
