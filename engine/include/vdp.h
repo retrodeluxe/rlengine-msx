@@ -54,8 +54,8 @@ typedef enum {
 #define vdp_base_spatr_grp1 0x1b00
 #define vdp_base_sppat_grp1 0x3800
 
-#define vdp_hw_max_sprites 32
-#define vdp_hw_max_patterns 255
+#define MAX_SPR_ATTR 32
+#define MAX_SPR_PTRN 255
 
 typedef struct VdpSpriteAttr VdpSpriteAttr;
 struct VdpSpriteAttr {

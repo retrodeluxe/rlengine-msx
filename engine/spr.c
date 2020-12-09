@@ -26,16 +26,16 @@
 #pragma CODE_PAGE 2
 
 // vram sprite attribute allocation table
-uint8_t spr_attr_valloc[vdp_hw_max_sprites];
+uint8_t spr_attr_valloc[MAX_SPR_ATTR];
 
 // vram sprite pattern allocation table
-uint8_t spr_patt_valloc[vdp_hw_max_patterns];
+uint8_t spr_patt_valloc[MAX_SPR_PTRN];
 
 // spr pattern sets
 SpritePattern spr_pattern[SPR_PATRN_MAX];
 
 // spr pattern attr
-VdpSpriteAttr spr_attr[vdp_hw_max_sprites];
+VdpSpriteAttr spr_attr[MAX_SPR_ATTR];
 
 /**
  * spr_init: initialize vdp sprites and allocation tables
@@ -47,7 +47,7 @@ void spr_init(void) {
 
 void spr_refresh(void) {
   vdp_memcpy(vdp_base_spatr_grp1, (uint8_t *)&spr_attr,
-             sizeof(VdpSpriteAttr) * vdp_hw_max_sprites);
+             sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
 }
 
 void spr_clear(void) {
@@ -56,9 +56,9 @@ void spr_clear(void) {
   vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
 
   /** entirely disable sprites by setting y=208 **/
-  sys_memset(spr_attr, 208, sizeof(VdpSpriteAttr) * vdp_hw_max_sprites);
-  sys_memset(spr_attr_valloc, 1, vdp_hw_max_sprites);
-  sys_memset(spr_patt_valloc, 1, vdp_hw_max_patterns);
+  sys_memset(spr_attr, 208, sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
+  sys_memset(spr_attr_valloc, 1, MAX_SPR_ATTR);
+  sys_memset(spr_patt_valloc, 1, MAX_SPR_PTRN);
 
   // free pattern sets
   for (i = 0; i < SPR_PATRN_MAX; i++)
@@ -101,7 +101,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
 
   npat = ps->n_planes * ps->n_steps * size;
 
-  for (i = 0; i < vdp_hw_max_patterns - 1; i++) {
+  for (i = 0; i < MAX_SPR_PTRN - 1; i++) {
     f = f * spr_patt_valloc[i] + spr_patt_valloc[i];
     if (f == npat) {
       idx = i - npat + 1;
@@ -231,7 +231,7 @@ uint8_t spr_show(SpriteDef *sp) __nonbanked {
     n = n * 2;
   else if (sp->pattern_set->size == SPR_SIZE_32x32)
     n = n * 4;
-  for (i = 0; i < vdp_hw_max_sprites - 1; i++) {
+  for (i = 0; i < MAX_SPR_ATTR - 1; i++) {
     f = f * spr_attr_valloc[i] + spr_attr_valloc[i];
     if (f == n) {
       idx = i - n + 1;
