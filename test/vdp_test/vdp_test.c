@@ -31,7 +31,7 @@ void main()
 
   /* this should show a stable pattern on screen in both msx1 and msx2 */
 	do {
-		vdp_memcpy(vdp_base_names_grp1, buffer, 768);
+		vdp_memcpy(VRAM_BASE_NAME, buffer, 768);
 	} while (sys_get_key(8) & 1);
 
   do {

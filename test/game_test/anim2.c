@@ -299,7 +299,7 @@ void anim_satan(DisplayObject *obj) {
       obj->tob->cur_anim_step++;
     } else {
       for (x = 0; x < to->ts->frame_w; x++) {
-        vdp_write(vdp_base_names_grp1 + offset_bottom + x, 0);
+        vdp_write(VRAM_BASE_NAME + offset_bottom + x, 0);
       }
       ty = obj->ypos / 8;
       ty--;
@@ -330,7 +330,7 @@ void anim_satan(DisplayObject *obj) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else {
       for (x = 0; x < to->ts->frame_w; x++) {
-        vdp_write(vdp_base_names_grp1 + offset_top + x, 0);
+        vdp_write(VRAM_BASE_NAME + offset_top + x, 0);
       }
       ty = obj->ypos / 8;
       ty++;
@@ -442,8 +442,8 @@ void anim_dragon_bullets(DisplayObject *obj) {
   offset_after = (obj->xpos + dx) / 8;
 
   if (offset_before != offset_after) {
-    vdp_write(vdp_base_names_grp1 + base_offset + offset_before + 1, 0);
-    vdp_write(vdp_base_names_grp1 + base_offset + offset_before - 1, 0);
+    vdp_write(VRAM_BASE_NAME + base_offset + offset_before + 1, 0);
+    vdp_write(VRAM_BASE_NAME + base_offset + offset_before - 1, 0);
     *(scr_tile_buffer + base_offset + offset_before + 1) = 0;
     *(scr_tile_buffer + base_offset + offset_before - 1) = 0;
   }
@@ -459,8 +459,8 @@ void anim_dragon_bullets(DisplayObject *obj) {
   }
   if (obj->xpos < 48 || obj->xpos > 250) {
     tile_object_hide(obj->tob, scr_tile_buffer, true);
-    vdp_write(vdp_base_names_grp1 + base_offset + offset_before, 0);
-    vdp_write(vdp_base_names_grp1 + base_offset + offset_before - 1, 0);
+    vdp_write(VRAM_BASE_NAME + base_offset + offset_before, 0);
+    vdp_write(VRAM_BASE_NAME + base_offset + offset_before - 1, 0);
     *(scr_tile_buffer + base_offset + offset_before) = 0;
     *(scr_tile_buffer + base_offset + offset_before - 1) = 0;
     list_del(&obj->list);
@@ -485,8 +485,8 @@ void anim_hanging_priest(DisplayObject *obj) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
       obj->tob->cur_anim_step--;
     } else {
-      vdp_write(vdp_base_names_grp1 + offset_bottom, 0);
-      vdp_write(vdp_base_names_grp1 + offset_bottom + 1, 0);
+      vdp_write(VRAM_BASE_NAME + offset_bottom, 0);
+      vdp_write(VRAM_BASE_NAME + offset_bottom + 1, 0);
       *(scr_tile_buffer + offset_bottom) = 0;
       *(scr_tile_buffer + offset_bottom + 1) = 0;
       ty = obj->ypos / 8;
@@ -506,8 +506,8 @@ void anim_hanging_priest(DisplayObject *obj) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
       obj->tob->cur_anim_step++;
     } else {
-      vdp_write(vdp_base_names_grp1 + offset_top, 0);
-      vdp_write(vdp_base_names_grp1 + offset_top + 1, 180); // rope
+      vdp_write(VRAM_BASE_NAME + offset_top, 0);
+      vdp_write(VRAM_BASE_NAME + offset_top + 1, 180); // rope
       *(scr_tile_buffer + offset_top) = 0;
       *(scr_tile_buffer + offset_top + 1) = 100;
       ty = obj->ypos / 8;

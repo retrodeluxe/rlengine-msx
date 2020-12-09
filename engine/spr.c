@@ -46,7 +46,7 @@ void spr_init(void) {
 }
 
 void spr_refresh(void) {
-  vdp_memcpy(vdp_base_spatr_grp1, (uint8_t *)&spr_attr,
+  vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
              sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
 }
 
@@ -106,7 +106,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
     if (f == npat) {
       idx = i - npat + 1;
       sys_memset(&spr_patt_valloc[idx], 0, npat);
-      vdp_memcpy(vdp_base_sppat_grp1 + idx * 8, ps->patterns, npat * 8);
+      vdp_memcpy(VRAM_BASE_SPAT + idx * 8, ps->patterns, npat * 8);
       sys_memcpy(ps->colors2, ps->colors, npat / 4);
       ps->pidx = idx;
       ps->allocated = true;

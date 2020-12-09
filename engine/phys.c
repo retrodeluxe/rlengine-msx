@@ -340,16 +340,16 @@ static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
   tile[8] = *(base_inner_t);
   tile[9] = *(base_inner_b);
 
-  // vdp_write(vdp_base_names_grp1 + base_ceiling_l - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_ceiling_r - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_left_t - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_left_b - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_right_t - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_right_b - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_floor_l - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_floor_r - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_inner_t - map, 254);
-  // vdp_write(vdp_base_names_grp1 + base_inner_b - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_ceiling_l - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_ceiling_r - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_left_t - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_left_b - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_right_t - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_right_b - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_floor_l - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_floor_r - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_inner_t - map, 254);
+  // vdp_write(VRAM_BASE_NAME + base_inner_b - map, 254);
 
   obj->collision_state = 0;
 

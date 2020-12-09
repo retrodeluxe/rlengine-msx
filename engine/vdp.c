@@ -266,7 +266,7 @@ void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked
 	ld	a,(VDP_DW)
 	inc	a
 	ld	c,a
-	ld	hl,#vdp_base_names_grp1
+	ld	hl,#VRAM_BASE_NAME
 	ld	a,l
 	di
 	out	(c),a
@@ -397,10 +397,10 @@ end_rle:
  */
 void vdp_clear(VdpColor color)
 {
-	vdp_memset(vdp_base_names_grp1, 256 * 3, 0);
-	vdp_memset(vdp_base_color_grp1, 8, color);
-	vdp_memset(vdp_base_color_grp1 + 0x800, 8, color);
-	vdp_memset(vdp_base_color_grp1 + 0x1000, 8, color);
+	vdp_memset(VRAM_BASE_NAME, 256 * 3, 0);
+	vdp_memset(VRAM_BASE_COLR, 8, color);
+	vdp_memset(VRAM_BASE_COLR + 0x800, 8, color);
+	vdp_memset(VRAM_BASE_COLR + 0x1000, 8, color);
 }
 
 /**
@@ -409,7 +409,7 @@ void vdp_clear(VdpColor color)
 void vdp_puts(char x, char y, char *msg)
 {
 	register char c;
-	register uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
+	register uint16_t addr = VRAM_BASE_NAME + y * 32 + x;
 
 	while ((c = *msg++ ) != 0) {
 		vdp_write(addr++, c);

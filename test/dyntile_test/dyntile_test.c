@@ -57,7 +57,7 @@ void main()
 		giant_tobj.x-=8;
 		tile_object_show(&giant_tobj, scr_buf, true);
 
-		vdp_memcpy(vdp_base_names_grp1, scr_buf, 768);
+		vdp_memcpy(VRAM_BASE_NAME, scr_buf, 768);
 		sys_sleep_ms(500);
 	} while(1);
 }

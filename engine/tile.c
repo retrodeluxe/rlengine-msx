@@ -51,19 +51,19 @@ void tile_set_to_vram_bank(TileSet *ts, uint8_t bank, uint8_t pos) {
   offset = pos * 8;
   size = ts->w * ts->h * 8;
   if (bank == BANK0 || bank == ALLBANKS) {
-    vdp_rle_inflate(vdp_base_chars_grp1 + offset, ts->pattern, size);
-    vdp_rle_inflate(vdp_base_color_grp1 + offset, ts->color, size);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset, ts->pattern, size);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset, ts->color, size);
   }
   if (bank == BANK1 || bank == ALLBANKS) {
-    vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern,
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern,
                     size);
-    vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color,
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color,
                     size);
   }
   if (bank == BANK2 || bank == ALLBANKS) {
-    vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern,
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern,
                     size);
-    vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color,
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color,
                     size);
   }
   for (i = pos; i < pos + (size / 8); i++)
@@ -77,16 +77,16 @@ void tile_set_to_vram_bank_raw(TileSet *ts, uint8_t bank, uint8_t pos) {
   offset = pos * 8;
   size = ts->w * ts->h * 8;
   if (bank == BANK0 || bank == ALLBANKS) {
-    vdp_memcpy(vdp_base_chars_grp1 + offset, ts->pattern, size);
-    vdp_memcpy(vdp_base_color_grp1 + offset, ts->color, size);
+    vdp_memcpy(VRAM_BASE_PTRN + offset, ts->pattern, size);
+    vdp_memcpy(VRAM_BASE_COLR + offset, ts->color, size);
   }
   if (bank == BANK1 || bank == ALLBANKS) {
-    vdp_memcpy(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, size);
-    vdp_memcpy(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, size);
+    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, size);
+    vdp_memcpy(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, size);
   }
   if (bank == BANK2 || bank == ALLBANKS) {
-    vdp_memcpy(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, size);
-    vdp_memcpy(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, size);
+    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, size);
+    vdp_memcpy(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, size);
   }
 
   for (i = pos; i < pos + (size / 8); i++)
@@ -126,22 +126,22 @@ bool tile_set_valloc(TileSet *ts) {
   offset = pos * 8;
   vsize = size * 8;
   if (ts->raw) {
-    vdp_memcpy(vdp_base_chars_grp1 + offset, ts->pattern, vsize);
-    vdp_memcpy(vdp_base_color_grp1 + offset, ts->color, vsize);
-    vdp_memcpy(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern, vsize);
-    vdp_memcpy(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color, vsize);
-    vdp_memcpy(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern, vsize);
-    vdp_memcpy(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color, vsize);
+    vdp_memcpy(VRAM_BASE_PTRN + offset, ts->pattern, vsize);
+    vdp_memcpy(VRAM_BASE_COLR + offset, ts->color, vsize);
+    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, vsize);
+    vdp_memcpy(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, vsize);
+    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, vsize);
+    vdp_memcpy(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, vsize);
   } else {
-    vdp_rle_inflate(vdp_base_chars_grp1 + offset, ts->pattern, vsize);
-    vdp_rle_inflate(vdp_base_color_grp1 + offset, ts->color, vsize);
-    vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK1_OFFSET, ts->pattern,
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset, ts->pattern, vsize);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset, ts->color, vsize);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern,
                     vsize);
-    vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK1_OFFSET, ts->color,
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color,
                     vsize);
-    vdp_rle_inflate(vdp_base_chars_grp1 + offset + BANK2_OFFSET, ts->pattern,
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern,
                     vsize);
-    vdp_rle_inflate(vdp_base_color_grp1 + offset + BANK2_OFFSET, ts->color,
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color,
                     vsize);
   }
   ts->allocated = true;
@@ -201,7 +201,7 @@ void tile_object_show(TileObject *to, uint8_t *scrbuf,
     for (x = 0; x < to->ts->frame_w; x++) {
       *(ptr + x) = tile;
       if (refresh_vram) {
-        vdp_write(vdp_base_names_grp1 + offset + x, tile);
+        vdp_write(VRAM_BASE_NAME + offset + x, tile);
       }
       tile++;
       /** allow for shift using idx: this will only work
@@ -227,7 +227,7 @@ void tile_object_hide(TileObject *to, uint8_t *scrbuf,
     for (x = 0; x < to->ts->frame_w; x++) {
       *(ptr + x) = 0;
       if (refresh_vram) {
-        vdp_write(vdp_base_names_grp1 + offset + x, 0);
+        vdp_write(VRAM_BASE_NAME + offset + x, 0);
       }
     }
     ptr += 32;

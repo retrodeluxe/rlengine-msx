@@ -90,9 +90,9 @@ void font_color_mask(Font *f, uint8_t color) {
   if (ts->allocated) {
     offset = ts->pidx * 8;
     size = ts->w * ts->h * 8;
-    vdp_memset(vdp_base_color_grp1 + offset, size, color);
-    vdp_memset(vdp_base_color_grp1 + offset + BANK1_OFFSET, size, color);
-    vdp_memset(vdp_base_color_grp1 + offset + BANK2_OFFSET, size, color);
+    vdp_memset(VRAM_BASE_COLR + offset, size, color);
+    vdp_memset(VRAM_BASE_COLR + offset + BANK1_OFFSET, size, color);
+    vdp_memset(VRAM_BASE_COLR + offset + BANK2_OFFSET, size, color);
   }
 }
 
@@ -192,7 +192,7 @@ void font_printf(FontSet *fs, uint8_t x, uint8_t y, uint8_t *buffer,
  */
 void font_vprintf(FontSet *fs, uint8_t x, uint8_t y, char *text) {
   char c, tc, base;
-  uint16_t addr = vdp_base_names_grp1 + y * 32 + x;
+  uint16_t addr = VRAM_BASE_NAME + y * 32 + x;
 
   while ((c = *text++) != 0) {
     if (c == CHR_SPC) {

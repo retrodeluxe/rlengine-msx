@@ -77,7 +77,7 @@ tile_set_to_vram(&my_tileset, 0);
 At this point, the tile patterns are available to be used by writting to the name table.
 
 ```
-vdp_poke(vdp_base_names_grp1, <tile number>);
+vdp_poke(VRAM_BASE_NAME, <tile number>);
 ```
 
 This way of using tiles is suitable for drawing maps or displaying static images. Also see the section about dynamic tiles to draw animated objects based on tiles.

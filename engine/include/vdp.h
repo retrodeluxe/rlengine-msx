@@ -48,11 +48,11 @@ typedef enum {
   COLOR_WHITE
 } VdpColor;
 
-#define vdp_base_names_grp1 0x1800
-#define vdp_base_color_grp1 0x2000
-#define vdp_base_chars_grp1 0x0000
-#define vdp_base_spatr_grp1 0x1b00
-#define vdp_base_sppat_grp1 0x3800
+#define VRAM_BASE_NAME 0x1800
+#define VRAM_BASE_COLR 0x2000
+#define VRAM_BASE_PTRN 0x0000
+#define VRAM_BASE_SATR 0x1b00
+#define VRAM_BASE_SPAT 0x3800
 
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
@@ -66,7 +66,7 @@ struct VdpSpriteAttr {
 };
 
 #define vdp_poke_names(OFFSET, PATTERN)                                        \
-  vdp_write(vdp_base_names_grp1 + (OFFSET), PATTERN)
+  vdp_write(VRAM_BASE_NAME + (OFFSET), PATTERN)
 
 extern void vdp_clear(VdpColor color);
 extern void vdp_puts(char x, char y, char *msg);

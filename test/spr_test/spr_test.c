@@ -82,7 +82,7 @@ void main()
 	/**
 	 * Low level sprites using direct access to VRAM
 	 */
-	vdp_memcpy(vdp_base_sppat_grp1, bee1, 16 * 8);
+	vdp_memcpy(VRAM_BASE_SPAT, bee1, 16 * 8);
 	bee_hw.x = 100;
 	bee_hw.y = 100;
 	bee_hw.pattern = 0;

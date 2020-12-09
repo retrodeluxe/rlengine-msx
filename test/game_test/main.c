@@ -176,7 +176,7 @@ start:
     sys_wait_vsync();
     spr_refresh();
     // debug
-    // vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
+    // vdp_memcpy(VRAM_BASE_NAME, scr_tile_buffer, 704);
 
     reftick = sys_get_ticks();
     stick = sys_get_stick(0) | sys_get_stick(1);
@@ -294,7 +294,7 @@ void show_retrodeluxe_logo() {
   i = 0;
   for (y = 0; y < retro_logo_tile_h; y++)
     for (x = 0; x < retro_logo_tile_w; x++) {
-      vdp_write(vdp_base_names_grp1 + 11 + 9 * 32 + x + y * 32, i++);
+      vdp_write(VRAM_BASE_NAME + 11 + 9 * 32 + x + y * 32, i++);
       sys_sleep_ms(50);
     }
 
@@ -355,10 +355,10 @@ static void load_instructions_scr() {
   spr_refresh();
 
   ascii8_set_data(PAGE_INSTR_PAT);
-  vdp_memcpy(vdp_base_chars_grp1, instr_pat, 6144);
+  vdp_memcpy(VRAM_BASE_PTRN, instr_pat, 6144);
 
   ascii8_set_data(PAGE_INSTR_COL);
-  vdp_memcpy(vdp_base_color_grp1, instr_col, 6144);
+  vdp_memcpy(VRAM_BASE_COLR, instr_col, 6144);
 
   vdp_screen_enable();
 }
@@ -370,7 +370,7 @@ void show_title_screen() {
 
   vdp_screen_disable();
   for (i = 0; i < 768; i++) {
-    vdp_write(vdp_base_names_grp1 + i, b++);
+    vdp_write(VRAM_BASE_NAME + i, b++);
   }
   load_intro_scr();
 
@@ -467,7 +467,7 @@ void show_intro_animation() __nonbanked {
   font_printf(&intro_font_set, 4, 20, scr_tile_buffer, str_intro_4);
   font_printf(&intro_font_set, 1, 22, scr_tile_buffer, str_intro_5);
 
-  vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
+  vdp_memcpy(VRAM_BASE_NAME, scr_tile_buffer, 768);
 
   load_intro_scene();
   spr_refresh();
@@ -598,7 +598,7 @@ void show_ending_animation() {
   tile_set_to_vram_bank(&tileset_ending, BANK1, 1);
 
   show_ending_gate_animation(0);
-  vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
+  vdp_memcpy(VRAM_BASE_NAME, scr_tile_buffer, 768);
 
   vdp_screen_enable();
 
@@ -618,7 +618,7 @@ void show_ending_animation() {
 
     sys_sleep_ms(700);
     show_ending_gate_animation(i);
-    vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 768);
+    vdp_memcpy(VRAM_BASE_NAME, scr_tile_buffer, 768);
 
   } while (i++ < 10);
 
@@ -737,7 +737,7 @@ void show_room_title(uint8_t room) {
   }
 
   w = tileset_room_title[room].w;
-  vram_offset = vdp_base_names_grp1 + SCR_WIDTH + 22 * SCR_WIDTH;
+  vram_offset = VRAM_BASE_NAME + SCR_WIDTH + 22 * SCR_WIDTH;
 
   tile_set_to_vram_bank(&tileset_room_title[room], BANK2, 184);
 
@@ -758,10 +758,10 @@ void refresh_score() {
   char snum[3];
 
   /** clear up 2 digit live count **/
-  vdp_write(vdp_base_names_grp1 + 3 + 22 * 32, 0);
-  vdp_write(vdp_base_names_grp1 + 3 + 23 * 32, 0);
-  vdp_write(vdp_base_names_grp1 + 7 + 22 * 32, 0);
-  vdp_write(vdp_base_names_grp1 + 7 + 23 * 32, 0);
+  vdp_write(VRAM_BASE_NAME + 3 + 22 * 32, 0);
+  vdp_write(VRAM_BASE_NAME + 3 + 23 * 32, 0);
+  vdp_write(VRAM_BASE_NAME + 7 + 22 * 32, 0);
+  vdp_write(VRAM_BASE_NAME + 7 + 23 * 32, 0);
 
   score_font_set.numeric = &big_digits;
   _itoa(game_state.live_cnt, snum, 10);

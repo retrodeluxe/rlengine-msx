@@ -934,7 +934,7 @@ void load_room(uint8_t room, bool reload) {
     show_score_panel();
   }
 
-  vdp_memcpy(vdp_base_names_grp1, scr_tile_buffer, 704);
+  vdp_memcpy(VRAM_BASE_NAME, scr_tile_buffer, 704);
   spr_refresh();
   vdp_screen_enable();
   start_music(room);
