@@ -22,16 +22,13 @@
 
 #include "vdp.h"
 
-#define SPR_SIZE_8x8 1
-#define SPR_SIZE_16x16 4
-#define SPR_SIZE_16x32 8
-#define SPR_SIZE_32x16 16
-#define SPR_SIZE_32x32 32
-
-#define SPR_SHOW_8x8 0
-#define SPR_SHOW_16x16 1
-#define SPR_ZOOM_OFF 0
-#define SPR_ZOOM_ON 1
+typedef enum {
+  SPR_SIZE_8x8 = 1,
+  SPR_SIZE_16x16 = 4,
+  SPR_SIZE_16x32 = 8,
+  SPR_SIZE_32x16 = 16,
+  SPR_SIZE_32x32 = 32
+} SpriteSize;
 
 /* max number of patterns to be held in memory */
 #define SPR_PATRN_MAX 48
@@ -94,10 +91,6 @@ extern SpritePattern spr_pattern[SPR_PATRN_MAX];
 
 extern void spr_init();
 extern void spr_clear();
-extern void spr_copy_pattern_set(uint8_t index, uint8_t *patterns,
-                                 uint8_t *colors);
-extern void spr_define_pattern_set(uint8_t index, uint8_t size, uint8_t planes,
-                                   uint8_t num_states, uint8_t *state_steps);
 extern void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx);
 extern uint8_t spr_valloc_pattern_set(uint8_t patrn_idx);
 extern void spr_vfree_pattern_set(uint8_t patrn_idx);

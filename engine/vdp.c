@@ -225,7 +225,7 @@ $7:
 	__endasm;
 }
 
-void vdp_init_hw_sprites(char spritesize, char zoom)
+void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom)
 {
 	zoom;
 

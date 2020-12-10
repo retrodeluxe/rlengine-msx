@@ -30,6 +30,16 @@ typedef enum {
 } VdpMode;
 
 typedef enum {
+  SPR_SIZE_8,
+  SPR_SIZE_16
+} VdpSpriteSize;
+
+typedef enum {
+  SPR_ZOOM_OFF,
+  SPR_ZOOM_ON
+} VdpSpriteZoom;
+
+typedef enum {
   COLOR_TRANSPARENT,
   COLOR_BLACK,
   COLOR_GREEN,
@@ -80,7 +90,7 @@ extern void vdp_memset(uint16_t vaddress, uint16_t size,
 extern void vdp_memcpy(uint16_t vaddress, uint8_t *buffer,
                        uint16_t size) __nonbanked;
 extern void vdp_memcpy_vda(uint8_t *buffer) __nonbanked;
-extern void vdp_init_hw_sprites(char spritesize, char zoom);
+extern void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom);
 extern void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked;
 extern void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size);
 

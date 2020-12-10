@@ -53,7 +53,8 @@ void spr_refresh(void) {
 void spr_clear(void) {
   uint8_t i;
 
-  vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
+  // FIXME: why this dependency here?
+  vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
 
   /** entirely disable sprites by setting y=208 **/
   sys_memset(spr_attr, 208, sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);

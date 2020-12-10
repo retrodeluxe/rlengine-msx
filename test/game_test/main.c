@@ -335,7 +335,7 @@ void show_game_over() {
 static void load_intro_scr() {
   vdp_screen_disable();
 
-  vdp_init_hw_sprites(SPR_SHOW_16x16, SPR_ZOOM_OFF);
+  vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
 
   ascii8_set_data(PAGE_INTRO2_PAT);
   vdp_memcpy_vda(intropat_vda);
