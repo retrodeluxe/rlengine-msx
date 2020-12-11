@@ -221,6 +221,8 @@ static void phys_tile_collision_notify(uint8_t tile, uint16_t x,
           continue;
         }
       }
+      // HACK: this only works with game_test at the moment
+      //       called from anim(6) but the handlers are in logic(3)
       ascii8_set_code(3);
       cgroup[i].handler(cgroup[i].dpo, cgroup[i].data);
       ascii8_set_code(6);
