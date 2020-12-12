@@ -31,7 +31,6 @@
 *.dSYM/
 
 # msx specific files
-*.rst
 *.map
 *.bin
 *.ihx
