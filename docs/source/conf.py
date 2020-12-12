@@ -18,8 +18,9 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-
-cautodoc_root = os.path.abspath('/media/geijoenr/geix/MSX/rlengine-msx1/engine')
+import pathlib
+pathlib.Path().absolute()
+cautodoc_root = os.path.abspath(str(pathlib.Path().absolute()))
 
 # -- General configuration ------------------------------------------------
 
@@ -164,6 +165,3 @@ texinfo_documents = [
      author, 'rdlEngine', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

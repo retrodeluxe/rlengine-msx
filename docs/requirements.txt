@@ -1,2 +1,3 @@
 hawkmoth==0.5
 clang==11.0
+pathlib==1.0.1

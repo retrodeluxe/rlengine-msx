@@ -11,8 +11,8 @@ Welcome to rdlEngine's documentation!
    :caption: Contents:
 
 
-.. c:autodoc:: ./include/*.h
-.. c:autodoc:: *.c
+.. c:autodoc:: ../../engine/include/*.h
+.. c:autodoc:: ../../engine/*.c
 
 
 Indices and tables
