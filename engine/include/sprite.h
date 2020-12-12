@@ -22,11 +22,33 @@
 
 #include "vdp.h"
 
+/**
+ * sprite size
+ */
 typedef enum {
+  /**
+   * 8x8 pixel sprite, each frame is a superposition of 8x8 hardware sprites
+   */
   SPR_SIZE_8x8 = 1,
+
+  /**
+   * 16x16 pixel sprite, each frame is a superposition of 16x16 hardware sprites
+   */
   SPR_SIZE_16x16 = 4,
+
+  /**
+   * 16x32 pixel sprite, each frame is a composition of two 16x16 hardware sprites
+   */
   SPR_SIZE_16x32 = 8,
+
+  /**
+   * 32x16 pixel sprite, each frame is a composition of two 16x16 hardware sprites
+   */
   SPR_SIZE_32x16 = 16,
+
+  /**
+   * 32x32 pixel sprite, each frame is a composition of four 16x16 hardware sprites
+   */
   SPR_SIZE_32x32 = 32
 } SpriteSize;
 
@@ -45,17 +67,32 @@ enum spr_state {
 };
 
 /**
- * spr_pattern_set:
- *		a set of sprite patterns plus data used for animation
+ *	a set of sprite patterns plus data used for animation
  */
 typedef struct SpritePattern SpritePattern;
+
+/**
+ * Contains a software sprite pattern composed of many individual
+ * hardware sprite patterns, along with metadata to describe the structure.
+ */
 struct SpritePattern {
   uint8_t pidx;
+
+  /** Indicates if the pattern has been allocated in VRAM */
   bool allocated;
+
+  /** Size, see doc:enum:SpriteSize */
   uint8_t size;
+
+  /** Number of planes (colors) */
   uint8_t n_planes;
+
+  /** Number of states */
   uint8_t n_states;
+
+  /** Animation steps per state */
   uint8_t state_steps[SPR_STATES_MAX];
+
   uint8_t n_steps;
   uint8_t *patterns;
   uint8_t *colors;
@@ -63,16 +100,24 @@ struct SpritePattern {
 };
 
 /**
- * spr_sprite_def:
- *		copy of sprite attributes as in vram plus animation status
+ * Contains a software sprite definition
  */
 typedef struct SpriteDef SpriteDef;
+
+/**
+ * structure definiting the contents of doc:typedef:SpriteDef
+ */
 struct SpriteDef {
   uint8_t aidx;
   VdpSpriteAttr planes[6];
   SpritePattern *pattern_set;
+
+  /** current sprite state */
   uint8_t cur_state;
+
+  /** current animation step within the current state */
   uint8_t cur_anim_step;
+
   uint8_t state_anim_ctr[SPR_STATES_MAX];
   uint8_t anim_ctr;
   uint8_t anim_ctr_treshold;
@@ -80,14 +125,24 @@ struct SpriteDef {
 
 extern SpritePattern spr_pattern[SPR_PATRN_MAX];
 
-#define SPR_DEFINE_PATTERN_SET(X, SIZE, PLANES, STATES, STEPS, PATTERNS)       \
-  spr_pattern[(X)].size = (SIZE);                                              \
-  spr_pattern[(X)].n_planes = (PLANES);                                        \
-  sys_memcpy(spr_pattern[(X)].state_steps, (STEPS), (STATES));                 \
-  spr_pattern[(X)].n_states = (STATES);                                        \
-  spr_pattern[(X)].allocated = false;                                          \
-  spr_pattern[(X)].patterns = (PATTERNS);                                      \
-  spr_pattern[(X)].colors = PATTERNS##_color
+/**
+ * Helper macro for filling in a SpritePattern structure using resource data
+ *
+ * :param INDEX: Pattern index (value between 0 and 47)
+ * :param SIZE: a SpriteSize
+ * :param PLANES: number of planes
+ * :param STATES: number of states
+ * :param STEPS: array containing the number of animation steps per state
+ * :param PATTERNS: patterns binary data
+ */
+#define SPR_DEFINE_PATTERN_SET(INDEX, SIZE, PLANES, STATES, STEPS, PATTERNS)       \
+  spr_pattern[(INDEX)].size = (SIZE);                                              \
+  spr_pattern[(INDEX)].n_planes = (PLANES);                                        \
+  sys_memcpy(spr_pattern[(INDEX)].state_steps, (STEPS), (STATES));                 \
+  spr_pattern[(INDEX)].n_states = (STATES);                                        \
+  spr_pattern[(INDEX)].allocated = false;                                          \
+  spr_pattern[(INDEX)].patterns = (PATTERNS);                                      \
+  spr_pattern[(INDEX)].colors = PATTERNS##_color
 
 extern void spr_init();
 extern void spr_clear();

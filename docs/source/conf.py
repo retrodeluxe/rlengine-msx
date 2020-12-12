@@ -29,8 +29,7 @@ if clanglib_path:
 
 pathlib.Path().absolute()
 cautodoc_root = os.path.abspath(str(pathlib.Path().absolute()))
-
-
+cautodoc_clang = "-I"+cautodoc_root+"/../../engine/include,-DHAWKMOTH"
 
 # -- General configuration ------------------------------------------------
 

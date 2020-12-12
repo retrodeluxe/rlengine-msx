@@ -41,4 +41,12 @@
 #define sys_irq_disable() __asm di __endasm
 #define sys_irq_enable() __asm ei __endasm
 #define sys_wait_vsync() __asm halt __endasm
+
+/* avoids SDCC builtins to break sphinx
+ * documentation generation
+ */
+#ifdef HAWKMOTH
+#define __nonbanked
+#endif
+
 #endif /* _MSX_H_ */

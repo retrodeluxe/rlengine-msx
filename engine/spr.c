@@ -38,18 +38,25 @@ SpritePattern spr_pattern[SPR_PATRN_MAX];
 VdpSpriteAttr spr_attr[MAX_SPR_ATTR];
 
 /**
- * spr_init: initialize vdp sprites and allocation tables
+ * Initialize Sprite module
  */
 void spr_init(void) {
   spr_clear();
   sys_memset(spr_pattern, 0, sizeof(SpritePattern) * SPR_PATRN_MAX);
 }
 
+/**
+ * Refresh all sprite patterns in VRAM
+ */
 void spr_refresh(void) {
   vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
              sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
 }
 
+/**
+ * Clear all sprites from VRAM and frees all allocations. Preserves
+ * defined patterns.
+ */
 void spr_clear(void) {
   uint8_t i;
 
@@ -66,6 +73,9 @@ void spr_clear(void) {
     spr_vfree_pattern_set(i);
 }
 
+/**
+ * Initializes a SpriteDef structure
+ */
 void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
   sp->pattern_set = &spr_pattern[patrn_idx];
   sp->cur_anim_step = 0;
@@ -76,8 +86,8 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
 }
 
 /**
- * spr_valloc_pattern_set:
- *		finds a gap to allocate a pattern set
+ * Allocates VRAM and transfers a SpritePattern making the Sprite ready
+ * for visualization.
  */
 uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
   uint16_t npat;
@@ -117,6 +127,9 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
   return false;
 }
 
+/**
+ * Frees VRAM used by a specific SpritePattern
+ */
 void spr_vfree_pattern_set(uint8_t patrn_idx) {
   uint8_t npat, size;
 
@@ -133,12 +146,18 @@ void spr_vfree_pattern_set(uint8_t patrn_idx) {
   sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 
+/**
+ * if is allocated
+ */
 bool spr_is_allocated(uint8_t patrn_idx) {
   SpritePattern *ps = &spr_pattern[patrn_idx];
   return ps->allocated;
 }
 
-static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
+/**
+ * Is this broken?
+ */
+void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   uint8_t i, color_frame, base = 0, base2, frame;
 
   SpritePattern *ps = sp->pattern_set;
@@ -200,6 +219,9 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   }
 }
 
+/**
+ * Updates
+ */
 void spr_update(SpriteDef *sp) __nonbanked {
   uint8_t i;
   spr_calc_patterns(sp);
@@ -222,7 +244,7 @@ void spr_update(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * spr_show: finds a gap to allocate the attribute set
+ * Allocates a SpriteDef into VRAM
  */
 uint8_t spr_show(SpriteDef *sp) __nonbanked {
   uint8_t i, idx = 7, n, f = 0;
@@ -245,6 +267,9 @@ uint8_t spr_show(SpriteDef *sp) __nonbanked {
   return false;
 }
 
+/**
+ * dada
+ */
 void spr_hide(SpriteDef *sp) __nonbanked {
   uint8_t n, idx;
   VdpSpriteAttr null_spr;
@@ -322,7 +347,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   }
 }
 
-void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
+static void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
   uint8_t i;
   for (i = 0; i < sp->pattern_set->n_planes; i++) {
     (sp->planes[i]).color = colors[i];

@@ -1,5 +1,7 @@
 [![Generic badge](https://img.shields.io/badge/build-passing-green.svg)](https://shields.io/)
 
+[![Documentation Status](https://readthedocs.org/projects/retrodeluxe-engine-for-msx/badge/?version=latest)](https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/?badge=latest)
+
 # RetroDeluxe Game Engine for MSX1 computers
 
 RLE is a game engine targeted at MSX1 Computers, written in C and aimed at
@@ -16,6 +18,10 @@ At the moment it provides:
 * Basic Physics and Animation Support
 
 RLE is a work in progress, but mature enough for development (see the tests folder for samples).
+
+# Documentation
+
+https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/
 
 # How to Build
 

@@ -28,40 +28,76 @@
 #define DISP_OBJECT_TILE 2
 #define DISP_OBJECT_COMBO 3
 
+/**
+ * An object to be displayed as part of a display list.
+ */
 typedef struct DisplayObject DisplayObject;
-typedef struct Animator Animator;
 
+/**
+ * contents of a DisplayObject
+ */
+struct DisplayObject {
+
+  /** DisplayObject type, see c:enum:DisplayObjectType */
+  uint8_t type;
+
+  /** Maximum coordinate used for animation */
+  uint8_t max;
+
+  /** Minimum coordinate used in animation */
+  uint8_t min;
+
+  /** Speed of movement, used in animation */
+  uint8_t speed;
+
+  /** Color override, used to in animation */
+  uint8_t color;
+
+  /** Indicates if the object should be visible in screen */
+  bool visible;
+
+  /** Indicates if collision detection should be carried out for this object */
+  bool check_collision;
+
+  /** Animation state */
+  uint8_t state;
+
+  /** Auxiliary animation data */
+  uint8_t aux;
+
+  /** Auxiliary animation data */
+  uint8_t aux2;
+
+  /** Current screen position */
+  int16_t xpos;
+
+  /** Current screen position */
+  int16_t ypos;
+
+  /** Current collision state */
+  uint8_t collision_state;
+
+  /** Sprite definition */
+  SpriteDef *spr;
+
+  /** TileObject definition */
+  TileObject *tob;
+
+  /** Parent object, used for animation */
+  DisplayObject *parent;
+
+  List list;
+  List animator_list;
+};
+
+/**
+ * Contains an animator
+ */
+typedef struct Animator Animator;
 struct Animator {
   List list;
   uint8_t page; // HACK: store animator page to allow switching
   void (*run)(DisplayObject *obj);
-};
-
-struct DisplayObject {
-  uint8_t type; /*< sprite or dynamic tile */
-
-  /* static animation data */
-  uint8_t max;   /*<  max coordinate */
-  uint8_t min;   /*<  min coordinate */
-  uint8_t speed; /*<  speed */
-  uint8_t color;
-  bool visible;
-
-  /* collision detection flags */
-  bool check_collision;
-
-  /* dynamic animation data */
-  uint8_t state;
-  uint8_t aux; // per object auxiliary data
-  uint8_t aux2;
-  int16_t xpos;
-  int16_t ypos;
-  uint8_t collision_state;
-  SpriteDef *spr;
-  TileObject *tob;
-  DisplayObject *parent;
-  List list;
-  List animator_list;
 };
 
 void dpo_simple_animate(DisplayObject *dpo, signed char dx,
