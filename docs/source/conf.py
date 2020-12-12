@@ -19,8 +19,18 @@
 #
 import os
 import pathlib
+from ctypes.util import find_library
+from clang.cindex import Index, Config
+
+clanglib_path = find_library('clang-6.0')
+
+if clanglib_path:
+    Config.set_library_file(clanglib_path)
+
 pathlib.Path().absolute()
 cautodoc_root = os.path.abspath(str(pathlib.Path().absolute()))
+
+
 
 # -- General configuration ------------------------------------------------
 
