@@ -185,7 +185,7 @@ set_pointer:
 	bit 	7,c
 	jr	nz, set_masks
 	ld	a,(#_sfx_noise)
-	ld	(#_AYREGS + 6),aplays
+	ld	(#_AYREGS + 6),a
 set_masks:
 	ld	a,c
 	and 	#0x90
@@ -243,7 +243,7 @@ sfx_end:
 	ld 	a,(#_sfx_channel)
 	inc 	a
 	and 	#3
-	add 	a,#8plays 
+	add 	a,#8
 	add 	a,l
 	ld 	l,a
 	adc 	a,h
