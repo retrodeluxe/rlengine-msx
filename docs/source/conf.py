@@ -57,8 +57,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'RetroDeluxe Engine for MSX'
-copyright = '2020, RetroDeluxe (Enric Martin Geijo)'
-author = 'RetroDeluxe (Enric Martin Geijo)'
+copyright = '2020, RetroDeluxe (Enric Geijo)'
+author = 'RetroDeluxe (Enric Geijo)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -149,8 +149,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'rdlEngine.tex', 'rdlEngine Documentation',
-     'RetroDeluxe (Enric Martin Geijo)', 'manual'),
+    (master_doc, 'rdlEngine.tex', 'RetroDeluxe Engine Documentation',
+     'RetroDeluxe (Enric Geijo)', 'manual'),
 ]
 
 
