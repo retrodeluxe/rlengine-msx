@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-RetrodeLuxe Engine for MSX documentation
-=====================================
+RetrodeLuxe Engine for MSX
+===========================
 
 .. toctree::
    :maxdepth: 2
@@ -37,23 +37,68 @@ This amounts to a total 64 frames for 16x16 sprites.
 .. c:autodoc:: ../../engine/spr.c
 
 
-Tiles
------
+Tile Module
+------------
 
 .. c:autodoc:: ../../engine/include/tile.h
+.. c:autodoc:: ../../engine/tile.c
 
-Fonts
------
+Font Module
+-----------
 
 .. c:autodoc:: ../../engine/include/font.h
+.. c:autodoc:: ../../engine/font.c
 
-Display Objects
----------------
+Display Object Module
+---------------------
 
 .. c:autodoc:: ../../engine/include/dpo.h
+.. c:autodoc:: ../../engine/dpo.c
 
-Animation
----------
+Animation Module
+----------------
+
+Physics Module
+--------------
+.. c:autodoc:: ../../engine/include/phys.h
+.. c:autodoc:: ../../engine/phys.c
+
+
+Vdp Module
+----------
+
+.. c:autodoc:: ../../engine/include/vdp.h
+.. c:autodoc:: ../../engine/vdp.c
+
+Timer Module
+------------
+
+.. c:autodoc:: ../../engine/include/timer.h
+.. c:autodoc:: ../../engine/timer.c
+
+System Module
+-------------
+
+.. c:autodoc:: ../../engine/include/sys.h
+.. c:autodoc:: ../../engine/sys.c
+
+Sound Effects Module
+--------------------
+
+.. c:autodoc:: ../../engine/include/sfx.h
+.. c:autodoc:: ../../engine/sfx.c
+
+Vortex Tracker Module
+---------------------
+
+.. c:autodoc:: ../../engine/include/pt3.h
+.. c:autodoc:: ../../engine/pt3.c
+
+Map Module
+----------
+
+.. c:autodoc:: ../../engine/include/map.h
+.. c:autodoc:: ../../engine/map.c
 
 
 Indices and tables
