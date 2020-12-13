@@ -1,6 +1,4 @@
-[![Generic badge](https://img.shields.io/badge/build-passing-green.svg)](https://shields.io/)
-
-[![Documentation Status](https://readthedocs.org/projects/retrodeluxe-engine-for-msx/badge/?version=latest)](https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/?badge=latest)
+[![Generic badge](https://img.shields.io/badge/build-passing-green.svg)](https://shields.io/) [![Documentation Status](https://readthedocs.org/projects/retrodeluxe-engine-for-msx/badge/?version=latest)](https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/?badge=latest)
 
 # RetroDeluxe Game Engine for MSX1 computers
 
@@ -21,7 +19,7 @@ RLE is a work in progress, but mature enough for development (see the tests fold
 
 # Documentation
 
-https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/
+Also work in progress, but please check https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/
 
 # How to Build
 

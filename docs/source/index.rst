@@ -10,6 +10,10 @@ RetrodeLuxe Engine for MSX
    :maxdepth: 2
    :caption: Contents:
 
+   tutorial
+   build
+   assets
+   patterns
    api
 
 
