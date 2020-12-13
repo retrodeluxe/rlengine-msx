@@ -63,7 +63,7 @@ void spr_clear(void) {
   // FIXME: why this dependency here?
   vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
 
-  /** entirely disable sprites by setting y=208 **/
+  /* entirely disable sprites by setting y=208 */
   sys_memset(spr_attr, 208, sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
   sys_memset(spr_attr_valloc, 1, MAX_SPR_ATTR);
   sys_memset(spr_patt_valloc, 1, MAX_SPR_PTRN);
@@ -75,6 +75,9 @@ void spr_clear(void) {
 
 /**
  * Initializes a SpriteDef structure
+ *
+ * :param sp: a SpriteDef object
+ * :param patrn_idx: sprite pattern set index (0-47)
  */
 void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
   sp->pattern_set = &spr_pattern[patrn_idx];
@@ -88,6 +91,8 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
 /**
  * Allocates VRAM and transfers a SpritePattern making the Sprite ready
  * for visualization.
+ *
+ * :param patrn_idx: sprite pattern set index (0-47)
  */
 uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
   uint16_t npat;
@@ -129,6 +134,8 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
 
 /**
  * Frees VRAM used by a specific SpritePattern
+ *
+ * :param patrn_idx: sprite pattern set index (0-47)
  */
 void spr_vfree_pattern_set(uint8_t patrn_idx) {
   uint8_t npat, size;
@@ -146,18 +153,8 @@ void spr_vfree_pattern_set(uint8_t patrn_idx) {
   sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
 }
 
-/**
- * if is allocated
- */
-bool spr_is_allocated(uint8_t patrn_idx) {
-  SpritePattern *ps = &spr_pattern[patrn_idx];
-  return ps->allocated;
-}
 
-/**
- * Is this broken?
- */
-void spr_calc_patterns(SpriteDef *sp) __nonbanked {
+static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   uint8_t i, color_frame, base = 0, base2, frame;
 
   SpritePattern *ps = sp->pattern_set;
@@ -220,7 +217,9 @@ void spr_calc_patterns(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * Updates
+ * Updates a Sprite attribute on the VRAM buffer
+ *
+ * :param sp: a SpriteDef object
  */
 void spr_update(SpriteDef *sp) __nonbanked {
   uint8_t i;
@@ -245,6 +244,8 @@ void spr_update(SpriteDef *sp) __nonbanked {
 
 /**
  * Allocates a SpriteDef into VRAM
+ *
+ * :param sp: a SpriteDef object
  */
 uint8_t spr_show(SpriteDef *sp) __nonbanked {
   uint8_t i, idx = 7, n, f = 0;
@@ -268,7 +269,9 @@ uint8_t spr_show(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * dada
+ * Deallocates a SpriteDef.
+ *
+ * :param sp: SpriteDef object
  */
 void spr_hide(SpriteDef *sp) __nonbanked {
   uint8_t n, idx;
@@ -283,7 +286,7 @@ void spr_hide(SpriteDef *sp) __nonbanked {
   idx = sp->aidx;
   sys_memset(&spr_attr_valloc[idx], 1, n);
 
-  /** set sprite outside screen using EC bit */
+  /* set sprite outside screen using EC bit */
   null_spr.y = 193;
   null_spr.x = 0;
   null_spr.pattern = 0;
@@ -302,7 +305,11 @@ void spr_hide(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * Set sprite position taking into account off-screen coordinates
+ * Set sprite position on screen taking into account off-screen coordinates
+ *
+ * :param sp: a SpriteDef object
+ * :param xp: x screen coordinate (-32 to 256)
+ * :param yp: y screen coordinate (-32 to 192)
  */
 void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   uint8_t i, x, y, ec = 0;
@@ -347,7 +354,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   }
 }
 
-static void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
+void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
   uint8_t i;
   for (i = 0; i < sp->pattern_set->n_planes; i++) {
     (sp->planes[i]).color = colors[i];
@@ -363,9 +370,14 @@ static void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
 }
 
 /**
- * Handle sprite animation for simple cases of 2 and 4 states with collision
+ * Updates a SpriteDef state and animation frame based on the direction
+ * of movement, for a simple case of 2 or 4 states.
+ *
+ * :param sp: a SpriteDef object
+ * :param dx: delta X
+ * :param dy: delta Y
  */
-void spr_animate(SpriteDef *sp, signed char dx, signed char dy) __nonbanked {
+void spr_animate(SpriteDef *sp, int8_t dx, int8_t dy) __nonbanked {
   uint8_t old_dir, x, y;
   SpritePattern *ps = sp->pattern_set;
 

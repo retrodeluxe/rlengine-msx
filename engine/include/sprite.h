@@ -154,8 +154,7 @@ extern void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked;
 extern uint8_t spr_show(SpriteDef *sp) __nonbanked;
 extern void spr_update(SpriteDef *sp) __nonbanked;
 extern void spr_hide(SpriteDef *sp) __nonbanked;
-extern void spr_animate(SpriteDef *sp, signed char dx,
-                        signed char dy) __nonbanked;
+extern void spr_animate(SpriteDef *sp, int8_t dx, int8_t dy) __nonbanked;
 extern bool spr_is_allocated(uint8_t patrn_idx);
 extern void spr_refresh(void);
 #endif
