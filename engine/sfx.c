@@ -55,6 +55,7 @@
 
 
 #include "pt3.h"
+#include "msx.h"
 
 #pragma CODE_PAGE 2
 
@@ -68,6 +69,11 @@ uint8_t sfx_channel;
 uint16_t sfx_tone;
 uint8_t *sfx_volume_table;
 
+/**
+ * Setup SFX bank
+ *
+ * :param bank: binary data containing a bank of sound effects
+ */
 void sfx_setup(uint8_t *bank)
 {
 	sfx_bank = bank;
@@ -76,6 +82,14 @@ void sfx_setup(uint8_t *bank)
 	sfx_priority = 255;
 }
 
+/**
+ * Play a sound effect
+ *  set up a sound effect from the current bank with specific priority to be
+ *  played
+ *
+ * :param effect: index for effect to be played inside the current bank
+ * :param priority: value from 0 (higher) to 255 (lower) priority
+ */
 void sfx_play_effect(uint8_t effect, uint8_t priority) __nonbanked
 {
 	effect;
@@ -123,6 +137,10 @@ end:
 	__endasm;
 }
 
+/**
+ * Play next note of the currently selected sound effect
+ *  this function should be called after sfx_play_effect
+ */
 void sfx_play(void) __naked __nonbanked
 {
 	__asm
@@ -167,7 +185,7 @@ set_pointer:
 	bit 	7,c
 	jr	nz, set_masks
 	ld	a,(#_sfx_noise)
-	ld	(#_AYREGS + 6),a
+	ld	(#_AYREGS + 6),aplays
 set_masks:
 	ld	a,c
 	and 	#0x90
@@ -225,7 +243,7 @@ sfx_end:
 	ld 	a,(#_sfx_channel)
 	inc 	a
 	and 	#3
-	add 	a,#8
+	add 	a,#8plays 
 	add 	a,l
 	ld 	l,a
 	adc 	a,h

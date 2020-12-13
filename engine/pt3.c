@@ -18,6 +18,7 @@
 
 #include "pt3.h"
 #include "sys.h"
+#include "msx.h"
 
 #pragma CODE_PAGE 2
 
@@ -77,10 +78,9 @@ unsigned int PT3_ESldAdd;  //Envelope data (idem)
 
 char NoteTable[192];       //Note table
 
-/* -----------------------------------------------------------------------------
-PT3Mute
-Silence the PSG.
------------------------------------------------------------------------------ */
+/**
+ * Silence the PSG
+ */
 void pt3_mute() __naked
 {
 	__asm
@@ -93,16 +93,13 @@ MUTE:
 
 	__endasm;
 }
-// ----------------------------------------------------------------------------- END PT3Stop
 
-
-
-
-/* -----------------------------------------------------------------------------
-PT3Init
-(unsigned int) Song data address
-(char) Loop - 0=off ; 1=on  (false = 0, true = 1));
------------------------------------------------------------------------------ */
+/**
+ * Initialize the PT3 Module
+ *
+ * :param song: a PT3 song in binary format
+ * :param loop: indicates whether the song should loop (0:no, 1: yes)
+ */
 void pt3_init(uint8_t *song,uint8_t loop) __naked
 {
 	song;
@@ -234,11 +231,25 @@ INITV3:
 	__endasm;
 }
 
+/**
+ * Initialize PT3 note table
+ *  there are 4 available note tables in files pt3_nt0.h, pt3_nt1.h
+ *  pt3_nt2.h and pt3_nt3.h. One of those files should be included to load the
+ *  definition on a note table in the global variable NT. After that this
+ *  function can be called passing NT as parameter.
+ *
+ * :param note_table: a PT3 note table in binary format.
+ */
 void pt3_init_notes(uint8_t *note_table)
 {
 	sys_memcpy(NoteTable, note_table, 96*2);
 }
 
+/**
+ * Play a current set of notes.
+ *   This function should be called after pt3_decode
+ *
+ */
 void pt3_play() __naked __nonbanked
 {
 	__asm
@@ -272,6 +283,10 @@ LOUT:
 __endasm;
 }
 
+/**
+ * Decode the following note of the song
+ *  this function should be called before pt3_play
+ */
 void pt3_decode() __naked __nonbanked
 {
 	__asm

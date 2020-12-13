@@ -47,6 +47,7 @@
  */
 #ifdef HAWKMOTH
 #define __nonbanked
+#define __naked
 #endif
 
 #endif /* _MSX_H_ */
