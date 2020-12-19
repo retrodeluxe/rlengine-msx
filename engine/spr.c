@@ -80,6 +80,8 @@ void spr_clear(void) {
  * :param patrn_idx: sprite pattern set index (0-47)
  */
 void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
+  assert(patrn_idx < SPR_PATRN_MAX);
+
   sp->pattern_set = &spr_pattern[patrn_idx];
   sp->cur_anim_step = 0;
   sp->cur_state = 0;
@@ -98,6 +100,8 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
   uint16_t npat;
   uint8_t i, idx, size, f = 0;
   uint8_t n_steps = 0;
+
+  assert(patrn_idx < SPR_PATRN_MAX);
 
   SpritePattern *ps = &spr_pattern[patrn_idx];
 
@@ -140,6 +144,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
 void spr_vfree_pattern_set(uint8_t patrn_idx) {
   uint8_t npat, size;
 
+  assert(patrn_idx < SPR_PATRN_MAX);
   SpritePattern *ps = &spr_pattern[patrn_idx];
 
   size = ps->size;

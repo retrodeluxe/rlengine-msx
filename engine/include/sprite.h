@@ -21,6 +21,7 @@
 #define _MSX_H_SPRITE
 
 #include "vdp.h"
+#include "assert.h"
 
 /**
  * sprite size
@@ -136,6 +137,7 @@ extern SpritePattern spr_pattern[SPR_PATRN_MAX];
  * :param PATTERNS: patterns binary data
  */
 #define SPR_DEFINE_PATTERN_SET(INDEX, SIZE, PLANES, STATES, STEPS, PATTERNS)       \
+  assert((INDEX) < SPR_PATRN_MAX);                                                 \
   spr_pattern[(INDEX)].size = (SIZE);                                              \
   spr_pattern[(INDEX)].n_planes = (PLANES);                                        \
   sys_memcpy(spr_pattern[(INDEX)].state_steps, (STEPS), (STATES));                 \

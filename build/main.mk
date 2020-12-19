@@ -45,11 +45,11 @@ export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
 
 
 ifeq ($(BUILD_TYPE),release)
-	export ENGINE_CFLAGS  := -mz80 --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
-	export ENGINE_CFLAGS_BANKED := -mz80 --model-large --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+	export ENGINE_CFLAGS  := -DNDEBUG -mz80 --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+	export ENGINE_CFLAGS_BANKED :=-DNDEBUG -mz80 --model-large --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
 else
-	export ENGINE_CFLAGS  := -DNDEBUG -mz80 --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
-	export ENGINE_CFLAGS_BANKED := -DNDEBUG -mz80 --model-large --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+	export ENGINE_CFLAGS  := -mz80 --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+	export ENGINE_CFLAGS_BANKED := -mz80 --model-large --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
 endif
 
 export HOSTCC	:= gcc

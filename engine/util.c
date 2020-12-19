@@ -26,6 +26,7 @@
 
 #ifdef NDEBUG
 
+#else
 /**
  * send a char to the debug port
  */
@@ -124,4 +125,12 @@ void log(int level, char *fmt, ...) __nonbanked {
     putchar('\r');
   }
 }
+
+void __assert(const char *expression, const char *functionname,
+  const char *filename, unsigned int linenumber) __nonbanked {
+    log(LOG_ERROR, "Assert(%s) failed in function %s at line %d in file %s.\n",
+		expression, functionname, linenumber, filename);
+	for(;;);
+}
+
 #endif
