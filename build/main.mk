@@ -43,13 +43,14 @@ export CROSS_LD := $(SDCC_ROOT)/bin/sdldz80
 export SDCC_LIB := $(SDCC_ROOT)/share/lib/z80
 export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
 
-# release
-#export ENGINE_CFLAGS  := -mz80 --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
-#export ENGINE_CFLAGS_BANKED := -mz80 --model-large --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
 
-# debug
-export ENGINE_CFLAGS  := -mz80 --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
-export ENGINE_CFLAGS_BANKED := -mz80 --model-large --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+ifeq ($(BUILD_TYPE),release)
+	export ENGINE_CFLAGS  := -mz80 --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+	export ENGINE_CFLAGS_BANKED := -mz80 --model-large --std-c99 --opt-code-speed --max-allocs-per-node 100000 --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+else
+	export ENGINE_CFLAGS  := -DNDEBUG -mz80 --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+	export ENGINE_CFLAGS_BANKED := -DNDEBUG -mz80 --model-large --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
+endif
 
 export HOSTCC	:= gcc
 export TILED2H  := $(RLE_TOOLS)/map2header.py

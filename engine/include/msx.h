@@ -20,8 +20,6 @@
 #ifndef _MSX_H_
 #define _MSX_H_
 
-#define DEBUG
-
 #include <stdbool.h>
 #include <stdint.h>
 

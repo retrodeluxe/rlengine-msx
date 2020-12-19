@@ -17,8 +17,6 @@
  *
  */
 
-#define DEBUG
-
 #include "bitmap.h"
 #include "log.h"
 

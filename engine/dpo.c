@@ -20,7 +20,6 @@
 #include "msx.h"
 #include "phys.h"
 #include "sprite.h"
-#define DEBUG
 #include "log.h"
 /**
  * Handle sprite animation for simple cases of 2 and 4 states with collision

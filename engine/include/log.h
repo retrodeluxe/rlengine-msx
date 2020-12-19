@@ -30,7 +30,7 @@
 
 #define LOGLEVEL 7
 
-#ifdef DEBUG
+#ifdef NDEBUG
 extern void log(int level, char *fmt, ...) __nonbanked;
 extern void dump_vram(int start_addr, int end_addr);
 
@@ -50,6 +50,6 @@ extern void dump_vram(int start_addr, int end_addr);
 #define log_entry(_fmt, ...)
 #define log_exit(_fmt, ...)
 
-#endif /* DEBUG */
+#endif /* NDEBUG */
 
 #endif

@@ -24,8 +24,7 @@
 
 #pragma CODE_PAGE 2
 
-#define DEBUG
-#ifdef DEBUG
+#ifdef NDEBUG
 
 /**
  * send a char to the debug port

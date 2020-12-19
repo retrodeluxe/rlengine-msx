@@ -10,6 +10,7 @@
 #include "sys.h"
 #include "vdp.h"
 #include "sprite.h"
+#include "log.h"
 #include "gen/spr_test.h"
 #include <stdlib.h>
 

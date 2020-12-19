@@ -1,4 +1,6 @@
 include ../build.mk
+
+BUILD_TYPE := release
 include $(SETUP_BUILD)
 
 include $(CONFIG_ROM)
