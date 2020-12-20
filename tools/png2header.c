@@ -62,6 +62,7 @@ struct rgb tms9918_pal[PALSIZE]= {
     { 201,91 ,186},             /* D Magenta       201   91  186   */
     { 204,204,204},             /* E Gray          204  204  204   */
     { 255,255,255}              /* F White         255  255  255   */
+};
 
 struct png_header
 {
@@ -74,10 +75,11 @@ struct png_header
 	int filter_method;
 };
 
-#define IMAGE_SIZE_B  (image.width * image.height / 8)
+#define IMAGE_SIZE_B  (png_img.width * png_img.height / 8)
 
 png_bytepp png_rows;
-struct png_header image;     /* input image tga header        */
+int rowbytes;
+struct png_header png_img;    /* input image png header        */
 struct rgb palette[PALSIZE];    /* target palette                */
 struct scr2 *image_out_scr2;    /* image out in scr2 format      */
 struct fbit *image_out_4bit;    /* image out in 4bit pal format  */
@@ -89,13 +91,14 @@ int rle_encode = 0;
 uint16_t rgb_square_error(uint8_t clr, uint16_t x, uint16_t y)
 {
     int16_t u0,u1,u2;
-    uint8_t col = image_out_4bit[ x + y * tga.width].color;
+    //uint8_t col = image_out_4bit[ x + y * tga.width].color;
 
     /* confusing , but works */
-    u0 = (palette[col].r - palette[clr].r);
-    u1 = (palette[col].g - palette[clr].g);
-    u2 = (palette[col].b - palette[clr].b);
-    return u0 * u0 + u1 * u1 + u2 * u2;
+    //u0 = (palette[col].r - palette[clr].r);
+    //u1 = (palette[col].g - palette[clr].g);
+    //u2 = (palette[col].b - palette[clr].b);
+    //return u0 * u0 + u1 * u1 + u2 * u2;
+    return 0;
 }
 
 
@@ -147,16 +150,16 @@ int tga2msx_scr2_tiles()
     uint16_t yy, qe;
     struct scr2 *dst = image_out_scr2;
 
-    for (y = 0; y < (tga.height + 7) >> 3; y++) {
-        for (x = 0; x < (tga.width + 7 ) >> 3; x++) {
+    //for (y = 0; y < (tga.height + 7) >> 3; y++) {
+      //  for (x = 0; x < (tga.width + 7 ) >> 3; x++) {
             /* process 8x8 pixel block */
             for (j = 0; j < 8; j++) {
                 yy = ((y << 3) | j);
 
                 *dst++ = match_line(x, yy);
             }
-        }
-    }
+      //  }
+  //  }
     return 0;
 }
 
@@ -188,22 +191,40 @@ void dump_4bitimage()
 {
     uint16_t i,j;
 
-    for (j = 0; j < tga.height; j++) {
-        for(i = 0; i < tga.width; i++) {
-            printf("0x%2.2X,",(image_out_4bit + i + j * tga.width)->color);
-        }
+    //for (j = 0; j < tga.height; j++) {
+    //    for(i = 0; i < tga.width; i++) {
+    //        printf("0x%2.2X,",(image_out_4bit + i + j * tga.width)->color);
+    //    }
         printf("\n");
-    }
+  //  }
 }
 
 int rgb2msx_palette()
 {
-    struct rgb *src = image;
+    //struct rgb *src = image;
     struct fbit *dst = image_out_4bit;
+    int j;
 
-    do {
-        (dst++)->color = find_min_sqerr_color(src++, palette);
-    } while (src < image + (tga.width * tga.height) - 1);
+    for (j = 0; j < png_img.height; j++) {
+      int i;
+      png_bytep row;
+      row = png_rows[j];
+      for (i = 0; i < rowbytes; i++) {
+        png_byte pixel_pair;
+	      pixel_pair = row[i];
+        uint8_t right = pixel_pair & 0x0F;
+        uint8_t left = (pixel_pair & 0xF0) >> 4;
+
+        (dst++)->color = left;
+        (dst++)->color = right;
+      }
+    }
+
+    // need to iterate over every 4bit pixel and produce the output
+
+    //do {
+    //    (dst++)->color = find_min_sqerr_color(src++, palette);
+    //} while (src < image + (tga.width * tga.height) - 1);
 
     return 0;
 }
@@ -212,10 +233,10 @@ void usage(void)
 {
     int i;
 
-    printf("Usage: tga2header [OPTION]... [file.tga]\n"
-           "Transform tga graphic file into MSX C header\n"
+    printf("Usage: png2header [OPTION]... [file.tga]\n"
+           "Transform png graphic file into MSX C header\n"
            " -h, --help           Print this help.\n"
-           " -f, --full (DEFAULT) full tga to scr2 format conversion,\n"
+           " -f, --full (DEFAULT) full png to scr2/scr5 format conversion,\n"
            " -p, --palette        convert to msx1 palette only,\n"
            " -t, --type=TYPE      output format,\n"
            "                          TILE    : scr2/4 pattern & color C source,\n"
@@ -237,15 +258,7 @@ static int load_png_image(int fileidx, int argc, char **argv)
 	FILE * fp;
 	png_structp png_ptr;
 	png_infop info_ptr;
-	png_uint_32 width;
-	png_uint_32 height;
-	int bit_depth;
-	int color_type;
-	int interlace_method;
-	int compression_method;
-	int filter_method;
 	int j;
-	png_bytepp rows;
 
 	if (argc - fileidx <= 0) {
 		fprintf(stderr, "No input file specified\n");
@@ -256,12 +269,12 @@ static int load_png_image(int fileidx, int argc, char **argv)
 	input_file = argv[fileidx];
 
 	fp = fopen(input_file, "rb");
-	if (file == NULL) {
+	if (fp == NULL) {
 		fprintf(stderr, "Cannot open %s file!\n",argv[1]);
 		return -1;
 	}
 	png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if ( png_ptr) {
+	if (!png_ptr) {
 		fprintf(stderr, "Cannot create PNG read structure\n");
 		return -1;
 	}
@@ -271,38 +284,29 @@ static int load_png_image(int fileidx, int argc, char **argv)
 	}
 	png_init_io (png_ptr, fp);
 	png_read_png (png_ptr, info_ptr, 0, 0);
-	png_get_IHDR (png_ptr, info_ptr, & width, & height, & bit_depth,
-		 & color_type, & interlace_method, & compression_method,
-		 & filter_method);
+	png_get_IHDR (png_ptr, info_ptr, &png_img.width, &png_img.height,
+    &png_img.bit_depth, &png_img.color_type, &png_img.interlace_method,
+    &png_img.compression_method, &png_img.filter_method);
 
-	if (color_type != 3 /* indexed */) {
-		fprintf(stderr, "Only PNG indexed color type is supported\n",argv[1]);
+	if (png_img.color_type != 3 /* indexed */) {
+		fprintf(stderr, "Only PNG indexed color type is supported\n");
 		return -1;
 	}
 
-	if (bit_depth != 4) {
-		fprintf(stderr, "Only indexed PNG with 4bit depth is supported\n",argv[1]);
+	if (png_img.bit_depth != 4) {
+		fprintf(stderr, "Only indexed PNG with 4bit depth is supported, found depth %d\n",png_img.bit_depth);
 		return -1;
 	}
 
-	rows = png_get_rows (png_ptr, info_ptr);
-	printf ("Width is %d, height is %d\n", width, height);
+	png_rows = png_get_rows (png_ptr, info_ptr);
+	printf ("Width is %d, height is %d\n", png_img.width, png_img.height);
 
-	int rowbytes;
 	rowbytes = png_get_rowbytes (png_ptr, info_ptr);
 	printf ("Row bytes = %d\n", rowbytes);
 
-	tgasize = tga.width * tga.height;
+	fclose(fp);
 
-	image = malloc(tgasize * sizeof(struct rgb));
-
-	// FIXME: these shouldn't be here
-	image_out_4bit = malloc(tgasize * sizeof(struct fbit));
-	image_out_scr2 = malloc(MAX_SCR2_SIZE * sizeof(struct scr2));
-
-	fclose(file);
-
-    return 0;
+  return 0;
 }
 
 
@@ -313,7 +317,7 @@ void dump_sprite_8x8_block(FILE *fd, struct fbit *base, uint8_t color)
 
     for (j = 0; j < 8; j++) {
         for (i = 0; i < 8; i++) {
-            enabled = (base + i + j * tga.width)->color == color ? 1 : 0;
+            enabled = (base + i + j * png_img.width)->color == color ? 1 : 0;
             byte = byte << 1 | enabled;
         }
         fprintf(fd, "0x%2.2X,",byte);
@@ -327,7 +331,7 @@ int block_8x8_has_color(struct fbit *base, uint8_t color)
 
     for(j=0;j<8;j++) {
         for(i=0;i<8;i++) {
-            if ((base + i + j * tga.width)->color == color)
+            if ((base + i + j * png_img.width)->color == color)
                 return 1;
         }
     }
@@ -338,8 +342,9 @@ int pattern_has_color(struct fbit *idx, uint8_t color)
 {
     return block_8x8_has_color(idx,color) |
            block_8x8_has_color(idx + 8 ,color) |
-           block_8x8_has_color(idx + tga.width * 8,color) |
-           block_8x8_has_color(idx + 8 + tga.width * 8 ,color);
+           block_8x8_has_color(idx + png_img.width * 8,color) |
+           block_8x8_has_color(idx + 8 + png_img.width * 8 ,color);
+    return 1;
 }
 
 void dump_sprite_file(FILE *fd, int only_header)
@@ -367,19 +372,20 @@ void dump_sprite_file(FILE *fd, int only_header)
     fprintf(fd, "const unsigned char %s_color[] = { ", dataname);
 
     do {
+        // ignore transparent color for sprites
         for (color = 1; color < 16; color++) {
             if (pattern_has_color(idx, color)) {
                 fprintf(fd, "%d,", color);
             }
         }
-        if (++colcnt > (tga.width / 16) - 1) {
-            colcnt = 0;
-            idx += tga.width * 15 + 16;
-        } else {
-            idx += 16;
-        }
+        if (++colcnt > (png_img.width / 16) - 1) {
+           colcnt = 0;
+           idx += png_img.width * 15 + 16;
+       } else {
+           idx += 16;
+       }
         np++;
-    } while (idx < image_out_4bit + (tga.width * tga.height) - 1);
+    } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
 
     fprintf(fd, "0 };\n");
 
@@ -388,26 +394,27 @@ void dump_sprite_file(FILE *fd, int only_header)
     fprintf(fd, "const unsigned char %s[] = {\n", dataname);
 
     do {
+        // ignore transparent color for sprites
         for (color = 1; color < 16; color++) {
             if (pattern_has_color(idx, color)) {
 
                 fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);
 
                 dump_sprite_8x8_block(fd, idx, color);
-                dump_sprite_8x8_block(fd, idx + tga.width * 8, color);
+                dump_sprite_8x8_block(fd, idx + png_img.width * 8, color);
                 dump_sprite_8x8_block(fd, idx + 8, color);
-                dump_sprite_8x8_block(fd, idx + 8 + tga.width * 8, color);
+                dump_sprite_8x8_block(fd, idx + 8 + png_img.width * 8, color);
             }
         }
         /* move to the next block */
-        if (++colcnt > (tga.width / 16) - 1) {
-            colcnt = 0;
-            idx += tga.width * 15 + 16;
+        if (++colcnt > (png_img.width / 16) - 1) {
+           colcnt = 0;
+           idx += png_img.width * 15 + 16;
         } else {
-            idx += 16;
+           idx += 16;
         }
         np++;
-    } while (idx < image_out_4bit + (tga.width * tga.height) - 1);
+    } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
 
     fprintf(fd, "0x00};\n");
     fprintf(fd, "#endif\n");
@@ -494,22 +501,22 @@ void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
             return;
     }
 
-    fprintf(file,"const unsigned char %s_tile_w = %d;\n", dataname, tga.width / 8);
-    fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8);
+    //fprintf(file,"const unsigned char %s_tile_w = %d;\n", dataname, tga.width / 8);
+    //fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8);
     fprintf(file,"const unsigned char %s_tile[]={\n",dataname);
 
     if (rle_encode)
         dump_buffer_rle(buffer, file, 0);
     else {
             p = buffer;
-            for (cnt = 0; cnt < (tga.width * tga.height / 8) ; p++, cnt++) {
+            //for (cnt = 0; cnt < (tga.width * tga.height / 8) ; p++, cnt++) {
                 if(bytectr++ > 6) {
                     fprintf(file,"0x%2.2X,\n",p->patrn);
                     bytectr=0;
                 } else {
                     fprintf(file,"0x%2.2X,",p->patrn);
                 }
-            }
+            //}
             fprintf(file,"0x%2.2X};\n\n",p->patrn);
     }
     fprintf(file,"const unsigned char %s_tile_color[]={\n",dataname);
@@ -518,14 +525,14 @@ void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
         dump_buffer_rle(buffer, file, 1);
     else {
             p = buffer;
-            for (cnt = 0; cnt < (tga.width * tga.height / 8); p++, cnt++) {
+            //for (cnt = 0; cnt < (tga.width * tga.height / 8); p++, cnt++) {
                 if(bytectr++ > 6) {
                     fprintf(file,"0x%2.2X,\n",p->color);
                     bytectr=0;
                 } else {
                     fprintf(file,"0x%2.2X,",p->color);
                 }
-            }
+            //}
             fprintf(file,"0x%2.2X};\n\n",p->color);
     }
 }
@@ -577,8 +584,8 @@ int generate_header(char *outfile, char *type)
 		dump_sprite_file(file, do_only_header);
 	else if (do_tile)
 		dump_tile_file(file, do_only_header);
-	else if (do_scr5)
-		dump_bitmap_file(file, do_only_header);
+	//else if (do_scr5)
+		//dump_bitmap_file(file, do_only_header);
 
 	fclose(file);
 	return 0;
@@ -667,18 +674,18 @@ int main(int argc, char **argv)
 
 	result = load_png_image(fileidx, argc, argv);
 
-	// the dimensions now go elsewher other than tga.
-	// if (!strcmp(type,"TILE") && ((tga.width / 8 * tga.height > 2048) ||
-	// 	(tga.width % 8 != 0 || tga.height % 8 != 0))) {
-	// 		fprintf(stderr, "When generating TILE output, \
-	// 			input file size must have width and heigth multiple of 8 and be smaller than 256x64 pixels (16Kb).\n");
-	// 		return -1;
-	// }
+	if (!strcmp(type,"TILE") && ((png_img.width / 8 * png_img.height > 2048) ||
+		(png_img.width % 8 != 0 || png_img.height % 8 != 0))) {
+			fprintf(stderr, "When generating TILE output, \
+				input file size must have width and heigth multiple of 8 and be smaller than 256x64 pixels (16Kb).\n");
+			return -1;
+	}
 
 	/** process image **/
-
-	// if source is rgb or rgba we need an to convert to indexed
-	// I think this is a mistake, we should take only indexed at 4 bit.
+  int imagesize = png_img.width * png_img.height;
+  fprintf(stderr, "image size in bytes %d %d %d\n", png_img.width, png_img.height, imagesize);
+	image_out_4bit = malloc(imagesize * sizeof(struct fbit));
+	image_out_scr2 = malloc(MAX_SCR2_SIZE * sizeof(struct scr2));
 
 	// if source is rgb and output is scr2/scr4
 	// if ((result == 0) && do_full) {
@@ -687,9 +694,10 @@ int main(int argc, char **argv)
 	// 	result = tga2msx_scr2_tiles();
 	// }
 	//
-	// if ((result == 0) && do_palette) {
-	// 	result = rgb2msx_palette();
-	// }
+  // sprites
+	if ((result == 0) && do_palette) {
+	 	result = rgb2msx_palette();
+	}
 
 	// if source is indexed, we can just output it without palette processing
 
