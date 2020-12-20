@@ -126,10 +126,11 @@ void log(int level, char *fmt, ...) __nonbanked {
   }
 }
 
-void __assert(const char *expression, const char *functionname,
+void __assert(const char *expression, const char *message, const char *functionname,
   const char *filename, unsigned int linenumber) __nonbanked {
     log(LOG_ERROR, "Assert(%s) failed in function %s at line %d in file %s.\n",
 		expression, functionname, linenumber, filename);
+    log(LOG_ERROR, "FATAL: %s\n", message);
 	for(;;);
 }
 

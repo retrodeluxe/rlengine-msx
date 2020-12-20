@@ -42,6 +42,8 @@
 #else
 extern void log(int level, char *fmt, ...) __nonbanked;
 extern void dump_vram(int start_addr, int end_addr);
+extern void __assert(const char *expression, const char *message, const char *functionname,
+  const char *filename, unsigned int linenumber) __nonbanked;
 
 #define log_d(_fmt, ...) log(LOG_DEBUG, _fmt, ##__VA_ARGS__)
 #define log_w(_fmt, ...) log(LOG_WARNING, _fmt, ##__VA_ARGS__)
@@ -51,7 +53,10 @@ extern void dump_vram(int start_addr, int end_addr);
 #define log_entry(_fmt, ...) log(LOG_ENTRY, _fmt, ##__VA_ARGS__)
 #define log_exit(_fmt, ...) log(LOG_EXIT, _fmt, ##__VA_ARGS__)
 
-#define assert(x) ((x) ? (void)0 : __assert(#x, __func__, __FILE__, __LINE__))
+#ifdef assert
+#undef assert
+#endif
+#define assert(x,y) ((x) ? (void)0 : __assert(#x, #y, __func__, __FILE__, __LINE__))
 
 #endif /* NDEBUG */
 

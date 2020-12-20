@@ -21,7 +21,6 @@
 #define _MSX_H_SPRITE
 
 #include "vdp.h"
-#include "assert.h"
 
 /**
  * sprite size
@@ -137,14 +136,19 @@ extern SpritePattern spr_pattern[SPR_PATRN_MAX];
  * :param PATTERNS: patterns binary data
  */
 #define SPR_DEFINE_PATTERN_SET(INDEX, SIZE, PLANES, STATES, STEPS, PATTERNS)       \
-  assert((INDEX) < SPR_PATRN_MAX);                                                 \
+  assert((INDEX) < SPR_PATRN_MAX, "Max pattern index should be below 48");         \
   spr_pattern[(INDEX)].size = (SIZE);                                              \
   spr_pattern[(INDEX)].n_planes = (PLANES);                                        \
   sys_memcpy(spr_pattern[(INDEX)].state_steps, (STEPS), (STATES));                 \
   spr_pattern[(INDEX)].n_states = (STATES);                                        \
   spr_pattern[(INDEX)].allocated = false;                                          \
   spr_pattern[(INDEX)].patterns = (PATTERNS);                                      \
-  spr_pattern[(INDEX)].colors = PATTERNS##_color
+  spr_pattern[(INDEX)].colors = PATTERNS##_color;                                  \
+  if (SIZE > SPR_SIZE_32x16)                                                       \
+    assert(PLANES < 2, "Max 1 plane allowed in 32x32 sprites");                    \
+  if (SIZE > SPR_SIZE_16x16)                                                       \
+    assert(PLANES < 3, "Max 2 planes allowed in 16x32 and 32x16 sprites");          \
+  assert(PLANES < 4, "Max 3 planes allowed in 16x16 sprites")
 
 extern void spr_init();
 extern void spr_clear();
