@@ -91,14 +91,13 @@ int rle_encode = 0;
 uint16_t rgb_square_error(uint8_t clr, uint16_t x, uint16_t y)
 {
     int16_t u0,u1,u2;
-    //uint8_t col = image_out_4bit[ x + y * tga.width].color;
+    uint8_t col = image_out_4bit[ x + y * png_img.width].color;
 
     /* confusing , but works */
-    //u0 = (palette[col].r - palette[clr].r);
-    //u1 = (palette[col].g - palette[clr].g);
-    //u2 = (palette[col].b - palette[clr].b);
-    //return u0 * u0 + u1 * u1 + u2 * u2;
-    return 0;
+    u0 = (palette[col].r - palette[clr].r);
+    u1 = (palette[col].g - palette[clr].g);
+    u2 = (palette[col].b - palette[clr].b);
+    return u0 * u0 + u1 * u1 + u2 * u2;
 }
 
 
@@ -135,6 +134,9 @@ struct scr2 match_line(uint16_t x,  uint16_t y)
         }
     }
 
+    //fprintf(stderr, "math pat col %d %d\n",bp, bc);
+
+
     match.patrn = bp;
     match.color = bc;
 
@@ -150,16 +152,16 @@ int tga2msx_scr2_tiles()
     uint16_t yy, qe;
     struct scr2 *dst = image_out_scr2;
 
-    //for (y = 0; y < (tga.height + 7) >> 3; y++) {
-      //  for (x = 0; x < (tga.width + 7 ) >> 3; x++) {
+    for (y = 0; y < (png_img.height + 7) >> 3; y++) {
+        for (x = 0; x < (png_img.width + 7 ) >> 3; x++) {
             /* process 8x8 pixel block */
             for (j = 0; j < 8; j++) {
                 yy = ((y << 3) | j);
 
                 *dst++ = match_line(x, yy);
             }
-      //  }
-  //  }
+        }
+    }
     return 0;
 }
 
@@ -199,9 +201,12 @@ void dump_4bitimage()
   //  }
 }
 
+/**
+ * We assume the image is indexed 4bit using
+ * an MSX1 palette
+ */
 int rgb2msx_palette()
 {
-    //struct rgb *src = image;
     struct fbit *dst = image_out_4bit;
     int j;
 
@@ -219,13 +224,6 @@ int rgb2msx_palette()
         (dst++)->color = right;
       }
     }
-
-    // need to iterate over every 4bit pixel and produce the output
-
-    //do {
-    //    (dst++)->color = find_min_sqerr_color(src++, palette);
-    //} while (src < image + (tga.width * tga.height) - 1);
-
     return 0;
 }
 
@@ -501,22 +499,22 @@ void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
             return;
     }
 
-    //fprintf(file,"const unsigned char %s_tile_w = %d;\n", dataname, tga.width / 8);
-    //fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, tga.height / 8);
+    fprintf(file,"const unsigned char %s_tile_w = %d;\n", dataname, png_img.width / 8);
+    fprintf(file,"const unsigned char %s_tile_h = %d;\n", dataname, png_img.height / 8);
     fprintf(file,"const unsigned char %s_tile[]={\n",dataname);
 
     if (rle_encode)
         dump_buffer_rle(buffer, file, 0);
     else {
             p = buffer;
-            //for (cnt = 0; cnt < (tga.width * tga.height / 8) ; p++, cnt++) {
+            for (cnt = 0; cnt < (png_img.width * png_img.height / 8) ; p++, cnt++) {
                 if(bytectr++ > 6) {
                     fprintf(file,"0x%2.2X,\n",p->patrn);
                     bytectr=0;
                 } else {
                     fprintf(file,"0x%2.2X,",p->patrn);
                 }
-            //}
+            }
             fprintf(file,"0x%2.2X};\n\n",p->patrn);
     }
     fprintf(file,"const unsigned char %s_tile_color[]={\n",dataname);
@@ -525,14 +523,14 @@ void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
         dump_buffer_rle(buffer, file, 1);
     else {
             p = buffer;
-            //for (cnt = 0; cnt < (tga.width * tga.height / 8); p++, cnt++) {
+            for (cnt = 0; cnt < (png_img.width * png_img.height / 8); p++, cnt++) {
                 if(bytectr++ > 6) {
                     fprintf(file,"0x%2.2X,\n",p->color);
                     bytectr=0;
                 } else {
                     fprintf(file,"0x%2.2X,",p->color);
                 }
-            //}
+            }
             fprintf(file,"0x%2.2X};\n\n",p->color);
     }
 }
@@ -688,12 +686,12 @@ int main(int argc, char **argv)
 	image_out_scr2 = malloc(MAX_SCR2_SIZE * sizeof(struct scr2));
 
 	// if source is rgb and output is scr2/scr4
-	// if ((result == 0) && do_full) {
-	// 	result = rgb2msx_palette();
-	// 	//dump_4bitimage();
-	// 	result = tga2msx_scr2_tiles();
-	// }
-	//
+	if ((result == 0) && do_full) {
+	 	result = rgb2msx_palette();
+	 	//dump_4bitimage();
+	 	result = tga2msx_scr2_tiles();
+	 }
+
   // sprites
 	if ((result == 0) && do_palette) {
 	 	result = rgb2msx_palette();

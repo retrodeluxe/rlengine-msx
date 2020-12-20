@@ -4,17 +4,21 @@ TOOLS_ROOT := $(TOP)/tools
 
 export HEX2BIN := $(BUILD_OUT_TOOLS)/hex2bin
 export TGA2H := $(BUILD_OUT_TOOLS)/tga2header
+export PNG2H := $(BUILD_OUT_TOOLS)/png2header
 export TMU2H := $(BUILD_OUT_TOOLS)/tmu2header
 export XXD   := $(BUILD_OUT_TOOLS)/xxd
 export HEX2ROM := $(BUILD_OUT_TOOLS)/hex2rom
 export GRAPHX := $(BUILD_OUT_TOOLS)/graphx
 
-export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD) $(GRAPHX)
+export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD) $(GRAPHX) $(PNG2H)
 
-all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD)
+all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD) $(PNG2H)
 
 $(TGA2H): $(TOOLS_ROOT)/tga2header.c
 	$(hide) $(HOSTCC) $^ -o $@
+
+$(PNG2H): $(TOOLS_ROOT)/png2header.c
+	$(hide) $(HOSTCC) $^ -lpng -o $@
 
 $(HEX2BIN): $(TOOLS_ROOT)/hex2bin.c
 	$(hide) $(HOSTCC) $^ -o $@
