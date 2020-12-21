@@ -10,7 +10,7 @@ sprites consisting of several layers (colors) and multiple animation states.
 It supports dynamic VRAM allocation and automatic calculation of the frames to
 be displayed based on the current animation state of the sprite.
 
-It currently supports up to 48 sprite pattern set definitions and a maximum of 8 states
+Up to 48 sprite pattern set definitions can be stored in RAM with 8 states
 per sprite. The maximum allowed number of planes per frame depends on the sprite size,
 due to the VDP limit of 4 sprites per row. This value varies from 1 (for 32x32 sprites)
 to 3 (for 16x16 sprites).
@@ -22,7 +22,6 @@ This amounts to a total 64 frames for 16x16 sprites.
 .. code-block:: c
 
    #include "sprite.h".
-
 
 .. c:autodoc:: ../../engine/include/sprite.h
 .. c:autodoc:: ../../engine/spr.c

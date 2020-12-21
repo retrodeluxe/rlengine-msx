@@ -23,51 +23,64 @@
 #include "vdp.h"
 
 /**
- * sprite size
+ * Size of a Sprite
  */
 typedef enum {
   /**
-   * 8x8 pixel sprite, each frame is a superposition of 8x8 hardware sprites
-   */
-  SPR_SIZE_8x8 = 1,
-
-  /**
-   * 16x16 pixel sprite, each frame is a superposition of 16x16 hardware sprites
+   * 16x16 pixel sprite, each frame is a superposition of 16x16 hardware sprites.
    */
   SPR_SIZE_16x16 = 4,
 
   /**
-   * 16x32 pixel sprite, each frame is a composition of two 16x16 hardware sprites
+   * 16x32 pixel sprite, composed by two 16x16 sprites.
    */
   SPR_SIZE_16x32 = 8,
 
   /**
-   * 32x16 pixel sprite, each frame is a composition of two 16x16 hardware sprites
+   * 32x16 pixel sprite, composed by two 16x16 sprites.
    */
   SPR_SIZE_32x16 = 16,
 
   /**
-   * 32x32 pixel sprite, each frame is a composition of four 16x16 hardware sprites
+   * 32x32 pixel sprite, composed by four 16x16 sprites.
    */
   SPR_SIZE_32x32 = 32
 } SpriteSize;
 
-/* max number of patterns to be held in memory */
+/** Max number of patterns that are held in RAM */
 #define SPR_PATRN_MAX 48
 
-/* max number of states per sprites */
+/** Max number of states per sprites */
 #define SPR_STATES_MAX 8
 
-/* predefined states for simple amimation */
+/**
+ * Set of predefined sprite states that can be used with :c:func:`spr_animate`
+ */
 enum spr_state {
+
+  /**
+   * Moving left
+   */
   SPR_STATE_LEFT,
+
+  /**
+   * Moving right
+   */
   SPR_STATE_RIGHT,
+
+  /**
+   * Moving up
+   */
   SPR_STATE_UP,
+
+  /**
+   * Moving down
+   */
   SPR_STATE_DOWN
 };
 
 /**
- *	a set of sprite patterns plus data used for animation
+ * Defines a sprite pattern
  */
 typedef struct SpritePattern SpritePattern;
 
@@ -81,7 +94,7 @@ struct SpritePattern {
   /** Indicates if the pattern has been allocated in VRAM */
   bool allocated;
 
-  /** Size, see doc:enum:SpriteSize */
+  /** Size, see :c:enum:`SpriteSize` */
   uint8_t size;
 
   /** Number of planes (colors) */
@@ -93,9 +106,15 @@ struct SpritePattern {
   /** Animation steps per state */
   uint8_t state_steps[SPR_STATES_MAX];
 
+  /** Total number of animation steps */
   uint8_t n_steps;
+
+  /** Raw hardware sprite pattern data */
   uint8_t *patterns;
+
+  /** Raw hardware sprite color data */
   uint8_t *colors;
+
   uint8_t colors2[24]; // FIXME: this requires some sort of dynamic allocation
 };
 
@@ -105,7 +124,8 @@ struct SpritePattern {
 typedef struct SpriteDef SpriteDef;
 
 /**
- * structure definiting the contents of doc:typedef:SpriteDef
+ * Contains sprite attributes like position and color, along with the
+ * current animation state.
  */
 struct SpriteDef {
   uint8_t aidx;
