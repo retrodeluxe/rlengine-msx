@@ -39,6 +39,7 @@ VdpSpriteAttr spr_attr[MAX_SPR_ATTR];
 
 /**
  * Initialize Sprite module
+ *  Calling this function clears all defined patters and frees allocations.
  */
 void spr_init(void) {
   spr_clear();
@@ -46,7 +47,9 @@ void spr_init(void) {
 }
 
 /**
- * Refresh all sprite patterns in VRAM
+ * Apply changes made to SpriteDefs into VRAM
+ *  This function should be called after running :c:func:`sys_wait_vsync` and is
+ *  required for changes due to :c:func:`spr_update` to be visible on screen.
  */
 void spr_refresh(void) {
   vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
@@ -95,8 +98,9 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
  * for visualization.
  *
  * :param patrn_idx: sprite pattern set index (0-47)
+ * :returns: true if sucess, false is the pattern could not be allocated
  */
-uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
+bool spr_valloc_pattern_set(uint8_t patrn_idx) {
   uint16_t npat;
   uint8_t i, idx, size, f = 0;
   uint8_t n_steps = 0;
@@ -137,7 +141,7 @@ uint8_t spr_valloc_pattern_set(uint8_t patrn_idx) {
 }
 
 /**
- * Frees VRAM used by a specific SpritePattern
+ * Frees the VRAM used by the specified SpritePattern
  *
  * :param patrn_idx: sprite pattern set index (0-47)
  */
@@ -154,65 +158,65 @@ void spr_vfree_pattern_set(uint8_t patrn_idx) {
     size = 16;
 
   npat = ps->n_planes * ps->n_steps * size;
-  ps->allocated = false;
   sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
+  ps->allocated = false;
 }
 
 
 static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
-  uint8_t i, color_frame, base = 0, base2, frame;
+  uint8_t i, cf, base = 0, base2, frame, np, sz, as;
 
   SpritePattern *ps = sp->pattern_set;
   for (i = 0; i < sp->cur_state; i++) {
     base += ps->state_steps[i];
   }
-  color_frame = (base + sp->cur_anim_step) * ps->n_planes;
 
-  switch (ps->size) {
+  np = ps->n_planes;
+  sz = ps->size;
+  as = sp->cur_anim_step;
+  cf = (base + as) * np;
+
+  switch (sz) {
   case SPR_SIZE_16x16:
-    base *= (ps->size * ps->n_planes);
-    frame = sp->cur_anim_step * (ps->size * ps->n_planes);
-    for (i = 0; i < ps->n_planes; i++) {
-      (sp->planes[i]).color |= (ps->colors2)[color_frame + i];
-      (sp->planes[i]).pattern = ps->pidx + base + frame + i * ps->size;
+    base *= (sz * np);
+    frame = as * (sz * np);
+    for (i = 0; i < np; i++) {
+      (sp->planes[i]).color |= (ps->colors2)[cf + i];
+      (sp->planes[i]).pattern = ps->pidx + base + frame + i * sz;
     }
     break;
   case SPR_SIZE_16x32:
-    base *= (SPR_SIZE_16x16 * ps->n_planes);
-    base2 = base + ps->n_planes * ps->n_steps * SPR_SIZE_16x16;
-    frame = sp->cur_anim_step * (SPR_SIZE_16x16 * ps->n_planes);
-    for (i = 0; i < ps->n_planes; i++) {
-      (sp->planes[i]).color &= 128;
-      (sp->planes[i]).color |= (ps->colors2)[color_frame + i];
-      (sp->planes[i + 2]).color &= 128;
-      (sp->planes[i + 2]).color |= (ps->colors2)[color_frame + i];
+    base *= (SPR_SIZE_16x16 * np);
+    base2 = base + np * ps->n_steps * SPR_SIZE_16x16;
+    frame = as * (SPR_SIZE_16x16 * np);
+    for (i = 0; i < np; i++) {
+    //  (sp->planes[i]).color &= 128;
+      (sp->planes[i]).color |= (ps->colors2)[cf + i];
       (sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
-      (sp->planes[i + 2]).pattern =
-          ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
+  //    (sp->planes[i + np]).color &= 128;
+      (sp->planes[i + np]).color |= (ps->colors2)[cf + i];
+      (sp->planes[i + np]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
     }
     break;
   case SPR_SIZE_32x16:
-    base *= (SPR_SIZE_16x32 * ps->n_planes); // 0 8 16 32
+    base *= (SPR_SIZE_16x32 * np);
     base2 = base + 4;
-    frame = sp->cur_anim_step * SPR_SIZE_16x32 * ps->n_planes; // 0 or 8
-    for (i = 0; i < ps->n_planes; i++) {
-      // 2 is the max number of planes supported
-      (sp->planes[i]).color |= (ps->colors2)[color_frame];
-      (sp->planes[i + 2]).color |= (ps->colors2)[color_frame];
+    frame = as * SPR_SIZE_16x32 * np;
+    for (i = 0; i < np; i++) {
+      (sp->planes[i]).color |= (ps->colors2)[cf];
       (sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x32;
-      (sp->planes[i + 2]).pattern =
-          ps->pidx + base2 + frame + i * SPR_SIZE_16x32;
+      (sp->planes[i + np]).color |= (ps->colors2)[cf];
+      (sp->planes[i + np]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x32;
     }
     break;
   case SPR_SIZE_32x32:
-    // only 1 plane supported
     base *= SPR_SIZE_16x32;
     base2 = base + ps->n_steps * SPR_SIZE_16x32;
-    frame = sp->cur_anim_step * SPR_SIZE_16x32;
-    (sp->planes[0]).color |= (ps->colors2)[color_frame];
-    (sp->planes[1]).color |= (ps->colors2)[color_frame];
-    (sp->planes[2]).color |= (ps->colors2)[color_frame];
-    (sp->planes[3]).color |= (ps->colors2)[color_frame];
+    frame = as * SPR_SIZE_16x32;
+    (sp->planes[0]).color |= (ps->colors2)[cf];
+    (sp->planes[1]).color |= (ps->colors2)[cf];
+    (sp->planes[2]).color |= (ps->colors2)[cf];
+    (sp->planes[3]).color |= (ps->colors2)[cf];
     (sp->planes[0]).pattern = ps->pidx + base + frame;
     (sp->planes[1]).pattern = ps->pidx + base + frame + 4;
     (sp->planes[2]).pattern = ps->pidx + base2 + frame;
@@ -222,20 +226,25 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * Updates a Sprite attribute on the VRAM buffer
+ * Updates a SpriteDef
+ *  This function must be called after
+ *  It is necessary to call :c:func:`spr_refresh` for the changes to be
+ *  transferred to VRAM and be visible on screen.
  *
  * :param sp: a SpriteDef object
  */
 void spr_update(SpriteDef *sp) __nonbanked {
-  uint8_t i;
+  uint8_t i, np;
+
+  np = sp->pattern_set->n_planes;
+
   spr_calc_patterns(sp);
-  for (i = 0; i < sp->pattern_set->n_planes; i++) {
-    sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i],
-               4);
+  for (i = 0; i < np; i++) {
+    sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i], 4);
     if (sp->pattern_set->size == SPR_SIZE_16x32 ||
         sp->pattern_set->size == SPR_SIZE_32x16) {
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1],
-                 (uint8_t *)&sp->planes[i + 2], 4);
+                 (uint8_t *)&sp->planes[i + np], 4);
     } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1],
                  (uint8_t *)&sp->planes[1], 4);
@@ -248,11 +257,13 @@ void spr_update(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * Allocates a SpriteDef into VRAM
+ * Allocates a SpriteDef in VRAM
+ *  this function
  *
  * :param sp: a SpriteDef object
+ * :return: true on sucess, false if the Sprite could not be allocated
  */
-uint8_t spr_show(SpriteDef *sp) __nonbanked {
+bool spr_show(SpriteDef *sp) __nonbanked {
   uint8_t i, idx = 7, n, f = 0;
   n = sp->pattern_set->n_planes;
   if (sp->pattern_set->size == SPR_SIZE_16x32 ||
@@ -274,7 +285,11 @@ uint8_t spr_show(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * Deallocates a SpriteDef.
+ * Frees a SpriteDef from VRAM
+ *  calling this function removes the Sprite from screen.
+ *
+ *  It is necessary to call :c:func:`spr_refresh` for the changes to be
+ *  transferred to VRAM and be visible on screen.
  *
  * :param sp: SpriteDef object
  */
@@ -310,14 +325,17 @@ void spr_hide(SpriteDef *sp) __nonbanked {
 }
 
 /**
- * Set sprite position on screen taking into account off-screen coordinates
+ * Set a Sprite position on screen taking into account off-screen coordinates
+ *
+ *  It is necessary to call :c:func:`spr_refresh` for the changes to be
+ *  transferred to VRAM and be visible on screen.
  *
  * :param sp: a SpriteDef object
  * :param xp: x screen coordinate (-32 to 256)
  * :param yp: y screen coordinate (-32 to 192)
  */
 void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
-  uint8_t i, x, y, ec = 0;
+  uint8_t i, x, y, np, sz, ec = 0;
 
   if (yp > -33 && yp < 0)
     y = (int8_t)yp;
@@ -325,7 +343,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
     y = 0xFF;
   else if (yp > 0 && yp < 193)
     y = yp - 1;
-  // need to cover > 192 as well
+  // TODO: need to cover > 192 as well
 
   if (xp < 0) {
     x = xp + 32;
@@ -333,19 +351,22 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   } else if (xp >= 0 && xp < 256)
     x = xp;
 
-  for (i = 0; i < sp->pattern_set->n_planes; i++) {
+  np = sp->pattern_set->n_planes;
+  sz = sp->pattern_set->size;
+
+  for (i = 0; i < np; i++) {
     (sp->planes[i]).x = x;
     (sp->planes[i]).y = y;
     (sp->planes[i]).color = ec;
-    if (sp->pattern_set->size == SPR_SIZE_16x32) {
-      (sp->planes[i + 2]).x = x;
-      (sp->planes[i + 2]).y = y + 16;
-      (sp->planes[i + 2]).color = ec;
-    } else if (sp->pattern_set->size == SPR_SIZE_32x16) {
-      (sp->planes[i + 2]).x = x + 16;
-      (sp->planes[i + 2]).y = y;
-      (sp->planes[i + 2]).color = ec;
-    } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+    if (sz == SPR_SIZE_16x32) {
+      (sp->planes[i + np]).x = x;
+      (sp->planes[i + np]).y = y + 16;
+      (sp->planes[i + np]).color = ec;
+    } else if (sz == SPR_SIZE_32x16) {
+      (sp->planes[i + np]).x = x + 16;
+      (sp->planes[i + np]).y = y;
+      (sp->planes[i + np]).color = ec;
+    } else if (sz == SPR_SIZE_32x32) {
       (sp->planes[1]).x = x + 16;
       (sp->planes[1]).y = y;
       (sp->planes[1]).color = ec;
@@ -360,12 +381,13 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
 }
 
 void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
-  uint8_t i;
-  for (i = 0; i < sp->pattern_set->n_planes; i++) {
+  uint8_t i, np;
+  np = sp->pattern_set->n_planes;
+  for (i = 0; i < np; i++) {
     (sp->planes[i]).color = colors[i];
     if (sp->pattern_set->size == SPR_SIZE_16x32 ||
         sp->pattern_set->size == SPR_SIZE_32x16) {
-      (sp->planes[i + 2]).color = colors[i];
+      (sp->planes[i + np]).color = colors[i];
     } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
       (sp->planes[1]).color = colors[i];
       (sp->planes[2]).color = colors[i];
@@ -419,10 +441,6 @@ void spr_animate(SpriteDef *sp, int8_t dx, int8_t dy) __nonbanked {
   /* update animation frame */
   if (old_dir == sp->cur_state) {
     sp->anim_ctr++;
-    // if (collision) {
-    /* animate faster when colliding */
-    //	sp->anim_ctr++;
-    //}
     if (sp->anim_ctr > sp->anim_ctr_treshold) {
       sp->cur_anim_step++;
       sp->anim_ctr = 0;

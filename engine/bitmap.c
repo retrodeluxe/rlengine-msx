@@ -59,11 +59,11 @@ bool bitmap_find_gap(uint8_t *bitmap, uint8_t gap_size, uint8_t bitmap_size,
   return false;
 }
 
-void bitmap_dump(uint8_t *bitmap, uint8_t bitmap_size) {
-  uint8_t i;
-  log_e("bitmap dump\n");
-  for (i = 0; i < bitmap_size * 8; i++) {
-    log_e("%d - %d\n", i, bitmap_get(bitmap, i));
-  }
-  log_e("\n");
-}
+// void bitmap_dump(uint8_t *bitmap, uint8_t bitmap_size) {
+//   uint8_t i;
+//   log_e("bitmap dump\n");
+//   for (i = 0; i < bitmap_size * 8; i++) {
+//     log_e("%d - %d\n", i, bitmap_get(bitmap, i));
+//   }
+//   log_e("\n");
+//}

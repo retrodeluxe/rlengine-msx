@@ -38,6 +38,7 @@
 #define log_e(_fmt, ...)
 #define log_entry(_fmt, ...)
 #define log_exit(_fmt, ...)
+#define assert(x,y) {}
 
 #else
 extern void log(int level, char *fmt, ...) __nonbanked;
@@ -53,9 +54,6 @@ extern void __assert(const char *expression, const char *message, const char *fu
 #define log_entry(_fmt, ...) log(LOG_ENTRY, _fmt, ##__VA_ARGS__)
 #define log_exit(_fmt, ...) log(LOG_EXIT, _fmt, ##__VA_ARGS__)
 
-#ifdef assert
-#undef assert
-#endif
 #define assert(x,y) ((x) ? (void)0 : __assert(#x, #y, __func__, __FILE__, __LINE__))
 
 #endif /* NDEBUG */

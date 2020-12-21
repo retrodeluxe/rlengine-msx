@@ -31,7 +31,7 @@
  *   out buffer needs to be 4 times data_size
  */
 void map_inflate(const uint8_t *dict, uint8_t *in, uint8_t *out,
-                 uint16_t data_size, uint8_t w) {
+                 uint16_t data_size, uint8_t w) __nonbanked {
   uint8_t col = 0;
   unsigned int idx;
   uint8_t *src;
@@ -57,7 +57,7 @@ void map_inflate(const uint8_t *dict, uint8_t *in, uint8_t *out,
  * big to be decompressed entirely.
  */
 void __map_inflate_screen(const uint8_t *dict, uint16_t *in, uint8_t *out,
-                          uint8_t w, uint8_t vpx, uint8_t vpy) {
+                          uint8_t w, uint8_t vpx, uint8_t vpy) __nonbanked {
   unsigned int idx;
   uint16_t *base = in + vpx / 2 + (vpy / 2) * w / 2;
   uint16_t *src = base;

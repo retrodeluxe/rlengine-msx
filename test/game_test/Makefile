@@ -1,4 +1,9 @@
 include ../build.mk
+
+# game test is very tight in terms of how code fits on each
+# ROM page, enabling debug mode breaks the build currently
+# due to the addition of asserts 
+BUILD_TYPE := release
 include $(SETUP_BUILD)
 
 include $(CONFIG_ROM)
