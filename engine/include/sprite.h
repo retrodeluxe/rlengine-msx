@@ -167,8 +167,17 @@ extern SpritePattern spr_pattern[SPR_PATRN_MAX];
   if (SIZE > SPR_SIZE_32x16)                                                       \
     assert(PLANES < 2, "Max 1 plane allowed in 32x32 sprites");                    \
   if (SIZE > SPR_SIZE_16x16)                                                       \
-    assert(PLANES < 3, "Max 2 planes allowed in 16x32 and 32x16 sprites");          \
+    assert(PLANES < 3, "Max 2 planes allowed in 16x32 and 32x16 sprites");         \
   assert(PLANES < 4, "Max 3 planes allowed in 16x16 sprites")
+
+#define SET_PLANE_ATTR(SP, P, X, Y, C)                                          \
+    (SP->planes[P]).x = X;                                                      \
+    (SP->planes[P]).y = Y;                                                      \
+    (SP->planes[P]).color = C
+
+#define SET_PLANE_PTRN(SP, P, COL, PAT)                                        \
+    (SP->planes[P]).color |= COL;                                               \
+    (SP->planes[P]).pattern = ps->pidx + PAT;
 
 extern void spr_init();
 extern void spr_clear();

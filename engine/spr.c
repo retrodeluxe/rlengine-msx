@@ -206,46 +206,39 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   switch (sz) {
   case SPR_SIZE_16x16:
     base *= (sz * np);
-    frame = as * (sz * np);
+    base += as * (sz * np); // current frame
     for (i = 0; i < np; i++) {
-      (sp->planes[i]).color |= (ps->colors2)[cf + i];
-      (sp->planes[i]).pattern = ps->pidx + base + frame + i * sz;
+      SET_PLANE_PTRN(sp, i, (ps->colors2)[cf + i], base + i * sz);
     }
     break;
   case SPR_SIZE_16x32:
     base *= (SPR_SIZE_16x16 * np);
+    base += as * (SPR_SIZE_16x16 * np); // current frame
     base2 = base + np * ps->n_steps * SPR_SIZE_16x16;
-    frame = as * (SPR_SIZE_16x16 * np);
     for (i = 0; i < np; i++) {
-      (sp->planes[i]).color |= (ps->colors2)[cf + i];
-      (sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
-      (sp->planes[i + np]).color |= (ps->colors2)[cf + i];
-      (sp->planes[i + np]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
+      SET_PLANE_PTRN(sp, i, (ps->colors2)[cf + i], base + i * SPR_SIZE_16x16);
+      SET_PLANE_PTRN(sp, i + np, (ps->colors2)[cf + i],
+        base2 + i * SPR_SIZE_16x16);
     }
     break;
   case SPR_SIZE_32x16:
     base *= (SPR_SIZE_16x32 * np);
+    base += as * SPR_SIZE_16x32 * np; // current frame
     base2 = base + 4;
-    frame = as * SPR_SIZE_16x32 * np;
     for (i = 0; i < np; i++) {
-      (sp->planes[i]).color |= (ps->colors2)[cf];
-      (sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x32;
-      (sp->planes[i + np]).color |= (ps->colors2)[cf];
-      (sp->planes[i + np]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x32;
+      SET_PLANE_PTRN(sp, i, (ps->colors2)[cf], base + i * SPR_SIZE_16x32);
+      SET_PLANE_PTRN(sp, i + np, (ps->colors2)[cf],
+        base2 + i * SPR_SIZE_16x32);
     }
     break;
   case SPR_SIZE_32x32:
     base *= SPR_SIZE_16x32;
+    base += as * SPR_SIZE_16x32; // current frame
     base2 = base + ps->n_steps * SPR_SIZE_16x32;
-    frame = as * SPR_SIZE_16x32;
-    (sp->planes[0]).color |= (ps->colors2)[cf];
-    (sp->planes[1]).color |= (ps->colors2)[cf];
-    (sp->planes[2]).color |= (ps->colors2)[cf];
-    (sp->planes[3]).color |= (ps->colors2)[cf];
-    (sp->planes[0]).pattern = ps->pidx + base + frame;
-    (sp->planes[1]).pattern = ps->pidx + base + frame + 4;
-    (sp->planes[2]).pattern = ps->pidx + base2 + frame;
-    (sp->planes[3]).pattern = ps->pidx + base2 + frame + 4;
+    SET_PLANE_PTRN(sp, 0, (ps->colors2)[cf], base);
+    SET_PLANE_PTRN(sp, 1, (ps->colors2)[cf], base + 4);
+    SET_PLANE_PTRN(sp, 2, (ps->colors2)[cf], base2);
+    SET_PLANE_PTRN(sp, 3, (ps->colors2)[cf], base2 + 4);
     break;
   }
 }
@@ -259,18 +252,19 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
  * :param sp: a SpriteDef object
  */
 void spr_update(SpriteDef *sp) __nonbanked {
-  uint8_t i, np;
+  uint8_t i, np, sz;
 
   np = sp->pattern_set->n_planes;
+  sz = sp->pattern_set->size;
 
   spr_calc_patterns(sp);
   for (i = 0; i < np; i++) {
     sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i], 4);
-    if (sp->pattern_set->size == SPR_SIZE_16x32 ||
-        sp->pattern_set->size == SPR_SIZE_32x16) {
+    if (sz == SPR_SIZE_16x32 ||
+        sz == SPR_SIZE_32x16) {
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + np],
                  (uint8_t *)&sp->planes[i + np], 4);
-    } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+    } else if (sz == SPR_SIZE_32x32) {
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1],
                  (uint8_t *)&sp->planes[1], 4);
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 2],
@@ -289,12 +283,14 @@ void spr_update(SpriteDef *sp) __nonbanked {
  * :return: true on sucess, false if the Sprite could not be allocated
  */
 bool spr_show(SpriteDef *sp) __nonbanked {
-  uint8_t i, idx = 7, n, f = 0;
+  uint8_t i, sz, idx = 7, n, f = 0;
   n = sp->pattern_set->n_planes;
-  if (sp->pattern_set->size == SPR_SIZE_16x32 ||
-      sp->pattern_set->size == SPR_SIZE_32x16)
+  sz = sp->pattern_set->size;
+
+  if (sz == SPR_SIZE_16x32 ||
+      sz == SPR_SIZE_32x16)
     n = n * 2;
-  else if (sp->pattern_set->size == SPR_SIZE_32x32)
+  else if (sz == SPR_SIZE_32x32)
     n = n * 4;
   for (i = 0; i < MAX_SPR_ATTR - 1; i++) {
     f = f * spr_attr_valloc[i] + spr_attr_valloc[i];
@@ -319,14 +315,15 @@ bool spr_show(SpriteDef *sp) __nonbanked {
  * :param sp: SpriteDef object
  */
 void spr_hide(SpriteDef *sp) __nonbanked {
-  uint8_t n, idx;
+  uint8_t n, idx, sz;
   VdpSpriteAttr null_spr;
 
+  sz = sp->pattern_set->size;
   n = sp->pattern_set->n_planes;
-  if (sp->pattern_set->size == SPR_SIZE_16x32 ||
-      sp->pattern_set->size == SPR_SIZE_32x16)
+  if (sz == SPR_SIZE_16x32
+    || sz == SPR_SIZE_32x16)
     n = n * 2;
-  else if (sp->pattern_set->size == SPR_SIZE_32x32)
+  else if (sz == SPR_SIZE_32x32)
     n = n * 4;
   idx = sp->aidx;
   sys_memset(&spr_attr_valloc[idx], 1, n);
@@ -343,11 +340,11 @@ void spr_hide(SpriteDef *sp) __nonbanked {
   // FIXME: still wrong handling of multiple planes
   sys_memcpy((uint8_t *)&spr_attr[sp->aidx], (uint8_t *)&null_spr,
              sizeof(VdpSpriteAttr));
-  if (sp->pattern_set->size == SPR_SIZE_16x32 ||
-      sp->pattern_set->size == SPR_SIZE_32x16) {
+  if (sz == SPR_SIZE_16x32 ||
+      sz == SPR_SIZE_32x16) {
     sys_memcpy((uint8_t *)&spr_attr[sp->aidx + 1], (uint8_t *)&null_spr,
                sizeof(VdpSpriteAttr));
-  } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+  } else if (sz == SPR_SIZE_32x32) {
     // TODO
   }
 }
@@ -396,40 +393,29 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   }
 
   for (i = 0; i < np; i++) {
-    (sp->planes[i]).x = x;
-    (sp->planes[i]).y = y;
-    (sp->planes[i]).color = ec;
+    SET_PLANE_ATTR(sp, i, x, y, ec);
     if (sz == SPR_SIZE_16x32) {
-      (sp->planes[i + np]).x = x;
-      (sp->planes[i + np]).y = y + 16;
-      (sp->planes[i + np]).color = ec;
+      SET_PLANE_ATTR(sp, i + np, x, y + 16, ec);
     } else if (sz == SPR_SIZE_32x16) {
-      (sp->planes[i + np]).x = x2 + 16;
-      (sp->planes[i + np]).y = y;
-      (sp->planes[i + np]).color = ec2;
+      SET_PLANE_ATTR(sp, i + np, x2 + 16, y, ec2);
     } else if (sz == SPR_SIZE_32x32) {
-      (sp->planes[1]).x = x2 + 16;
-      (sp->planes[1]).y = y;
-      (sp->planes[1]).color = ec2;
-      (sp->planes[2]).x = x;
-      (sp->planes[2]).y = y + 16;
-      (sp->planes[2]).color = ec;
-      (sp->planes[3]).x = x2 + 16;
-      (sp->planes[3]).y = y + 16;
-      (sp->planes[3]).color = ec2;
+      SET_PLANE_ATTR(sp, 1, x2 + 16, y, ec2);
+      SET_PLANE_ATTR(sp, 2, x, y + 16, ec);
+      SET_PLANE_ATTR(sp, 3, x2 + 16, y + 16, ec2);
     }
   }
 }
 
 void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
-  uint8_t i, np;
+  uint8_t i, np, sz;
+  sz = sp->pattern_set->size;
   np = sp->pattern_set->n_planes;
   for (i = 0; i < np; i++) {
     (sp->planes[i]).color = colors[i];
-    if (sp->pattern_set->size == SPR_SIZE_16x32 ||
-        sp->pattern_set->size == SPR_SIZE_32x16) {
+    if (sz == SPR_SIZE_16x32 ||
+        sz == SPR_SIZE_32x16) {
       (sp->planes[i + np]).color = colors[i];
-    } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
+    } else if (sz == SPR_SIZE_32x32) {
       (sp->planes[1]).color = colors[i];
       (sp->planes[2]).color = colors[i];
       (sp->planes[3]).color = colors[i];
