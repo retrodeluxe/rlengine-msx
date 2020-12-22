@@ -1,7 +1,6 @@
 #
 # Build an ASCII8 ROM (up to 2048K)
 #
-include $(BUILD_SYSTEM)/tools.mk
 include $(BUILD_SYSTEM)/boot.mk
 include $(BUILD_SYSTEM)/engine.mk
 
