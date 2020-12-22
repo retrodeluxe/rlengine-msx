@@ -33,7 +33,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_32K) | $(BUILT_ENG
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
-	$(hide) $(CROSS_LD) -k $(SDCC_LIB) -k $(BUILD_OUT_BIN)  -f $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
+	$(hide) $(CROSS_LD) -n -k $(SDCC_LIB) -k $(BUILD_OUT_BIN)  -f $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
