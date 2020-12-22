@@ -325,7 +325,7 @@ $5:
 static void vdp_write_internal() __naked
 {
 	__asm
-	ex	af,af'
+	ex	af,af'    ;'
 	ld	a,(VDP_DW)
 	inc	a
 	ld	c,a
@@ -334,7 +334,7 @@ static void vdp_write_internal() __naked
 	ld	a,d
 	add 	a,#0x40
 	out 	(c),a
-	ex	af,af'
+	ex	af,af'    ;'
 	dec	c
 	out 	(c),a
 	inc 	de
@@ -385,7 +385,7 @@ prev_run:
 run_mode:
 	pop 	bc
 	push 	hl
-	ex	af, af'
+	ex	af, af'   ;'
 	ld	a,#255
 	ld	(#_rle_prev_run),a
 	ld	a,(hl)
@@ -402,9 +402,9 @@ run_loop:
 	pop 	hl
 	jr	end_rle
 cont:
-	ex	af,af'
+	ex	af,af'   ;'
 	call	_vdp_write_internal
-	ex	af,af'
+	ex	af,af'   ;'
 	djnz	run_loop
 	ld	b,h
 	ld	c,l
