@@ -46,13 +46,14 @@ void spr_init(void) {
   sys_memset(spr_pattern, 0, sizeof(SpritePattern) * SPR_PATRN_MAX);
 }
 
+bool flip;
+
 /**
  * Apply changes made to SpriteDefs into VRAM
 
  * This function should be called after running :c:func:`sys_wait_vsync` and is
  * required for changes due to :c:func:`spr_update` to be visible on screen.
  */
-bool flip;
 void spr_refresh(void) {
   uint8_t _5th_sprite, i, ct;
 
@@ -189,9 +190,8 @@ void spr_vfree_pattern_set(uint8_t patrn_idx) {
   ps->allocated = false;
 }
 
-
 static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
-  uint8_t i, cf, base = 0, base2, frame, np, sz, as;
+  uint8_t i, cf, base = 0, base2, np, sz, as;
 
   SpritePattern *ps = sp->pattern_set;
   for (i = 0; i < sp->cur_state; i++) {
@@ -284,6 +284,7 @@ void spr_update(SpriteDef *sp) __nonbanked {
  */
 bool spr_show(SpriteDef *sp) __nonbanked {
   uint8_t i, sz, idx = 7, n, f = 0;
+
   n = sp->pattern_set->n_planes;
   sz = sp->pattern_set->size;
 
@@ -315,8 +316,8 @@ bool spr_show(SpriteDef *sp) __nonbanked {
  * :param sp: SpriteDef object
  */
 void spr_hide(SpriteDef *sp) __nonbanked {
-  uint8_t n, idx, sz;
   VdpSpriteAttr null_spr;
+  uint8_t n, idx, sz;
 
   sz = sp->pattern_set->size;
   n = sp->pattern_set->n_planes;
@@ -365,6 +366,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   np = sp->pattern_set->n_planes;
   sz = sp->pattern_set->size;
 
+  y = (uint8_t) yp;
   if (yp > -33 && yp < 0)
     y = (int8_t)yp;
   else if (yp == 0)
@@ -372,23 +374,20 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   else if (yp > 0 && yp < 193)
     y = yp - 1;
 
+  x = (uint8_t) xp;
   if (xp < 0) {
     x = xp + 32;
     ec = 128;
-  } else if (xp >= 0 && xp < 256) {
-    x = xp;
   }
 
-  // wide sprites need additional off-screen adjustment
+  x2 = (uint8_t) xp;
   if (sz == SPR_SIZE_32x16 || sz == SPR_SIZE_32x32) {
     if (xp < -16) {
         x2 = xp + 32;
         ec2 = 128;
     } else if (xp >= 239) {
-        x2 = -16;
+        x2 = 0;
         ec2 = 128;
-    } else if (xp >= -16 && xp < 239) {
-        x2 = xp;
     }
   }
 
@@ -432,7 +431,7 @@ void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
  * :param dy: delta Y
  */
 void spr_animate(SpriteDef *sp, int8_t dx, int8_t dy) __nonbanked {
-  uint8_t old_dir, x, y;
+  uint8_t old_dir;
   SpritePattern *ps = sp->pattern_set;
 
   old_dir = sp->cur_state;
