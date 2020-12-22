@@ -42,5 +42,5 @@ $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
 #
 $(built_rom_32k) : $(built_rom_bin)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_ROM)
-	$(hide) tr "\000" "\377" < /dev/zero | dd ibs=1k count=32 of=$@
-	$(hide) dd if=$^ of=$@ conv=notrunc
+	$(hide) tr "\000" "\377" < /dev/zero | (dd ibs=1k count=32 of=$@ ) > /dev/null 2>&1
+	$(hide) (dd if=$^ of=$@ conv=notrunc status=noxfer) > /dev/null 2>&1
