@@ -49,6 +49,29 @@ void vdp_set_mode(VdpMode mode)
 	__endasm;
 }
 
+/**
+ * Checks 5th sprite collision flag
+ *
+ * Must be called right after vsync (halt)
+ *
+ * returns: the 5th sprite attribute id or zero if no 5th sprite
+ */
+uint8_t vdp_5th_sprite() __naked
+{
+  __asm
+  ld a,(SYS_5TH_SPRITE)
+  bit #6,a
+  jr z,no_5th_spr
+  and #0x1F
+  ld l,a
+  ret
+no_5th_spr:
+  xor a
+  ld l,a
+  ret
+  __endasm;
+}
+
 void vdp_set_color(VdpColor ink, VdpColor border)
 {
 	ink;

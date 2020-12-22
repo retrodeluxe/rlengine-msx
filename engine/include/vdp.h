@@ -66,6 +66,7 @@ typedef enum {
 
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
+#define SPR_OFF 208
 
 typedef struct VdpSpriteAttr VdpSpriteAttr;
 struct VdpSpriteAttr {
@@ -93,5 +94,6 @@ extern void vdp_memcpy_vda(uint8_t *buffer) __nonbanked;
 extern void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom);
 extern void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked;
 extern void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size);
+extern uint8_t vdp_5th_sprite() __nonbanked;
 
 #endif

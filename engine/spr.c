@@ -48,12 +48,39 @@ void spr_init(void) {
 
 /**
  * Apply changes made to SpriteDefs into VRAM
- *  This function should be called after running :c:func:`sys_wait_vsync` and is
- *  required for changes due to :c:func:`spr_update` to be visible on screen.
+
+ * This function should be called after running :c:func:`sys_wait_vsync` and is
+ * required for changes due to :c:func:`spr_update` to be visible on screen.
  */
+bool flip;
 void spr_refresh(void) {
-  vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
-             sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
+  uint8_t _5th_sprite, i, ct;
+
+  /**
+   * This fuction does 5th sprite detection and interleaving
+   *
+   * The first 3 attributes are reserved for the main character sprite
+   * and won't be interleaved to avoid flickering on that sprite. The rest of
+   * the sprite attributes are sent in reverse order to ensure the 5th sprite
+   * is visible. This works well for 5th sprites in a row, but not for more
+   * which requires a more expensive algorithm.
+   */
+  _5th_sprite = vdp_5th_sprite();
+  if(_5th_sprite && flip) {
+    for (i = MAX_SPR_ATTR - 1, ct = 3; i > 2; i--) {
+        if (spr_attr[i].y != SPR_OFF)
+          vdp_memcpy(VRAM_BASE_SATR + sizeof(VdpSpriteAttr) * ct++,
+            (uint8_t *)&spr_attr[i],
+            sizeof(VdpSpriteAttr));
+    }
+    vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
+            sizeof(VdpSpriteAttr) * 3);
+    flip = false;
+  } else {
+    vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
+            sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
+    flip = true;
+  }
 }
 
 /**
@@ -66,8 +93,8 @@ void spr_clear(void) {
   // FIXME: why this dependency here?
   vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
 
-  /* entirely disable sprites by setting y=208 */
-  sys_memset(spr_attr, 208, sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
+  /* entirely disable sprites by setting y=SPR_OFF */
+  sys_memset(spr_attr, SPR_OFF, sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
   sys_memset(spr_attr_valloc, 1, MAX_SPR_ATTR);
   sys_memset(spr_patt_valloc, 1, MAX_SPR_PTRN);
 
@@ -305,6 +332,9 @@ void spr_hide(SpriteDef *sp) __nonbanked {
     n = n * 4;
   idx = sp->aidx;
   sys_memset(&spr_attr_valloc[idx], 1, n);
+
+  // FIXME: this should actually use SPR_OFF and re-arrange the
+  //        attributes so that only active sprites remain
 
   /* set sprite outside screen using EC bit */
   null_spr.y = 193;

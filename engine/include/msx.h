@@ -29,6 +29,7 @@
 #define SYS_INFO2 0x002C
 #define SYS_INFO3 0x002D
 #define SYS_CLIKSW 0xF3DB
+#define SYS_5TH_SPRITE 0xF3E7
 
 #define BIOS_DISSCR 0x0041
 #define BIOS_ENASCR 0x0044
