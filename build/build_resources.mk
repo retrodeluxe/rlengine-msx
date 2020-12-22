@@ -2,6 +2,7 @@
 # Build resources
 #
 include $(BUILD_SYSTEM)/tools.mk
+include $(BUILD_SYSTEM)/util.mk
 
 SPR_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_SPR)/*.tga)
 SPR_RES_FILES_PNG := $(wildcard $(LOCAL_BUILD_RES_SPR)/*.png)
@@ -50,52 +51,61 @@ all: $(built_spr_res) $(built_map_res) $(built_til_res) $(built_spr_ext_res) $(b
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+		$(call print_res, map, $^)
 	$(hide) $(TILED2H) -s $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 
 $(built_til_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_TIL)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+		$(call print_res, tile, $^)
 	$(hide) $(TGA2H) -t TILE -z -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles.h
 
 $(built_til_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_TIL)/%.png
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+		$(call print_res, tile, $^)
 	$(hide) $(PNG2H) -t TILE -z -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles.h
 
 $(built_raw_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_RAW)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+		$(call print_res, raw, $^)
 	$(hide) $(TGA2H) -t TILE -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_raw_tiles.h
 
 $(built_raw_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_RAW)/%.png
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, raw, $^)
 	$(hide) $(PNG2H) -t TILE -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_raw_tiles.h
 
 $(built_spr_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SPR)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, sprite, $^)
 	$(hide) $(TGA2H) -t SPRITE -p $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sprites.h
 
 $(built_spr_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SPR)/%.png
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, sprite, $^)
 	$(hide) $(PNG2H) -t SPRITE -p $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sprites.h
 
 $(built_pt3_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_PT3)/%.pt3
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, pt3, $^)
 	$(hide) cd $(LOCAL_BUILD_RES_PT3) && $(XXD) -i $(notdir $^) > $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_music.h
 
 $(built_sfx_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SFX)/%.afb
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, sfx, $^)
 	$(hide) cd $(LOCAL_BUILD_RES_SFX) && $(XXD) -i $(notdir $^) > $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sfx.h
 
@@ -131,21 +141,25 @@ $(built_spr_ext_res_png) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_SPR
 
 $(built_pat_res) : $(LOCAL_BUILD_OUT_GEN)/%.pat.h: $(LOCAL_BUILD_RES_SCR)/%.pat
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, scr, $^)
 	$(hide) cd $(LOCAL_BUILD_RES_SCR) && $(XXD) -i $(notdir $^) > $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_pat.h
 
 $(built_col_res) : $(LOCAL_BUILD_OUT_GEN)/%.col.h: $(LOCAL_BUILD_RES_SCR)/%.col
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, scr, $^)
 	$(hide) cd $(LOCAL_BUILD_RES_SCR) && $(XXD) -i $(notdir $^) > $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_col.h
 
 $(built_vda_res) : $(LOCAL_BUILD_OUT_GEN)/%.vda.h: $(LOCAL_BUILD_RES_SCR)/%.vda
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, vda, $^)
 	$(hide) cd $(LOCAL_BUILD_RES_SCR) && $(XXD) -i $(notdir $^) > $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_vda.h
 
 $(built_fnt_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_FNT)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, font, $^)
 	$(hide) $(TGA2H) -t TILE -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_fonts.h
 
@@ -156,6 +170,7 @@ $(built_fnt_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_FNT)/%.
 
 $(built_fnt_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_FNT)/%.png
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, font, $^)
 	$(hide) $(PNG2H) -t TILE -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_fonts.h
 

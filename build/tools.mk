@@ -15,22 +15,29 @@ export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD) $(GRAPHX) $(PNG2H)
 all: $(TGA2H) $(HEX2BIN) $(TMU2H) $(XXD) $(PNG2H)
 
 $(TGA2H): $(TOOLS_ROOT)/tga2header.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -o $@
 
 $(PNG2H): $(TOOLS_ROOT)/png2header.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -lpng -o $@
 
 $(HEX2BIN): $(TOOLS_ROOT)/hex2bin.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -o $@
 
 $(TMU2H): $(TOOLS_ROOT)/tmu2header.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -o $@
 
 $(XXD): $(TOOLS_ROOT)/xxd.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -o $@
 
 $(HEX2ROM): $(TOOLS_ROOT)/hex2rom.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -o $@
 
 $(GRAPHX): $(TOOLS_ROOT)/graphx.c
+	$(call print_host_cc, tools, $@)
 	$(hide) $(HOSTCC) $^ -o $@ -lm -lSDL2
