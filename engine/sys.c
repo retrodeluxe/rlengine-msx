@@ -134,7 +134,7 @@ void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked
  *      register a function to be run from the interrupt handler
  *      any registered caller must run with _interrupts disabled_
  */
-void sys_irq_register(void (*func))
+void sys_irq_register(void (*func)())
 {
 	// should check if the function is already there maybe?
 	sys_procs.proc[sys_procs.np++].func = func;
@@ -151,7 +151,7 @@ static void sys_remove_callback(uint8_t index) __nonbanked
 /**
  * sys_irq_unregister
  */
-void sys_irq_unregister(void (*func)) __nonbanked
+void sys_irq_unregister(void (*func)()) __nonbanked
 {
 	for (i = 0; i < sys_procs.np; i++) {
 		if(sys_procs.proc[i].func == func)

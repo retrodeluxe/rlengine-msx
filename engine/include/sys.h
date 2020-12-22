@@ -55,8 +55,8 @@ extern void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked;
 #define sys_memset __builtin_memset
 // extern void sys_memset(void *dst, uint8_t c, uint16_t size);
 
-extern void sys_irq_register(void(*func));
-extern void sys_irq_unregister(void(*func)) __nonbanked;
+extern void sys_irq_register(void(*func)());
+extern void sys_irq_unregister(void(*func)()) __nonbanked;
 extern void sys_irq_init();
 extern void sys_sleep_ms(uint16_t msecs) __nonbanked;
 extern void sys_sleep(uint16_t secs) __nonbanked;
