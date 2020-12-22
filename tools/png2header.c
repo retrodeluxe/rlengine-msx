@@ -297,10 +297,7 @@ static int load_png_image(int fileidx, int argc, char **argv)
 	}
 
 	png_rows = png_get_rows (png_ptr, info_ptr);
-	printf ("Width is %d, height is %d\n", png_img.width, png_img.height);
-
 	rowbytes = png_get_rowbytes (png_ptr, info_ptr);
-	printf ("Row bytes = %d\n", rowbytes);
 
 	fclose(fp);
 
@@ -681,7 +678,6 @@ int main(int argc, char **argv)
 
 	/** process image **/
   int imagesize = png_img.width * png_img.height;
-  fprintf(stderr, "image size in bytes %d %d %d\n", png_img.width, png_img.height, imagesize);
 	image_out_4bit = malloc(imagesize * sizeof(struct fbit));
 	image_out_scr2 = malloc(MAX_SCR2_SIZE * sizeof(struct scr2));
 
