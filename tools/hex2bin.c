@@ -264,9 +264,9 @@ int main (int argc, char *argv[])
   /* This will hold binary codes translated from hex file. */
   byte *Memory_Block;
 
-  fprintf (stdout,PROGRAM" v"VERSION", Copyright (C) 2012 Jacques Pelletier\n"
-		   "checksum extensions Copyright (C) 2004 Rockwell Automation\n"
-		   "improved P.G. 2007, modified Danny Schneider,2012\n\n");
+  //fprintf (stdout,PROGRAM" v"VERSION", Copyright (C) 2012 Jacques Pelletier\n"
+	//	   "checksum extensions Copyright (C) 2004 Rockwell Automation\n"
+	//	   "improved P.G. 2007, modified Danny Schneider,2012\n\n");
 
   if (argc == 1)
 	usage();
@@ -288,7 +288,7 @@ int main (int argc, char *argv[])
 			  p = argv[Param + 1];
 			if ( !_COND_(p) )
 				Param++;
-				
+
             switch(tolower (*(++c)))
 			  {
 			  case 'e':
@@ -390,7 +390,7 @@ int main (int argc, char *argv[])
 	  /* Read a line from input file. */
 	  fgets(Line,MAX_LINE_SIZE,Filin);
 	  Record_Nb++;
-	  
+
 	  /* Remove carriage return/line feed at the end of line. */
 	  i = strlen(Line)-1;
 
@@ -417,7 +417,7 @@ int main (int argc, char *argv[])
 			  fprintf(stderr,"0 byte length Data record ignored\n");
 			  break;
 		    }
-			  
+
 		  Address = First_Word;
 
 		  if (Seg_Lin_Select == SEGMENTED_ADDRESS)
@@ -444,7 +444,7 @@ int main (int argc, char *argv[])
 			  /* Read the Data bytes. */
 			  /* Bytes are written in the Memory block even if checksum is wrong. */
 			  i = Nb_Bytes;
-			  
+
 			  do
 			    {
 				  sscanf (p, "%2x",&temp2);
@@ -455,7 +455,7 @@ int main (int argc, char *argv[])
 
 				  Memory_Block[Phys_Addr++] = temp2;
 				  Checksum = (Checksum + temp2) & 0xFF;
-				} 
+				}
 			  while (--i != 0);
 
 			  /* Read the Checksum value. */
@@ -556,9 +556,9 @@ int main (int argc, char *argv[])
   // reading the hex file. The padding bytes will then be added to the binary file.
   if(Max_Length_Setted==TRUE) Highest_Address = Starting_Address + Max_Length-1;
 
-  fprintf(stdout,"Lowest address  = %08X\n",Lowest_Address);
-  fprintf(stdout,"Highest address = %08X\n",Highest_Address);
-  fprintf(stdout,"Pad Byte        = %X\n",  Pad_Byte);
+  //fprintf(stdout,"Lowest address  = %08X\n",Lowest_Address);
+  //fprintf(stdout,"Highest address = %08X\n",Highest_Address);
+  //fprintf(stdout,"Pad Byte        = %X\n",  Pad_Byte);
 
   /* Add a checksum to the binary file */
   wCKS = 0;
@@ -576,12 +576,12 @@ int main (int argc, char *argv[])
 		  wCKS += Memory_Block[i];
 		}
 
-	  fprintf(stdout,"8-bit Checksum = %02X\n",wCKS & 0xff);
+	  //fprintf(stdout,"8-bit Checksum = %02X\n",wCKS & 0xff);
 	  if( Cks_Addr_set )
 		{
 		  wCKS = Cks_Value - (wCKS - Memory_Block[Cks_Addr]);
 		  Memory_Block[Cks_Addr] = (byte)(wCKS & 0xff);
-		  fprintf(stdout,"Addr %08X set to %02X\n",Cks_Addr, wCKS & 0xff);
+		  //fprintf(stdout,"Addr %08X set to %02X\n",Cks_Addr, wCKS & 0xff);
 		}
 	  break;
 
@@ -593,14 +593,14 @@ int main (int argc, char *argv[])
 		  wCKS += w;
 		}
 
-	  fprintf(stdout,"16-bit Checksum = %04X\n",wCKS);
+	  //fprintf(stdout,"16-bit Checksum = %04X\n",wCKS);
 	  if( Cks_Addr_set )
 		{
 		  w = Memory_Block[Cks_Addr+1] | ((word)Memory_Block[Cks_Addr] << 8);
 		  wCKS = Cks_Value - (wCKS - w);
 		  Memory_Block[Cks_Addr] = (byte)(wCKS >> 8);
 		  Memory_Block[Cks_Addr+1] = (byte)(wCKS & 0xff);
-		  fprintf(stdout,"Addr %08X set to %04X\n",Cks_Addr, wCKS);
+		  //fprintf(stdout,"Addr %08X set to %04X\n",Cks_Addr, wCKS);
 		}
 	  break;
 
@@ -612,14 +612,14 @@ int main (int argc, char *argv[])
 		  wCKS += w;
 		}
 
-	  fprintf(stdout,"16-bit Checksum = %04X\n",wCKS);
+	  //fprintf(stdout,"16-bit Checksum = %04X\n",wCKS);
 	  if( Cks_Addr_set )
 		{
 		  w = Memory_Block[Cks_Addr] | ((word)Memory_Block[Cks_Addr+1] << 8);
 		  wCKS = Cks_Value - (wCKS - w);
 		  Memory_Block[Cks_Addr+1] = (byte)(wCKS >> 8);
 		  Memory_Block[Cks_Addr] = (byte)(wCKS & 0xff);
-		  fprintf(stdout,"Addr %08X set to %04X\n",Cks_Addr, wCKS);
+		  //fprintf(stdout,"Addr %08X set to %04X\n",Cks_Addr, wCKS);
 		}
 
 	default:
