@@ -217,10 +217,8 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
     base2 = base + np * ps->n_steps * SPR_SIZE_16x16;
     frame = as * (SPR_SIZE_16x16 * np);
     for (i = 0; i < np; i++) {
-    //  (sp->planes[i]).color &= 128;
       (sp->planes[i]).color |= (ps->colors2)[cf + i];
       (sp->planes[i]).pattern = ps->pidx + base + frame + i * SPR_SIZE_16x16;
-  //    (sp->planes[i + np]).color &= 128;
       (sp->planes[i + np]).color |= (ps->colors2)[cf + i];
       (sp->planes[i + np]).pattern = ps->pidx + base2 + frame + i * SPR_SIZE_16x16;
     }
@@ -270,7 +268,7 @@ void spr_update(SpriteDef *sp) __nonbanked {
     sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i], 4);
     if (sp->pattern_set->size == SPR_SIZE_16x32 ||
         sp->pattern_set->size == SPR_SIZE_32x16) {
-      sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1],
+      sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + np],
                  (uint8_t *)&sp->planes[i + np], 4);
     } else if (sp->pattern_set->size == SPR_SIZE_32x32) {
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + 1],
