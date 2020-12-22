@@ -88,5 +88,6 @@ roms:
 rle: #roms
 
 clean:
-	rm -Rf $(TOP)/out
-	$(MAKE) -C $(RLE_TEST) $(MAKEFLAGS) clean
+	$(hide) rm -Rf $(TOP)/out
+	$(hide) $(MAKE) -C $(RLE_TEST) clean_rom
+	$(hide) $(MAKE) -C $(RLE_ROMS) clean_rom

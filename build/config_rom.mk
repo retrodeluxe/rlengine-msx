@@ -22,6 +22,6 @@ $(LOCAL_BUILD_OUT_ROM):
 $(LOCAL_BUILD_OUT_GEN):
 	@mkdir -p $@
 
-clean:
+clean_rom:
 	@rm -Rf $(LOCAL_BUILD_OUT_GEN)
 	@rm -Rf $(LOCAL_BUILD_OUT)

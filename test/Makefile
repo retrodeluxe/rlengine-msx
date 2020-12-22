@@ -1,8 +1,8 @@
 SUBDIRS := $(wildcard */Makefile)
 
-all clean: $(SUBDIRS)
+all clean_rom: $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) -C $(dir $@) $(MAKECMDGOALS)
+	$(hide) $(MAKE) -C $(dir $@) $(MAKECMDGOALS)
 
-.PHONY: all clean $(SUBDIRS)
+.PHONY: all clean_rom $(SUBDIRS)
