@@ -363,7 +363,10 @@ void spr_hide(SpriteDef *sp) __nonbanked {
  * :param yp: y screen coordinate (-32 to 192)
  */
 void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
-  uint8_t i, x, y, np, sz, ec = 0;
+  uint8_t i, x, x2, y, np, sz, ec = 0, ec2 = 0;
+
+  np = sp->pattern_set->n_planes;
+  sz = sp->pattern_set->size;
 
   if (yp > -33 && yp < 0)
     y = (int8_t)yp;
@@ -371,16 +374,26 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
     y = 0xFF;
   else if (yp > 0 && yp < 193)
     y = yp - 1;
-  // TODO: need to cover > 192 as well
 
   if (xp < 0) {
     x = xp + 32;
     ec = 128;
-  } else if (xp >= 0 && xp < 256)
+  } else if (xp >= 0 && xp < 256) {
     x = xp;
+  }
 
-  np = sp->pattern_set->n_planes;
-  sz = sp->pattern_set->size;
+  // wide sprites need additional off-screen adjustment
+  if (sz == SPR_SIZE_32x16 || sz == SPR_SIZE_32x32) {
+    if (xp < -16) {
+        x2 = xp + 32;
+        ec2 = 128;
+    } else if (xp >= 239) {
+        x2 = -16;
+        ec2 = 128;
+    } else if (xp >= -16 && xp < 239) {
+        x2 = xp;
+    }
+  }
 
   for (i = 0; i < np; i++) {
     (sp->planes[i]).x = x;
@@ -391,19 +404,19 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
       (sp->planes[i + np]).y = y + 16;
       (sp->planes[i + np]).color = ec;
     } else if (sz == SPR_SIZE_32x16) {
-      (sp->planes[i + np]).x = x + 16;
+      (sp->planes[i + np]).x = x2 + 16;
       (sp->planes[i + np]).y = y;
-      (sp->planes[i + np]).color = ec;
+      (sp->planes[i + np]).color = ec2;
     } else if (sz == SPR_SIZE_32x32) {
-      (sp->planes[1]).x = x + 16;
+      (sp->planes[1]).x = x2 + 16;
       (sp->planes[1]).y = y;
-      (sp->planes[1]).color = ec;
+      (sp->planes[1]).color = ec2;
       (sp->planes[2]).x = x;
       (sp->planes[2]).y = y + 16;
       (sp->planes[2]).color = ec;
-      (sp->planes[3]).x = x + 16;
+      (sp->planes[3]).x = x2 + 16;
       (sp->planes[3]).y = y + 16;
-      (sp->planes[3]).color = ec;
+      (sp->planes[3]).color = ec2;
     }
   }
 }
