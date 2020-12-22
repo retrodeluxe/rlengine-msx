@@ -74,7 +74,7 @@ void phys_init() {
 }
 
 /* note that this runs in interrupt context */
-void phys_set_sprite_collision_handler(void(*handler)) {
+void phys_set_sprite_collision_handler(void(*handler)()) {
   if (sprite_colision_cb == NULL) {
     sprite_colision_cb = handler;
     sys_irq_register(phys_check_collision_bit);
@@ -92,7 +92,7 @@ void phys_clear_sprite_collision_handler() __nonbanked {
  * set callbacks for specific tiles
  */
 void phys_set_tile_collision_handler(enum tile_collision_type type,
-                                     DisplayObject *dpo, void(*handler),
+          DisplayObject *dpo, void(*handler)(DisplayObject *dpo, uint8_t data),
                                      uint8_t data) {
   uint8_t i;
   uint8_t base_tile = dpo->tob->ts->pidx;
@@ -127,7 +127,7 @@ void phys_set_tile_collision_handler(enum tile_collision_type type,
  */
 void phys_set_colliding_tile_object(DisplayObject *dpo,
                                     enum tile_collision_type type,
-                                    void(*handler), uint8_t data) {
+                                    void(*handler)(DisplayObject *dpo, uint8_t data), uint8_t data) {
   uint8_t i;
   uint8_t base_tile = dpo->tob->ts->pidx;
   uint8_t num_tiles = dpo->tob->ts->frame_w * dpo->tob->ts->frame_h *
@@ -148,7 +148,7 @@ void phys_set_colliding_tile_object(DisplayObject *dpo,
 void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
                                            enum tile_collision_type type,
                                            uint8_t x, uint8_t y, uint8_t w,
-                                           uint8_t h, void(*handler),
+                                           uint8_t h, void(*handler)(DisplayObject *dpo, uint8_t data),
                                            uint8_t data) {
   uint8_t i, j, k;
   uint8_t base_tile = dpo->tob->ts->pidx;
@@ -210,6 +210,8 @@ static void phys_tile_collision_notify(uint8_t tile, uint16_t x,
                                        uint16_t y) __nonbanked {
   uint8_t i;
   int16_t d;
+
+  unused(y);
 
   for (i = 0; i < n_cgroups; i++) {
     if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
@@ -398,9 +400,12 @@ static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
 static void phys_detect_tile_collisions_16x16(DisplayObject *obj, uint8_t *map,
                                               int8_t dx, int8_t dy, bool duck,
                                               bool notify) __nonbanked {
-  uint8_t x, y, c;
+  uint8_t x, y;
   uint8_t *base_tl, *base_bl, *base_tr, *base_br;
   uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
+
+  unused(duck);
+  unused(notify);
 
   x = obj->xpos + dx;
   y = obj->ypos + dy;

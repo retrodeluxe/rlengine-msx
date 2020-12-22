@@ -110,6 +110,8 @@ void music_isr(void) {
 }
 
 void music_init(uint16_t *song) {
+
+  unused(song);
   // need to place the player ISR in hook
   sys_irq_register(music_isr);
 

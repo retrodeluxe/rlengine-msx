@@ -41,7 +41,7 @@ void vdp_screen_enable(void)
 
 void vdp_set_mode(VdpMode mode)
 {
-	mode;
+	unused(mode);
 
 	__asm
 	ld	a,4(ix)
@@ -74,8 +74,8 @@ no_5th_spr:
 
 void vdp_set_color(VdpColor ink, VdpColor border)
 {
-	ink;
-	border;
+	unused(ink);
+	unused(border);
 
 	__asm
 	ld	a,(VDP_DW)
@@ -99,8 +99,8 @@ void vdp_set_color(VdpColor ink, VdpColor border)
 
 void vdp_write(uint16_t address, uint8_t value) __nonbanked
 {
-	address;
-	value;
+	unused(address);
+	unused(value);
 
 	__asm
 	ld	a,(VDP_DW)
@@ -124,9 +124,9 @@ void vdp_write(uint16_t address, uint8_t value) __nonbanked
 
 void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked
 {
-	vaddress;
-	size;
-	value;
+	unused(vaddress);
+	unused(size);
+	unused(value);
 
 	__asm
 	ld	a,(VDP_DW)
@@ -162,9 +162,9 @@ $1:
  */
 void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked
 {
-	buffer;
-	vaddress;
-	size;
+	unused(buffer);
+	unused(vaddress);
+	unused(size);
 
 	__asm
 	ld	a,(VDP_DW)
@@ -197,7 +197,7 @@ $2:
 
 void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
 {
-	buffer;
+	unused(buffer);
 
 	__asm
 	ld	l,4(ix)
@@ -250,7 +250,8 @@ $7:
 
 void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom)
 {
-	zoom;
+	unused(zoom);
+  unused(spritesize);
 
 	__asm
 	ld	a,(VDP_DW)
@@ -283,7 +284,7 @@ $4:
 
 void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked
 {
-	buffer;
+	unused(buffer);
 
 	__asm
 	ld	a,(VDP_DW)
@@ -345,6 +346,10 @@ void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size)
 {
 	rle_prev = 0;
 	rle_prev_run = 255;
+
+  unused(vaddress);
+  unused(buffer);
+  unused(size);
 
 	__asm
 	di

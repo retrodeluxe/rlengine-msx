@@ -164,7 +164,7 @@ static uint8_t font_emit_glyph_vram(Font *f, uint16_t addr, char tc) {
  */
 void font_printf(FontSet *fs, uint8_t x, uint8_t y, uint8_t *buffer,
                  char *text) {
-  char c, tc, base;
+  char c, tc;
   uint8_t *addr = buffer + y * 32 + x;
 
   while ((c = *text++) != 0) {
@@ -191,7 +191,7 @@ void font_printf(FontSet *fs, uint8_t x, uint8_t y, uint8_t *buffer,
  * prints a complex string directly to vram
  */
 void font_vprintf(FontSet *fs, uint8_t x, uint8_t y, char *text) {
-  char c, tc, base;
+  char c, tc;
   uint16_t addr = VRAM_BASE_NAME + y * 32 + x;
 
   while ((c = *text++) != 0) {

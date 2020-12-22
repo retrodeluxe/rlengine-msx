@@ -60,14 +60,14 @@ enum tile_collision_type {
 };
 
 void phys_init();
-void phys_set_sprite_collision_handler(void(*handler));
+void phys_set_sprite_collision_handler(void(*handler)());
 void phys_clear_sprite_collision_handler() __nonbanked;
 void phys_set_tile_collision_handler(enum tile_collision_type type,
-                                     DisplayObject *dpo, void(*handler),
-                                     uint8_t data);
+          DisplayObject *dpo, void(*handler)(DisplayObject *dpo, uint8_t data),
+                                        uint8_t data);
 void phys_set_colliding_tile_object(DisplayObject *dpo,
                                     enum tile_collision_type type,
-                                    void(*handler), uint8_t data);
+          void(*handler)(DisplayObject *dpo, uint8_t data), uint8_t data);
 void phys_clear_colliding_tile_object(DisplayObject *dpo);
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
@@ -80,6 +80,6 @@ void phys_set_colliding_tile_set(TileSet *ts);
 void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
                                            enum tile_collision_type type,
                                            uint8_t x, uint8_t y, uint8_t w,
-                                           uint8_t h, void(*handler),
+                                           uint8_t h, void(*handler)(DisplayObject *dpo, uint8_t data),
                                            uint8_t data);
 #endif

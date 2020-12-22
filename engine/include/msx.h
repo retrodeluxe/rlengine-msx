@@ -41,6 +41,8 @@
 #define sys_irq_enable() __asm ei __endasm
 #define sys_wait_vsync() __asm halt __endasm
 
+#define unused(x) x
+
 /* avoids SDCC builtins to break sphinx
  * documentation generation
  */

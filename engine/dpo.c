@@ -26,7 +26,6 @@
  */
 void dpo_simple_animate(DisplayObject *dpo, signed char dx,
                         signed char dy) __nonbanked {
-  uint8_t old_dir;
   int16_t x, y;
   SpriteDef *sp = dpo->spr;
 

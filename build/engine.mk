@@ -12,4 +12,4 @@ $(BUILT_ENGINE): $(BUILD_OUT_BIN)/%.rel: $(ENGINE_ROOT)/%.c
 
 $(BUILT_ENGINE_LIB): $(BUILT_ENGINE)
 	$(hide) mkdir -p $(BUILD_OUT_BIN)
-	$(CROSS_AR) $(ENGINE_LDFLAGS) $@ $^
+	$(hide) $(CROSS_AR) $(ENGINE_LDFLAGS) $@ $^
