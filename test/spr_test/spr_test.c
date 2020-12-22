@@ -56,8 +56,6 @@ void test_5th_sprite();
 void main()
 {
 	unsigned int count = 0;
-	uint8_t i;
-
 
 	vdp_set_mode(MODE_GRP1);
 	vdp_set_color(COLOR_WHITE, COLOR_BLUE);

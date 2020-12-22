@@ -9,5 +9,5 @@ LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)
 
 LOCAL_ROM_NAME := spr_test
-LOCAL_SRC_FILES := spr_test.c dummy.c
+LOCAL_SRC_FILES := spr_test.c
 include $(BUILD_ROM_32K)
