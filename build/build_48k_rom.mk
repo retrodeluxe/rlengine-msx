@@ -33,7 +33,7 @@ $(BUILT_LOCAL_BANKED_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC
 $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BUILT_BOOTSTRAP_48K) | $(BUILT_ENGINE_LIB)
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	@echo "-b _DATA_PAGE_1=0x10000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	@echo "-b _DATA_PAGE_1=0x0001" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _CODE=0x40D8" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-b _CODE_PAGE_2=0x8000" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
@@ -56,4 +56,4 @@ $(built_rom_48k) : $(built_rom_bin)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_ROM)
 	$(call print_pack, rom48k, $@)
 	$(hide) tr "\000" "\377" < /dev/zero | (dd ibs=1k count=48 of=$@ ) > /dev/null 2>&1
-	$(hide) (dd if=$^ of=$@ conv=notrunc) > /dev/null 2>&1
+	$(hide) (dd if=$^ of=$@ seek=1 bs=1 conv=notrunc) > /dev/null 2>&1

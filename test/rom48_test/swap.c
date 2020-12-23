@@ -1,3 +1,5 @@
-#include "gen/rom48_test.h"
+//#include "gen/rom48_test.h"
 
-const char test_string[] = "seems to work";
+#pragma DATA_PAGE 1
+
+const char test_string[] = "ROM DATA";
