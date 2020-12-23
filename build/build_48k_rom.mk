@@ -17,7 +17,7 @@ BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_S
 $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_BIN)
 	$(call print_cc, local, $^)
-	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -c -o $@ $^
+	$(hide) $(CROSS_CC) $(ROM_CFLAGS) -c -o $@ $^
 
 # Build banked sources that are placed in page0
 #
@@ -26,7 +26,7 @@ BUILT_LOCAL_BANKED_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(
 $(BUILT_LOCAL_BANKED_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	$(hide) @mkdir -p $(LOCAL_BUILD_OUT_BIN)
 	$(call print_cc, banked, $^)
-	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -ba 1 -c -o $@ $^
+	$(hide) $(CROSS_CC) $(ROM_CFLAGS) -ba 1 -c -o $@ $^
 
 # Link with Engine and 48k bootstrap
 #

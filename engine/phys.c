@@ -25,6 +25,7 @@
 #include "sprite.h"
 #include "sys.h"
 #include "tile.h"
+#include "ascii8.h"
 
 #pragma CODE_PAGE 2
 

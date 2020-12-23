@@ -23,7 +23,7 @@ BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_S
 $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	@mkdir -p $(LOCAL_BUILD_OUT_BIN)
 	$(call print_cc, local, $^)
-	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -c -o $@ $^
+	$(hide) $(CROSS_CC) $(ROM_CFLAGS) -c -o $@ $^
 
 ## Build IHX on a 24bit address space containing all code and data
 ##
