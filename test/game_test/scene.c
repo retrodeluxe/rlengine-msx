@@ -88,9 +88,9 @@ static void add_tileobject(DisplayObject *dpo, uint8_t objidx,
   ascii8_set_data(PAGE_MAPOBJECTS);
   tileobject[objidx].x = map_object->x;
   tileobject[objidx].y = map_object->y;
-  tileobject[objidx].cur_dir = 0;
-  tileobject[objidx].cur_anim_step = 0;
-  tileobject[objidx].ts = &tileset[tileidx];
+  tileobject[objidx].state = 0;
+  tileobject[objidx].frame = 0;
+  tileobject[objidx].tileset = &tileset[tileidx];
   tileobject[objidx].idx = 0;
 
   dpo->type = DISP_OBJECT_TILE;
@@ -143,7 +143,7 @@ void add_jean() __nonbanked {
   spr_valloc_pattern_set(PATRN_JEAN);
 
   spr_init_sprite(&jean_sprite, PATRN_JEAN);
-  jean_sprite.cur_state = game_state.jean_anim_state;
+  jean_sprite.state = game_state.jean_anim_state;
 
   dpo_jean.xpos = game_state.jean_x;
   dpo_jean.ypos = game_state.jean_y;
@@ -164,7 +164,7 @@ void add_jean() __nonbanked {
   } else if (game_state.room == ROOM_EVIL_CHAMBER) {
     dpo_jean.xpos = 200;
     dpo_jean.ypos = 96;
-    jean_sprite.cur_state = SPR_STATE_LEFT;
+    jean_sprite.state = SPR_STATE_LEFT;
     spr_set_pos(&jean_sprite, dpo_jean.xpos, dpo_jean.ypos);
   } else {
     add_animator(&dpo_jean, ANIM_JEAN);
@@ -189,8 +189,8 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
     return;
 
   spr_init_sprite(&bullet_sprites[idx], patrn_id);
-  bullet_sprites[idx].cur_state = state;
-  bullet_sprites[idx].cur_anim_step = 0;
+  bullet_sprites[idx].state = state;
+  bullet_sprites[idx].frame = 0;
   spr_set_pos(&bullet_sprites[idx], xpos, ypos);
 
   dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
@@ -234,9 +234,9 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 
   bullet_tob[idx].x = xpos;
   bullet_tob[idx].y = ypos;
-  bullet_tob[idx].cur_dir = 0;
-  bullet_tob[idx].cur_anim_step = 0;
-  bullet_tob[idx].ts = &tileset[tileidx];
+  bullet_tob[idx].state = 0;
+  bullet_tob[idx].frame = 0;
+  bullet_tob[idx].tileset = &tileset[tileidx];
   bullet_tob[idx].idx = 0;
 
   dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
@@ -343,12 +343,12 @@ void clear_room() {
 
   /* free dynamic tiles, but do not clear patterns from VRAM */
   for (i = 0; i < tob_ct; i++) {
-    tile_set_vfree(tileobject[i].ts);
+    tile_set_vfree(tileobject[i].tileset);
   }
 
   /* free dragon bullets */
   for (i = 0; i < SCENE_MAX_TOB_BULLET; i++) {
-    tile_set_vfree(bullet_tob[i].ts);
+    tile_set_vfree(bullet_tob[i].tileset);
   }
 
   spr_ct = 0;
@@ -381,7 +381,7 @@ void load_intro_scene() __nonbanked {
     dpo->state = STATE_OFF_SCREEN;
     dpo->visible = false;
     dpo->aux = 0;
-    dpo->spr->cur_state = SPR_STATE_RIGHT;
+    dpo->spr->state = SPR_STATE_RIGHT;
     if (i == 1) {
       dpo->state = STATE_OFF_SCREEN_DELAY_1S;
     } else if (i == 2) {
@@ -393,7 +393,7 @@ void load_intro_scene() __nonbanked {
   spr_valloc_pattern_set(PATRN_JEAN);
   spr_init_sprite(&jean_sprite, PATRN_JEAN);
 
-  jean_sprite.cur_state = JANE_STATE_RIGHT;
+  jean_sprite.state = JANE_STATE_RIGHT;
   dpo_jean.xpos = 20;
   dpo_jean.ypos = 80;
   dpo_jean.type = DISP_OBJECT_SPRITE;
@@ -567,7 +567,7 @@ void load_room(uint8_t room, bool reload) {
                                          checkpoint_handler, id);
         } else {
           add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
-          dpo->tob->cur_anim_step = 1;
+          dpo->tob->frame = 1;
         }
       } else if (map_object->object.actionitem.type == TYPE_SWITCH) {
         add_sprite(dpo, spr_ct, PATRN_SWITCH_MASK);
@@ -582,8 +582,8 @@ void load_room(uint8_t room, bool reload) {
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
                                        crosswitch_handler, 0);
         if (game_state.cross_switch) {
-          dpo->tob->cur_anim_step = 1;
-          dpo->parent->spr->cur_anim_step = 1;
+          dpo->tob->frame = 1;
+          dpo->parent->spr->frame = 1;
         }
       } else if (map_object->object.actionitem.type == TYPE_CUP) {
         // Can only fight final boss if we have all 12 crosses
@@ -616,11 +616,11 @@ void load_room(uint8_t room, bool reload) {
           ps = &spr_pattern[PATRN_BELL_MASK];
           ps->colors2[0] = 1;
           ps->colors2[1] = 1;
-          dpo->spr->cur_anim_step = 1;
+          dpo->spr->frame = 1;
           dpo->check_collision = false;
           dpo++;
           add_tileobject(dpo, tob_ct, TILE_BELL);
-          dpo->tob->cur_anim_step = 1;
+          dpo->tob->frame = 1;
         }
       } else {
         room_objs += NEXT_OBJECT(struct map_object_actionitem);
@@ -635,7 +635,7 @@ void load_room(uint8_t room, bool reload) {
       } else if (map_object->object.static_.type == TYPE_LAVA) {
         offset = map_object->object.static_.offset;
         add_tileobject(dpo, tob_ct, TILE_LAVA);
-        dpo->tob->cur_anim_step = offset;
+        dpo->tob->frame = offset;
         add_animator(dpo, ANIM_LAVA);
         if (room != ROOM_BONFIRE) {
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
@@ -698,8 +698,8 @@ void load_room(uint8_t room, bool reload) {
       } else if (id == 4) {
         /** evil church door, open with toggle room */
         add_tileobject(dpo, tob_ct, TILE_DOOR);
-        dpo->tob->cur_dir = 1;
-        dpo->tob->cur_anim_step = 0;
+        dpo->tob->state = 1;
+        dpo->tob->frame = 0;
         dpo->visible = game_state.toggle[2] == 0;
         add_animator(dpo, ANIM_OPEN_DOOR);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
@@ -719,8 +719,8 @@ void load_room(uint8_t room, bool reload) {
       if (add_dpo) {
         add_tileobject(dpo, tob_ct, TILE_DOOR);
         if (type == 1) {
-          dpo->tob->cur_dir = 1;
-          dpo->tob->cur_anim_step = 0;
+          dpo->tob->state = 1;
+          dpo->tob->frame = 0;
         }
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
                                        0);
@@ -776,7 +776,7 @@ void load_room(uint8_t room, bool reload) {
         game_state.final_fight = true;
         id = map_object->object.block.index;
         add_tileobject(dpo, tob_ct, TILE_BLOCK_CROSS);
-        dpo->tob->cur_anim_step = id % 3;
+        dpo->tob->frame = id % 3;
         dpo->aux = id;
         dpo->state = 0;
         dpo->visible = false;
@@ -811,7 +811,7 @@ void load_room(uint8_t room, bool reload) {
           dpo->xpos = -32;
           dpo->aux = 0;
           dpo->aux2 = 0;
-          dpo->spr->cur_state = SPR_STATE_RIGHT;
+          dpo->spr->state = SPR_STATE_RIGHT;
           if (game_state.templar_ct == 1) {
             dpo->xpos = -56;
           } else if (game_state.templar_ct == 2) {
@@ -824,7 +824,7 @@ void load_room(uint8_t room, bool reload) {
           dpo->visible = false;
           dpo->aux = 0;
           dpo->aux2 = 0;
-          dpo->spr->cur_state = SPR_STATE_RIGHT;
+          dpo->spr->state = SPR_STATE_RIGHT;
           if (game_state.templar_ct == 1) {
             dpo->state = STATE_OFF_SCREEN_DELAY_1S;
           } else if (game_state.templar_ct == 2) {
@@ -835,9 +835,9 @@ void load_room(uint8_t room, bool reload) {
           game_state.templar_ct++;
         } else if (room == ROOM_BONFIRE) {
           add_animator(dpo, ANIM_TEMPLAR_BONFIRE);
-          dpo->spr->cur_state = SPR_STATE_RIGHT;
+          dpo->spr->state = SPR_STATE_RIGHT;
           if (game_state.templar_ct > 1) {
-            dpo->spr->cur_state = SPR_STATE_LEFT;
+            dpo->spr->state = SPR_STATE_LEFT;
           }
           game_state.templar_ct++;
         }
@@ -899,7 +899,7 @@ void load_room(uint8_t room, bool reload) {
         add_tileobject(dpo, tob_ct, TILE_SATAN);
         dpo->aux = 0;
         dpo->aux2 = 50;
-        dpo->tob->cur_anim_step = 1;
+        dpo->tob->frame = 1;
         dpo->state = STATE_MOVING_UP;
         add_animator(dpo, ANIM_SATAN);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,

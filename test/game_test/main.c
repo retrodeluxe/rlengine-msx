@@ -260,7 +260,7 @@ void animate_all() __nonbanked {
       anim = list_entry(elem2, Animator, list);
       /** XXX: hack for banked function pointers **/
       // log_e("dpo aidx:%d n:%d\n",dpo->spr->aidx,
-      // dpo->spr->pattern_set->n_planes);
+      // dpo->spr->pattern_set->planes);
       ascii8_set_code(anim->page);
       anim->run(dpo);
       ascii8_restore();
@@ -781,9 +781,9 @@ void show_score_panel() {
 
   score.y = (uint8_t)(192 - 16);
   score.x = 0;
-  score.cur_dir = 0;
-  score.cur_anim_step = 0;
-  score.ts = &tileset[TILE_HEART_STATUS];
+  score.state = 0;
+  score.frame = 0;
+  score.tileset = &tileset[TILE_HEART_STATUS];
   score.idx = 0;
 
   tile_object_show(&score, scr_tile_buffer, true);
@@ -799,9 +799,9 @@ void show_score_panel() {
 
   score.x = 32;
   score.y = (uint8_t)(192 - 16);
-  score.cur_dir = 0;
-  score.cur_anim_step = 0;
-  score.ts = &tileset[TILE_CROSS_STATUS];
+  score.state = 0;
+  score.frame = 0;
+  score.tileset = &tileset[TILE_CROSS_STATUS];
   score.idx = 0;
 
   tile_object_show(&score, scr_tile_buffer, true);

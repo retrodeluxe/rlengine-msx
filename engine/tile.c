@@ -33,6 +33,9 @@
 
 uint8_t bitmap_tile_bank[BITMAP_TILEBANK_SIZE];
 
+/**
+ * This function clears all TileSet allocations.
+ */
 void tile_init() {
   /* initialize bitmap to all ones : free */
   sys_memset(bitmap_tile_bank, 255, BITMAP_TILEBANK_SIZE);
@@ -42,76 +45,104 @@ void tile_init() {
 }
 
 /**
- * set a tileset in a fixed position.
+ * Transfer a compressed Tileset to VRAM into a fixed position and into a specific bank.
+ *
+ * This function is useful when a TileMap requires tile defintions to be at a
+ * specific offset.
+ *
+ *   .. warning::
+ *
+ *        this function overrides previous TileSet allocations.
+ *
+ * :param tileset: TileSet to be transferred
+ * :param bank: target bank see :c:type:`TileBank`
+ * :param offset: start position inside the target bank to transder the TileSet
  */
-void tile_set_to_vram_bank(TileSet *ts, TileBank bank, uint8_t pos) {
-  uint16_t size, offset, i;
-  offset = pos * 8;
-  size = ts->w * ts->h * 8;
+ void tile_set_to_vram_bank(TileSet *tileset, TileBank bank, uint8_t offset) {
+  uint16_t size, _offset, i;
+  _offset = offset * 8;
+  size = tileset->w * tileset->h * 8;
   if (bank == BANK0 || bank == ALLBANKS) {
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset, ts->pattern, size);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset, ts->color, size);
+    vdp_rle_inflate(VRAM_BASE_PTRN + _offset, tileset->pattern, size);
+    vdp_rle_inflate(VRAM_BASE_COLR + _offset, tileset->color, size);
   }
   if (bank == BANK1 || bank == ALLBANKS) {
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, size);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, size);
+    vdp_rle_inflate(VRAM_BASE_PTRN + _offset + BANK1_OFFSET, tileset->pattern, size);
+    vdp_rle_inflate(VRAM_BASE_COLR + _offset + BANK1_OFFSET, tileset->color, size);
   }
   if (bank == BANK2 || bank == ALLBANKS) {
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, size);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, size);
+    vdp_rle_inflate(VRAM_BASE_PTRN + _offset + BANK2_OFFSET, tileset->pattern, size);
+    vdp_rle_inflate(VRAM_BASE_COLR + _offset + BANK2_OFFSET, tileset->color, size);
   }
-  for (i = pos; i < pos + (size / 8); i++)
+  for (i = offset; i < offset + (size / 8); i++)
     bitmap_reset(bitmap_tile_bank, i);
-  ts->allocated = true;
-  ts->pidx = pos;
+  tileset->allocated = true;
+  tileset->pidx = offset;
 }
 
-void tile_set_to_vram_bank_raw(TileSet *ts, TileBank bank, uint8_t pos) {
-  uint16_t size, offset, i;
-  offset = pos * 8;
-  size = ts->w * ts->h * 8;
+
+/**
+ * Transfer an uncompressed Tileset to VRAM into a fixed position and a specific bank.
+ *
+ * This function is useful when a TileMap requires tile defintions to be at a
+ * specific offset.
+ *
+ *   .. warning::
+ *
+ *        this function overrides previous TileSet allocations.
+ *
+ * :param tileset: TileSet to be transferred
+ * :param bank: target bank see :c:type:`TileBank`
+ * :param offset: start position inside the target bank to transder the tileset
+ */
+void tile_set_to_vram_bank_raw(TileSet *tileset, TileBank bank, uint8_t offset) {
+  uint16_t size, _offset, i;
+  _offset = offset * 8;
+  size = tileset->w * tileset->h * 8;
   if (bank == BANK0 || bank == ALLBANKS) {
-    vdp_memcpy(VRAM_BASE_PTRN + offset, ts->pattern, size);
-    vdp_memcpy(VRAM_BASE_COLR + offset, ts->color, size);
+    vdp_memcpy(VRAM_BASE_PTRN + _offset, tileset->pattern, size);
+    vdp_memcpy(VRAM_BASE_COLR + _offset, tileset->color, size);
   }
   if (bank == BANK1 || bank == ALLBANKS) {
-    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, size);
-    vdp_memcpy(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, size);
+    vdp_memcpy(VRAM_BASE_PTRN + _offset + BANK1_OFFSET, tileset->pattern, size);
+    vdp_memcpy(VRAM_BASE_COLR + _offset + BANK1_OFFSET, tileset->color, size);
   }
   if (bank == BANK2 || bank == ALLBANKS) {
-    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, size);
-    vdp_memcpy(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, size);
+    vdp_memcpy(VRAM_BASE_PTRN + _offset + BANK2_OFFSET, tileset->pattern, size);
+    vdp_memcpy(VRAM_BASE_COLR + _offset + BANK2_OFFSET, tileset->color, size);
   }
 
-  for (i = pos; i < pos + (size / 8); i++)
+  for (i = offset; i < offset + (size / 8); i++)
     bitmap_reset(bitmap_tile_bank, i);
-  ts->allocated = true;
-  ts->pidx = pos;
+  tileset->allocated = true;
+  tileset->pidx = offset;
 }
 
 /**
- * tile_set_valloc
- *   attemps to allocate vram for a tileset
- * params:
- * return: true if success, false if failure
+ * Allocates and transfers a TileSet to VRAM.
+ *
+ * This function detects compression and transfers the TileSet to the first available
+ * gap in VRAM.
+ *
+ * :param tileset: the TileSet to be allocated and transferred
+ *
+ * :returns: see :c:type:`rle_result`
  */
-bool tile_set_valloc(TileSet *ts) {
+rle_result tile_set_valloc(TileSet *tileset) {
   uint16_t offset, vsize;
   uint8_t i, pos, size;
   bool found;
 
-  if (ts->allocated) {
-    return true;
+  if (tileset->allocated) {
+    return RLE_ALREADY_ALLOCATED;
   }
 
-  size = ts->w * ts->h;
+  size = tileset->w * tileset->h;
 
   found =
       bitmap_find_gap(bitmap_tile_bank, size, BITMAP_TILEBANK_SIZE - 1, &pos);
   if (!found) {
-    // ascii8_restore();
-    // bitmap_dump(bitmap_tile_bank, BITMAP_TILEBANK_SIZE -1);
-    return false;
+    return RLE_COULD_NOT_ALLOCATE_VRAM;
   }
 
   for (i = pos; i < pos + size; i++)
@@ -119,76 +150,96 @@ bool tile_set_valloc(TileSet *ts) {
 
   offset = pos * 8;
   vsize = size * 8;
-  if (ts->raw) {
-    vdp_memcpy(VRAM_BASE_PTRN + offset, ts->pattern, vsize);
-    vdp_memcpy(VRAM_BASE_COLR + offset, ts->color, vsize);
-    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, vsize);
-    vdp_memcpy(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, vsize);
-    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, vsize);
-    vdp_memcpy(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, vsize);
+  if (tileset->raw) {
+    vdp_memcpy(VRAM_BASE_PTRN + offset, tileset->pattern, vsize);
+    vdp_memcpy(VRAM_BASE_COLR + offset, tileset->color, vsize);
+    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK1_OFFSET, tileset->pattern, vsize);
+    vdp_memcpy(VRAM_BASE_COLR + offset + BANK1_OFFSET, tileset->color, vsize);
+    vdp_memcpy(VRAM_BASE_PTRN + offset + BANK2_OFFSET, tileset->pattern, vsize);
+    vdp_memcpy(VRAM_BASE_COLR + offset + BANK2_OFFSET, tileset->color, vsize);
   } else {
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset, ts->pattern, vsize);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset, ts->color, vsize);
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, ts->pattern, vsize);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, ts->color, vsize);
-    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, ts->pattern, vsize);
-    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, ts->color, vsize);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset, tileset->pattern, vsize);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset, tileset->color, vsize);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK1_OFFSET, tileset->pattern, vsize);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK1_OFFSET, tileset->color, vsize);
+    vdp_rle_inflate(VRAM_BASE_PTRN + offset + BANK2_OFFSET, tileset->pattern, vsize);
+    vdp_rle_inflate(VRAM_BASE_COLR + offset + BANK2_OFFSET, tileset->color, vsize);
   }
-  ts->allocated = true;
-  ts->pidx = pos;
-  return true;
+  tileset->allocated = true;
+  tileset->pidx = pos;
+  return RLE_OK;
 }
 
 /**
- * Force a tileset into a certain position
- *   this is useful when we have a map whose tiles are static and depend
- *   on the tiles to be in a specific location.
+ * Transfer a Tileset to VRAM into a fixed position in `ALL_BANKS`
+ *
+ * This function is useful when a TileMap requires tile defintions to be at a
+ * specific offset.
+ *
+ *   .. warning::
+ *
+ *        this function overrides previous TileSet allocations.
+ *
+ * :param tileset: TileSet to be transferred
+ * :param offset: start position inside the target bank to transder the tileset
  */
-void tile_set_to_vram(TileSet *ts, uint8_t pos) {
-  if (ts->allocated)
+void tile_set_to_vram(TileSet *tileset, uint8_t offset) {
+  if (tileset->allocated)
     return;
 
-  if (ts->raw)
-    tile_set_to_vram_bank_raw(ts, ALLBANKS, pos);
+  if (tileset->raw)
+    tile_set_to_vram_bank_raw(tileset, ALLBANKS, offset);
   else
-    tile_set_to_vram_bank(ts, ALLBANKS, pos);
+    tile_set_to_vram_bank(tileset, ALLBANKS, offset);
 }
 
-void tile_set_to_vram_raw(TileSet *ts, uint8_t pos) {
-  if (ts->allocated)
+// FIXME: remove
+void tile_set_to_vram_raw(TileSet *tileset, uint8_t offset) {
+  if (tileset->allocated)
     return;
 
-  tile_set_to_vram_bank_raw(ts, ALLBANKS, pos);
+  tile_set_to_vram_bank_raw(tileset, ALLBANKS, offset);
 }
 
-void tile_set_vfree(TileSet *ts) {
+/**
+ * Free a previously allocated TileSet
+ *
+ * :param tileset: the TileSet to be freed.
+ */
+void tile_set_vfree(TileSet *tileset) {
   uint8_t i, size;
 
-  if (!ts->allocated)
+  if (!tileset->allocated)
     return;
-  size = ts->w * ts->h;
-  for (i = ts->pidx; i < ts->pidx + size; i++)
+  size = tileset->w * tileset->h;
+  for (i = tileset->pidx; i < tileset->pidx + size; i++)
     bitmap_set(bitmap_tile_bank, i);
-  ts->allocated = false;
-  ts->pidx = 0;
+  tileset->allocated = false;
+  tileset->pidx = 0;
 }
 
 /**
- * puts on a screen buffer a set of tiles using an already allocated tileset
+ * Transfers a TileObject into a Buffer and/or VRAM
+ *
+ * :param tileobject: the TileObject to be displayed
+ * :param scrbuf: a screen buffer in RAM
+ * :param refresh_vram: true for the TileObject to be transferred to VRAM after
+ *    transferring into the RAM buffer.
+ *
  */
-void tile_object_show(TileObject *to, uint8_t *scrbuf,
+void tile_object_show(TileObject *tileobject, uint8_t *scrbuf,
                       bool refresh_vram) __nonbanked {
-  uint16_t offset = to->x / 8 + to->y / 8 * 32;
+  uint16_t offset = tileobject->x / 8 + tileobject->y / 8 * 32;
   uint8_t *ptr = scrbuf + offset;
-  uint8_t tile_base = to->ts->pidx;
-  uint8_t tile = to->ts->pidx + to->idx;
+  uint8_t tile_base = tileobject->tileset->pidx;
+  uint8_t tile = tileobject->tileset->pidx + tileobject->idx;
   uint8_t x, y;
 
-  tile += (to->ts->frame_w * to->cur_anim_step) +
-          to->cur_dir * (to->ts->frame_w * to->ts->n_frames);
+  tile += (tileobject->tileset->frame_w * tileobject->frame) +
+          tileobject->state * (tileobject->tileset->frame_w * tileobject->tileset->frames);
 
-  for (y = 0; y < to->ts->frame_h; y++) {
-    for (x = 0; x < to->ts->frame_w; x++) {
+  for (y = 0; y < tileobject->tileset->frame_h; y++) {
+    for (x = 0; x < tileobject->tileset->frame_w; x++) {
       *(ptr + x) = tile;
       if (refresh_vram) {
         vdp_write(VRAM_BASE_NAME + offset + x, tile);
@@ -196,25 +247,31 @@ void tile_object_show(TileObject *to, uint8_t *scrbuf,
       tile++;
       /** allow for shift using idx: this will only work
                       for single frame one direction objects **/
-      if (to->idx > 0 && tile > tile_base + to->ts->frame_w - 1)
+      if (tileobject->idx > 0 && tile > tile_base + tileobject->tileset->frame_w - 1)
         tile = tile_base;
     }
     ptr += 32;
     offset += 32;
-    tile += to->ts->w - to->ts->frame_w;
+    tile += tileobject->tileset->w - tileobject->tileset->frame_w;
   }
-  // log_e("showing : %d at pos %d dir %d step %d nf %d\n", tile, ptr,
-  // to->cur_dir, to->cur_anim_step, to->ts->n_frames);
 }
 
-void tile_object_hide(TileObject *to, uint8_t *scrbuf,
+/**
+ * Hide a TileObject by replacing it with zero-tiles
+ *
+ * :param to: the TileObject to be hidden
+ * :param scrbuf: a screen buffer in RAM
+ * :param refresh_vram: true for the TileObject to be transferred to VRAM after
+ *    transferring into the RAM buffer.
+ */
+void tile_object_hide(TileObject *tileobject, uint8_t *scrbuf,
                       bool refresh_vram) __nonbanked {
-  uint16_t offset = to->x / 8 + to->y / 8 * 32;
+  uint16_t offset = tileobject->x / 8 + tileobject->y / 8 * 32;
   uint8_t *ptr = scrbuf + offset;
   uint8_t x, y;
 
-  for (y = 0; y < to->ts->frame_h; y++) {
-    for (x = 0; x < to->ts->frame_w; x++) {
+  for (y = 0; y < tileobject->tileset->frame_h; y++) {
+    for (x = 0; x < tileobject->tileset->frame_w; x++) {
       *(ptr + x) = 0;
       if (refresh_vram) {
         vdp_write(VRAM_BASE_NAME + offset + x, 0);

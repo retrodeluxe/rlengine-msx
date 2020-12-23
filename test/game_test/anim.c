@@ -82,7 +82,7 @@ void change_room() __nonbanked {
     // log_e("room change state %d\n", dpo_jean.state);
     game_state.jean_state = dpo_jean.state;
     game_state.jean_collision_state = dpo_jean.collision_state;
-    game_state.jean_anim_state = dpo_jean.spr->cur_state;
+    game_state.jean_anim_state = dpo_jean.spr->state;
 
     /** final boss room is a checkpoint **/
     if (game_state.room == ROOM_SATAN) {
@@ -97,14 +97,14 @@ void anim_jean_death(DisplayObject *obj) {
   SpriteDef *sp = obj->spr;
   SpritePattern *ps = sp->pattern_set;
 
-  sp->cur_state = JANE_STATE_DEATH;
+  sp->state = JANE_STATE_DEATH;
   sp->anim_ctr++;
   if (sp->anim_ctr > sp->anim_ctr_treshold) {
-    sp->cur_anim_step++;
+    sp->frame++;
     sp->anim_ctr = 0;
   }
-  if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
-    sp->cur_anim_step = 0;
+  if (sp->frame > ps->state_steps[sp->state] - 1)
+    sp->frame = 0;
 
   spr_update(sp);
 }
@@ -154,10 +154,10 @@ void anim_jean(DisplayObject *obj) {
       obj->state = STATE_FALLING;
     }
     if (stick == STICK_LEFT) {
-      sp->cur_state = JANE_STATE_LEFT_JUMP;
+      sp->state = JANE_STATE_LEFT_JUMP;
       dx = -JEAN_DX_JUMP;
     } else if (stick == STICK_RIGHT) {
-      sp->cur_state = JANE_STATE_RIGHT_JUMP;
+      sp->state = JANE_STATE_RIGHT_JUMP;
       dx = JEAN_DX_JUMP;
     }
     if (is_colliding_up(obj)) {
@@ -166,19 +166,19 @@ void anim_jean(DisplayObject *obj) {
     }
     break;
   case STATE_MOVING_LEFT:
-    sp->cur_state = JANE_STATE_LEFT;
+    sp->state = JANE_STATE_LEFT;
     if (stick == STICK_LEFT) {
       dx = -JEAN_DX;
     } else if (stick == STICK_RIGHT) {
       obj->state = STATE_MOVING_RIGHT;
     } else if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT) {
       obj->state = STATE_CROUCHING;
-      sp->cur_state = JANE_STATE_LEFT_CROUCH;
+      sp->state = JANE_STATE_LEFT_CROUCH;
     } else if (stick == STICK_CENTER) {
       obj->state = STATE_IDLE;
     }
     if (trigger) {
-      sp->cur_state = JANE_STATE_LEFT_JUMP;
+      sp->state = JANE_STATE_LEFT_JUMP;
       obj->state = STATE_JUMPING;
       jmp = -JEAN_DY_JUMP;
       sfx_play_effect(SFX_JUMP, 0);
@@ -187,22 +187,22 @@ void anim_jean(DisplayObject *obj) {
       obj->state = STATE_FALLING;
     break;
   case STATE_MOVING_RIGHT:
-    sp->cur_state = JANE_STATE_RIGHT;
+    sp->state = JANE_STATE_RIGHT;
     if (stick == STICK_RIGHT) {
       dx = JEAN_DX;
     } else if (stick == STICK_LEFT) {
       obj->state = STATE_MOVING_LEFT;
     } else if (stick == STICK_DOWN || stick == STICK_DOWN_RIGHT) {
       obj->state = STATE_CROUCHING;
-      sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+      sp->state = JANE_STATE_RIGHT_CROUCH;
     } else if (stick == STICK_CENTER) {
-      sp->cur_state = JANE_STATE_RIGHT;
+      sp->state = JANE_STATE_RIGHT;
       obj->state = STATE_IDLE;
     } else if (stick == STICK_CENTER) {
       obj->state = STATE_IDLE;
     }
     if (trigger) {
-      sp->cur_state = JANE_STATE_RIGHT_JUMP;
+      sp->state = JANE_STATE_RIGHT_JUMP;
       obj->state = STATE_JUMPING;
       jmp = -JEAN_DY_JUMP;
       sfx_play_effect(SFX_JUMP, 0);
@@ -218,28 +218,28 @@ void anim_jean(DisplayObject *obj) {
       }
     } else if (stick == STICK_DOWN_LEFT) {
       dx = -JEAN_DX;
-      sp->cur_state = JANE_STATE_LEFT_CROUCH;
+      sp->state = JANE_STATE_LEFT_CROUCH;
     } else if (stick == STICK_DOWN_RIGHT) {
       dx = JEAN_DX;
-      sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+      sp->state = JANE_STATE_RIGHT_CROUCH;
     } else if (stick == STICK_CENTER && !is_colliding_up(obj)) {
-      if (sp->cur_state == JANE_STATE_LEFT_CROUCH)
-        sp->cur_state = JANE_STATE_LEFT;
-      else if (sp->cur_state == JANE_STATE_RIGHT_CROUCH)
-        sp->cur_state = JANE_STATE_RIGHT;
+      if (sp->state == JANE_STATE_LEFT_CROUCH)
+        sp->state = JANE_STATE_LEFT;
+      else if (sp->state == JANE_STATE_RIGHT_CROUCH)
+        sp->state = JANE_STATE_RIGHT;
       obj->state = STATE_IDLE;
     } else if (stick == STICK_LEFT && !is_colliding_up(obj)) {
       obj->state = STATE_MOVING_LEFT;
-      sp->cur_state = JANE_STATE_LEFT;
+      sp->state = JANE_STATE_LEFT;
     } else if (stick == STICK_LEFT && is_colliding_up(obj)) {
       dx = -JEAN_DX;
-      sp->cur_state = JANE_STATE_LEFT_CROUCH;
+      sp->state = JANE_STATE_LEFT_CROUCH;
     } else if (stick == STICK_RIGHT && !is_colliding_up(obj)) {
       obj->state = STATE_MOVING_RIGHT;
-      sp->cur_state = JANE_STATE_RIGHT;
+      sp->state = JANE_STATE_RIGHT;
     } else if (stick == STICK_RIGHT && is_colliding_up(obj)) {
       dx = JEAN_DX;
-      sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+      sp->state = JANE_STATE_RIGHT_CROUCH;
     }
     if (!is_colliding_down(obj) && !is_colliding_down_ft(obj))
       obj->state = STATE_FALLING;
@@ -253,10 +253,10 @@ void anim_jean(DisplayObject *obj) {
     } else if (stick == STICK_DOWN || stick == STICK_DOWN_LEFT ||
                stick == STICK_DOWN_RIGHT) {
       obj->state = STATE_CROUCHING;
-      if (sp->cur_state == JANE_STATE_LEFT)
-        sp->cur_state = JANE_STATE_LEFT_CROUCH;
-      else if (sp->cur_state == JANE_STATE_RIGHT)
-        sp->cur_state = JANE_STATE_RIGHT_CROUCH;
+      if (sp->state == JANE_STATE_LEFT)
+        sp->state = JANE_STATE_LEFT_CROUCH;
+      else if (sp->state == JANE_STATE_RIGHT)
+        sp->state = JANE_STATE_RIGHT_CROUCH;
     }
     if (trigger) {
       obj->state = STATE_JUMPING;
@@ -270,25 +270,25 @@ void anim_jean(DisplayObject *obj) {
     dy = jmp;
     if (jmp++ > 6)
       jmp = JEAN_DY_FALL;
-    if (sp->cur_state == JANE_STATE_RIGHT ||
-        sp->cur_state == JANE_STATE_RIGHT_CROUCH) {
-      sp->cur_state = JANE_STATE_RIGHT_JUMP;
-    } else if (sp->cur_state == JANE_STATE_LEFT ||
-               sp->cur_state == JANE_STATE_LEFT_CROUCH) {
-      sp->cur_state = JANE_STATE_LEFT_JUMP;
+    if (sp->state == JANE_STATE_RIGHT ||
+        sp->state == JANE_STATE_RIGHT_CROUCH) {
+      sp->state = JANE_STATE_RIGHT_JUMP;
+    } else if (sp->state == JANE_STATE_LEFT ||
+               sp->state == JANE_STATE_LEFT_CROUCH) {
+      sp->state = JANE_STATE_LEFT_JUMP;
     }
     if (stick == STICK_LEFT) {
-      sp->cur_state = JANE_STATE_LEFT_JUMP;
+      sp->state = JANE_STATE_LEFT_JUMP;
       dx = -JEAN_DX;
     } else if (stick == STICK_RIGHT) {
-      sp->cur_state = JANE_STATE_RIGHT_JUMP;
+      sp->state = JANE_STATE_RIGHT_JUMP;
       dx = JEAN_DX;
     }
     if (is_colliding_down(obj) || is_colliding_down_ft(obj)) {
-      if (sp->cur_state == JANE_STATE_RIGHT_JUMP) {
-        sp->cur_state = JANE_STATE_RIGHT;
-      } else if (sp->cur_state == JANE_STATE_LEFT_JUMP) {
-        sp->cur_state = JANE_STATE_LEFT;
+      if (sp->state == JANE_STATE_RIGHT_JUMP) {
+        sp->state = JANE_STATE_RIGHT;
+      } else if (sp->state == JANE_STATE_LEFT_JUMP) {
+        sp->state = JANE_STATE_LEFT;
       }
       obj->state = STATE_IDLE;
     }
@@ -305,11 +305,11 @@ void anim_jean(DisplayObject *obj) {
   if (obj->state != STATE_IDLE) {
     sp->anim_ctr++;
     if (sp->anim_ctr > sp->anim_ctr_treshold) {
-      sp->cur_anim_step++;
+      sp->frame++;
       sp->anim_ctr = 0;
     }
-    if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
-      sp->cur_anim_step = 0;
+    if (sp->frame > ps->state_steps[sp->state] - 1)
+      sp->frame = 0;
   }
 
   if ((dx > 0 && !is_colliding_right(obj)) ||
@@ -344,11 +344,11 @@ void anim_jean(DisplayObject *obj) {
 
 void anim_cycle_tile(DisplayObject *dpo) {
   if (dpo->state++ == 5) {
-    if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
+    if (dpo->tob->frame < dpo->tob->tileset->frames) {
       tile_object_show(dpo->tob, scr_tile_buffer, true);
-      dpo->tob->cur_anim_step++;
+      dpo->tob->frame++;
     } else {
-      dpo->tob->cur_anim_step = 0;
+      dpo->tob->frame = 0;
     }
     dpo->state = 0;
   }
@@ -362,11 +362,11 @@ void anim_cycle_tile(DisplayObject *dpo) {
  */
 void anim_lava(DisplayObject *dpo) {
   if (dpo->state++ == 10) {
-    if (dpo->tob->cur_anim_step < dpo->tob->ts->n_frames) {
+    if (dpo->tob->frame < dpo->tob->tileset->frames) {
       tile_object_show(dpo->tob, scr_tile_buffer, true);
-      dpo->tob->cur_anim_step++;
+      dpo->tob->frame++;
     } else {
-      dpo->tob->cur_anim_step = 0;
+      dpo->tob->frame = 0;
     }
     dpo->state = 0;
   }
@@ -582,21 +582,21 @@ void anim_close_door(DisplayObject *obj) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
       obj->visible = true;
       obj->state = 0;
-      obj->tob->cur_dir = 1;
-      obj->tob->cur_anim_step = 0;
+      obj->tob->state = 1;
+      obj->tob->frame = 0;
     }
     if (obj->state == 20 || obj->state == 21) {
-      obj->tob->cur_dir = 0;
-      if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
-        obj->tob->cur_anim_step++;
-        if (obj->tob->cur_anim_step > 1)
-          obj->tob->cur_anim_step = 0;
+      obj->tob->state = 0;
+      if (obj->tob->frame < obj->tob->tileset->frames) {
+        obj->tob->frame++;
+        if (obj->tob->frame > 1)
+          obj->tob->frame = 0;
         tile_object_show(obj->tob, scr_tile_buffer, true);
         sfx_play_effect(SFX_DOOR, 0);
       }
     } else if (obj->state == 22) {
-      obj->tob->cur_dir = 0;
-      obj->tob->cur_anim_step = 0;
+      obj->tob->state = 0;
+      obj->tob->frame = 0;
       obj->state = 0;
     }
     obj->state++;
@@ -647,7 +647,7 @@ void anim_plant(DisplayObject *obj) {
   // obj->aux contains delay in cycles, state rolls over at 200
   if (obj->state == obj->aux) {
     // open
-    obj->tob->cur_anim_step = 1;
+    obj->tob->frame = 1;
     tile_object_show(obj->tob, scr_tile_buffer, true);
     add_bullet((uint8_t)obj->xpos, (uint8_t)(obj->ypos - 8), PATRN_SMALL_BULLET,
                ANIM_FALLING_BULLETS, 0, (uint8_t)-4, 0, NULL);
@@ -657,7 +657,7 @@ void anim_plant(DisplayObject *obj) {
                ANIM_FALLING_BULLETS, 0, (uint8_t)-4, 1, NULL);
   } else if (obj->state == obj->aux + 10) {
     // close
-    obj->tob->cur_anim_step = 0;
+    obj->tob->frame = 0;
     tile_object_show(obj->tob, scr_tile_buffer, true);
   }
   if (++obj->state > 70)
@@ -677,14 +677,14 @@ void anim_waterdrop(DisplayObject *obj) {
   }
   // state 1 - just count
   if (obj->state == 1) {
-    obj->spr->cur_anim_step = 0;
+    obj->spr->frame = 0;
     if (obj->aux++ > 30) {
       obj->aux = 0;
       obj->state = 2;
     }
   }
   if (obj->state == 2) {
-    obj->spr->cur_anim_step = 1;
+    obj->spr->frame = 1;
     if (obj->aux++ > 30) {
       obj->aux = 0;
       obj->state = 3;
@@ -692,14 +692,14 @@ void anim_waterdrop(DisplayObject *obj) {
   }
   if (obj->state == 3 && obj->ypos < max) {
     obj->ypos += 4;
-    obj->spr->cur_anim_step = 2;
+    obj->spr->frame = 2;
     spr_set_pos(obj->spr, obj->xpos, obj->ypos);
   }
   if (obj->ypos >= max) {
     obj->aux = 0;
     obj->state = 0;
     obj->ypos = obj->aux2;
-    obj->spr->cur_anim_step = 0;
+    obj->spr->frame = 0;
     spr_set_pos(obj->spr, obj->xpos, obj->ypos);
   }
   spr_update(obj->spr);
@@ -745,15 +745,15 @@ void anim_splash(DisplayObject *obj) {
   if (obj->aux2 == SPLASH_LAUNCH) {
     obj->state++;
     if (obj->state == obj->aux) {
-      obj->tob->cur_anim_step = 0;
+      obj->tob->frame = 0;
       tile_object_show(obj->tob, scr_tile_buffer, true);
       add_bullet((uint8_t)obj->xpos, (uint8_t)(obj->ypos - 8), PATRN_FISH, ANIM_FISH_JUMP, 0, (uint8_t)-6, 0,
                  obj);
     } else if (obj->state == obj->aux + 2) {
-      obj->tob->cur_anim_step = 1;
+      obj->tob->frame = 1;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else if (obj->state == obj->aux + 5) {
-      obj->tob->cur_anim_step = 2;
+      obj->tob->frame = 2;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else if (obj->state > obj->aux + 10) {
       obj->state = 0;
@@ -763,13 +763,13 @@ void anim_splash(DisplayObject *obj) {
   } else if (obj->aux2 == SPLASH_RECEIVE) {
     obj->state++;
     if (obj->state == 0) {
-      obj->tob->cur_anim_step = 0;
+      obj->tob->frame = 0;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else if (obj->state == 2) {
-      obj->tob->cur_anim_step = 1;
+      obj->tob->frame = 1;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else if (obj->state == 5) {
-      obj->tob->cur_anim_step = 2;
+      obj->tob->frame = 2;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else if (obj->state > 10) {
       obj->state = 0;
@@ -830,22 +830,22 @@ void anim_archer_skeleton(DisplayObject *obj) {
   uint8_t arrow_xpos;
 
   if (dpo_jean.xpos > (obj->xpos + 16)) {
-    obj->tob->cur_dir = 1;
+    obj->tob->state = 1;
     arrow_xpos = obj->xpos + 16;
   } else if (dpo_jean.xpos < (obj->xpos - 16)) {
-    obj->tob->cur_dir = 0;
+    obj->tob->state = 0;
     arrow_xpos = obj->xpos - 4;
   }
 
   if (obj->state == obj->aux) {
-    obj->tob->cur_anim_step = 0;
+    obj->tob->frame = 0;
     tile_object_show(obj->tob, scr_tile_buffer, true);
     add_bullet(obj->xpos, obj->ypos + 4, PATRN_ARROW,
-               ANIM_HORIZONTAL_PROJECTILE, obj->tob->cur_dir, obj->tob->cur_dir,
+               ANIM_HORIZONTAL_PROJECTILE, obj->tob->state, obj->tob->state,
                8, NULL);
     sfx_play_effect(SFX_SHOOT, 0);
   } else if (obj->state == obj->aux + 10) {
-    obj->tob->cur_anim_step = 1;
+    obj->tob->frame = 1;
     tile_object_show(obj->tob, scr_tile_buffer, true);
   } else if (obj->state == 0) {
     tile_object_show(obj->tob, scr_tile_buffer, true);
@@ -884,13 +884,13 @@ void anim_horizontal_projectile(DisplayObject *obj) {
 void anim_gargolyne(DisplayObject *obj) {
 
   if (obj->state == obj->aux) {
-    obj->tob->cur_anim_step = 1;
+    obj->tob->frame = 1;
     tile_object_show(obj->tob, scr_tile_buffer, true);
     add_bullet(obj->xpos, obj->ypos + 4, PATRN_SPIT, ANIM_HORIZONTAL_PROJECTILE,
                0, 0, 8, NULL);
     sfx_play_effect(SFX_SHOOT, 0);
   } else if (obj->state == obj->aux + 10) {
-    obj->tob->cur_anim_step = 0;
+    obj->tob->frame = 0;
     tile_object_show(obj->tob, scr_tile_buffer, true);
   } else if (obj->state == 0) {
     tile_object_show(obj->tob, scr_tile_buffer, true);

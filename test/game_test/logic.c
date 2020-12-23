@@ -120,7 +120,7 @@ void checkpoint_handler(DisplayObject *dpo, uint8_t data) {
   game_state.checkpoint_x = dpo->xpos;
   game_state.checkpoint_y = dpo->ypos - 8;
   game_state.checkpoint_room = game_state.room;
-  dpo->tob->cur_anim_step = 1;
+  dpo->tob->frame = 1;
   phys_clear_colliding_tile_object(dpo);
   update_tileobject(dpo);
   sfx_play_effect(SFX_PICKUP_ITEM, 0);
@@ -128,7 +128,7 @@ void checkpoint_handler(DisplayObject *dpo, uint8_t data) {
 
 void toggle_handler(DisplayObject *dpo, uint8_t data) {
   game_state.toggle[data] = 1;
-  dpo->tob->cur_anim_step = 1;
+  dpo->tob->frame = 1;
   update_tileobject(dpo);
   phys_clear_colliding_tile_object(dpo);
   sfx_play_effect(SFX_SWITCH, 0);
@@ -137,10 +137,10 @@ void toggle_handler(DisplayObject *dpo, uint8_t data) {
 void bell_handler(DisplayObject *dpo, uint8_t data) {
   unused(data);
   game_state.bell = true;
-  dpo->tob->cur_anim_step = 1;
+  dpo->tob->frame = 1;
   update_tileobject(dpo);
   phys_clear_colliding_tile_object(dpo);
-  dpo->parent->spr->cur_anim_step = 1;
+  dpo->parent->spr->frame = 1;
   spr_update(dpo->parent->spr);
   sfx_play_effect(SFX_SWITCH, 0);
 }
@@ -150,12 +150,12 @@ void crosswitch_handler(DisplayObject *dpo, uint8_t data) {
   /** switch is only active once every time it appears **/
   phys_clear_colliding_tile_object(dpo);
   if (game_state.cross_switch) {
-    dpo->tob->cur_anim_step = 0;
-    dpo->parent->spr->cur_anim_step = 0;
+    dpo->tob->frame = 0;
+    dpo->parent->spr->frame = 0;
     game_state.cross_switch = false;
   } else {
-    dpo->tob->cur_anim_step = 1;
-    dpo->parent->spr->cur_anim_step = 1;
+    dpo->tob->frame = 1;
+    dpo->parent->spr->frame = 1;
     game_state.cross_switch = true;
   }
   update_tileobject(dpo);

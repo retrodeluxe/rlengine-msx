@@ -98,16 +98,16 @@ struct SpritePattern {
   uint8_t size;
 
   /** Number of planes (colors) */
-  uint8_t n_planes;
+  uint8_t planes;
 
   /** Number of states */
-  uint8_t n_states;
+  uint8_t states;
 
   /** Animation steps per state */
   uint8_t state_steps[SPR_STATES_MAX];
 
   /** Total number of animation steps */
-  uint8_t n_steps;
+  uint8_t steps;
 
   /** Raw hardware sprite pattern data */
   uint8_t *patterns;
@@ -133,10 +133,10 @@ struct SpriteDef {
   SpritePattern *pattern_set;
 
   /** current sprite state */
-  uint8_t cur_state;
+  uint8_t state;
 
-  /** current animation step within the current state */
-  uint8_t cur_anim_step;
+  /** current animation frame */
+  uint8_t frame;
 
   uint8_t state_anim_ctr[SPR_STATES_MAX];
   uint8_t anim_ctr;
@@ -158,9 +158,9 @@ extern SpritePattern spr_pattern[SPR_PATRN_MAX];
 #define SPR_DEFINE_PATTERN_SET(INDEX, SIZE, PLANES, STATES, STEPS, PATTERNS)       \
   assert((INDEX) < SPR_PATRN_MAX, "Max pattern index should be below 48");         \
   spr_pattern[(INDEX)].size = (SIZE);                                              \
-  spr_pattern[(INDEX)].n_planes = (PLANES);                                        \
+  spr_pattern[(INDEX)].planes = (PLANES);                                        \
   sys_memcpy(spr_pattern[(INDEX)].state_steps, (STEPS), (STATES));                 \
-  spr_pattern[(INDEX)].n_states = (STATES);                                        \
+  spr_pattern[(INDEX)].states = (STATES);                                        \
   spr_pattern[(INDEX)].allocated = false;                                          \
   spr_pattern[(INDEX)].patterns = (PATTERNS);                                      \
   spr_pattern[(INDEX)].colors = PATTERNS##_color;                                  \

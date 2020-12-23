@@ -50,9 +50,9 @@ void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id) {
 
   bullet_tob[idx].x = xpos;
   bullet_tob[idx].y = ypos;
-  bullet_tob[idx].cur_dir = 0;
-  bullet_tob[idx].cur_anim_step = 0;
-  bullet_tob[idx].ts = &tileset[TILE_EXPLOSION];
+  bullet_tob[idx].state = 0;
+  bullet_tob[idx].frame = 0;
+  bullet_tob[idx].tileset = &tileset[TILE_EXPLOSION];
   bullet_tob[idx].idx = 0;
 
   dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
@@ -124,11 +124,11 @@ void anim_intro_jean(DisplayObject *obj) {
   sp->anim_ctr++;
 
   if (sp->anim_ctr > sp->anim_ctr_treshold) {
-    sp->cur_anim_step++;
+    sp->frame++;
     sp->anim_ctr = 0;
   }
-  if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
-    sp->cur_anim_step = 0;
+  if (sp->frame > ps->state_steps[sp->state] - 1)
+    sp->frame = 0;
 
   spr_set_pos(sp, obj->xpos, obj->ypos);
   spr_update(sp);
@@ -165,7 +165,7 @@ void anim_death(DisplayObject *obj) {
   }
   // based on current animation state, throw bullet which is a scythe with
   // own animation
-  if (sp->cur_anim_step == 2 && sp->anim_ctr == 0 && obj->aux2 < obj->aux) {
+  if (sp->frame == 2 && sp->anim_ctr == 0 && obj->aux2 < obj->aux) {
     obj->aux2++;
     add_bullet(obj->xpos, obj->ypos + 24, PATRN_SCYTHE, ANIM_SCYTHE, 0, 1, 1,
                obj);
@@ -233,12 +233,12 @@ void add_satan_bullets(uint8_t xpos, uint8_t ypos) {
   spr_init_sprite(&bullet_sprites[idx], PATRN_BULLET);
   spr_init_sprite(&bullet_sprites[idx + 1], PATRN_BULLET);
   spr_init_sprite(&bullet_sprites[idx + 2], PATRN_BULLET);
-  bullet_sprites[idx].cur_state = 0;
-  bullet_sprites[idx].cur_anim_step = 0;
-  bullet_sprites[idx + 1].cur_state = 0;
-  bullet_sprites[idx + 1].cur_anim_step = 0;
-  bullet_sprites[idx + 2].cur_state = 0;
-  bullet_sprites[idx + 2].cur_anim_step = 0;
+  bullet_sprites[idx].state = 0;
+  bullet_sprites[idx].frame = 0;
+  bullet_sprites[idx + 1].state = 0;
+  bullet_sprites[idx + 1].frame = 0;
+  bullet_sprites[idx + 2].state = 0;
+  bullet_sprites[idx + 2].frame = 0;
   spr_set_pos(&bullet_sprites[idx], xpos, ypos);
   spr_set_pos(&bullet_sprites[idx + 1], xpos, ypos + 8);
   spr_set_pos(&bullet_sprites[idx + 2], xpos, ypos + 16);
@@ -273,7 +273,7 @@ void anim_satan(DisplayObject *obj) {
   static uint8_t delay = 0;
   TileObject *to = obj->tob;
   uint16_t offset_bottom =
-      to->x / 8 + to->y / 8 * 32 + (to->ts->frame_h - 1) * 32;
+      to->x / 8 + to->y / 8 * 32 + (to->tileset->frame_h - 1) * 32;
   uint16_t offset_top = to->x / 8 + to->y / 8 * 32;
 
   if (obj->aux2) {
@@ -294,11 +294,11 @@ void anim_satan(DisplayObject *obj) {
   }
 
   if (obj->state == STATE_MOVING_UP) {
-    if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+    if (obj->tob->frame < obj->tob->tileset->frames) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
-      obj->tob->cur_anim_step++;
+      obj->tob->frame++;
     } else {
-      for (x = 0; x < to->ts->frame_w; x++) {
+      for (x = 0; x < to->tileset->frame_w; x++) {
         vdp_write(VRAM_BASE_NAME + offset_bottom + x, 0);
       }
       ty = obj->ypos / 8;
@@ -306,42 +306,42 @@ void anim_satan(DisplayObject *obj) {
       obj->ypos = ty * 8;
       obj->tob->y = ty * 8;
       if (obj->aux++ > 3) {
-        obj->tob->cur_anim_step = 0;
+        obj->tob->frame = 0;
         add_satan_bullets(obj->xpos - 8, obj->ypos);
         obj->aux = 0;
       } else {
-        obj->tob->cur_anim_step = 1;
+        obj->tob->frame = 1;
       }
       tile_object_show(obj->tob, scr_tile_buffer, true);
     }
     if (obj->ypos < obj->min) {
       obj->state = STATE_MOVING_DOWN;
-      obj->tob->cur_anim_step = 2;
+      obj->tob->frame = 2;
     }
   } else if (obj->state == STATE_MOVING_DOWN) {
-    if (obj->tob->cur_anim_step > 0) {
-      if (obj->tob->cur_anim_step == 1 && obj->aux++ > 3) {
-        obj->tob->cur_anim_step = 0;
+    if (obj->tob->frame > 0) {
+      if (obj->tob->frame == 1 && obj->aux++ > 3) {
+        obj->tob->frame = 0;
         add_satan_bullets(obj->xpos - 8, obj->ypos);
         obj->aux = 0;
       } else {
-        obj->tob->cur_anim_step--;
+        obj->tob->frame--;
       }
       tile_object_show(obj->tob, scr_tile_buffer, true);
     } else {
-      for (x = 0; x < to->ts->frame_w; x++) {
+      for (x = 0; x < to->tileset->frame_w; x++) {
         vdp_write(VRAM_BASE_NAME + offset_top + x, 0);
       }
       ty = obj->ypos / 8;
       ty++;
       obj->ypos = ty * 8;
       obj->tob->y = ty * 8;
-      obj->tob->cur_anim_step = 2;
+      obj->tob->frame = 2;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     }
     if (obj->ypos > obj->max) {
       obj->state = STATE_MOVING_UP;
-      obj->tob->cur_anim_step = 1;
+      obj->tob->frame = 1;
     }
   }
 }
@@ -405,11 +405,11 @@ void anim_satan_bullets(DisplayObject *obj) {
 void anim_dragon_flame(DisplayObject *obj) {
   obj->state++;
   if (obj->state < 30) {
-    if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+    if (obj->tob->frame < obj->tob->tileset->frames) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
-      obj->tob->cur_anim_step++;
+      obj->tob->frame++;
     } else {
-      obj->tob->cur_anim_step = 0;
+      obj->tob->frame = 0;
     }
   } else if (obj->state == 30) {
     // bullets are tileobjects... how to handle those
@@ -451,11 +451,11 @@ void anim_dragon_bullets(DisplayObject *obj) {
   obj->xpos += dx;
   obj->tob->x += dx;
 
-  if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+  if (obj->tob->frame < obj->tob->tileset->frames) {
     tile_object_show(obj->tob, scr_tile_buffer, true);
-    obj->tob->cur_anim_step++;
+    obj->tob->frame++;
   } else {
-    obj->tob->cur_anim_step = 0;
+    obj->tob->frame = 0;
   }
   if (obj->xpos < 48 || obj->xpos > 250) {
     tile_object_hide(obj->tob, scr_tile_buffer, true);
@@ -476,13 +476,13 @@ void anim_hanging_priest(DisplayObject *obj) {
   uint8_t ty;
   TileObject *to = obj->tob;
   uint16_t offset_bottom =
-      to->x / 8 + to->y / 8 * 32 + (to->ts->frame_h - 1) * 32;
+      to->x / 8 + to->y / 8 * 32 + (to->tileset->frame_h - 1) * 32;
   uint16_t offset_top = to->x / 8 + to->y / 8 * 32;
 
   if (obj->state == STATE_MOVING_UP) {
-    if (obj->tob->cur_anim_step > 0) {
+    if (obj->tob->frame > 0) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
-      obj->tob->cur_anim_step--;
+      obj->tob->frame--;
     } else {
       vdp_write(VRAM_BASE_NAME + offset_bottom, 0);
       vdp_write(VRAM_BASE_NAME + offset_bottom + 1, 0);
@@ -492,18 +492,18 @@ void anim_hanging_priest(DisplayObject *obj) {
       ty--;
       obj->ypos = ty * 8;
       obj->tob->y = ty * 8;
-      obj->tob->cur_anim_step = 3;
+      obj->tob->frame = 3;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     }
     if (obj->ypos < obj->min) {
       obj->state = STATE_MOVING_DOWN;
-      obj->tob->cur_dir = 1;
-      obj->tob->cur_anim_step = 0;
+      obj->tob->state = 1;
+      obj->tob->frame = 0;
     }
   } else if (obj->state == STATE_MOVING_DOWN) {
-    if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+    if (obj->tob->frame < obj->tob->tileset->frames) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
-      obj->tob->cur_anim_step++;
+      obj->tob->frame++;
     } else {
       vdp_write(VRAM_BASE_NAME + offset_top, 0);
       vdp_write(VRAM_BASE_NAME + offset_top + 1, 180); // rope
@@ -513,24 +513,24 @@ void anim_hanging_priest(DisplayObject *obj) {
       ty++;
       obj->ypos = ty * 8;
       obj->tob->y = ty * 8;
-      obj->tob->cur_anim_step = 0;
+      obj->tob->frame = 0;
       tile_object_show(obj->tob, scr_tile_buffer, true);
     }
     if (obj->ypos > obj->max) {
       obj->state = STATE_MOVING_UP;
-      obj->tob->cur_dir = 0;
-      obj->tob->cur_anim_step = 3;
+      obj->tob->state = 0;
+      obj->tob->frame = 3;
     }
   }
 }
 
 void anim_explosion(DisplayObject *obj) {
   if (obj->state++ < 20) {
-    if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+    if (obj->tob->frame < obj->tob->tileset->frames) {
       tile_object_show(obj->tob, scr_tile_buffer, true);
-      obj->tob->cur_anim_step++;
+      obj->tob->frame++;
     } else {
-      obj->tob->cur_anim_step = 0;
+      obj->tob->frame = 0;
     }
   } else {
     tile_object_hide(obj->tob, scr_tile_buffer, true);
@@ -602,26 +602,26 @@ void anim_jean_bonfire(DisplayObject *obj) {
   SpritePattern *ps = sp->pattern_set;
 
   if (obj->state == 0) {
-    sp->cur_state = JANE_STATE_LEFT_JUMP;
+    sp->state = JANE_STATE_LEFT_JUMP;
     spr_update(sp);
   } else if (obj->state == 50) {
-    sp->cur_state = JANE_STATE_RIGHT_JUMP;
+    sp->state = JANE_STATE_RIGHT_JUMP;
     spr_update(sp);
   } else if (obj->state == 100) {
-    sp->cur_state = JANE_STATE_LEFT_JUMP;
+    sp->state = JANE_STATE_LEFT_JUMP;
     spr_update(sp);
   } else if (obj->state == 150) {
     // doesn't sound because there isn't any music...
     sfx_play_effect(SFX_DEATH, 0);
   } else if (obj->state > 150 && obj->state < 170) {
-    sp->cur_state = JANE_STATE_DEATH;
+    sp->state = JANE_STATE_DEATH;
     sp->anim_ctr++;
     if (sp->anim_ctr > sp->anim_ctr_treshold) {
-      sp->cur_anim_step++;
+      sp->frame++;
       sp->anim_ctr = 0;
     }
-    if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
-      sp->cur_anim_step = 0;
+    if (sp->frame > ps->state_steps[sp->state] - 1)
+      sp->frame = 0;
 
     spr_update(sp);
   } else if (obj->state == 170) {
@@ -654,11 +654,11 @@ void anim_block_crosses(DisplayObject *obj) {
       obj->state++;
     }
     if (obj->state == 30) {
-      if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+      if (obj->tob->frame < obj->tob->tileset->frames) {
         tile_object_show(obj->tob, scr_tile_buffer, true);
-        obj->tob->cur_anim_step++;
+        obj->tob->frame++;
       } else {
-        obj->tob->cur_anim_step = 0;
+        obj->tob->frame = 0;
       }
       obj->state = 1;
     }
@@ -683,11 +683,11 @@ void anim_cross(DisplayObject *obj) {
   }
   if (obj->visible) {
     if (obj->state++ == 5) {
-      if (obj->tob->cur_anim_step < obj->tob->ts->n_frames) {
+      if (obj->tob->frame < obj->tob->tileset->frames) {
         tile_object_show(obj->tob, scr_tile_buffer, true);
-        obj->tob->cur_anim_step++;
+        obj->tob->frame++;
       } else {
-        obj->tob->cur_anim_step = 0;
+        obj->tob->frame = 0;
       }
       obj->state = 0;
     }

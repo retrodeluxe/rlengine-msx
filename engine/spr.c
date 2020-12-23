@@ -114,8 +114,8 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
   assert(patrn_idx < SPR_PATRN_MAX, "Max pattern index should be below 48");
 
   sp->pattern_set = &spr_pattern[patrn_idx];
-  sp->cur_anim_step = 0;
-  sp->cur_state = 0;
+  sp->frame = 0;
+  sp->state = 0;
   sp->anim_ctr_treshold = 5;
   sp->anim_ctr = 0;
   spr_set_plane_colors(sp, spr_pattern[patrn_idx].colors);
@@ -131,7 +131,7 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
 bool spr_valloc_pattern_set(uint8_t patrn_idx) {
   uint16_t npat;
   uint8_t i, idx, size, f = 0;
-  uint8_t n_steps = 0;
+  uint8_t steps = 0;
 
   assert(patrn_idx < SPR_PATRN_MAX, "Max pattern index should be below 48");
 
@@ -140,10 +140,10 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
   if (ps->allocated)
     return true;
 
-  for (i = 0; i < ps->n_states; i++) {
-    n_steps += ps->state_steps[i];
+  for (i = 0; i < ps->states; i++) {
+    steps += ps->state_steps[i];
   }
-  ps->n_steps = n_steps;
+  ps->steps = steps;
 
   size = ps->size;
   if (ps->size == SPR_SIZE_32x16)
@@ -151,7 +151,7 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
   if (ps->size == SPR_SIZE_32x32)
     size = 16;
 
-  npat = ps->n_planes * ps->n_steps * size;
+  npat = ps->planes * ps->steps * size;
 
   for (i = 0; i < MAX_SPR_PTRN - 1; i++) {
     f = f * spr_patt_valloc[i] + spr_patt_valloc[i];
@@ -185,7 +185,7 @@ void spr_vfree_pattern_set(uint8_t patrn_idx) {
   if (ps->size == SPR_SIZE_32x32)
     size = 16;
 
-  npat = ps->n_planes * ps->n_steps * size;
+  npat = ps->planes * ps->steps * size;
   sys_memset(&spr_patt_valloc[ps->pidx], 1, npat);
   ps->allocated = false;
 }
@@ -194,13 +194,13 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   uint8_t i, cf, base = 0, base2, np, sz, as;
 
   SpritePattern *ps = sp->pattern_set;
-  for (i = 0; i < sp->cur_state; i++) {
+  for (i = 0; i < sp->state; i++) {
     base += ps->state_steps[i];
   }
 
-  np = ps->n_planes;
+  np = ps->planes;
   sz = ps->size;
-  as = sp->cur_anim_step;
+  as = sp->frame;
   cf = (base + as) * np;
 
   switch (sz) {
@@ -214,7 +214,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   case SPR_SIZE_16x32:
     base *= (SPR_SIZE_16x16 * np);
     base += as * (SPR_SIZE_16x16 * np); // current frame
-    base2 = base + np * ps->n_steps * SPR_SIZE_16x16;
+    base2 = base + np * ps->steps * SPR_SIZE_16x16;
     for (i = 0; i < np; i++) {
       SET_PLANE_PTRN(sp, i, (ps->colors2)[cf + i], base + i * SPR_SIZE_16x16);
       SET_PLANE_PTRN(sp, i + np, (ps->colors2)[cf + i],
@@ -234,7 +234,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   case SPR_SIZE_32x32:
     base *= SPR_SIZE_16x32;
     base += as * SPR_SIZE_16x32; // current frame
-    base2 = base + ps->n_steps * SPR_SIZE_16x32;
+    base2 = base + ps->steps * SPR_SIZE_16x32;
     SET_PLANE_PTRN(sp, 0, (ps->colors2)[cf], base);
     SET_PLANE_PTRN(sp, 1, (ps->colors2)[cf], base + 4);
     SET_PLANE_PTRN(sp, 2, (ps->colors2)[cf], base2);
@@ -254,7 +254,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
 void spr_update(SpriteDef *sp) __nonbanked {
   uint8_t i, np, sz;
 
-  np = sp->pattern_set->n_planes;
+  np = sp->pattern_set->planes;
   sz = sp->pattern_set->size;
 
   spr_calc_patterns(sp);
@@ -285,7 +285,7 @@ void spr_update(SpriteDef *sp) __nonbanked {
 bool spr_show(SpriteDef *sp) __nonbanked {
   uint8_t i, sz, idx = 7, n, f = 0;
 
-  n = sp->pattern_set->n_planes;
+  n = sp->pattern_set->planes;
   sz = sp->pattern_set->size;
 
   if (sz == SPR_SIZE_16x32 ||
@@ -320,7 +320,7 @@ void spr_hide(SpriteDef *sp) __nonbanked {
   uint8_t n, idx, sz;
 
   sz = sp->pattern_set->size;
-  n = sp->pattern_set->n_planes;
+  n = sp->pattern_set->planes;
   if (sz == SPR_SIZE_16x32
     || sz == SPR_SIZE_32x16)
     n = n * 2;
@@ -363,7 +363,7 @@ void spr_hide(SpriteDef *sp) __nonbanked {
 void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
   uint8_t i, x, x2, y, np, sz, ec = 0, ec2 = 0;
 
-  np = sp->pattern_set->n_planes;
+  np = sp->pattern_set->planes;
   sz = sp->pattern_set->size;
 
   y = (uint8_t) yp;
@@ -408,7 +408,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
 void spr_set_plane_colors(SpriteDef *sp, uint8_t *colors) __nonbanked {
   uint8_t i, np, sz;
   sz = sp->pattern_set->size;
-  np = sp->pattern_set->n_planes;
+  np = sp->pattern_set->planes;
   for (i = 0; i < np; i++) {
     (sp->planes[i]).color = colors[i];
     if (sz == SPR_SIZE_16x32 ||
@@ -434,30 +434,30 @@ void spr_animate(SpriteDef *sp, int8_t dx, int8_t dy) __nonbanked {
   uint8_t old_dir;
   SpritePattern *ps = sp->pattern_set;
 
-  old_dir = sp->cur_state;
+  old_dir = sp->state;
 
   /* update state based on direction of movement */
-  if (sp->pattern_set->n_states < 2) {
+  if (sp->pattern_set->states < 2) {
     // keep current state, no changes
-  } else if (sp->pattern_set->n_states < 3) {
+  } else if (sp->pattern_set->states < 3) {
 
     if (dx > 0) {
-      sp->cur_state = SPR_STATE_RIGHT;
+      sp->state = SPR_STATE_RIGHT;
     } else if (dx < 0) {
-      sp->cur_state = SPR_STATE_LEFT;
+      sp->state = SPR_STATE_LEFT;
     }
 
-  } else if (sp->pattern_set->n_states < 5) {
+  } else if (sp->pattern_set->states < 5) {
 
     if (dx > 0) {
-      sp->cur_state = SPR_STATE_RIGHT;
+      sp->state = SPR_STATE_RIGHT;
     } else if (dx < 0) {
-      sp->cur_state = SPR_STATE_LEFT;
+      sp->state = SPR_STATE_LEFT;
     }
     if (dy > 0) {
-      sp->cur_state = SPR_STATE_DOWN;
+      sp->state = SPR_STATE_DOWN;
     } else if (dy < 0) {
-      sp->cur_state = SPR_STATE_UP;
+      sp->state = SPR_STATE_UP;
     }
 
   } else {
@@ -465,16 +465,16 @@ void spr_animate(SpriteDef *sp, int8_t dx, int8_t dy) __nonbanked {
   }
 
   /* update animation frame */
-  if (old_dir == sp->cur_state) {
+  if (old_dir == sp->state) {
     sp->anim_ctr++;
     if (sp->anim_ctr > sp->anim_ctr_treshold) {
-      sp->cur_anim_step++;
+      sp->frame++;
       sp->anim_ctr = 0;
     }
   } else {
-    sp->cur_anim_step = 0;
+    sp->frame = 0;
   }
 
-  if (sp->cur_anim_step > ps->state_steps[sp->cur_state] - 1)
-    sp->cur_anim_step = 0;
+  if (sp->frame > ps->state_steps[sp->state] - 1)
+    sp->frame = 0;
 }

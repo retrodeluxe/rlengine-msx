@@ -43,6 +43,18 @@
 
 #define unused(x) x
 
+/**
+ * Defines Engine Result Codes
+ */
+typedef enum {
+    /** Operation sucessful */
+    RLE_OK,
+    /** Object is already allocated */
+    RLE_ALREADY_ALLOCATED,
+    /** Could not allocate Object in VRAM */
+    RLE_COULD_NOT_ALLOCATE_VRAM
+} rle_result;
+
 /* avoids SDCC builtins to break sphinx
  * documentation generation
  */

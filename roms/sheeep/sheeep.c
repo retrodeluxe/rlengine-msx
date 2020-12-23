@@ -138,8 +138,8 @@ void main()
 
 	spr_set_pos(&indust, x,y);
 	spr_show(&indust);
-	indust.cur_state = RIGHT_IDLE;
-	indust.cur_anim_step = 0;
+	indust.state = RIGHT_IDLE;
+	indust.frame = 0;
 	do {
 			dx =0; dy =0; dy_8 = 0; dx_8 = 0;
 			stick = sys_get_stick(0);
@@ -147,49 +147,49 @@ void main()
 			sys_memcpy(screen_buffer, map_tilemap, 768 - 64);
 
 
-			if (trigg && !squash && !jump && indust.cur_state != RIGHT_ACTION && indust.cur_state != LEFT_ACTION) {
-				indust.cur_anim_step = 0;
-				if (indust.cur_state == RIGHT_IDLE || indust.cur_state == RIGHT_RUN)
-					indust.cur_state = RIGHT_ACTION;
-				else if (indust.cur_state == LEFT_IDLE || indust.cur_state == LEFT_RUN)
-					indust.cur_state = LEFT_ACTION;
-			} else if (!jump && !squash && indust.cur_state != RIGHT_ACTION && indust.cur_state != LEFT_ACTION){
+			if (trigg && !squash && !jump && indust.state != RIGHT_ACTION && indust.state != LEFT_ACTION) {
+				indust.frame = 0;
+				if (indust.state == RIGHT_IDLE || indust.state == RIGHT_RUN)
+					indust.state = RIGHT_ACTION;
+				else if (indust.state == LEFT_IDLE || indust.state == LEFT_RUN)
+					indust.state = LEFT_ACTION;
+			} else if (!jump && !squash && indust.state != RIGHT_ACTION && indust.state != LEFT_ACTION){
 				if (stick == 3) {
-					indust.cur_state = RIGHT_RUN;
+					indust.state = RIGHT_RUN;
 					dx = 2;
 					if(++indust.state_anim_ctr[RIGHT_RUN] > 5 ) {
 						indust.state_anim_ctr[RIGHT_RUN] = 0;
-						if (++indust.cur_anim_step >= indust.pattern_set->state_steps[RIGHT_RUN]) {
-							indust.cur_anim_step = 0;
+						if (++indust.frame >= indust.pattern_set->state_steps[RIGHT_RUN]) {
+							indust.frame = 0;
 						}
 					}
 				} else if (stick == 7) {
-					indust.cur_state = LEFT_RUN;
+					indust.state = LEFT_RUN;
 					dx = -2;
 					if(++indust.state_anim_ctr[LEFT_RUN] > 5 ) {
 						indust.state_anim_ctr[LEFT_RUN] = 0;
-						if (++indust.cur_anim_step >= indust.pattern_set->state_steps[LEFT_RUN]) {
-							indust.cur_anim_step = 0;
+						if (++indust.frame >= indust.pattern_set->state_steps[LEFT_RUN]) {
+							indust.frame = 0;
 						}
 					}
 				} else if (stick == 1 || stick == 2 || stick == 8) {
 					jump = 1;
 					if (stick == 2) {
-						indust.cur_state = RIGHT_RUN;
+						indust.state = RIGHT_RUN;
 					}
 					if (stick == 8) {
-						indust.cur_state = LEFT_RUN;
+						indust.state = LEFT_RUN;
 					}
-					if (indust.cur_state == RIGHT_IDLE || indust.cur_state == RIGHT_RUN) {
-						indust.cur_anim_step = 0;
-						indust.cur_state = RIGHT_RUN;
-						if (indust.cur_state == RIGHT_RUN) {
+					if (indust.state == RIGHT_IDLE || indust.state == RIGHT_RUN) {
+						indust.frame = 0;
+						indust.state = RIGHT_RUN;
+						if (indust.state == RIGHT_RUN) {
 							dx_jump = 2;
 						}
-					} else if (indust.cur_state == LEFT_IDLE || indust.cur_state == LEFT_RUN) {
-						indust.cur_anim_step = 7;
-						indust.cur_state = LEFT_RUN;
-						if (indust.cur_state == LEFT_RUN) {
+					} else if (indust.state == LEFT_IDLE || indust.state == LEFT_RUN) {
+						indust.frame = 7;
+						indust.state = LEFT_RUN;
+						if (indust.state == LEFT_RUN) {
 							dx_jump = -2;
 						}
 					}
@@ -197,10 +197,10 @@ void main()
 						dx_jump = 0;
 					}
 				} else {
-					if (indust.cur_state == LEFT_RUN) {
-						indust.cur_state = LEFT_IDLE;
-					} else if (indust.cur_state == RIGHT_RUN) {
-						indust.cur_state = RIGHT_IDLE;
+					if (indust.state == LEFT_RUN) {
+						indust.state = LEFT_IDLE;
+					} else if (indust.state == RIGHT_RUN) {
+						indust.state = RIGHT_IDLE;
 					}
 				}
 			} else if (jump) {
@@ -210,19 +210,19 @@ void main()
 					}
 				}
 				if (stick == 3 || stick == 2) {
-					indust.cur_state = RIGHT_RUN;
+					indust.state = RIGHT_RUN;
 					dx_8 = 8;
 				} else if (stick == 7 || stick == 8) {
 					dx_8 = -8;
-					indust.cur_state = LEFT_RUN;
+					indust.state = LEFT_RUN;
 				} else {
 					dx = 0;
-					if (indust.cur_state == LEFT_RUN) {
-						indust.cur_anim_step = 0;
-						indust.cur_state = LEFT_IDLE;
-					} else if (indust.cur_state == RIGHT_RUN) {
-						indust.cur_anim_step = 0;
-						indust.cur_state = RIGHT_IDLE;
+					if (indust.state == LEFT_RUN) {
+						indust.frame = 0;
+						indust.state = LEFT_IDLE;
+					} else if (indust.state == RIGHT_RUN) {
+						indust.frame = 0;
+						indust.state = RIGHT_IDLE;
 					}
 				}
 			} else if (squash) {
@@ -238,33 +238,33 @@ void main()
 				jump = 0;
 				jump_ct = 0;
 				dx_jump = 0;
-				if (indust.cur_state == RIGHT_RUN || indust.cur_state == RIGHT_IDLE) {
-					indust.cur_state = RIGHT_SQUASH;
-					indust.cur_anim_step = 0;
+				if (indust.state == RIGHT_RUN || indust.state == RIGHT_IDLE) {
+					indust.state = RIGHT_SQUASH;
+					indust.frame = 0;
 					dy = -2;
-				} else if (indust.cur_state == LEFT_RUN || indust.cur_state == LEFT_IDLE) {
-					indust.cur_state = LEFT_SQUASH;
-					indust.cur_anim_step = 0;
+				} else if (indust.state == LEFT_RUN || indust.state == LEFT_IDLE) {
+					indust.state = LEFT_SQUASH;
+					indust.frame = 0;
 					dy = -2;
 				}
 			}
 
 			if (squash) {
-				if (indust.cur_state == RIGHT_SQUASH) {
+				if (indust.state == RIGHT_SQUASH) {
 					if(++indust.state_anim_ctr[RIGHT_SQUASH] > 1 ) {
 						indust.state_anim_ctr[RIGHT_SQUASH] = 0;
-						if (++indust.cur_anim_step >= indust.pattern_set->state_steps[RIGHT_SQUASH]) {
-							indust.cur_state = RIGHT_IDLE;
-							indust.cur_anim_step = 0;
+						if (++indust.frame >= indust.pattern_set->state_steps[RIGHT_SQUASH]) {
+							indust.state = RIGHT_IDLE;
+							indust.frame = 0;
 							squash = 0;
 						}
 					}
-				} else if (indust.cur_state == LEFT_SQUASH) {
+				} else if (indust.state == LEFT_SQUASH) {
 					if(++indust.state_anim_ctr[LEFT_SQUASH] > 1 ) {
 						indust.state_anim_ctr[LEFT_SQUASH] = 0;
-						if (++indust.cur_anim_step >= indust.pattern_set->state_steps[LEFT_SQUASH]) {
-							indust.cur_state = LEFT_IDLE;
-							indust.cur_anim_step = 0;
+						if (++indust.frame >= indust.pattern_set->state_steps[LEFT_SQUASH]) {
+							indust.state = LEFT_IDLE;
+							indust.frame = 0;
 							squash = 0;
 						}
 					}
@@ -273,10 +273,10 @@ void main()
 
 			if (jump) {
 				jump_ct++;
-				if (indust.cur_state == RIGHT_RUN || indust.cur_state == RIGHT_IDLE) {
-					if (indust.cur_state == RIGHT_RUN) {
+				if (indust.state == RIGHT_RUN || indust.state == RIGHT_IDLE) {
+					if (indust.state == RIGHT_RUN) {
 						dx = dx_jump + dx_8 / 8;
-					} else if (indust.cur_state == RIGHT_IDLE) {
+					} else if (indust.state == RIGHT_IDLE) {
 						dx = dx_jump;
 					}
 					if (jump_ct < 15) {
@@ -284,15 +284,15 @@ void main()
 						dy += dy_8 /2;
 					} else if (jump_ct < 20) {
 						dy = 0;
-						indust.cur_anim_step = 1;
+						indust.frame = 1;
 					} else {
 						dy = 2;
-						indust.cur_anim_step = 2;
+						indust.frame = 2;
 					}
-				} else if (indust.cur_state == LEFT_RUN || indust.cur_state == LEFT_IDLE) {
-					if (indust.cur_state == LEFT_RUN) {
+				} else if (indust.state == LEFT_RUN || indust.state == LEFT_IDLE) {
+					if (indust.state == LEFT_RUN) {
 						dx = dx_jump + dx_8 / 8;
-					} else if (indust.cur_state == LEFT_IDLE) {
+					} else if (indust.state == LEFT_IDLE) {
 						dx = dx_jump;
 					}
 					if (jump_ct < 15) {
@@ -300,57 +300,57 @@ void main()
 						dy += dy_8 /2;
 					} else if (jump_ct < 20) {
 						dy = 0;
-						if (indust.cur_state == LEFT_IDLE) {
-							indust.cur_anim_step = 1;
+						if (indust.state == LEFT_IDLE) {
+							indust.frame = 1;
 						} else {
-							indust.cur_anim_step = 6;
+							indust.frame = 6;
 						}
 					} else {
 						dy = 2;
-						if (indust.cur_state == LEFT_IDLE) {
-							indust.cur_anim_step = 2;
+						if (indust.state == LEFT_IDLE) {
+							indust.frame = 2;
 						} else {
-							indust.cur_anim_step = 5;
+							indust.frame = 5;
 						}
 					}
 				}
 			}
 
-			if (indust.cur_state == LEFT_ACTION) {
+			if (indust.state == LEFT_ACTION) {
 				if(++indust.state_anim_ctr[LEFT_ACTION] > 5 ) {
 					indust.state_anim_ctr[LEFT_ACTION] = 0;
-					if (++indust.cur_anim_step >= indust.pattern_set->state_steps[LEFT_ACTION]) {
-						indust.cur_state = LEFT_IDLE;
-						indust.cur_anim_step = 0;
+					if (++indust.frame >= indust.pattern_set->state_steps[LEFT_ACTION]) {
+						indust.state = LEFT_IDLE;
+						indust.frame = 0;
 					}
 				}
 			}
 
-			if (indust.cur_state == RIGHT_ACTION) {
+			if (indust.state == RIGHT_ACTION) {
 				if(++indust.state_anim_ctr[RIGHT_ACTION] > 5 ) {
 					indust.state_anim_ctr[RIGHT_ACTION] = 0;
-					if (++indust.cur_anim_step >= indust.pattern_set->state_steps[RIGHT_ACTION]) {
-						indust.cur_state = RIGHT_IDLE;
-						indust.cur_anim_step = 0;
+					if (++indust.frame >= indust.pattern_set->state_steps[RIGHT_ACTION]) {
+						indust.state = RIGHT_IDLE;
+						indust.frame = 0;
 					}
 				}
 			}
 
 
-			if (indust.cur_state == RIGHT_IDLE) {
+			if (indust.state == RIGHT_IDLE) {
 				if(++indust.state_anim_ctr[RIGHT_IDLE] > 5 ) {
 					indust.state_anim_ctr[RIGHT_IDLE] = 0;
-					if (++indust.cur_anim_step >= indust.pattern_set->state_steps[RIGHT_IDLE]) {
-						indust.cur_anim_step = 0;
+					if (++indust.frame >= indust.pattern_set->state_steps[RIGHT_IDLE]) {
+						indust.frame = 0;
 					}
 				}
 			}
 
-			if (indust.cur_state == LEFT_IDLE) {
+			if (indust.state == LEFT_IDLE) {
 				if(++indust.state_anim_ctr[LEFT_IDLE] > 5 ) {
 					indust.state_anim_ctr[LEFT_IDLE] = 0;
-					if (++indust.cur_anim_step >= indust.pattern_set->state_steps[LEFT_IDLE]) {
-						indust.cur_anim_step = 0;
+					if (++indust.frame >= indust.pattern_set->state_steps[LEFT_IDLE]) {
+						indust.frame = 0;
 					}
 				}
 			}
@@ -361,10 +361,10 @@ void main()
 			phys_detect_tile_collisions(&dpo_main, screen_buffer, dx, dy, false);
 			vdp_fastcopy_nametable(screen_buffer);
 			if (!jump && !is_colliding_down(&dpo_main)) {
-				if (indust.cur_state == LEFT_RUN) {
-					indust.cur_anim_step = 5;
+				if (indust.state == LEFT_RUN) {
+					indust.frame = 5;
 				} else {
-					indust.cur_anim_step = 2;
+					indust.frame = 2;
 				}
 			}
 			if (is_colliding_down(&dpo_main) && dy > 0) {

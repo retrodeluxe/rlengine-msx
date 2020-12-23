@@ -1,6 +1,17 @@
 Engine API
 ==========
 
+General definitions
+-------------------
+
+The MSX header contains several useful definitions used by other modules.
+
+.. code-block:: c
+
+   #include "msx.h".
+
+.. c:autodoc:: ../../engine/include/msx.h
+
 Sprite Module
 -------------
 
@@ -29,6 +40,20 @@ This amounts to a total 64 frames for 16x16 sprites.
 Tile Module
 ------------
 
+The Tile module provides a software abstraction to handle a set of tiles defined
+either as a :c:type:`TileSet` or a :c:type:`TileObject`.
+
+A :c:type:`TileSet` can be defined as a **static** set of tiles and behave as a container for
+tile pattern and color definitions. But alternatively can also be defined as **dynamic** and contain
+structural information for animation in a similar way as Sprites do (states and frames).
+
+A dynamic :c:type:`TileSet` can be used as a pattern into a :c:type:`TileObject` to
+display animated tiles on screen.
+
+.. code-block:: c
+
+   #include "tile.h".
+
 .. c:autodoc:: ../../engine/include/tile.h
 .. c:autodoc:: ../../engine/tile.c
 
@@ -55,6 +80,13 @@ Physics Module
 
 Vdp Module
 ----------
+
+The Vdp module provides functions to configure the Vdp and transfer data from
+RAM to VRAM.
+
+.. code-block:: c
+
+   #include "vdp.h"
 
 .. c:autodoc:: ../../engine/include/vdp.h
 .. c:autodoc:: ../../engine/vdp.c

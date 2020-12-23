@@ -205,8 +205,8 @@ void main()
                 case TYPE_ARCHER_SKELETON:
                     add_sprite(dpo, i, PATRN_SKELETON, x, y);
                     add_animator(dpo, ANIM_THROW_ARROW);
-                    enemy_sprites[i].cur_state = 1;
-                    enemy_sprites[i].cur_anim_step = 1;
+                    enemy_sprites[i].state = 1;
+                    enemy_sprites[i].frame = 1;
                     break;
                 case TYPE_PLANT:
                     add_sprite(dpo, i, PATRN_PLANT, x, y);
@@ -329,8 +329,8 @@ void spr_colision_handler() {
  */
 void throw_arrow(uint8_t xpos, uint8_t ypos)
 {
-	arrow_sprite.cur_state = 1;
-	arrow_sprite.cur_anim_step = 0;
+	arrow_sprite.state = 1;
+	arrow_sprite.frame = 0;
 	INIT_LIST_HEAD(&dpo_arrow.animator_list);
 	list_add(&animators[2].list, &dpo_arrow.animator_list);
 	spr_set_pos(&arrow_sprite, xpos + 16, ypos + 16);
@@ -355,7 +355,7 @@ void anim_throw_arrow(DisplayObject *obj)
     if (obj->state == 0) {
         if (frame_ct++ > 60) {
             frame_ct = 0;
-            obj->spr->cur_anim_step = 0;
+            obj->spr->frame = 0;
             spr_update(obj->spr);
             obj->state = 1;
             throw_arrow(obj->xpos, obj->ypos);
@@ -364,7 +364,7 @@ void anim_throw_arrow(DisplayObject *obj)
     }
     if (obj->state == 1) {
         if (time_throw + 1 < sys_gettime_secs()) {
-            obj->spr->cur_anim_step = 1;
+            obj->spr->frame = 1;
             spr_update(obj->spr);
         }
 
@@ -380,7 +380,7 @@ void anim_throw_arrow(DisplayObject *obj)
 void throw_bullets(uint8_t xpos, uint8_t ypos)
 {
     for (int8_t i = 0; i < 2; i++) {
-        bullet_sprite[i].cur_anim_step = 0;
+        bullet_sprite[i].frame = 0;
         INIT_LIST_HEAD(&dpo_bullet[i].animator_list);
         list_add(&animators[1].list, &dpo_bullet[i].animator_list);
         spr_set_pos(&bullet_sprite[i], xpos + 8 * i, ypos - 8);
@@ -407,7 +407,7 @@ void anim_spit_bullets(DisplayObject *obj)
     if (obj->state == 0) {
         if (frame_ct++ > 60) {
             frame_ct = 0;
-            obj->spr->cur_anim_step = 1;
+            obj->spr->frame = 1;
             spr_update(obj->spr);
             obj->state = 1;
             throw_bullets(obj->xpos, obj->ypos);
@@ -416,7 +416,7 @@ void anim_spit_bullets(DisplayObject *obj)
     }
     if (obj->state == 1) {
         if (time_throw + 1 < sys_gettime_secs()) {
-            obj->spr->cur_anim_step = 0;
+            obj->spr->frame = 0;
             spr_update(obj->spr);
         }
 
@@ -567,14 +567,14 @@ void anim_drop(DisplayObject *obj) {
 	}
 	// state 1 - just count
 	if (obj->state == 1) {
-		obj->spr->cur_anim_step = 0;
+		obj->spr->frame = 0;
 		if (frame_ct++ > 30) {
 			frame_ct = 0;
 			obj->state = 2;
 		}
 	}
 	if (obj->state == 2) {
-		obj->spr->cur_anim_step = 1;
+		obj->spr->frame = 1;
 		if (frame_ct++ > 30) {
 			frame_ct = 0;
 			obj->state = 3;
@@ -582,7 +582,7 @@ void anim_drop(DisplayObject *obj) {
 	}
 	if (obj->state == 3 && !is_colliding_down(obj)) {
 		obj->ypos++;
-		obj->spr->cur_anim_step = 2;
+		obj->spr->frame = 2;
 		spr_set_pos(obj->spr, obj->xpos, obj->ypos);
 	}
 	if (is_colliding_down(obj)) {
@@ -590,7 +590,7 @@ void anim_drop(DisplayObject *obj) {
 			frame_ct = 0;
 			obj->state = 0;
             obj->ypos = start_y;
-    		obj->spr->cur_anim_step = 0;
+    		obj->spr->frame = 0;
 		} else {
             obj->ypos++;
         }

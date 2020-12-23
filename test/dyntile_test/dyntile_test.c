@@ -42,17 +42,17 @@ void main()
 	tile_set_valloc(&giant_ts);
 	giant_tobj.x = 100;
 	giant_tobj.y = 50;
-	giant_tobj.cur_dir = 1;
-	giant_tobj.cur_anim_step = 0;
-	giant_tobj.ts = &giant_ts;
+	giant_tobj.state = 1;
+	giant_tobj.frame = 0;
+	giant_tobj.tileset = &giant_ts;
 	giant_tobj.idx = 0;
 
 	do {
 		sys_memset(scr_buf, 0, 768);
-		if (giant_tobj.cur_anim_step < giant_tobj.ts->n_frames - 1) {
-			giant_tobj.cur_anim_step++;
+		if (giant_tobj.frame < giant_tobj.tileset->frames - 1) {
+			giant_tobj.frame++;
 		} else {
-			giant_tobj.cur_anim_step = 0;
+			giant_tobj.frame = 0;
 		}
 		giant_tobj.x-=8;
 		tile_object_show(&giant_tobj, scr_buf, true);
