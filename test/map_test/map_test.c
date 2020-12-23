@@ -28,10 +28,7 @@ uint8_t map_buf[8000];
  */
 void main()
 {
-	uint8_t i,x,y, d;
-	uint8_t *ptr;
-	uint8_t *src;
-	unsigned int ct;
+	uint8_t i,x,y;
 
 	vdp_set_mode(MODE_GRP2);
 	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
