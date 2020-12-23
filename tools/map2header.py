@@ -561,6 +561,7 @@ class TileMapWriter:
             print >>fout,("/*\n * Initialization\n */")
             if count > 0:
                 print >>fout,("unsigned char *%s_object[%s];" % (self.basename, count))
+            print >>fout,("void main();\n")
             print >>fout,("void init() {\n main();\n}")
             print >>fout,("void init_%s_object_layers() {" % self.basename)
             layer_count = 0

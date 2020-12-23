@@ -75,6 +75,7 @@ extern void init_room_tilesets(uint8_t room, bool reload);
 extern void init_sfx();
 extern void show_room_title(uint8_t room);
 extern void start_music(uint8_t room);
+extern void show_score_panel();
 
 static void add_tileobject(DisplayObject *dpo, uint8_t objidx,
                            enum tile_sets_t tileidx) {
@@ -258,8 +259,7 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
 
 inline bool jean_check_collision() __nonbanked {
   uint8_t spr_size = coll_dpo->spr->pattern_set->size;
-  int16_t box_x, box_y, box_w, box_h;
-  ;
+  int16_t box_x = 0, box_y = 0, box_w = 0, box_h = 0;
 
   /** Hack to optimize final boss bullet performance **/
   if (game_state.room == ROOM_SATAN) {
@@ -417,7 +417,7 @@ void load_intro_scene() __nonbanked {
 }
 
 void load_room(uint8_t room, bool reload) {
-  uint8_t i, id, type, delay, offset, damage;
+  uint8_t i, id = 0, type, delay, offset, damage;
   bool add_dpo;
   SpritePattern *ps;
 

@@ -71,6 +71,8 @@ extern const uint8_t jean_state[];
 extern const uint8_t spit_state[];
 extern const uint8_t death_state[];
 
+void init_sprites();
+
 void init_map_tilesets() {
   tile_init();
   phys_init();

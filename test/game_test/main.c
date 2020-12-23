@@ -50,6 +50,14 @@ void load_room(uint8_t room, bool reload);
 void init_room_titles();
 void load_intro_scene() __nonbanked;
 void change_room() __nonbanked;
+void show_ending_animation();
+static void reload_font_digits();
+
+extern void init_resources();
+extern void init_animators();
+extern void init_game_state();
+extern void handle_death();
+extern void clear_room();
 
 TileSet logo;
 TileSet tileset_intro;
@@ -433,8 +441,8 @@ static void load_parchment_font() {
   INIT_FONT(font_symbols, big_font_symbols, FONT_SYMBOLS, 15, 1, 2);
 
   font_to_vram(&font_upper, 17);
-  font_to_vram(&font_lower, 128 + 17);
-  font_to_vram(&font_symbols, 180 + 17);
+  font_to_vram(&font_lower, (uint8_t)(128 + 17));
+  font_to_vram(&font_symbols, (uint8_t)(180 + 17));
 
   intro_font_set.upper = &font_upper;
   intro_font_set.lower = &font_lower;
@@ -453,8 +461,6 @@ static void reload_font_digits() {
  *  music.
  */
 void show_intro_animation() __nonbanked {
-  uint8_t i;
-
   tile_init();
   vdp_screen_disable();
   vdp_clear(0);
@@ -504,6 +510,9 @@ void show_intro_animation() __nonbanked {
 void show_ending_gate_animation(uint8_t frame) {
   uint8_t *dst, *dst1, *base = scr_tile_buffer + 256 + 32;
   uint8_t x, y, tile, tile1, w;
+
+  // clear compiler warning
+  tile = 0; w =0; dst = base; tile1 = 1; dst1 = dst;
 
   switch (frame) {
   case 0:
@@ -567,12 +576,6 @@ void show_ending_gate_animation(uint8_t frame) {
       dst1 += 32 - w;
     }
     break;
-  case 6:
-    // font_printf(&intro_font_set, 6, 2, scr_tile_buffer, str_ending_1);
-    // font_printf(&intro_font_set, 10, 4, scr_tile_buffer, str_ending_2);
-    // font_printf(&intro_font_set, 5, 19, scr_tile_buffer, str_ending_3);
-    // font_printf(&intro_font_set, 8, 21, scr_tile_buffer, str_ending_4);
-    break;
   }
 }
 
@@ -632,7 +635,6 @@ void show_ending_animation() {
 }
 
 void show_parchment(uint8_t id) {
-  uint8_t x, y;
 
   game_state.jean_x = dpo_jean.xpos;
   game_state.jean_y = dpo_jean.ypos;
@@ -771,14 +773,13 @@ void refresh_score() {
 }
 
 void show_score_panel() {
-  uint8_t i;
   SpritePattern *ps = &spr_pattern[PATRN_HEARTH_MASK];
 
   ascii8_set_data(PAGE_DYNTILES);
-  tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, 252 - 4);
-  tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, 252 - 8);
+  tile_set_to_vram_bank(&tileset[TILE_HEART_STATUS], BANK2, (uint8_t)(252 - 4));
+  tile_set_to_vram_bank(&tileset[TILE_CROSS_STATUS], BANK2, (uint8_t)(252 - 8));
 
-  score.y = 192 - 16;
+  score.y = (uint8_t)(192 - 16);
   score.x = 0;
   score.cur_dir = 0;
   score.cur_anim_step = 0;
@@ -797,7 +798,7 @@ void show_score_panel() {
   spr_show(&score_hearth_mask);
 
   score.x = 32;
-  score.y = 192 - 16;
+  score.y = (uint8_t)(192 - 16);
   score.cur_dir = 0;
   score.cur_anim_step = 0;
   score.ts = &tileset[TILE_CROSS_STATUS];
@@ -853,6 +854,7 @@ void start_music(uint8_t room) {
   ascii8_set_data(PAGE_MUSIC);
 
   new_song = NULL;
+  new_song_len = 0;
   switch (room) {
   case ROOM_EVIL_CHAMBER:
   case ROOM_FOREST:

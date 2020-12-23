@@ -67,6 +67,8 @@ void handle_death() {
 }
 
 void null_handler(DisplayObject *dpo, uint8_t data) {
+  unused(dpo);
+  unused(data);
   // empty handler
 }
 
@@ -133,6 +135,7 @@ void toggle_handler(DisplayObject *dpo, uint8_t data) {
 }
 
 void bell_handler(DisplayObject *dpo, uint8_t data) {
+  unused(data);
   game_state.bell = true;
   dpo->tob->cur_anim_step = 1;
   update_tileobject(dpo);
@@ -143,6 +146,7 @@ void bell_handler(DisplayObject *dpo, uint8_t data) {
 }
 
 void crosswitch_handler(DisplayObject *dpo, uint8_t data) {
+  unused(data);
   /** switch is only active once every time it appears **/
   phys_clear_colliding_tile_object(dpo);
   if (game_state.cross_switch) {
@@ -160,24 +164,29 @@ void crosswitch_handler(DisplayObject *dpo, uint8_t data) {
 }
 
 void trigger_handler(DisplayObject *dpo, uint8_t data) {
+  unused(dpo);
   if (data == TRIGGER_ENTRANCE_DOOR) {
     game_state.door_trigger = true;
   }
 }
 
 void deadly_tile_handler(DisplayObject *dpo, uint8_t data) {
+  unused(dpo);
+  unused(data);
   if (dpo_jean.state != STATE_COLLISION && dpo_jean.state != STATE_DEATH) {
     dpo_jean.state = STATE_COLLISION;
   }
 }
 
 void cup_handler(DisplayObject *dpo, uint8_t data) {
+  unused(data);
   remove_tileobject(dpo);
   sfx_play_effect(SFX_PICKUP_ITEM, 0);
   game_state.cup_picked_up = true;
 }
 
 void teletransport(DisplayObject *dpo, uint8_t data) {
+  unused(data);
   if (game_state.teletransport)
     return;
 

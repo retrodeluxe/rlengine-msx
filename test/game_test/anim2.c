@@ -473,7 +473,6 @@ void anim_dragon_bullets(DisplayObject *obj) {
  *  needs to be adjusted as priests move up and down.
  */
 void anim_hanging_priest(DisplayObject *obj) {
-  int8_t dy;
   uint8_t ty;
   TileObject *to = obj->tob;
   uint16_t offset_bottom =

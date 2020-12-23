@@ -649,12 +649,12 @@ void anim_plant(DisplayObject *obj) {
     // open
     obj->tob->cur_anim_step = 1;
     tile_object_show(obj->tob, scr_tile_buffer, true);
-    add_bullet(obj->xpos, obj->ypos - 8, PATRN_SMALL_BULLET,
-               ANIM_FALLING_BULLETS, 0, -4, 0, NULL);
+    add_bullet((uint8_t)obj->xpos, (uint8_t)(obj->ypos - 8), PATRN_SMALL_BULLET,
+               ANIM_FALLING_BULLETS, 0, (uint8_t)-4, 0, NULL);
     sfx_play_effect(SFX_SHOOT, 0);
   } else if (obj->state == obj->aux + 5) {
-    add_bullet(obj->xpos + 8, obj->ypos - 8, PATRN_SMALL_BULLET,
-               ANIM_FALLING_BULLETS, 0, -4, 1, NULL);
+    add_bullet((uint8_t)obj->xpos + 8, (uint8_t)(obj->ypos - 8), PATRN_SMALL_BULLET,
+               ANIM_FALLING_BULLETS, 0, (uint8_t)-4, 1, NULL);
   } else if (obj->state == obj->aux + 10) {
     // close
     obj->tob->cur_anim_step = 0;
@@ -747,7 +747,7 @@ void anim_splash(DisplayObject *obj) {
     if (obj->state == obj->aux) {
       obj->tob->cur_anim_step = 0;
       tile_object_show(obj->tob, scr_tile_buffer, true);
-      add_bullet(obj->xpos, obj->ypos - 8, PATRN_FISH, ANIM_FISH_JUMP, 0, -6, 0,
+      add_bullet((uint8_t)obj->xpos, (uint8_t)(obj->ypos - 8), PATRN_FISH, ANIM_FISH_JUMP, 0, (uint8_t)-6, 0,
                  obj);
     } else if (obj->state == obj->aux + 2) {
       obj->tob->cur_anim_step = 1;
@@ -882,7 +882,6 @@ void anim_horizontal_projectile(DisplayObject *obj) {
  * Animation of wall mounted gargolyne that spits a fireball
  */
 void anim_gargolyne(DisplayObject *obj) {
-  uint8_t spit_xpos;
 
   if (obj->state == obj->aux) {
     obj->tob->cur_anim_step = 1;
@@ -905,12 +904,12 @@ void anim_gargolyne(DisplayObject *obj) {
  * Water animation by tileobject shift
  */
 void anim_water(DisplayObject *obj) {
-  if (dpo->state++ == 10) {
-    dpo->tob->idx++;
-    if (dpo->tob->idx > 7)
-      dpo->tob->idx = 0;
-    tile_object_show(dpo->tob, scr_tile_buffer, true);
-    dpo->state = 0;
+  if (obj->state++ == 10) {
+    obj->tob->idx++;
+    if (obj->tob->idx > 7)
+      obj->tob->idx = 0;
+    tile_object_show(obj->tob, scr_tile_buffer, true);
+    obj->state = 0;
   }
 }
 
