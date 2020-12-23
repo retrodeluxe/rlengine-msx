@@ -267,9 +267,9 @@ int main (int argc, char *argv[])
   /* This will hold binary codes translated from hex file. */
   byte *Memory_Block;
 
-  fprintf (stdout,PROGRAM" v"VERSION", Copyright (C) 2012 Jacques Pelletier\n"
-		   "checksum extensions Copyright (C) 2004 Rockwell Automation\n"
-		   "improved P.G. 2007, modified Danny Schneider,2012\n\n");
+  //fprintf (stdout,PROGRAM" v"VERSION", Copyright (C) 2012 Jacques Pelletier\n"
+	//	   "checksum extensions Copyright (C) 2004 Rockwell Automation\n"
+	//	   "improved P.G. 2007, modified Danny Schneider,2012\n\n");
 
   if (argc == 1)
 	usage();
@@ -454,15 +454,15 @@ int main (int argc, char *argv[])
 				if (base > 0x7FFF && base < 0xBFFF) {
 
 					Phys_Addr = 0x4000 + page * 0x2000 + page_offset;
-					fprintf(stderr,"address %x --> page: %d offset %x\n", Phys_Addr, page, page_offset);
+					//fprintf(stderr,"address %x --> page: %d offset %x\n", Phys_Addr, page, page_offset);
 				} else {
 					// exception here must go to page 0
-					fprintf(stderr,"address %x --> page: %d\n", base, 0);
+					//fprintf(stderr,"address %x --> page: %d\n", base, 0);
 					Phys_Addr = base;
 				}
 
 			  } else {
-				  fprintf(stderr,"address %x\n", Phys_Addr);
+				  //fprintf(stderr,"address %x\n", Phys_Addr);
 			  }
 
 			  /* Same for the top address. */
@@ -597,9 +597,9 @@ int main (int argc, char *argv[])
   // reading the hex file. The padding bytes will then be added to the binary file.
   if(Max_Length_Setted==TRUE) Highest_Address = Starting_Address + Max_Length-1;
 
-  fprintf(stdout,"Lowest address  = %08X\n",Lowest_Address);
-  fprintf(stdout,"Highest address = %08X\n",Highest_Address);
-  fprintf(stdout,"Pad Byte        = %X\n",  Pad_Byte);
+  //fprintf(stdout,"Lowest address  = %08X\n",Lowest_Address);
+  //fprintf(stdout,"Highest address = %08X\n",Highest_Address);
+  //fprintf(stdout,"Pad Byte        = %X\n",  Pad_Byte);
 
   /* Add a checksum to the binary file */
   wCKS = 0;
@@ -617,7 +617,7 @@ int main (int argc, char *argv[])
 		  wCKS += Memory_Block[i];
 		}
 
-	  fprintf(stdout,"8-bit Checksum = %02X\n",wCKS & 0xff);
+	  //fprintf(stdout,"8-bit Checksum = %02X\n",wCKS & 0xff);
 	  if( Cks_Addr_set )
 		{
 		  wCKS = Cks_Value - (wCKS - Memory_Block[Cks_Addr]);

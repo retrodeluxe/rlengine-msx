@@ -51,8 +51,6 @@ void main()
 			log_e("playing effect %d\n", effect);
 		}
 	}
-	pt3_mute();
-	sys_reboot();
 }
 
 void play_music()

@@ -19,7 +19,8 @@ BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_S
 
 $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	@mkdir -p $(LOCAL_BUILD_OUT_BIN)
-	$(CROSS_CC) $(ENGINE_CFLAGS_BANKED) -c -o $@ $^
+	$(call print_cc, local, $^)
+	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS_BANKED) -c -o $@ $^
 
 ## Build IHX on a 24bit address space containing all code and data
 ##
@@ -38,22 +39,25 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LO
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _CODE=0x7C00" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(foreach page,$(CODE_PAGES),$(call emit_link_code_page,$(page)))
-	$(foreach page,$(DATA_PAGES),$(call emit_link_data_page,$(page)))
+	$(hide) $(foreach page,$(CODE_PAGES),$(call emit_link_code_page,$(page)))
+	$(hide) $(foreach page,$(DATA_PAGES),$(call emit_link_data_page,$(page)))
 	@echo "-b _HOME=0x4120" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
-	$(CROSS_LD) -n -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	$(call print_ld, ihx, $@)
+	$(hide) $(CROSS_LD) -n -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2ROM)
-	cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2ROM) -e bin $(notdir $^)
+	$(call print_pack, bin, $@)
+	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2ROM) -e bin $(notdir $^)
 
 ## Fill in the binary into a ROM of standard size (128Kb = 1Mbit)
 ##
 $(built_rom_1Mb) : $(built_rom_bin) | $(BUILT_ROM_PAGES)
 	@mkdir -p $(LOCAL_BUILD_OUT_ROM)
-	tr "\000" "\377" < /dev/zero | dd ibs=1k count=256 of=$@
-	dd if=$^ of=$@ conv=notrunc
+	$(call print_pack, rom1Mb, $@)
+	$(hide) tr "\000" "\377" < /dev/zero | (dd ibs=1k count=256 of=$@) > /dev/null 2>&1
+	$(hide) (dd if=$^ of=$@ conv=notrunc) > /dev/null 2>&1

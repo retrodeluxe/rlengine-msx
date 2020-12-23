@@ -15,7 +15,8 @@
 extern int function_in_code0();
 extern int function_in_code1();
 
-
+void something_else() __nonbanked;
+void something_else2() __nonbanked;
 
 void main() __nonbanked
 {

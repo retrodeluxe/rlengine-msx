@@ -16,6 +16,7 @@ BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_S
 
 $(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_BIN)
+	$(call print_cc, local, $^)
 	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -c -o $@ $^
 
 # Build banked sources that are placed in page0
@@ -24,6 +25,7 @@ BUILT_LOCAL_BANKED_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(
 
 $(BUILT_LOCAL_BANKED_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
 	$(hide) @mkdir -p $(LOCAL_BUILD_OUT_BIN)
+	$(call print_cc, banked, $^)
 	$(hide) $(CROSS_CC) $(ENGINE_CFLAGS) -ba 1 -c -o $@ $^
 
 # Link with Engine and 48k bootstrap
@@ -41,14 +43,17 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANKED_SRC_FILES) $(BU
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 	@echo "-e" >> $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
-	$(CROSS_LD) -n -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
+	$(call print_ld, ihx, $@)
+	$(hide) $(CROSS_LD) -n -k $(SDCC_LIB) -k $(BUILD_OUT_BIN) -f $(LOCAL_BUILD_OUT_BIN)/rom48.lnk
 
 $(built_rom_bin) : $(built_rom_ihx) | $(HEX2BIN)
+	$(call print_pack, bin, $@)
 	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
 
 # Generate the actual ROM
 #
 $(built_rom_48k) : $(built_rom_bin)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_ROM)
-	$(hide) tr "\000" "\377" < /dev/zero | dd ibs=1k count=48 of=$@
-	$(hide)dd if=$^ of=$@ conv=notrunc
+	$(call print_pack, rom48k, $@)
+	$(hide) tr "\000" "\377" < /dev/zero | (dd ibs=1k count=48 of=$@ ) > /dev/null 2>&1
+	$(hide) (dd if=$^ of=$@ conv=notrunc) > /dev/null 2>&1
