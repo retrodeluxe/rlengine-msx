@@ -68,6 +68,22 @@ extern uint8_t sys_rand() __nonbanked;
 extern bool sys_is60Hz() __nonbanked;
 extern void sys_disable_kbd_click();
 
+#define HASH_LITERAL #
+#define HASH() HASH_LITERAL
+
+/**
+ * Gets the ASCII8 ROM page of a symbol and stores it in ascii8_page
+ */
+#define ascii8_get_page(SYMBOL)                                                 \
+  __asm                                                                         \
+  push  iy                                                                      \
+  ld    iy, HASH()_ascii8_page                                                  \
+  ld    0(iy),HASH()(_##SYMBOL >> 16)                                           \
+  pop   iy                                                                      \
+  __endasm
+
+extern uint8_t ascii8_page;
+
 extern void ascii8_set_data(uint8_t page) __nonbanked;
 extern void ascii8_set_code(uint8_t page) __nonbanked;
 extern void ascii8_restore() __nonbanked;

@@ -2,6 +2,7 @@ include ../build.mk
 include $(SETUP_BUILD)
 #
 # ASCII8 banked ROM test (up to 2048K)
+BUILD_TYPE := debug
 include $(CONFIG_ROM)
 
 LOCAL_RES_DIR := ./res

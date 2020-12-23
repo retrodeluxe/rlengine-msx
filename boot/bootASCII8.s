@@ -1,5 +1,5 @@
 		.globl __sdcc_banked_call
-		.globl cur_page
+		.globl _ascii8_page
 		.globl _ascii8_set_data
 		.globl _ascii8_set_code
 		.globl _ascii8_restore
@@ -179,10 +179,10 @@ done:
 		; initialize banked call stack
 
 
-
 		.area _DATA
 romslot:	.ds 1
 biosslot:	.ds 1
 cur_page:	.ds 1
 cur_page2:	.ds 1
 banked_sp:	.ds 2
+_ascii8_page: .ds 1   ; global to store queried symbol pages
