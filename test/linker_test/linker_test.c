@@ -4,12 +4,10 @@
  *
  */
 
-#define DEBUG
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
 #include "log.h"
-//extern const unsigned char testmap_cmpr_dict;
 
 
 extern int function_in_code0();
