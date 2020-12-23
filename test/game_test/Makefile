@@ -2,7 +2,7 @@ include ../build.mk
 
 # game test is very tight in terms of how code fits on each
 # ROM page, enabling debug mode breaks the build currently
-# due to the addition of asserts 
+# due to the addition of asserts
 BUILD_TYPE := release
 include $(SETUP_BUILD)
 
@@ -10,11 +10,6 @@ include $(CONFIG_ROM)
 
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)
-
-LOCAL_ROM_CODE_START_PAGE := 2
-LOCAL_ROM_CODE_END_PAGE := 7
-LOCAL_ROM_DATA_START_PAGE := 8
-LOCAL_ROM_DATA_END_PAGE := 21
 
 LOCAL_ROM_NAME := game_test
 LOCAL_SRC_FILES := main.c logic.c anim.c anim2.c scene.c init.c \
