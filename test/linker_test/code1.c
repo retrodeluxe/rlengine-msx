@@ -5,6 +5,7 @@
 #include "sys.h"
 #include "vdp.h"
 #include "log.h"
+#include "ascii8.h"
 
 extern char caca1[];
 

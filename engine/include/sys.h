@@ -27,11 +27,6 @@
 
 #define BIOS_INT_HOOK 0xFD9A
 
-#define ASCII8_PAGE_CODE 3
-
-#define ASCII8_PAGE2 0x7000
-#define ASCII8_PAGE3 0x7800
-
 struct sys_proc {
   void (*func)();
 };
@@ -53,7 +48,6 @@ extern uint8_t sys_get_stick(uint8_t port) __nonbanked;
 extern uint8_t sys_get_trigger(uint8_t port) __nonbanked;
 extern void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked;
 #define sys_memset __builtin_memset
-// extern void sys_memset(void *dst, uint8_t c, uint16_t size);
 
 extern void sys_irq_register(void(*func)());
 extern void sys_irq_unregister(void(*func)()) __nonbanked;
@@ -68,23 +62,4 @@ extern uint8_t sys_rand() __nonbanked;
 extern bool sys_is60Hz() __nonbanked;
 extern void sys_disable_kbd_click();
 
-#define HASH_LITERAL #
-#define HASH() HASH_LITERAL
-
-/**
- * Gets the ASCII8 ROM page of a symbol and stores it in ascii8_page
- */
-#define ascii8_get_page(SYMBOL)                                                 \
-  __asm                                                                         \
-  push  iy                                                                      \
-  ld    iy, HASH()_ascii8_page                                                  \
-  ld    0(iy),HASH()(_##SYMBOL >> 16)                                           \
-  pop   iy                                                                      \
-  __endasm
-
-extern uint8_t ascii8_page;
-
-extern void ascii8_set_data(uint8_t page) __nonbanked;
-extern void ascii8_set_code(uint8_t page) __nonbanked;
-extern void ascii8_restore() __nonbanked;
 #endif

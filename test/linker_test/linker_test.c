@@ -8,7 +8,7 @@
 #include "sys.h"
 #include "vdp.h"
 #include "log.h"
-
+#include "ascii8.h"
 
 extern int function_in_code0();
 extern int function_in_code1();

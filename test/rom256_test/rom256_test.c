@@ -8,6 +8,7 @@
 #include "sys.h"
 #include "vdp.h"
 #include "log.h"
+#include "ascii8.h"
 
 extern const char test[];
 extern const char test2[];

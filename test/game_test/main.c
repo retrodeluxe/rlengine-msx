@@ -16,6 +16,7 @@
 #include "sys.h"
 #include "tile.h"
 #include "vdp.h"
+#include "ascii8.h"
 
 #include "anim.h"
 #include "banks.h"
