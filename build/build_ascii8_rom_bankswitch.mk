@@ -1,5 +1,5 @@
 #
-# Build an ASCII8 ROM (up to 2048K)
+# Build an ASCII8 ROM (up to 2048K) with support for banked calls
 #
 include $(BUILD_SYSTEM)/boot.mk
 include $(BUILD_SYSTEM)/engine.mk
@@ -10,8 +10,10 @@ built_rom_1Mb = $(LOCAL_BUILD_OUT_ROM)/$(LOCAL_ROM_NAME).rom
 
 all: $(built_rom_1Mb)
 
-CODE_PAGES := $(shell seq $(LOCAL_ROM_CODE_START_PAGE) $(LOCAL_ROM_CODE_END_PAGE))
-DATA_PAGES := $(shell seq $(LOCAL_ROM_DATA_START_PAGE) $(LOCAL_ROM_DATA_END_PAGE))
+# Extract pages from local source
+#
+CODE_PAGES := $(shell rgrep CODE_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$' | sort | uniq)
+DATA_PAGES := $(shell rgrep DATA_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$' | sort | uniq)
 
 # Build local sources
 #

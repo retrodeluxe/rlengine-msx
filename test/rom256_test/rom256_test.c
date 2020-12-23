@@ -4,17 +4,15 @@
  *
  */
 
-#define DEBUG
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
 #include "log.h"
 
-//extern const unsigned char testmap_cmpr_dict;
 extern const char test[];
 extern const char test2[];
 
-void main()
+void main() __nonbanked
 {
 
 	log_w("we are running");
