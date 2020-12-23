@@ -25,6 +25,9 @@
 uint8_t rle_prev;
 uint8_t rle_prev_run;
 
+/**
+ * Disable Screen
+ */
 void vdp_screen_disable(void)
 {
 	__asm
@@ -32,6 +35,9 @@ void vdp_screen_disable(void)
 	__endasm;
 }
 
+/**
+ * Enable Screen
+ */
 void vdp_screen_enable(void)
 {
 	__asm
@@ -39,6 +45,12 @@ void vdp_screen_enable(void)
 	__endasm;
 }
 
+/**
+ * Set VDP mode
+ *
+ * :param mode: see :c:enum:`VdpMode`
+ *
+ */
 void vdp_set_mode(VdpMode mode)
 {
 	unused(mode);
@@ -52,9 +64,11 @@ void vdp_set_mode(VdpMode mode)
 /**
  * Checks 5th sprite collision flag
  *
- * Must be called right after vsync (halt)
+ *   .. warning::
  *
- * returns: the 5th sprite attribute id or zero if no 5th sprite
+ *      This function must be called right after :c:func:`sys_wait_vsync`
+ *
+ * :returns: index of the 5th sprite attribute, or zero
  */
 uint8_t vdp_5th_sprite() __naked
 {
@@ -72,6 +86,13 @@ no_5th_spr:
   __endasm;
 }
 
+/**
+ * Sets foreground and border screen color
+ *
+ * :param ink: see :c:enum:`VdpColor`
+ * :param border: see :c:enum:`VdpColor`
+ *
+ */
 void vdp_set_color(VdpColor ink, VdpColor border)
 {
 	unused(ink);
@@ -96,7 +117,12 @@ void vdp_set_color(VdpColor ink, VdpColor border)
 	__endasm;
 }
 
-
+/**
+ * Write a single byte to VRAM
+ *
+ * :param address: VRAM address (0 to 16384)
+ * :param value: byte to be written
+ */
 void vdp_write(uint16_t address, uint8_t value) __nonbanked
 {
 	unused(address);
@@ -122,6 +148,13 @@ void vdp_write(uint16_t address, uint8_t value) __nonbanked
 	__endasm;
 }
 
+/**
+ * Writes value into an VRAM range
+ *
+ * :param vaddress: VRAM target address (0 to 16384)
+ * :param size: number of bytes to write
+ * :param value: byte to be written
+ */
 void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked
 {
 	unused(vaddress);
@@ -158,7 +191,11 @@ $1:
 }
 
 /**
- * copy ram buffer to vram
+ * Copy block from RAM to VRAM
+ *
+ * :param vaddress: VRAM target address (0 to 16384)
+ * :param buffer: pointer to RAM source
+ * :param size: number of bytes to copy
  */
 void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked
 {
@@ -195,6 +232,13 @@ $2:
 	__endasm;
 }
 
+/**
+ * Copy buffer with built-in address information to VRAM
+ *
+ * This function is equivalent to BLOAD"",S in Basic
+ *
+ * :param buffer: pointer to RAM source
+ */
 void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
 {
 	unused(buffer);
@@ -248,6 +292,12 @@ $7:
 	__endasm;
 }
 
+/**
+ * Initialize VDP sprites
+ *
+ * :param spritesize: see :c:enum:`VdpSpriteSize`
+ * :param zoom: see :c:enum:`VdpSpriteZoom`
+ */
 void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom)
 {
 	unused(zoom);
@@ -282,6 +332,13 @@ $4:
 	__endasm;
 }
 
+/**
+ * Fast copy of a RAM buffer of 768 bytes to VRAM, on the name table.
+ *
+ * This function provides a faster way to refresh tiles on the screen.
+ *
+ * :param buffer: pointer to RAM buffer of 768 bytes
+ */
 void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked
 {
 	unused(buffer);
@@ -319,9 +376,6 @@ $5:
 }
 
 
-/**
- *
- */
 static void vdp_write_internal() __naked
 {
 	__asm
@@ -342,6 +396,16 @@ static void vdp_write_internal() __naked
 	__endasm;
 }
 
+/**
+ * Decompress and Copy a RAM buffer into VRAM
+ *
+ * This function performs Run-Length-Encoding decompression, and can be used
+ * to tranfer big compressed assets (pattern definitions) to VRAM
+ *
+ * :param vaddress: VRAM target address
+ * :param buffer: pointer to source RAM buffer
+ * :param size: size of decompressed buffer
+ */
 void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size)
 {
 	rle_prev = 0;
@@ -421,7 +485,8 @@ end_rle:
 }
 
 /**
- * Fills name table with zeros and define zero char color in all banks
+ * Clears screen by filling the name table with zeros and defining a tile
+ * with index zero and the provided color.
  */
 void vdp_clear(VdpColor color)
 {
@@ -432,7 +497,11 @@ void vdp_clear(VdpColor color)
 }
 
 /**
- * Writes a string to vram assuming scr2 and default character set is defined
+ * Writes a String to VRAM on mode `MODE_GRP1`
+ *
+ * :param x: x coordinate (0-32)
+ * :param y: y coordinate (0-24)
+ * :param msg: String to be written
  */
 void vdp_puts(char x, char y, char *msg)
 {

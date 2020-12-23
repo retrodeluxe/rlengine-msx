@@ -22,39 +22,95 @@
 #ifndef _VDP_H_
 #define _VDP_H_
 
+/**
+ * VDP Mode
+ */
 typedef enum {
+  /**
+   * Text Mode (Screen 0)
+   */
   MODE_TXT,
+
+  /**
+   * Graphic Mode 1 (Screen 1)
+   */
   MODE_GRP1,
+
+  /**
+   * Graphic Mode 2 (Screen 2)
+   */
   MODE_GRP2,
+
+  /**
+   * Multicolor Mode (Screen 3)
+   */
   MODE_MULT
 } VdpMode;
 
+/**
+ * Sprite Size
+ */
 typedef enum {
+  /**
+   * Use 8x8 Hardware Sprites
+   */
   SPR_SIZE_8,
+
+  /**
+   * Use 16x16 Hardware Sprites
+   */
   SPR_SIZE_16
 } VdpSpriteSize;
 
+/**
+ * Sprite zoom
+ */
 typedef enum {
+  /**
+   * Disable sprites zoom
+   */
   SPR_ZOOM_OFF,
+  /**
+   * Enable sprite zoom
+   */
   SPR_ZOOM_ON
 } VdpSpriteZoom;
 
+/**
+ * Vdp Palette
+ */
 typedef enum {
+  /** */
   COLOR_TRANSPARENT,
+  /** */
   COLOR_BLACK,
+  /** */
   COLOR_GREEN,
+  /** */
   COLOR_LIGHTGREEN,
+  /** */
   COLOR_DIMBLUE,
+  /** */
   COLOR_BLUE,
+  /** */
   COLOR_DIMRED,
+  /** */
   COLOR_LIGHTBLUE,
+  /** */
   COLOR_RED,
+  /** */
   COLOR_LIGHTRED,
+  /** */
   COLOR_YELLOW,
+  /** */
   COLOR_LIGHTYELLOW,
+  /** */
   COLOR_DIMGREEN,
+  /** */
   COLOR_MAGENTA,
+  /** */
   COLOR_GREY,
+  /** */
   COLOR_WHITE
 } VdpColor;
 

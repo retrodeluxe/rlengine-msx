@@ -38,7 +38,7 @@ typedef struct DisplayObject DisplayObject;
  */
 struct DisplayObject {
 
-  /** DisplayObject type, see c:enum:DisplayObjectType */
+  /** DisplayObject type, see :c:enum:DisplayObjectType */
   uint8_t type;
 
   /** Maximum coordinate used for animation */
