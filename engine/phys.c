@@ -29,31 +29,50 @@
 
 #pragma CODE_PAGE 2
 
+#define STATFL 0xf3e7;
+#define SPR_COLISION_MASK 32
+#define SPR_5TH_ALIGN_MASK 64
+#define SPR_COLLISION_FRAME_SKIP 7 /* bitmask for frameskip */
+
+/*
+ * Bitmaps mapping which tiles (0 to 255) should generate different
+ * collision types.
+ */
 static uint8_t colliding_tiles[32];
 static uint8_t colliding_tiles_down[32];
 static uint8_t colliding_tiles_trigger[32];
 
-static uint8_t tile[12];
-static void (*sprite_colision_cb)();
+/* Tile collision definitions */
+static TileCollisionDef tile_collision[MAX_COLLISION_DEFS];
 
-static struct tile_collision_group cgroup[MAX_CROUPS];
-static uint8_t n_cgroups;
+/* Tile collision definition count */
+static uint8_t collision_ctr;
 
-#define STATFL 0xf3e7;
-#define SPR_COLISION_MASK 32
-#define SPR_5TH_ALIGN_MASK 64
+/* Sprite collision detection callback */
+static void (*sprite_collision_cb)();
 
-#define SPR_COLLISION_FRAME_SKIP 7 /* bitmask for frameskip */
-
+/* Sprite collision detection frame skip */
 static uint8_t frame_skip;
 static bool skip;
 
-void phys_check_collision_bit() __nonbanked {
-  uint8_t *status = (uint8_t *)STATFL;
+/* tile buffer */
+static uint8_t tile[12];
 
-  /** check collisions every X frames **/
+/*
+ * Internal Sprite collision detection handler
+ */
+void phys_check_sprite_collision() __nonbanked {
+  uint8_t *status = (uint8_t *)STATFL;
+  /*
+   * Check collisions every X frames only.
+   *
+   * The user handler usually has to traverse over many sprites
+   * and check collision rectangles to find out if the collision
+   * is actionable. This is computationally expensive, so we
+   * only generate callbacks at a rate of SPR_COLLISION_FRAME_SKIP
+   */
   if (!frame_skip && (*status & SPR_COLISION_MASK) != 0) {
-    sprite_colision_cb();
+    sprite_collision_cb();
     skip = true;
   }
   if (skip) {
@@ -64,71 +83,103 @@ void phys_check_collision_bit() __nonbanked {
   }
 }
 
+/**
+ * Initializes the Physics Module
+ *
+ * This function clears all types of colliding tiles.
+ */
 void phys_init() {
   sys_memset(colliding_tiles, 255, 32);
   sys_memset(colliding_tiles_down, 255, 32);
   sys_memset(colliding_tiles_trigger, 255, 32);
-  sprite_colision_cb = NULL;
-  n_cgroups = 0;
+  sprite_collision_cb = NULL;
+  collision_ctr = 0;
   frame_skip = 0;
   skip = false;
 }
 
-/* note that this runs in interrupt context */
+/**
+ * Sets the Sprite collision handler
+ *
+ * :param handler: function to be called when a collision occur
+ *
+ * .. warning::
+ *      The collision handler will be called from interrupt context,
+ *      therefore it should not perform long running operations and must
+ *      be defined as a ``__nonbanked`` function.
+ *
+ */
 void phys_set_sprite_collision_handler(void(*handler)()) {
-  if (sprite_colision_cb == NULL) {
-    sprite_colision_cb = handler;
-    sys_irq_register(phys_check_collision_bit);
-  }
-}
-
-void phys_clear_sprite_collision_handler() __nonbanked {
-  if (sprite_colision_cb != NULL) {
-    sys_irq_unregister(phys_check_collision_bit);
-    sprite_colision_cb = NULL;
+  if (sprite_collision_cb == NULL) {
+    sprite_collision_cb = handler;
+    sys_irq_register(phys_check_sprite_collision);
   }
 }
 
 /**
- * set callbacks for specific tiles
+ * Clears the currently configured Sprite collision handler
  */
-void phys_set_tile_collision_handler(enum tile_collision_type type,
-          DisplayObject *dpo, void(*handler)(DisplayObject *dpo, uint8_t data),
-                                     uint8_t data) {
+void phys_clear_sprite_collision_handler() __nonbanked {
+  if (sprite_collision_cb != NULL) {
+    sys_irq_unregister(phys_check_sprite_collision);
+    sprite_collision_cb = NULL;
+  }
+}
+
+/*
+ * Set a TileCollisionDef based on a DisplayObject
+ */
+void phys_set_tile_collision_handler(TileCollisionType type,
+  DisplayObject *dpo, TileCollisionHandler *callback, uint8_t data) {
+
   uint8_t i;
   uint8_t base_tile = dpo->tob->tileset->pidx;
   uint8_t num_tiles = dpo->tob->tileset->frame_w * dpo->tob->tileset->frame_h *
                       dpo->tob->tileset->frames * dpo->tob->tileset->states;
 
-  for (i = 0; i < n_cgroups; i++) {
-    if (cgroup[i].start == base_tile) {
+  /*
+   * Try find an existing TileCollisionDef that contains the target tiles
+   */
+  for (i = 0; i < collision_ctr; i++) {
+    if (tile_collision[i].start == base_tile) {
       break;
     }
   }
 
-  if (i < n_cgroups && !(type & TILE_COLLISION_MULTIPLE))
+  /*
+   * If there is a TileCollisionDef covering this object, and the collision
+   * type in not TILE_COLLISION_MULTIPLE, we avoid the duplicated definition.
+   * Otherwise, define a new TileCollisionDef with the same parameters but
+   * different handler because have two objects of the same type on screen.
+   */
+  if (i < collision_ctr && !(type & TILE_COLLISION_MULTIPLE))
     return;
 
-  cgroup[n_cgroups].start = base_tile;
-  cgroup[n_cgroups].end = base_tile + num_tiles - 1;
-  cgroup[n_cgroups].handler = handler;
-  cgroup[n_cgroups].data = data;
-  cgroup[n_cgroups].dpo = dpo;
-  cgroup[n_cgroups].type = type;
-  n_cgroups++;
-
-  // dump cgroups
-  // for (i = 0; i < n_cgroups; i++) {
-  //	log_e("cgroup %d: start %d end %d\n", i, cgroup[i].start,cgroup[i].end);
-  //}
+  tile_collision[collision_ctr].start = base_tile;
+  tile_collision[collision_ctr].end = base_tile + num_tiles - 1;
+  if (callback != NULL) {
+    tile_collision[collision_ctr].callback.page = callback->page;
+    tile_collision[collision_ctr].callback.handler = callback->handler;
+  } else {
+    tile_collision[collision_ctr].callback.handler = NULL;
+  }
+  tile_collision[collision_ctr].data = data;
+  tile_collision[collision_ctr].dpo = dpo;
+  tile_collision[collision_ctr].type = type;
+  collision_ctr++;
 }
 
 /**
- * Sets all the tiles composing an object as coliding tiles
+ * Create a new TileCollisionDef for a DisplayObject
+ *
+ * :param dpo: the DisplayObject target for collision detection
+ * :param type: collision type, see :c:enum:`TileCollisionType`
+ * :param handler: a tile collision handler
+ * :param data: data to be passed to the handler on the event of collision
  */
-void phys_set_colliding_tile_object(DisplayObject *dpo,
-                                    enum tile_collision_type type,
-                                    void(*handler)(DisplayObject *dpo, uint8_t data), uint8_t data) {
+void phys_set_colliding_tile_object(DisplayObject *dpo, TileCollisionType type,
+            TileCollisionHandler *callback, uint8_t data) {
+
   uint8_t i;
   uint8_t base_tile = dpo->tob->tileset->pidx;
   uint8_t num_tiles = dpo->tob->tileset->frame_w * dpo->tob->tileset->frame_h *
@@ -143,13 +194,28 @@ void phys_set_colliding_tile_object(DisplayObject *dpo,
       phys_set_colliding_tile(i);
   }
 
-  phys_set_tile_collision_handler(type, dpo, handler, data);
+  phys_set_tile_collision_handler(type, dpo, callback, data);
 }
 
+/**
+ * Create a new TileCollisionDef for a DisplayObject with a Mask
+ *
+ * This function narrows down the collision box a DisplayObject before
+ * defining the collision.
+ *
+ * :param dpo: the DisplayObject target for collision detection
+ * :param type: collision type, see :c:enum:`TileCollisionType`
+ * :param x: left position of the mask in tile coordinates
+ * :param y: top position of the mask in tile coordinates
+ * :param w: width of the mask in tile coordinates
+ * :param h: heigth of the mask in tile coordinates
+ * :param handler: a tile collision handler
+ * :param data: data to be passed to the handler on the event of collision
+ */
 void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
-                                           enum tile_collision_type type,
+                                           TileCollisionType type,
                                            uint8_t x, uint8_t y, uint8_t w,
-                                           uint8_t h, void(*handler)(DisplayObject *dpo, uint8_t data),
+                                           uint8_t h, TileCollisionHandler *callback,
                                            uint8_t data) {
   uint8_t i, j, k;
   uint8_t base_tile = dpo->tob->tileset->pidx;
@@ -175,9 +241,14 @@ void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
     }
   }
 
-  phys_set_tile_collision_handler(type, dpo, handler, data);
+  phys_set_tile_collision_handler(type, dpo, callback, data);
 }
 
+/**
+ * Clear TileCollisionDefs related to a DisplayObject
+ *
+ * :param dpo: DisplayObject to clear collisions for
+ */
 void phys_clear_colliding_tile_object(DisplayObject *dpo) {
   uint8_t i;
   uint8_t base_tile = dpo->tob->tileset->pidx;
@@ -192,7 +263,7 @@ void phys_clear_colliding_tile_object(DisplayObject *dpo) {
 }
 
 /**
- * registers tiles from a plain tile_set as colliding
+ * Set /
  */
 void phys_set_colliding_tile_set(TileSet *ts) {
   uint8_t i;
@@ -214,26 +285,39 @@ static void phys_tile_collision_notify(uint8_t tile, uint16_t x,
 
   unused(y);
 
-  for (i = 0; i < n_cgroups; i++) {
-    if (tile >= cgroup[i].start && tile <= cgroup[i].end) {
-      if (cgroup[i].type & TILE_COLLISION_MULTIPLE) {
-        d = (cgroup[i].dpo->xpos - x);
+  for (i = 0; i < collision_ctr; i++) {
+    if (tile >= tile_collision[i].start && tile <= tile_collision[i].end) {
+      if (tile_collision[i].type & TILE_COLLISION_MULTIPLE) {
+        /*
+         * In case of multiple objects of the same type on screen,
+         * need to find out which the one that is actually colliding
+         * in order to call the right handler.
+         */
+        d = (tile_collision[i].dpo->xpos - x);
         d = d < 0 ? (d * -1) : d;
         if (d > 32) {
           log_e("bad obj: %d\n", d);
           continue;
         }
       }
-      // HACK: this only works with game_test at the moment
-      //       called from anim(6) but the handlers are in logic(3)
-      ascii8_set_code(3);
-      cgroup[i].handler(cgroup[i].dpo, cgroup[i].data);
-      ascii8_set_code(6);
+
+      /*
+       * FIXME: ascii8 should only be defined in ascii8 roms, there should
+       *        be some built in define to disable it
+       */
+      if (tile_collision[i].callback.handler != NULL) {
+        ascii8_set_code(tile_collision[i].callback.page);
+        tile_collision[i].callback.handler(tile_collision[i].dpo, tile_collision[i].data);
+        ascii8_restore();
+      }
     }
   }
 }
-/*
- * Set collision flag for a specific tile (all directions)
+
+/**
+ * Set all collision flags for a specific tile
+ *
+ * :param tile: index of the tile to enable collisions for
  */
 void phys_set_colliding_tile(uint8_t tile) {
   bitmap_reset(colliding_tiles, tile);
@@ -242,16 +326,28 @@ void phys_set_colliding_tile(uint8_t tile) {
 }
 
 /**
- * Set a tile that collides only when falling
+ * Set down collision flag for a specific tile
+ *
+ * :param tile: index of the tile to enable collisions for
  */
 void phys_set_down_colliding_tile(uint8_t tile) {
   bitmap_reset(colliding_tiles_down, tile);
 }
 
+/**
+ * Set trigger collision flag for a specific tile
+ *
+ * :param tile: index of the tile to enable collisions for
+ */
 void phys_set_trigger_colliding_tile(uint8_t tile) {
   bitmap_reset(colliding_tiles_trigger, tile);
 }
 
+/**
+ * Clear all collision flags for a specific tile
+ *
+ * :param tile: index of the tile to clear collisions for
+ */
 void phys_clear_colliding_tile(uint8_t tile) {
   bitmap_set(colliding_tiles, tile);
   bitmap_set(colliding_tiles_down, tile);
@@ -284,7 +380,7 @@ static bool is_coliding_trigger_tile_pair(uint8_t tile1,
 
 #define TILE_WIDTH 32
 
-/**
+/*
  * Update dpo collision_state
  */
 static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
@@ -299,8 +395,8 @@ static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
   xp = obj->xpos + dx;
   yp = obj->ypos + dy;
 
-  /** truncate tile positions to screen borders **/
-  /** and add logic to handle corner cases **/
+  /* truncate tile positions to screen borders **/
+  /* and add logic to handle corner cases **/
   if (xp < 0)
     x = 0;
   else if (xp > 240)
@@ -358,7 +454,7 @@ static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
 
   obj->collision_state = 0;
 
-  /** check non-blocking collisions **/
+  /* check non-blocking collisions **/
   if (notify) {
     if (is_coliding_trigger_tile_pair(tile[8], tile[9])) {
       phys_tile_collision_notify(tile[9], x, y);
@@ -394,7 +490,7 @@ static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
   }
 }
 
-/**
+/*
  * compute tile colision based on future position
  * XXX: Enemies do not trigger collision callbacks with tob, need a flag.
  */
@@ -446,20 +542,32 @@ static void phys_detect_tile_collisions_16x16(DisplayObject *obj, uint8_t *map,
   }
 }
 
-/*
- * Update collision state of a display object 16x16
+/**
+ * Detect projected collisions for a DisplayObject
+ *
+ * This function updates collision status of the provided DisplayObject
+ * and notifies collision handlers if specified in the arguments.
+ *
+ * .. warning::
+ *
+ *        Only DisplayObjects of type SPRITE and sizes 16x16 and 16x32 are supported.
+ *
+ * :param dpo: DisplayObject to check collisions for
+ * :param map: RAM buffer containing the current map on display
+ * :param dx: delta x, applied to the DisplayObject current position before
+ *            checking for collisions
+ * :param dy: delta y, applied to the DisplayObject current position before
+ *            checking for collisions
+ * :param notify: true if listeners should be notified on collision event
  */
-void phys_detect_tile_collisions(DisplayObject *obj, uint8_t *map, int8_t dx,
+void phys_detect_tile_collisions(DisplayObject *dpo, uint8_t *map, int8_t dx,
                                  int8_t dy, bool duck,
                                  bool notify) __nonbanked {
-  uint8_t size = obj->spr->pattern_set->size;
+  uint8_t size = dpo->spr->pattern_set->size;
 
   if (size == SPR_SIZE_16x16) {
-    phys_detect_tile_collisions_16x16(obj, map, dx, dy, duck, notify);
+    phys_detect_tile_collisions_16x16(dpo, map, dx, dy, duck, notify);
   } else if (size = SPR_SIZE_16x32) {
-    phys_detect_tile_collisions_16x32(obj, map, dx, dy, duck, notify);
+    phys_detect_tile_collisions_16x32(dpo, map, dx, dy, duck, notify);
   }
-  // else if (size = SPR_SIZE_32x16) {
-  //	phys_detect_tile_collisions_16x16(obj,map, dx, dy, duck, notify);
-  //}
 }

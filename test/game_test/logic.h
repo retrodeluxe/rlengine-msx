@@ -57,7 +57,24 @@ enum trigger_ids {
   TRIGGER_ENTRANCE_DOOR = 2,
 };
 
+enum collision_handler_t {
+  PICKUP_HEART,
+  PICKUP_SCROLL,
+  PICKUP_RED_SCROLL,
+  PICKUP_CROSS,
+  CHECKPOINT,
+  TOGGLE,
+  BELL,
+  CROSSWITCH,
+  TRIGGER,
+  DEADLY_TILE,
+  CUP,
+  TELETRANSPORT,
+  MAX_HANDLERS
+};
+
 extern struct game_state_t game_state;
+extern TileCollisionHandler handler[MAX_HANDLERS];
 
 void null_handler(DisplayObject *dpo, uint8_t data);
 void pickup_heart(DisplayObject *dpo, uint8_t data);

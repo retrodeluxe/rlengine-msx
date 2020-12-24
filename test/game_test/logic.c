@@ -9,6 +9,7 @@
 #include "sys.h"
 #include "tile.h"
 #include "vdp.h"
+#include "ascii8.h"
 
 #include "anim.h"
 #include "logic.h"
@@ -16,9 +17,16 @@
 
 #pragma CODE_PAGE 3
 
+TileCollisionHandler handler[MAX_HANDLERS];
+
 struct game_state_t game_state;
 
+void init_handlers();
+
 void init_game_state() {
+
+  init_handlers();
+
   sys_memset(&game_state, 0, sizeof(game_state));
 
   game_state.jean_x = 100;
@@ -213,4 +221,26 @@ void teletransport(DisplayObject *dpo, uint8_t data) {
       sfx_play_effect(SFX_PORTAL, 0);
     }
   }
+}
+
+void init_handlers() {
+  uint8_t i;
+
+  ascii8_get_page(pickup_heart);
+  for (i = 0; i < MAX_HANDLERS; i++) {
+    handler[i].page = ascii8_page;
+  }
+
+  handler[PICKUP_HEART].handler = pickup_heart;
+  handler[PICKUP_SCROLL].handler = pickup_scroll;
+  handler[PICKUP_RED_SCROLL].handler = pickup_red_scroll;
+  handler[PICKUP_CROSS].handler = pickup_cross;
+  handler[CHECKPOINT].handler = checkpoint_handler;
+  handler[TOGGLE].handler = toggle_handler;
+  handler[BELL].handler = bell_handler;
+  handler[CROSSWITCH].handler = crosswitch_handler;
+  handler[TRIGGER].handler = trigger_handler;
+  handler[DEADLY_TILE].handler = deadly_tile_handler;
+  handler[CUP].handler = cup_handler;
+  handler[TELETRANSPORT].handler = teletransport;
 }

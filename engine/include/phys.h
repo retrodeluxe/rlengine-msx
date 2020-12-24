@@ -29,6 +29,9 @@
 #define COLLISION_DOWN 8
 #define COLLISION_DOWN_FT 16 // fallthrough
 
+/**
+ *
+ */
 #define is_colliding_left(x) (((x)->collision_state & COLLISION_LEFT) != 0)
 #define is_colliding_right(x) (((x)->collision_state & COLLISION_RIGHT) != 0)
 #define is_colliding_down(x) (((x)->collision_state & COLLISION_DOWN) != 0)
@@ -39,35 +42,89 @@
 #define is_colliding_y(x) (is_colliding_up((x)) || is_colliding_down((x)))
 #define is_colliding(x) (((x)->collision_state) != 0)
 
-#define MAX_CROUPS 12
+#define MAX_COLLISION_DEFS 12
 
-struct tile_collision_group {
-  uint8_t start;
-  uint8_t end;
-  uint8_t data;
-  uint8_t type;
-  DisplayObject *dpo;
+/**
+ * Defines the type of tile collision
+ */
+typedef enum {
+  /**
+   * Collision in all directions
+   */
+  TILE_COLLISION_FULL = 1,
+  /**
+   * Collision only when moving down (falling)
+   */
+  TILE_COLLISION_DOWN = 2,
+  /**
+   * Collision that triggers a callback but does not impair movement
+   */
+  TILE_COLLISION_TRIGGER = 4,
+  /**
+   * Collision from multiple instances of the same objects
+   * but potentially with different callbacks
+   */
+  TILE_COLLISION_MULTIPLE = 8,
+} TileCollisionType;
+
+typedef struct TileCollisionHandler TileCollisionHandler;
+struct TileCollisionHandler {
+  uint8_t page;
   void (*handler)(DisplayObject *dpo, uint8_t data);
 };
 
-enum tile_collision_type {
-  TILE_COLLISION_FULL = 1,
-  TILE_COLLISION_DOWN = 2,
-  TILE_COLLISION_TRIGGER = 4,
-  TILE_COLLISION_MULTIPLE = 8, // indicates multiple objects may
-                               // share same tiles on screen and have
-                               // different handlers
+/**
+ * Defines a set of tiles that generate collision events
+ */
+typedef struct TileCollisionDef TileCollisionDef;
+/**
+ * Contains TileCollisionDef data
+ */
+struct TileCollisionDef {
+  /**
+   * Starting tile index that defines the collision range
+   */
+  uint8_t start;
+  /**
+   * Ending tile index that defines the collision range
+   */
+  uint8_t end;
+  /**
+   * Data to be passed to the handler on collision event
+   */
+  uint8_t data;
+  /**
+   * Type of collision
+   */
+  TileCollisionType type;
+  /**
+   * DisplayObject to be passed to the handler on collision
+   */
+  DisplayObject *dpo;
+  /**
+   * Handler to be called on collision event
+   */
+  TileCollisionHandler callback;
 };
+
+
 
 void phys_init();
 void phys_set_sprite_collision_handler(void(*handler)());
 void phys_clear_sprite_collision_handler() __nonbanked;
-void phys_set_tile_collision_handler(enum tile_collision_type type,
-          DisplayObject *dpo, void(*handler)(DisplayObject *dpo, uint8_t data),
-                                        uint8_t data);
+void phys_set_tile_collision_handler(TileCollisionType type,
+                              DisplayObject *dpo,
+                              TileCollisionHandler *callback,
+                              uint8_t data);
 void phys_set_colliding_tile_object(DisplayObject *dpo,
-                                    enum tile_collision_type type,
-          void(*handler)(DisplayObject *dpo, uint8_t data), uint8_t data);
+                              TileCollisionType type,
+                              TileCollisionHandler *callback,
+                              uint8_t data);
+void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
+                              TileCollisionType type,
+                              uint8_t x, uint8_t y, uint8_t w, uint8_t h,
+                              TileCollisionHandler *callback,
+                              uint8_t data);
 void phys_clear_colliding_tile_object(DisplayObject *dpo);
 void phys_set_colliding_tile(uint8_t tile);
 void phys_set_down_colliding_tile(uint8_t tile);
@@ -75,11 +132,6 @@ void phys_set_trigger_colliding_tile(uint8_t tile);
 void phys_clear_colliding_tile(uint8_t tile);
 void phys_detect_tile_collisions(DisplayObject *obj, uint8_t *map, int8_t dx,
                                  int8_t dy, bool duck, bool notify) __nonbanked;
-void phys_detect_fall(DisplayObject *obj, uint8_t *map, int8_t dx) __nonbanked;
 void phys_set_colliding_tile_set(TileSet *ts);
-void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
-                                           enum tile_collision_type type,
-                                           uint8_t x, uint8_t y, uint8_t w,
-                                           uint8_t h, void(*handler)(DisplayObject *dpo, uint8_t data),
-                                           uint8_t data);
+
 #endif

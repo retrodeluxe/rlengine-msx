@@ -255,7 +255,7 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
   add_animator(&dpo_tob_bullet[idx], anim_id);
   tile_object_show(dpo_tob_bullet[idx].tob, scr_tile_buffer, true);
   phys_set_colliding_tile_object(&dpo_tob_bullet[idx], TILE_COLLISION_TRIGGER,
-                                 deadly_tile_handler, 0);
+                                 &handler[DEADLY_TILE], 0);
 }
 
 inline bool jean_check_collision() __nonbanked {
@@ -453,21 +453,21 @@ void load_room(uint8_t room, bool reload) {
           if (game_state.scroll[id] == 0) {
             add_tileobject(dpo, tob_ct, TILE_SCROLL);
             phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                           pickup_scroll, id);
+                                           &handler[PICKUP_SCROLL], id);
           }
         } else {
           add_tileobject(dpo, tob_ct, TILE_RED_SCROLL);
           dpo->visible = false;
           add_animator(dpo, ANIM_RED_PARCHMENT);
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                         pickup_red_scroll, id);
+                                         &handler[PICKUP_RED_SCROLL], id);
         }
       } else if (map_object->object.actionitem.type == TYPE_TOGGLE) {
         id = map_object->object.actionitem.action_id;
         if (game_state.toggle[id] == 0) {
           add_tileobject(dpo, tob_ct, TILE_TOGGLE);
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                         toggle_handler, id);
+                                         &handler[TOGGLE], id);
         } else {
           add_tileobject(dpo, tob_ct, TILE_TOGGLE);
         }
@@ -494,7 +494,7 @@ void load_room(uint8_t room, bool reload) {
             add_animator(dpo, ANIM_CROSS);
             phys_set_colliding_tile_object(
                 dpo, TILE_COLLISION_TRIGGER | TILE_COLLISION_MULTIPLE,
-                pickup_cross, id);
+                &handler[PICKUP_CROSS], id);
           } else {
             add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
             dpo->aux = 1;
@@ -507,7 +507,7 @@ void load_room(uint8_t room, bool reload) {
             add_animator(dpo, ANIM_CROSS);
             phys_set_colliding_tile_object(
                 dpo, TILE_COLLISION_TRIGGER | TILE_COLLISION_MULTIPLE,
-                pickup_cross, id);
+                &handler[PICKUP_CROSS], id);
             dpo->visible = false;
           }
         } else if (id > 7 && game_state.cross[id] == 0) {
@@ -523,7 +523,7 @@ void load_room(uint8_t room, bool reload) {
             add_animator(dpo, ANIM_CROSS);
             phys_set_colliding_tile_object(
                 dpo, TILE_COLLISION_TRIGGER | TILE_COLLISION_MULTIPLE,
-                pickup_cross, id);
+                &handler[PICKUP_CROSS], id);
             dpo->visible = false;
           } else {
             add_tileobject(dpo, tob_ct, TILE_INVERTED_CROSS);
@@ -538,7 +538,7 @@ void load_room(uint8_t room, bool reload) {
             add_animator(dpo, ANIM_CROSS);
             phys_set_colliding_tile_object(
                 dpo, TILE_COLLISION_TRIGGER | TILE_COLLISION_MULTIPLE,
-                pickup_cross, id);
+                &handler[PICKUP_CROSS], id);
           }
         }
       } else if (map_object->object.actionitem.type == TYPE_TELETRANSPORT) {
@@ -549,7 +549,7 @@ void load_room(uint8_t room, bool reload) {
           game_state.teletransport = false;
         } else {
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                         teletransport, id);
+                                         &handler[TELETRANSPORT], id);
         }
       } else if (map_object->object.actionitem.type == TYPE_HEART) {
         id = map_object->object.actionitem.action_id;
@@ -558,14 +558,14 @@ void load_room(uint8_t room, bool reload) {
           add_animator(dpo, ANIM_CYCLE_TILE);
           phys_set_colliding_tile_object(
               dpo, TILE_COLLISION_TRIGGER | TILE_COLLISION_MULTIPLE,
-              pickup_heart, id);
+              &handler[PICKUP_HEART], id);
         }
       } else if (map_object->object.actionitem.type == TYPE_CHECKPOINT) {
         id = map_object->object.actionitem.action_id;
         if (game_state.checkpoint[id] == 0) {
           add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                         checkpoint_handler, id);
+                                         &handler[CHECKPOINT], id);
         } else {
           add_tileobject(dpo, tob_ct, TILE_CHECKPOINT);
           dpo->tob->frame = 1;
@@ -581,7 +581,7 @@ void load_room(uint8_t room, bool reload) {
         add_tileobject(dpo, tob_ct, TILE_SWITCH);
         dpo->parent = tmp_dpo;
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                       crosswitch_handler, 0);
+                                       &handler[CROSSWITCH], 0);
         if (game_state.cross_switch) {
           dpo->tob->frame = 1;
           dpo->parent->spr->frame = 1;
@@ -592,13 +592,13 @@ void load_room(uint8_t room, bool reload) {
           game_state.final_fight = true;
           add_tileobject(dpo, tob_ct, TILE_CUP);
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                         cup_handler, 0);
+                                         &handler[CUP], 0);
         }
       } else if (map_object->object.actionitem.type == TYPE_TRIGGER) {
         id = map_object->object.actionitem.action_id;
         add_tileobject(dpo, tob_ct, TILE_INVISIBLE_TRIGGER);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                       trigger_handler, id);
+                                       &handler[TRIGGER], id);
       } else if (map_object->object.actionitem.type == TYPE_BELL) {
         if (!game_state.bell) {
           add_sprite(dpo, spr_ct, PATRN_BELL_MASK);
@@ -611,7 +611,7 @@ void load_room(uint8_t room, bool reload) {
           add_tileobject(dpo, tob_ct, TILE_BELL);
           dpo->parent = tmp_dpo;
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                         bell_handler, id);
+                                         &handler[BELL], id);
         } else {
           add_sprite(dpo, spr_ct, PATRN_BELL_MASK);
           ps = &spr_pattern[PATRN_BELL_MASK];
@@ -632,7 +632,7 @@ void load_room(uint8_t room, bool reload) {
       if (map_object->object.static_.type == TYPE_DRAGON) {
         add_tileobject(dpo, tob_ct, TILE_DRAGON);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
       } else if (map_object->object.static_.type == TYPE_LAVA) {
         offset = map_object->object.static_.offset;
         add_tileobject(dpo, tob_ct, TILE_LAVA);
@@ -640,18 +640,18 @@ void load_room(uint8_t room, bool reload) {
         add_animator(dpo, ANIM_LAVA);
         if (room != ROOM_BONFIRE) {
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                         deadly_tile_handler, 0);
+                                         &handler[DEADLY_TILE], 0);
         }
       } else if (map_object->object.static_.type == TYPE_LAVA4) {
         add_tileobject(dpo, tob_ct, TILE_LAVA4);
         add_animator(dpo, ANIM_LAVA);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
       } else if (map_object->object.static_.type == TYPE_LAVA6) {
         add_tileobject(dpo, tob_ct, TILE_LAVA6);
         add_animator(dpo, ANIM_LAVA);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
       } else if (map_object->object.static_.type == TYPE_SPEAR) {
         damage = map_object->object.static_.damage;
         if (damage == 1) {
@@ -659,13 +659,13 @@ void load_room(uint8_t room, bool reload) {
         } else {
           add_tileobject(dpo, tob_ct, TILE_SPEAR);
           phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                         deadly_tile_handler, 0);
+                                         &handler[DEADLY_TILE], 0);
         }
       } else if (map_object->object.static_.type == TYPE_WATER) {
         add_tileobject(dpo, tob_ct, TILE_WATER);
         add_animator(dpo, ANIM_WATER);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
       }
       room_objs += NEXT_OBJECT(struct map_object_static);
     } else if (map_object->type == GHOST) {
@@ -684,15 +684,14 @@ void load_room(uint8_t room, bool reload) {
         add_tileobject(dpo, tob_ct, TILE_DOOR);
         dpo->visible = game_state.door_trigger;
         add_animator(dpo, ANIM_CLOSE_DOOR);
-        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
+        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, NULL,
                                        0);
       } else if (id == 1 && game_state.toggle[0] == 0) {
         /** hanging priests, opens with dragon toggle **/
         add_dpo = true;
       } else if (id == 2 && !game_state.bell) {
         add_tileobject(dpo, tob_ct, TILE_TRAPDOOR);
-        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
-                                       0);
+        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, NULL, 0);
       } else if (id == 3 && game_state.toggle[1] == 0) {
         /** death door, opens with toggle in hangin priests */
         add_dpo = true;
@@ -703,8 +702,7 @@ void load_room(uint8_t room, bool reload) {
         dpo->tob->frame = 0;
         dpo->visible = game_state.toggle[2] == 0;
         add_animator(dpo, ANIM_OPEN_DOOR);
-        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
-                                       0);
+        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, NULL, 0);
       } else if (id == 5) {
         // church tower door
         add_dpo = true;
@@ -714,8 +712,7 @@ void load_room(uint8_t room, bool reload) {
         add_tileobject(dpo, tob_ct, TILE_DOOR);
         dpo->visible = false;
         add_animator(dpo, ANIM_CLOSE_DOOR_SATAN);
-        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
-                                       0);
+        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, NULL, 0);
       }
       if (add_dpo) {
         add_tileobject(dpo, tob_ct, TILE_DOOR);
@@ -723,8 +720,7 @@ void load_room(uint8_t room, bool reload) {
           dpo->tob->state = 1;
           dpo->tob->frame = 0;
         }
-        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
-                                       0);
+        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, NULL, 0);
       }
       room_objs += NEXT_OBJECT(struct map_object_door);
     } else if (map_object->type == SHOOTER) {
@@ -752,7 +748,7 @@ void load_room(uint8_t room, bool reload) {
         dpo->aux = 30;
         add_animator(dpo, ANIM_ARCHER_SKELETON);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
         ascii8_set_data(PAGE_SPRITES);
         spr_valloc_pattern_set(PATRN_ARROW);
       } else if (map_object->object.shooter.type == TYPE_PLANT) {
@@ -761,14 +757,14 @@ void load_room(uint8_t room, bool reload) {
         add_tileobject(dpo, tob_ct, TILE_PLANT);
         add_animator(dpo, ANIM_SHOOTER_PLANT);
         phys_set_masked_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER, 0, 1,
-                                              2, 1, deadly_tile_handler, 0);
+                                              2, 1, &handler[DEADLY_TILE], 0);
         ascii8_set_data(PAGE_SPRITES);
         spr_valloc_pattern_set(PATRN_SMALL_BULLET);
       } else if (map_object->object.shooter.type == TYPE_FLAME) {
         add_tileobject(dpo, tob_ct, TILE_FLAME);
         add_animator(dpo, ANIM_DRAGON_FLAME);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
       }
       room_objs += NEXT_OBJECT(struct map_object_shooter);
     } else if (map_object->type == BLOCK) {
@@ -782,8 +778,7 @@ void load_room(uint8_t room, bool reload) {
         dpo->state = 0;
         dpo->visible = false;
         add_animator(dpo, ANIM_BLOCK_CROSSES);
-        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, null_handler,
-                                       0);
+        phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL, NULL, 0);
       }
       room_objs += NEXT_OBJECT(struct map_object_block);
     } else if (map_object->type == STEP) {
@@ -860,7 +855,7 @@ void load_room(uint8_t room, bool reload) {
         dpo->state = STATE_MOVING_DOWN;
         add_animator(dpo, ANIM_HANGING_PRIEST);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_TRIGGER,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
       } else if (map_object->object.movable.type == TYPE_FLY) {
         add_sprite(dpo, spr_ct, PATRN_FLY);
         add_animator(dpo, ANIM_UP_DOWN_BOUNDED);
@@ -904,7 +899,7 @@ void load_room(uint8_t room, bool reload) {
         dpo->state = STATE_MOVING_UP;
         add_animator(dpo, ANIM_SATAN);
         phys_set_colliding_tile_object(dpo, TILE_COLLISION_FULL,
-                                       deadly_tile_handler, 0);
+                                       &handler[DEADLY_TILE], 0);
         ascii8_set_data(PAGE_SPRITES);
         spr_valloc_pattern_set(PATRN_BULLET);
       } else {
