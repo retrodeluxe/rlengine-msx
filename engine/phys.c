@@ -296,14 +296,14 @@ static void phys_tile_collision_notify(uint8_t tile, uint16_t x,
         d = (tile_collision[i].dpo->xpos - x);
         d = d < 0 ? (d * -1) : d;
         if (d > 32) {
+          // FIXME: ?
           log_e("bad obj: %d\n", d);
           continue;
         }
       }
 
       /*
-       * FIXME: ascii8 should only be defined in ascii8 roms, there should
-       *        be some built in define to disable it
+       * Call the handler by switching ROM page if necessary
        */
       if (tile_collision[i].callback.handler != NULL) {
         ascii8_set_code(tile_collision[i].callback.page);

@@ -47,7 +47,7 @@ export ENGINE_CFLAGS := -mz80
 export ROM_CFLAGS := -mz80
 
 ifeq ($(BANKED_CALLS),enabled)
-	ROM_CFLAGS += --model-large
+	ROM_CFLAGS += --model-large -DBANKED_CALLS
 endif
 
 ifeq ($(BUILD_TYPE),release)

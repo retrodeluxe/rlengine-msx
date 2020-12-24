@@ -74,6 +74,19 @@ Animation Module
 
 Physics Module
 --------------
+
+The Physics Module provides an abstraction to define what objects in a scene
+generate collisions and to allow for detecting and handling those collisions
+during animation.
+
+``TileObjects``, ``TileSets`` and individual tiles can be used to configure
+collision events that can then be detected during the animation of a
+``DisplayObject``.
+
+.. code-block:: c
+
+   #include "phys.h".
+
 .. c:autodoc:: ../../engine/include/phys.h
 .. c:autodoc:: ../../engine/phys.c
 

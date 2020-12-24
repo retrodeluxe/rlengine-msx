@@ -145,9 +145,6 @@ struct TileObject {
    * Tileset data
    */
   TileSet *tileset;
-  /**
-   * XXX
-   */
   uint8_t idx;
 };
 

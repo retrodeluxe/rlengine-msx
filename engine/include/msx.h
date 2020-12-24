@@ -37,10 +37,24 @@
 #define BIOS_WRTPSG 0x0093
 #define BIOS_RDPSG 0x0096
 
+/**
+ * Disable interrupts
+ */
 #define sys_irq_disable() __asm di __endasm
+
+/**
+ * Enable interrupts
+ */
 #define sys_irq_enable() __asm ei __endasm
+
+/**
+ * Wait for VSYNC
+ */
 #define sys_wait_vsync() __asm halt __endasm
 
+/**
+ * Declare an unused argument to avoid compiler warnings
+ */
 #define unused(x) x
 
 /**

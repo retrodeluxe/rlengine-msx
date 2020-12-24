@@ -30,18 +30,42 @@
 #define COLLISION_DOWN_FT 16 // fallthrough
 
 /**
- *
+ * Check if a DisplayObject is colliding on the left side
  */
 #define is_colliding_left(x) (((x)->collision_state & COLLISION_LEFT) != 0)
+/**
+ * Check if a DisplayObject is colliding on the right side
+ */
 #define is_colliding_right(x) (((x)->collision_state & COLLISION_RIGHT) != 0)
+/**
+ * Check if a DisplayObject is colliding on the bottom side
+ */
 #define is_colliding_down(x) (((x)->collision_state & COLLISION_DOWN) != 0)
+/**
+ * Check if a DisplayObject is colliding on the bottom side with fallthrough tiles
+ */
 #define is_colliding_down_ft(x)                                                \
   (((x)->collision_state & COLLISION_DOWN_FT) != 0)
+/**
+ * Check if a DisplayObject is colliding on the top side
+ */
 #define is_colliding_up(x) (((x)->collision_state & COLLISION_UP) != 0)
+/**
+ * Check if a DisplayObject is colliding on the x-axis
+ */
 #define is_colliding_x(x) (is_colliding_left((x)) || is_colliding_right((x)))
+/**
+ * Check if a DisplayObject is colliding on the y-axis
+ */
 #define is_colliding_y(x) (is_colliding_up((x)) || is_colliding_down((x)))
+/**
+ * Check if a DisplayObject is colliding in any direction
+ */
 #define is_colliding(x) (((x)->collision_state) != 0)
 
+/*
+ * Max number of TilleCollisionDefs
+ */
 #define MAX_COLLISION_DEFS 12
 
 /**
@@ -65,11 +89,25 @@ typedef enum {
    * but potentially with different callbacks
    */
   TILE_COLLISION_MULTIPLE = 8,
+
 } TileCollisionType;
 
+/**
+ * Defines a TileCollisionHandler
+ */
 typedef struct TileCollisionHandler TileCollisionHandler;
+
+/**
+ * Contains a TileCollisionHandler
+ */
 struct TileCollisionHandler {
+  /**
+   * ascii8 ROM page where the handler is locatted
+   */
   uint8_t page;
+  /**
+   * handler function pointer
+   */
   void (*handler)(DisplayObject *dpo, uint8_t data);
 };
 
@@ -106,7 +144,6 @@ struct TileCollisionDef {
    */
   TileCollisionHandler callback;
 };
-
 
 
 void phys_init();
