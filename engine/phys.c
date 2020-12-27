@@ -133,9 +133,9 @@ void phys_set_tile_collision_handler(TileCollisionType type,
   DisplayObject *dpo, TileCollisionHandler *callback, uint8_t data) {
 
   uint8_t i;
-  uint8_t base_tile = dpo->tob->tileset->pidx;
-  uint8_t num_tiles = dpo->tob->tileset->frame_w * dpo->tob->tileset->frame_h *
-                      dpo->tob->tileset->frames * dpo->tob->tileset->states;
+  TileSet *ts = dpo->tob->tileset;
+  uint8_t base_tile = ts->pidx;
+  uint8_t num_tiles = ts->frame_w * ts->frame_h * ts->frames * ts->states;
 
   /*
    * Try find an existing TileCollisionDef that contains the target tiles
@@ -181,9 +181,9 @@ void phys_set_colliding_tile_object(DisplayObject *dpo, TileCollisionType type,
             TileCollisionHandler *callback, uint8_t data) {
 
   uint8_t i;
-  uint8_t base_tile = dpo->tob->tileset->pidx;
-  uint8_t num_tiles = dpo->tob->tileset->frame_w * dpo->tob->tileset->frame_h *
-                      dpo->tob->tileset->frames * dpo->tob->tileset->states;
+  TileSet *ts = dpo->tob->tileset;
+  uint8_t base_tile = ts->pidx;
+  uint8_t num_tiles = ts->frame_w * ts->frame_h * ts->frames * ts->states;
 
   for (i = base_tile; i < base_tile + num_tiles; i++) {
     if (type & TILE_COLLISION_DOWN)
@@ -218,16 +218,15 @@ void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
                                            uint8_t h, TileCollisionHandler *callback,
                                            uint8_t data) {
   uint8_t i, j, k;
-  uint8_t base_tile = dpo->tob->tileset->pidx;
-  uint8_t num_tiles = dpo->tob->tileset->frame_w * dpo->tob->tileset->frame_h *
-                      dpo->tob->tileset->frames * dpo->tob->tileset->states;
-  uint8_t tiles_in_row =
-      dpo->tob->tileset->frame_w * dpo->tob->tileset->frames * dpo->tob->tileset->states;
-  uint8_t num_frames = dpo->tob->tileset->frames * dpo->tob->tileset->states;
+  TileSet *ts = dpo->tob->tileset;
+  uint8_t base_tile = ts->pidx;
+  uint8_t num_tiles = ts->frame_w * ts->frame_h * ts->frames * ts->states;
+  uint8_t tiles_in_row = ts->frame_w * ts->frames * ts->states;
+  uint8_t num_frames = ts->frames * ts->states;
   uint8_t frame_base;
 
   for (i = 0; i < num_frames; i++) {
-    frame_base = base_tile + i * dpo->tob->tileset->frame_w;
+    frame_base = base_tile + i * ts->frame_w;
     frame_base += x + y * tiles_in_row;
     for (j = frame_base; j < frame_base + h * tiles_in_row; j++) {
       for (k = j; k < j + w; k++) {
@@ -251,9 +250,9 @@ void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
  */
 void phys_clear_colliding_tile_object(DisplayObject *dpo) {
   uint8_t i;
-  uint8_t base_tile = dpo->tob->tileset->pidx;
-  uint8_t num_tiles = dpo->tob->tileset->frame_w * dpo->tob->tileset->frame_h *
-                      dpo->tob->tileset->frames * dpo->tob->tileset->states;
+  TileSet *ts = dpo->tob->tileset;
+  uint8_t base_tile = ts->pidx;
+  uint8_t num_tiles = ts->frame_w * ts->frame_h * ts->frames * ts->states;
 
   for (i = base_tile; i < base_tile + num_tiles; i++) {
     phys_clear_colliding_tile(i);
