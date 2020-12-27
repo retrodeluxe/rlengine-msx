@@ -22,76 +22,73 @@
 
 #pragma CODE_PAGE 2
 
-char ChanA[29]; //CHNPRM_Size
-char ChanB[29];
-char ChanC[29];
+uint8_t chana[29]; //CHNPRM_Size
+uint8_t chanb[29];
+uint8_t chanc[29];
 
-char DelyCnt;
-unsigned int CurESld;
-char CurEDel;
+uint8_t delay_cnt;
+uint16_t CurESld;
+uint8_t CurEDel;
 
-//Ns_Base_AddToNs:
-char Ns_Base;
-char AddToNs;
+uint8_t Ns_Base;
+uint8_t AddToNs;
 
-//AYREGS::
-char VT_[14];
-char AYREGS[14];
-unsigned int EnvBase;
-char VAR0END[240];
+uint8_t AYREGS[14];
+uint16_t EnvBase;
+uint8_t VAR0END[240];
 
-/* --- Workarea --- (apunta a RAM que estaba antes en codigo automodificable)
- -El byte de estado en SETUP deberia ser algo asi (CH enable/disable no esta aun)
-|EP|0|0|0|CH3|CH2|CH1|LP|
+/*
+ * set bit0 to 1 to disable song loop, bit7 indicates playback looped over
+ */
+uint8_t pt3_setup;
 
-LP: Loop enable/disable. A 1 si queremos que el tema suene solo una vez.
-EP: End point. A 1 cada vez que el tema acaba.
-CH1-CH3: Channel enable/disable. A 1 si no queremos que suene el canal. (AUN  NO VA!!)
-*/
+/* pointer to song data */
+uint16_t pt3_song;
 
-char PT3_SETUP; /* set bit0 to 1, if you want to play without looping
-				           bit7 is set each time, when loop point is passed           */
-unsigned int PT3_MODADDR;	 //direccion datos canci�n
-unsigned int PT3_CrPsPtr;  //POSICION CURSOR EN PATTERN
-unsigned int PT3_SAMPTRS;  //sample info?
-unsigned int PT3_OrnPtrs;  //Ornament pattern
+/* cursor position in pattern */
+uint16_t PT3_CrPsPtr;
 
-unsigned int PT3_PDSP;     //pilasave
-unsigned int PT3_CSP;      //pilsave2
-unsigned int PT3_PSP;      //pilsave3
+/* sample platterns */
+uint16_t PT3_SAMPTRS;
 
-char PT3_PrNote;
-unsigned int PT3_PrSlide;
+/* ornament */
+uint16_t PT3_OrnPtrs;
 
-unsigned int PT3_AdInPtA;  //play data pattern
-unsigned int PT3_AdInPtB;  //play data
-unsigned int PT3_AdInPtC;  //play data
+uint16_t PT3_PDSP;     //pilasave
+uint16_t PT3_CSP;      //pilsave2
+uint16_t PT3_PSP;      //pilsave3
 
-unsigned int PT3_LPosPtr;  //Position Ptr?
-unsigned int PT3_PatsPtr;  //Pat Ptr
+uint8_t PT3_PrNote;
+uint16_t PT3_PrSlide;
 
-char PT3_Delay;            //delay
-char PT3_AddToEn;          //Envelope data (No cal ya que no usa Envs??)
-char PT3_Env_Del;          //Envelope data (idem)
-unsigned int PT3_ESldAdd;  //Envelope data (idem)
+uint16_t PT3_AdInPtA;  //play data pattern
+uint16_t PT3_AdInPtB;  //play data
+uint16_t PT3_AdInPtC;  //play data
+
+uint16_t PT3_LPosPtr;  //Position Ptr?
+uint16_t PT3_PatsPtr;  //Pat Ptr
+
+uint8_t PT3_Delay;            //delay
+uint8_t PT3_AddToEn;          //Envelope data (No cal ya que no usa Envs??)
+uint8_t PT3_Env_Del;          //Envelope data (idem)
+uint16_t PT3_ESldAdd;  //Envelope data (idem)
 
 
-char NoteTable[192];       //Note table
+uint8_t pt3_note_table[192];       //Note table
 
 /**
  * Silence the PSG
  */
 void pt3_mute() __naked
 {
-	__asm
-MUTE:
-	XOR  A
-	LD   (#_AYREGS+AR_AmplA),A
-	LD   (#_AYREGS+AR_AmplB),A
-	LD   (#_AYREGS+AR_AmplC),A
-	JP   _pt3_play
-
-	__endasm;
+  __asm
+mute:
+  xor  a
+  ld   (#_AYREGS+AR_AmplA),a
+  ld   (#_AYREGS+AR_AmplB),a
+  ld   (#_AYREGS+AR_AmplC),a
+  jp   _pt3_play
+  __endasm;
 }
 
 /**
@@ -102,129 +99,126 @@ MUTE:
  */
 void pt3_init(uint8_t *song,uint8_t loop) __naked
 {
-	song;
-	loop;
+	unused(song);
+	unused(loop);
 
 	__asm
+	push ix
+	ld   ix,#0
+	add  ix,sp
 
-	push IX
-	ld   IX,#0
-	add  IX,SP
+	ld   hl,#_pt3_setup
+	ld   a,6(ix)
+	or   a
+	jr   nz, with_loop
+	set  0,(hl)
+	jr   init_song
+with_loop:
+	res  0,(hl)
 
-	ld   HL,#_PT3_SETUP
-	ld   A,6(IX)
-	or   A
-	jr   NZ,SongLoop
-	set  0,(HL)  ;not loop
-	jr   initSong
-
-SongLoop:
-	res  0,(HL)  ;loop
-
-initSong:
-	ld   L,4(IX)
-	ld   H,5(IX)
-	call playerINIT
-	pop  IX
+init_song:
+	ld   l,4(ix)
+	ld   h,5(ix)
+	call init_player
+	pop  ix
 	ret
 
-; HL - AddressOfModule
-playerINIT::
-	LD   (#_PT3_MODADDR),HL
-	PUSH HL
+init_player:
+	ld   (#_pt3_song),hl
+	push hl
 
-	LD   DE,#100
-	ADD  HL,DE
+	ld   de,#100
+	add  hl,de
 
-	LD   A,(HL)            ;+100 = 1B Delay
-	LD   (#_PT3_Delay),A
+	ld   a,(hl)            ;+100 = 1B Delay
+	ld   (#_PT3_Delay),a
 
-	PUSH HL
-	POP  IX                 ;<<-- IX = _PT3_MODADDR + 100
+	push hl
+	pop  ix                 ;<<-- IX = _pt3_song + 100
 
-  ADD  HL,DE
-	LD   (#_PT3_CrPsPtr),HL  ;+200 = Cr Ps Ptr data
+  add  hl,de
+	ld   (#_PT3_CrPsPtr),hl  ;+200 = Cr Ps Ptr data
 
-	LD   E,2(IX)
-	ADD  HL,DE
-	INC  HL
-	LD   (#_PT3_LPosPtr),HL  ;
+	ld   e,2(ix)
+	add  hl,de
+	inc  hl
+	ld   (#_PT3_LPosPtr),hl  ;
 
-  POP  DE                 ;<<-- DE = _PT3_MODADDR
+  pop  DE                 ;<<-- DE = _pt3_song
 
-	LD   L,3(IX)
-	LD   H,4(IX)
-  ADD  HL,DE
-	LD   (#_PT3_PatsPtr),HL
+	ld   l,3(ix)
+	ld   h,4(ix)
+  add  hl,de
+	ld   (#_PT3_PatsPtr),hl
 
-	LD   HL,#169
-	ADD  HL,DE
-	LD   (#_PT3_OrnPtrs),HL
+	ld   hl,#169
+	add  hl,de
+	ld   (#_PT3_OrnPtrs),hl
 
-	LD   HL,#105
-	ADD  HL,DE
-	LD   (#_PT3_SAMPTRS),HL
+	ld   hl,#105
+	add  hl,de
+	ld   (#_PT3_SAMPTRS),hl
 
-	LD   HL,#_PT3_SETUP
-	RES  7,(HL)
+	ld   hl,#_pt3_setup
+	res  7,(hl)
 
 
 	; Create Volume Table for Vortex Tracker II/PT3.5
 	; (c) Ivan Roshin, adapted by SapphiRe ---
-	ld	HL,#0x11
-	ld	D,H
-	ld  E,H
-	ld  IX,#_VAR0END  ;_VT_+16
-	ld  B,#15
+	ld	hl,#0x11
+	ld	d,h
+	ld  e,h
+	ld  ix,#_VAR0END  ;_VT_+16
+	ld  b,#15
 INITV1:
-	push HL
-	add  HL,DE
-	ex   DE,HL
-	sbc  HL,HL
-	ld   C,B
-	ld   B,#16
+	push hl
+	add  hl,de
+	ex   de,hl
+	sbc  hl,hl
+	ld   c,b
+	ld   b,#16
 INITV2:
-	ld   A,L
+	ld   a,l
 	rla
-	ld   A,H
-	adc  A,#0
-	ld   (IX),A
-	inc  IX
-	add  HL,DE
+	ld   a,h
+	adc  a,#0
+	ld   (ix),a
+	inc  ix
+	add  hl,de
 	djnz INITV2
-	pop  HL
-	ld   A,E
+	pop  hl
+	ld   a,e
 	cp   #0x77
-	jr   NZ,INITV3
-	inc  E
+	jr   nz,INITV3
+	inc  e
 INITV3:
-	ld   B,C
+	ld   b,c
 	djnz INITV1
 
 ; --- INITIALIZE PT3 VARIABLES ---
-	xor	 A
-	LD   HL,#_ChanA     ;VARS
-	LD   (HL),A
-	LD   DE,#_ChanA+1   ;VARS+1
-	LD   BC,#_VAR0END - _ChanA -1  ;VARS -1
-	LDIR
+	xor	 a
+	ld   hl,#_chana     ;VARS
+	ld   (hl),a
+	ld   de,#_chana+1   ;VARS+1
+	ld   bc,#_VAR0END - _chana -1  ;VARS -1
+	ldir
 
-	INC  A
-	LD   (#_DelyCnt),A
-	LD   HL,#0xF001	;H - CHNPRM_Volume, L - CHNPRM_NtSkCn
-	LD   (#_ChanA+CHNPRM_NtSkCn),HL
-	LD   (#_ChanB+CHNPRM_NtSkCn),HL
-	LD   (#_ChanC+CHNPRM_NtSkCn),HL
+	inc  a
+	ld   (#_delay_cnt),a
+	ld   hl,#0xF001	;H - CHNPRM_Volume, L - CHNPRM_NtSkCn
+	ld   (#_chana+CHNPRM_NtSkCn),hl
+	ld   (#_chanb+CHNPRM_NtSkCn),hl
+	ld   (#_chanc+CHNPRM_NtSkCn),hl
 
-	LD   HL,#EMPTYSAMORN
-	LD   (#_PT3_AdInPtA),HL ;ptr to zero  ; # chg
-	LD   (#_ChanA+CHNPRM_OrnPtr),HL ;ornament 0 is "0,1,0"
-	LD   (#_ChanB+CHNPRM_OrnPtr),HL ;in all versions from
-	LD   (#_ChanC+CHNPRM_OrnPtr),HL ;3.xx to 3.6x and VTII
+	ld   hl,#EMPTYSAMORN
+	ld   (#_PT3_AdInPtA),hl ;ptr to zero  ; # chg
+	ld   (#_chana+CHNPRM_OrnPtr),hl ;ornament 0 is "0,1,0"
+	ld   (#_chanb+CHNPRM_OrnPtr),hl ;in all versions from
+	ld   (#_chanc+CHNPRM_OrnPtr),hl ;3.xx to 3.6x and VTII
 
-	LD   (#_ChanA+CHNPRM_SamPtr),HL ;S1 There is no default
-	LD   (#_ChanB+CHNPRM_SamPtr),HL ;S2 sample in PT3, so, you
-	LD   (#_ChanC+CHNPRM_SamPtr),HL ;S3 can comment S1,2,3; see
+	ld   (#_chana+CHNPRM_SamPtr),hl ;S1 There is no default
+	ld   (#_chanb+CHNPRM_SamPtr),hl ;S2 sample in PT3, so, you
+	ld   (#_chanc+CHNPRM_SamPtr),hl ;S3 can comment S1,2,3; see
 				    ;also EMPTYSAMORN comment
 	ret
 
@@ -242,7 +236,7 @@ INITV3:
  */
 void pt3_init_notes(uint8_t *note_table)
 {
-	sys_memcpy(NoteTable, note_table, 96*2);
+	sys_memcpy(pt3_note_table, note_table, 96*2);
 }
 
 /**
@@ -254,31 +248,31 @@ void pt3_play() __naked __nonbanked
 {
 	__asm
 
-	ld   A,(#_AYREGS+AR_Mixer)
-	AND  #0b00111111
-	ld   B,A
+	ld   a,(#_AYREGS+AR_Mixer)
+	and  #0b00111111
+	ld   b,a
 
-	ld   A,#AR_Mixer
-	out  (#AY0index),A
-	in   A,(#AY0read)
+	ld   a,#AR_Mixer
+	out  (#AY0index),a
+	in   a,(#AY0read)
 	and	 #0b11000000	; Mascara para coger dos bits de joys
-	or	 B		        ; A�ado Byte de B
+	or	 b		        ; A�ado Byte de B
 
-	ld   (#_AYREGS+AR_Mixer),A
+	ld   (#_AYREGS+AR_Mixer),a
 
-	XOR  A
+	xor  a
 
-	ld   C,#AY0index
-	ld   HL,#_AYREGS
+	ld   c,#AY0index
+	ld   hl,#_AYREGS
 LOUT:
-	OUT  (C),A
-	INC  C
-	OUTI
-	DEC  C
-	INC  A
-	CP   #13
-	JR   NZ,LOUT
-	RET
+	out (c),a
+	inc  c
+	outi
+	dec  c
+	inc  a
+	cp   #13
+	jr   nz,LOUT
+	ret
 
 __endasm;
 }
@@ -291,438 +285,438 @@ void pt3_decode() __naked __nonbanked
 {
 	__asm
 
-	XOR  A
-	LD   (#_PT3_AddToEn),A
-	LD   (#_AYREGS+AR_Mixer),A
-	DEC  A
-	LD   (#_AYREGS+AR_EnvTp),A
-	LD   HL,#_DelyCnt
-	DEC  (HL)
-	JP   NZ,PL2
-	LD   HL,#_ChanA+CHNPRM_NtSkCn
-	DEC  (HL)
-	JR   NZ,PL1B
-	ld	 BC,(#_PT3_AdInPtA)
-	LD   A,(BC)
-	AND  A
-	JR   NZ,PL1A
-	LD   D,A
-	LD   (#_Ns_Base),A
-	LD   HL,(#_PT3_CrPsPtr)
-	INC  HL
-	LD   A,(HL)
-	INC  A
-	JR   NZ,PLNLP
-	CALL CHECKLP
-	ld	 HL,(#_PT3_LPosPtr)
-	LD   A,(HL)
-	INC  A
+	xor  A
+	ld   (#_PT3_AddToEn),a
+	ld   (#_AYREGS+AR_Mixer),a
+	dec  A
+	ld   (#_AYREGS+AR_EnvTp),a
+	ld   hl,#_delay_cnt
+	dec  (hl)
+	JP   nz,PL2
+	ld   hl,#_chana+CHNPRM_NtSkCn
+	dec  (hl)
+	jr   nz,PL1B
+	ld	 bc,(#_PT3_AdInPtA)
+	ld   a,(bc)
+	and  A
+	jr   nz,PL1A
+	ld   d,a
+	ld   (#_Ns_Base),a
+	ld   hl,(#_PT3_CrPsPtr)
+	inc  HL
+	ld   a,(hl)
+	inc  A
+	jr   nz,PLNLP
+	call CHECKLP
+	ld	 hl,(#_PT3_LPosPtr)
+	ld   a,(hl)
+	inc  A
 PLNLP:
-	LD   (#_PT3_CrPsPtr),HL
-	DEC  A
-	ADD  A,A
-	LD   E,A
+	ld   (#_PT3_CrPsPtr),hl
+	dec  A
+	add  a,a
+	ld   e,a
 	RL   D
-	ld   HL,(#_PT3_PatsPtr)
-	ADD  HL,DE
-	LD   DE,(#_PT3_MODADDR)
-	ld   (#_PT3_PSP),SP
-	LD   SP,HL
-	POP  HL
-	ADD  HL,DE
-	LD   B,H
-	LD   C,L
-	POP  HL
-	ADD  HL,DE
-	LD   (#_PT3_AdInPtB),HL
-	POP  HL
-	ADD  HL,DE
-	LD   (#_PT3_AdInPtC),HL
-	ld   SP,(#_PT3_PSP)
+	ld   hl,(#_PT3_PatsPtr)
+	add  hl,de
+	ld   de,(#_pt3_song)
+	ld   (#_PT3_PSP),sp
+	ld   sp,hl
+	pop  hl
+	add  hl,de
+	ld   b,h
+	ld   c,l
+	pop  hl
+	add  hl,de
+	ld   (#_PT3_AdInPtB),hl
+	pop  hl
+	add  hl,de
+	ld   (#_PT3_AdInPtC),hl
+	ld   sp,(#_PT3_PSP)
 
 PL1A:
-	LD   IX,#_ChanA+12
-	CALL PTDECOD
-	LD   (#_PT3_AdInPtA),BC
+	ld   ix,#_chana+12
+	call PTDECOD
+	ld   (#_PT3_AdInPtA),BC
 
 PL1B:
-	LD   HL,#_ChanB+CHNPRM_NtSkCn
-	DEC  (HL)
-	JR   NZ,PL1C
-	LD   IX,#_ChanB+12
-	ld   BC,(#_PT3_AdInPtB)
-	CALL PTDECOD
-	LD   (#_PT3_AdInPtB),BC
+	ld   hl,#_chanb+CHNPRM_NtSkCn
+	dec  (hl)
+	jr   nz,PL1C
+	ld   ix,#_chanb+12
+	ld   bc,(#_PT3_AdInPtB)
+	call PTDECOD
+	ld   (#_PT3_AdInPtB),BC
 
 PL1C:
-	LD   HL,#_ChanC+CHNPRM_NtSkCn
-	DEC  (HL)
-	JR   NZ,PL1D
-	LD   IX,#_ChanC+12
-	ld   BC,(#_PT3_AdInPtC)
-	CALL PTDECOD
-	LD   (#_PT3_AdInPtC),BC
+	ld   hl,#_chanc+CHNPRM_NtSkCn
+	dec  (hl)
+	jr   nz,PL1D
+	ld   ix,#_chanc+12
+	ld   bc,(#_PT3_AdInPtC)
+	call PTDECOD
+	ld   (#_PT3_AdInPtC),BC
 
 PL1D:
-	ld   A,(#_PT3_Delay)
-	ld   (#_DelyCnt),A
+	ld   a,(#_PT3_Delay)
+	ld   (#_delay_cnt),a
 
 PL2:
-	LD   IX,#_ChanA
-	LD   HL,(#_AYREGS+AR_TonA)
-	CALL CHREGS
-	LD   (#_AYREGS+AR_TonA),HL
-	LD   A,(#_AYREGS+AR_AmplC)
-	LD   (#_AYREGS+AR_AmplA),A
-	LD   IX,#_ChanB
-	LD   HL,(#_AYREGS+AR_TonB)
-	CALL CHREGS
-	LD   (#_AYREGS+AR_TonB),HL
-	LD   A,(#_AYREGS+AR_AmplC)
-	LD   (#_AYREGS+AR_AmplB),A
-	LD   IX,#_ChanC
-	LD   HL,(#_AYREGS+AR_TonC)
-	CALL CHREGS
-	LD   (#_AYREGS+AR_TonC),HL
+	ld   ix,#_chana
+	ld   hl,(#_AYREGS+AR_TonA)
+	call CHREGS
+	ld   (#_AYREGS+AR_TonA),hl
+	ld   a,(#_AYREGS+AR_AmplC)
+	ld   (#_AYREGS+AR_AmplA),a
+	ld   ix,#_chanb
+	ld   hl,(#_AYREGS+AR_TonB)
+	call CHREGS
+	ld   (#_AYREGS+AR_TonB),hl
+	ld   a,(#_AYREGS+AR_AmplC)
+	ld   (#_AYREGS+AR_AmplB),a
+	ld   ix,#_chanc
+	ld   hl,(#_AYREGS+AR_TonC)
+	call CHREGS
+	ld   (#_AYREGS+AR_TonC),hl
 
-	LD   HL,(#_Ns_Base)    ;Ns_Base_AddToNs
-	LD   A,H
-	ADD  A,L
-	LD   (#_AYREGS+AR_Noise),A
+	ld   hl,(#_Ns_Base)    ;Ns_Base_AddToNs
+	ld   a,h
+	add  a,l
+	ld   (#_AYREGS+AR_Noise),a
 
-	ld   A,(#_PT3_AddToEn)
-	LD   E,A
-	ADD  A,A
-	SBC  A,A
-	LD   D,A
-	LD   HL,(#_EnvBase)
-	ADD  HL,DE
-	LD   DE,(#_CurESld)
-	ADD  HL,DE
-	LD  (#_AYREGS+AR_Env),HL
+	ld   a,(#_PT3_AddToEn)
+	ld   e,a
+	add  a,a
+	sbc  a,a
+	ld   d,a
+	ld   hl,(#_EnvBase)
+	add  hl,de
+	ld   de,(#_CurESld)
+	add  hl,de
+	ld  (#_AYREGS+AR_Env),hl
 
-	XOR  A
-	LD   HL,#_CurEDel
-	OR   (HL)
+	xor  A
+	ld   hl,#_CurEDel
+	OR   (hl)
 
-	RET  Z
-	DEC  (HL)
-	RET  NZ
-	LD   A,(#_PT3_Env_Del)
-	LD   (HL),A
-	LD   HL,(#_PT3_ESldAdd)
-	ADD  HL,DE
-	LD   (#_CurESld),HL
-	RET
+	ret Z
+	dec  (hl)
+	ret NZ
+	ld   a,(#_PT3_Env_Del)
+	ld   (hl),a
+	ld   hl,(#_PT3_ESldAdd)
+	add  hl,de
+	ld   (#_CurESld),hl
+	ret
 
 CHECKLP:
-	LD   HL,#_PT3_SETUP
-	SET  7,(HL)   ; -------------------------------------------------------------- <<< ????
-	BIT  0,(HL)   ;loop bit
-	RET  Z
+	ld   hl,#_pt3_setup
+	set  7,(hl)   ; -------------------------------------------------------------- <<< ????
+	bit  0,(hl)   ;loop bit
+	ret z
 
 ;=1 - No loop
-	POP  HL
-	LD   HL,#_DelyCnt
-	INC  (HL)
-	LD   HL,#_ChanA+CHNPRM_NtSkCn
-	INC  (HL)
-	JP   MUTE
+	pop  hl
+	ld   hl,#_delay_cnt
+	inc  (hl)
+	ld   hl,#_chana+CHNPRM_NtSkCn
+	inc  (hl)
+	jp   mute
 
 PD_OrSm:
-	LD   -12+CHNPRM_Env_En(IX),#0
-	CALL SETORN
-	LD   A,(BC)
-	INC  BC
-	RRCA
+	ld   -12+CHNPRM_Env_En(ix),#0
+	call SETORN
+	ld   a,(bc)
+	inc  bc
+	rrca
 
 PD_SAM:
-	ADD  A,A
+	add  a,a
 PD_SAM_:
-	LD   E,A
-	LD   D,#0
-	ld	 HL,(#_PT3_SAMPTRS)
-	ADD  HL,DE
-	LD   E,(HL)
-	INC  HL
-	LD   D,(HL)
-	ld	 HL,(#_PT3_MODADDR)
-	ADD  HL,DE
-	LD   -12+CHNPRM_SamPtr(IX),L
-	LD   -12+CHNPRM_SamPtr+1(IX),H
-	JR   PD_LOOP
+	ld   e,a
+	ld   d,#0
+	ld	 hl,(#_PT3_SAMPTRS)
+	add  hl,de
+	ld   e,(hl)
+	inc  hl
+	ld   d,(hl)
+	ld	 hl,(#_pt3_song)
+	add  hl,de
+	ld   -12+CHNPRM_SamPtr(ix),l
+	ld   -12+CHNPRM_SamPtr+1(ix),h
+	jr   PD_LOOP
 
 PD_VOL:
-	RLCA
-	RLCA
-	RLCA
-	RLCA
-	LD   -12+CHNPRM_Volume(IX),A
-	JR   PD_LP2
+	rlca
+	rlca
+	rlca
+	rlca
+	ld   -12+CHNPRM_Volume(ix),a
+	jr   PD_LP2
 
 PD_EOff:
-	LD   -12+CHNPRM_Env_En(IX),A
-	LD   -12+CHNPRM_PsInOr(IX),A
-	JR   PD_LP2
+	ld   -12+CHNPRM_Env_En(ix),a
+	ld   -12+CHNPRM_PsInOr(ix),a
+	jr   PD_LP2
 
 PD_SorE:
-	DEC  A
-	JR   NZ,PD_ENV
-	LD   A,(BC)
-	INC  BC
-	LD   -12+CHNPRM_NNtSkp(IX),A
-	JR   PD_LP2
+	dec  A
+	jr   nz,PD_ENV
+	ld   a,(bc)
+	inc  bc
+	ld   -12+CHNPRM_NNtSkp(ix),a
+	jr   PD_LP2
 
 PD_ENV:
-	CALL SETENV
-	JR   PD_LP2
+	call SETENV
+	jr   PD_LP2
 
 PD_ORN:
-	CALL SETORN
-	JR   PD_LOOP
+	call SETORN
+	jr   PD_LOOP
 
 PD_ESAM:
-	LD   -12+CHNPRM_Env_En(IX),A
-	LD   -12+CHNPRM_PsInOr(IX),A
-	CALL NZ,SETENV
-	LD   A,(BC)
-	INC  BC
-	JR   PD_SAM_
+	ld   -12+CHNPRM_Env_En(ix),a
+	ld   -12+CHNPRM_PsInOr(ix),a
+	call nz,SETENV
+	ld   a,(bc)
+	inc  bc
+	jr   PD_SAM_
 
 PTDECOD:
-	LD   A,-12+CHNPRM_Note(IX)
-	LD   (#_PT3_PrNote),A           ;LD   (#PrNote+1),A
-	LD   L,CHNPRM_CrTnSl-12(IX)
-	LD   H,CHNPRM_CrTnSl+1-12(IX)
-	LD  (#_PT3_PrSlide),HL
+	ld   a,-12+CHNPRM_Note(ix)
+	ld   (#_PT3_PrNote),a           ;ld   (#PrNote+1),a
+	ld   l,CHNPRM_CrTnSl-12(ix)
+	ld   h,CHNPRM_CrTnSl+1-12(ix)
+	ld  (#_PT3_PrSlide),hl
 
 PD_LOOP:
-	ld   DE,#0x2010
+	ld   de,#0x2010
 PD_LP2:
-	ld   A,(BC)
-	inc  BC
-	ADD  A,E
-	JR   C,PD_OrSm
-	ADD  A,D
-	JR   Z,PD_FIN
-	JR   C,PD_SAM
-	ADD  A,E
-	JR   Z,PD_REL
-	JR   C,PD_VOL
-	ADD  A,E
-	JR   Z,PD_EOff
-	JR   C,PD_SorE
-	ADD  A,#96
-	JR   C,PD_NOTE
-	ADD  A,E
-	JR   C,PD_ORN
-	ADD  A,D
-	JR   C,PD_NOIS
-	ADD  A,E
-	JR   C,PD_ESAM
-	ADD  A,A
-	LD   E,A
+	ld   a,(bc)
+	inc  bc
+	add  a,e
+	jr   c,PD_OrSm
+	add  a,d
+	jr   z,PD_FIN
+	jr   c,PD_SAM
+	add  a,e
+	jr   z,PD_REL
+	jr   c,PD_VOL
+	add  a,e
+	jr   z,PD_EOff
+	jr   c,PD_SorE
+	add  a,#96
+	jr   c,PD_NOTE
+	add  a,e
+	jr   c,PD_ORN
+	add  a,d
+	jr   c,PD_NOIS
+	add  a,e
+	jr   c,PD_ESAM
+	add  a,a
+	ld   e,a
 
-  LD   HL,#(SPCCOMS + 0xDF20)  ;LD HL,((SPCCOMS+$DF20) % 65536)
-;	PUSH DE
-;	LD   DE,#0xDF20
-;	LD   HL,#SPCCOMS
-;	ADD  HL,DE
-;	POP  DE
+  ld   hl,#(SPCCOMS + 0xDF20)  ;ld hl,((SPCCOMS+$DF20) % 65536)
+;	push de
+;	ld   de,#0xDF20
+;	ld   hl,#SPCCOMS
+;	add  hl,de
+;	pop  de
 
-	ADD  HL,DE
-	LD   E,(HL)
-	INC  HL
-	LD   D,(HL)
-	PUSH DE
+	add  hl,de
+	ld   e,(hl)
+	inc  hl
+	ld   d,(hl)
+	push de
 
-	JR   PD_LOOP
+	jr   PD_LOOP
 
 PD_NOIS:
-  LD   (#_Ns_Base),A
-	JR   PD_LP2
+  ld   (#_Ns_Base),a
+	jr   PD_LP2
 
 PD_REL:
-  RES  0,-12+CHNPRM_Flags(IX)
-	JR   PD_RES
+  res  0,-12+CHNPRM_Flags(ix)
+	jr   PD_RES
 
 PD_NOTE:
-  ld   -12+CHNPRM_Note(IX),A
-	SET  0,-12+CHNPRM_Flags(IX)
-	XOR  A
+  ld   -12+CHNPRM_Note(ix),a
+	set  0,-12+CHNPRM_Flags(ix)
+	xor  a
 
 PD_RES:
-	ld	 (#_PT3_PDSP),SP
-	LD   SP,IX
-	LD   H,A
-	LD   L,A
-	PUSH HL
-	PUSH HL
-	PUSH HL
-	PUSH HL
-	PUSH HL
-	PUSH HL
-	ld	SP,(#_PT3_PDSP)
+	ld	 (#_PT3_PDSP),sp
+	ld   sp,ix
+	ld   h,a
+	ld   l,a
+	push hl
+	push hl
+	push hl
+	push hl
+	push hl
+	push hl
+	ld	sp,(#_PT3_PDSP)
 
 PD_FIN:
-  ld   A,-12+CHNPRM_NNtSkp(IX)
-	ld   -12+CHNPRM_NtSkCn(IX),A
+  ld   a,-12+CHNPRM_NNtSkp(ix)
+	ld   -12+CHNPRM_NtSkCn(ix),a
 	ret
 
 C_PORTM:
-  RES  2,-12+CHNPRM_Flags(IX)
-	LD   A,(BC)
-	INC  BC
+  res  2,-12+CHNPRM_Flags(ix)
+	ld   a,(bc)
+	inc  bc
 ;SKIP PRECALCULATED TONE DELTA (BECAUSE
 ;CANNOT BE RIGHT AFTER PT3 COMPILATION)
-	INC  BC
-	INC  BC
-	LD   -12+CHNPRM_TnSlDl(IX),A
-	LD   -12+CHNPRM_TSlCnt(IX),A
-	LD   DE,#_NoteTable
-	LD   A,-12+CHNPRM_Note(IX)
-	LD   -12+CHNPRM_SlToNt(IX),A
-	ADD  A,A
-	LD   L,A
-	LD   H,#0
-	ADD  HL,DE
-	LD   A,(HL)
-	INC  HL
-	LD   H,(HL)
-	LD   L,A
-	PUSH HL
-  LD   A,(#_PT3_PrNote)            ;<--- LD   A,#0x3E
-	LD   -12+CHNPRM_Note(IX),A
-	ADD  A,A
-	LD   L,A
-	LD   H,#0
-	ADD  HL,DE
-	LD   E,(HL)
-	INC  HL
-	LD   D,(HL)
-	POP  HL
-	SBC  HL,DE
-	LD   -12+CHNPRM_TnDelt(IX),L
-	LD   -12+CHNPRM_TnDelt+1(IX),H
-  LD   DE,(#_PT3_PrSlide)             ;<--- change to Kun version
-	LD   -12+CHNPRM_CrTnSl(IX),E       ;<---
-	LD   -12+CHNPRM_CrTnSl+1(IX),D     ;<---
-  LD   A,(BC) ;SIGNED TONE STEP
-	INC  BC
-	EX   AF,AF
-	LD   A,(BC)
-	INC  BC
-	AND  A
-	JR   Z,NOSIG
-	EX   DE,HL
+	inc  bc
+	inc  bc
+	ld   -12+CHNPRM_TnSlDl(ix),a
+	ld   -12+CHNPRM_TSlCnt(ix),a
+	ld   de,#_pt3_note_table
+	ld   a,-12+CHNPRM_Note(ix)
+	ld   -12+CHNPRM_SlToNt(ix),a
+	add  a,a
+	ld   l,a
+	ld   h,#0
+	add  hl,de
+	ld   a,(hl)
+	inc  HL
+	ld   h,(hl)
+	ld   l,a
+	push HL
+  ld   a,(#_PT3_PrNote)            ;<--- ld   a,#0x3E
+	ld   -12+CHNPRM_Note(ix),a
+	add  a,a
+	ld   l,a
+	ld   h,#0
+	add  hl,de
+	ld   e,(hl)
+	inc  hl
+	ld   d,(hl)
+	pop  hl
+	sbc  hl,de
+	ld   -12+CHNPRM_TnDelt(ix),l
+	ld   -12+CHNPRM_TnDelt+1(ix),h
+  ld   de,(#_PT3_PrSlide)             ;<--- change to Kun version
+	ld   -12+CHNPRM_CrTnSl(ix),E       ;<---
+	ld   -12+CHNPRM_CrTnSl+1(ix),D     ;<---
+  ld   a,(bc) ;SIGNED TONE STEP
+	inc  bc
+	ex   af,af
+	ld   a,(bc)
+	inc  bc
+	and  a
+	jr   z,NOSIG
+	ex   de,hl
 NOSIG:
-  SBC  HL,DE
-	JP   P,SET_STP
-	CPL
-	EX   AF,AF
-	NEG
-	EX   AF,AF
+  sbc  hl,de
+	jp   P,SET_STP
+	cpl
+	ex   af,af
+	neg
+	ex   af,af
 SET_STP:
-  LD   -12+CHNPRM_TSlStp+1(IX),A
-	EX   AF,AF
-	ld   -12+CHNPRM_TSlStp(IX),A
-	ld   -12+CHNPRM_COnOff(IX),#0
+  ld   -12+CHNPRM_TSlStp+1(ix),a
+	ex   af,af
+	ld   -12+CHNPRM_TSlStp(ix),a
+	ld   -12+CHNPRM_COnOff(ix),#0
 	ret
 
 C_GLISS:
-  SET  2,-12+CHNPRM_Flags(IX)
-	LD   A,(BC)
-	INC  BC
-	LD  -12+CHNPRM_TnSlDl(IX),A
-	LD  -12+CHNPRM_TSlCnt(IX),A
-	LD   A,(BC)
-	INC  BC
-	EX   AF,AF
-	LD   A,(BC)
-	INC  BC
-	JR   SET_STP
+  set  2,-12+CHNPRM_Flags(ix)
+	ld   a,(bc)
+	inc  bc
+	ld  -12+CHNPRM_TnSlDl(ix),a
+	ld  -12+CHNPRM_TSlCnt(ix),a
+	ld   a,(bc)
+	inc  bc
+	ex   af,af
+	ld   a,(bc)
+	inc  bc
+	jr   SET_STP
 
 C_SMPOS:
-  LD   A,(BC)
-	INC  BC
-	LD   -12+CHNPRM_PsInSm(IX),A
-	RET
+  ld   a,(bc)
+	inc  bc
+	ld   -12+CHNPRM_PsInSm(ix),a
+	ret
 
 C_ORPOS:
-  LD   A,(BC)
-	INC  BC
-	LD   -12+CHNPRM_PsInOr(IX),A
-	RET
+  ld   a,(bc)
+	inc  bc
+	ld   -12+CHNPRM_PsInOr(ix),a
+	ret
 
 C_VIBRT:
-  LD   A,(BC)
-	INC  BC
-	LD   -12+CHNPRM_OnOffD(IX),A
-	LD   -12+CHNPRM_COnOff(IX),A
-	LD   A,(BC)
-	INC  BC
-	LD   -12+CHNPRM_OffOnD(IX),A
-	XOR  A
-	LD   -12+CHNPRM_TSlCnt(IX),A
-	LD   -12+CHNPRM_CrTnSl(IX),A
-	LD   -12+CHNPRM_CrTnSl+1(IX),A
-	RET
+  ld   a,(bc)
+	inc  bc
+	ld   -12+CHNPRM_OnOffD(ix),a
+	ld   -12+CHNPRM_COnOff(ix),a
+	ld   a,(bc)
+	inc  bc
+	ld   -12+CHNPRM_OffOnD(ix),a
+	xor  a
+	ld   -12+CHNPRM_TSlCnt(ix),a
+	ld   -12+CHNPRM_CrTnSl(ix),a
+	ld   -12+CHNPRM_CrTnSl+1(ix),a
+	ret
 
 C_ENGLS:
-  LD   A,(BC)
-	INC  BC
-	LD   (#_PT3_Env_Del),A
-	LD   (#_CurEDel),A
-	LD   A,(BC)
-	INC  BC
-	LD   L,A
-	LD   A,(BC)
-	INC  BC
-	LD   H,A
-	LD   (#_PT3_ESldAdd),HL
-	RET
+  ld   a,(bc)
+	inc  bc
+	ld   (#_PT3_Env_Del),a
+	ld   (#_CurEDel),a
+	ld   a,(bc)
+	inc  bc
+	ld   l,a
+	ld   a,(bc)
+	inc  bc
+	ld   h,a
+	ld   (#_PT3_ESldAdd),hl
+	ret
 
 C_DELAY:
-  LD   A,(BC)
-	INC  BC
-	LD   (#_PT3_Delay),A
-	RET
+  ld   a,(bc)
+	inc  bc
+	ld   (#_PT3_Delay),a
+	ret
 
 SETENV:
-  LD   -12+CHNPRM_Env_En(IX),E
-	LD   (#_AYREGS+AR_EnvTp),A
-	LD   A,(BC)
-	INC  BC
-	LD   H,A
-	LD   A,(BC)
-	INC  BC
-	LD   L,A
-	LD   (#_EnvBase),HL
-	XOR  A
-	LD   -12+CHNPRM_PsInOr(IX),A
-	LD   (#_CurEDel),A
-	LD   H,A
-	LD   L,A
-	LD   (#_CurESld),HL
+  ld   -12+CHNPRM_Env_En(ix),E
+	ld   (#_AYREGS+AR_EnvTp),a
+	ld   a,(bc)
+	inc  bc
+	ld   h,a
+	ld   a,(bc)
+	inc  bc
+	ld   l,a
+	ld   (#_EnvBase),hl
+	xor  A
+	ld   -12+CHNPRM_PsInOr(ix),a
+	ld   (#_CurEDel),a
+	ld   h,a
+	ld   l,a
+	ld   (#_CurESld),hl
 
 C_NOP:
-  RET
+  ret
 
 SETORN:
-  ADD  A,A
-	LD   E,A
-	LD   D,#0
-	LD   -12+CHNPRM_PsInOr(IX),D
-	ld	 HL,(#_PT3_OrnPtrs)
-	ADD  HL,DE
-	LD   E,(HL)
-	INC  HL
-	LD   D,(HL)
-	ld   HL,(#_PT3_MODADDR)
-	ADD  HL,DE
-	LD   -12+CHNPRM_OrnPtr(IX),L
-	LD   -12+CHNPRM_OrnPtr+1(IX),H
-	RET
+  add  a,a
+	ld   e,a
+	ld   d,#0
+	ld   -12+CHNPRM_PsInOr(ix),D
+	ld	 hl,(#_PT3_OrnPtrs)
+	add  hl,de
+	ld   e,(hl)
+	inc  hl
+	ld   d,(hl)
+	ld   hl,(#_pt3_song)
+	add  hl,de
+	ld   -12+CHNPRM_OrnPtr(ix),l
+	ld   -12+CHNPRM_OrnPtr+1(ix),h
+	ret
 
 
 
@@ -754,226 +748,201 @@ SPCCOMS:
 
 
 CHREGS:
-  XOR  A
-	LD   (#_AYREGS+AR_AmplC),A
-	BIT   0,CHNPRM_Flags(IX)
-	PUSH  HL
-	JP    Z,CH_EXIT
+  xor  a
+	ld   (#_AYREGS+AR_AmplC),a
+	bit   0,CHNPRM_Flags(ix)
+	push  hl
+	jp   z,CH_EXIT
 	ld	 (#_PT3_CSP),sp
-	LD   L,CHNPRM_OrnPtr(IX)
-	LD   H,CHNPRM_OrnPtr+1(IX)
-	LD   SP,HL
-	POP  DE
-	LD   H,A
-	LD   A,CHNPRM_PsInOr(IX)
-	LD   L,A
-	ADD  HL,SP
-	INC  A
-	CP   D
-	JR   C,CH_ORPS
-	LD   A,E
+	ld   l,CHNPRM_OrnPtr(ix)
+	ld   h,CHNPRM_OrnPtr+1(ix)
+	ld   sp,hl
+	pop  de
+	ld   h,a
+	ld   a,CHNPRM_PsInOr(ix)
+	ld   l,a
+	add  hl,sp
+	inc  a
+	cp   d
+	jr   c,CH_ORPS
+	ld   a,e
 CH_ORPS:
-  LD   CHNPRM_PsInOr(IX),A
-	LD   A,CHNPRM_Note(IX)
-	ADD  A,(HL)
-	JP   P,CH_NTP
-	XOR  A
+  ld   CHNPRM_PsInOr(ix),a
+	ld   a,CHNPRM_Note(ix)
+	add  a,(hl)
+	jp   p,CH_NTP
+	xor  a
 CH_NTP:
-  CP   #96
-	JR   C,CH_NOK
-	LD   A,#95
+  cp   #96
+	jr   c,CH_NOK
+	ld   a,#95
 CH_NOK:
-  ADD  A,A
-	EX   AF,AF
-	LD   L,CHNPRM_SamPtr(IX)
-	LD   H,CHNPRM_SamPtr+1(IX)
-	LD   SP,HL
-	POP  DE
-	LD   H,#0
-	LD   A,CHNPRM_PsInSm(IX)
-	LD   B,A
-	ADD  A,A
-	ADD  A,A
-	LD   L,A
-	ADD  HL,SP
-	LD   SP,HL
-	LD   A,B
-	INC  A
-	CP   D
-	JR   C,CH_SMPS
-	LD   A,E
+  add  a,a
+	ex   af,af
+	ld   l,CHNPRM_SamPtr(ix)
+	ld   h,CHNPRM_SamPtr+1(ix)
+	ld   sp,hl
+	pop  de
+	ld   h,#0
+	ld   a,CHNPRM_PsInSm(ix)
+	ld   b,a
+	add  a,a
+	add  a,a
+	ld   l,a
+	add  hl,sp
+	ld   sp,hl
+	ld   a,b
+  inc  a
+	cp   d
+	jr   c,CH_SMPS
+	ld   a,e
 CH_SMPS:
-  LD   CHNPRM_PsInSm(IX),A
-	POP  BC
-	POP  HL
-	LD   E,CHNPRM_TnAcc(IX)
-	LD   D,CHNPRM_TnAcc+1(IX)
-	ADD  HL,DE
-	BIT  6,B
-	JR   Z,CH_NOAC
-	LD   CHNPRM_TnAcc(IX),L
-	LD   CHNPRM_TnAcc+1(IX),H
+  ld   CHNPRM_PsInSm(ix),a
+	pop  bc
+	pop  hl
+	ld   e,CHNPRM_TnAcc(ix)
+	ld   d,CHNPRM_TnAcc+1(ix)
+	add  hl,de
+	bit  6,b
+	jr   z,CH_NOAC
+	ld   CHNPRM_TnAcc(ix),l
+	ld   CHNPRM_TnAcc+1(ix),h
 CH_NOAC:
-  EX   DE,HL
-	EX   AF,AF
-	LD   L,A
-	LD   H,#0
-	LD   SP,#_NoteTable
-	ADD  HL,SP
-	LD   SP,HL
-	POP  HL
-	ADD  HL,DE
-	LD   E,CHNPRM_CrTnSl(IX)
-	LD   D,CHNPRM_CrTnSl+1(IX)
-	ADD  HL,DE
-	ld	 SP,(#_PT3_CSP)
-	EX   (SP),HL
-	XOR  A
-	OR   CHNPRM_TSlCnt(IX)
-	JR   Z,CH_AMP
-	DEC  CHNPRM_TSlCnt(IX)
-	JR   NZ,CH_AMP
-	LD   A,CHNPRM_TnSlDl(IX)
-	LD   CHNPRM_TSlCnt(IX),A
-	LD   L,CHNPRM_TSlStp(IX)
-	LD   H,CHNPRM_TSlStp+1(IX)
-	LD   A,H
-	ADD  HL,DE
-	LD   CHNPRM_CrTnSl(IX),L
-	LD   CHNPRM_CrTnSl+1(IX),H
-	BIT  2,CHNPRM_Flags(IX)
-	JR   NZ,CH_AMP
-	LD   E,CHNPRM_TnDelt(IX)
-	LD   D,CHNPRM_TnDelt+1(IX)
-	AND  A
-	JR   Z,CH_STPP
-	EX   DE,HL
+  ex   de,hl
+	ex   af,af
+	ld   l,a
+	ld   h,#0
+	ld   sp,#_pt3_note_table
+	add  hl,sp
+	ld   sp,hl
+	pop  hl
+	add  hl,de
+	ld   e,CHNPRM_CrTnSl(ix)
+	ld   d,CHNPRM_CrTnSl+1(ix)
+	add  hl,de
+	ld	 sp,(#_PT3_CSP)
+	ex   (sp),hl
+	xor  a
+	or   CHNPRM_TSlCnt(ix)
+	jr   z,CH_AMP
+	dec  CHNPRM_TSlCnt(ix)
+	jr   nz,CH_AMP
+	ld   a,CHNPRM_TnSlDl(ix)
+	ld   CHNPRM_TSlCnt(ix),a
+	ld   l,CHNPRM_TSlStp(ix)
+	ld   h,CHNPRM_TSlStp+1(ix)
+	ld   a,h
+	add  hl,de
+	ld   CHNPRM_CrTnSl(ix),l
+	ld   CHNPRM_CrTnSl+1(ix),h
+	bit  2,CHNPRM_Flags(ix)
+	jr   nz,CH_AMP
+	ld   e,CHNPRM_TnDelt(ix)
+	ld   d,CHNPRM_TnDelt+1(ix)
+	and  a
+	jr   z,CH_STPP
+	ex   de,hl
 CH_STPP:
-  SBC  HL,DE
-	JP   M,CH_AMP
-	LD   A,CHNPRM_SlToNt(IX)
-	LD   CHNPRM_Note(IX),A
-	XOR  A
-	LD   CHNPRM_TSlCnt(IX),A
-	LD   CHNPRM_CrTnSl(IX),A
-	LD   CHNPRM_CrTnSl+1(IX),A
+  sbc  hl,de
+	jp   m,CH_AMP
+	ld   a,CHNPRM_SlToNt(ix)
+	ld   CHNPRM_Note(ix),a
+	xor  a
+	ld   CHNPRM_TSlCnt(ix),a
+	ld   CHNPRM_CrTnSl(ix),a
+	ld   CHNPRM_CrTnSl+1(ix),a
 CH_AMP:
-  LD   A,CHNPRM_CrAmSl(IX)
-	BIT  7,C
-	JR   Z,CH_NOAM
-	BIT  6,C
-	JR   Z,CH_AMIN
-	CP   #15
-	JR   Z,CH_NOAM
-	INC  A
-	JR   CH_SVAM
+  ld   a,CHNPRM_CrAmSl(ix)
+	bit  7,c
+	jr   z,CH_NOAM
+	bit  6,c
+	jr   z,CH_AMIN
+	cp   #15
+	jr   z,CH_NOAM
+	inc  a
+	jr   CH_SVAM
 CH_AMIN:
-  CP   #-15
-	JR   Z,CH_NOAM
-	DEC  A
+  cp   #-15
+	jr   z,CH_NOAM
+	dec  a
 CH_SVAM:
-  LD   CHNPRM_CrAmSl(IX),A
+  ld   CHNPRM_CrAmSl(ix),a
 CH_NOAM:
-  LD   L,A
-	LD   A,B
-	AND  #15
-	ADD  A,L
-	JP   P,CH_APOS
-	XOR  A
+  ld   l,a
+	ld   a,B
+	and  #15
+	add  a,l
+	jp   p,CH_APOS
+	xor  a
 CH_APOS:
-  CP   #16
-	JR   C,CH_VOL
-	LD   A,#15
+  cp   #16
+	jr   c,CH_VOL
+	ld   a,#15
 CH_VOL:
-  OR   CHNPRM_Volume(IX)
-	LD   L,A
-	LD   H,#0
-	LD   DE,#_AYREGS  ;_VT_
-	ADD  HL,DE
-	LD   A,(HL)
+  or   CHNPRM_Volume(ix)
+	ld   l,a
+	ld   h,#0
+	ld   de,#_AYREGS  ;_VT_
+	add  hl,de
+	ld   a,(hl)
 CH_ENV:
-  BIT  0,C
-	JR   NZ,CH_NOEN
-	OR   CHNPRM_Env_En(IX)
+  bit  0,c
+	jr   nz,CH_NOEN
+	or   CHNPRM_Env_En(ix)
 CH_NOEN:
-  LD   (#_AYREGS+AR_AmplC),A
-	BIT  7,B
-	LD   A,C
-	JR   Z,NO_ENSL
-	RLA
-	RLA
-	SRA  A
-	SRA  A
-	SRA  A
-	ADD  A,CHNPRM_CrEnSl(IX) ;SEE COMMENT BELOW
-	BIT  5,B
-	JR   Z,NO_ENAC
-	LD   CHNPRM_CrEnSl(IX),A
+  ld   (#_AYREGS+AR_AmplC),a
+	bit  7,B
+	ld   a,c
+	jr   Z,NO_ENSL
+	rla
+	rla
+	sra  A
+	sra  A
+	sra  A
+	add  a,CHNPRM_CrEnSl(ix) ;SEE COMMENT BELOW
+	bit  5,B
+	jr   Z,NO_ENAC
+	ld   CHNPRM_CrEnSl(ix),a
 NO_ENAC:
-	ld	 HL,#_PT3_AddToEn
-	ADD  A,(HL) ;BUG IN PT3 - NEED WORD HERE.
+	ld	 hl,#_PT3_AddToEn
+	add  a,(hl) ;BUG IN PT3 - NEED WORD HERE.
 		   ;FIX IT IN NEXT VERSION?
-	LD   (HL),A
-	JR   CH_MIX
+	ld   (hl),a
+	jr   CH_MIX
 NO_ENSL:
-  RRA
-	ADD  A,CHNPRM_CrNsSl(IX)
-	LD   (#_AddToNs),A
-	BIT  5,B
-	JR   Z,CH_MIX
-	LD   CHNPRM_CrNsSl(IX),A
+  rra
+	add  a,CHNPRM_CrNsSl(ix)
+	ld   (#_AddToNs),a
+	bit  5,B
+	jr   Z,CH_MIX
+	ld   CHNPRM_CrNsSl(ix),a
 CH_MIX:
-  LD   A,B
-	RRA
-	AND  #0x48
+  ld   a,B
+	rra
+	and  #0x48
 CH_EXIT:
-  LD   HL,#_AYREGS+AR_Mixer
-	OR   (HL)
-	RRCA
-	LD   (HL),A
-	POP  HL
-	XOR  A
-	OR   CHNPRM_COnOff(IX)
-	RET  Z
-	DEC  CHNPRM_COnOff(IX)
-	RET  NZ
-	XOR  CHNPRM_Flags(IX)
-	LD   CHNPRM_Flags(IX),A
-	RRA
-	LD   A,CHNPRM_OnOffD(IX)
-	JR   C,CH_ONDL
-	LD   A,CHNPRM_OffOnD(IX)
+  ld   hl,#_AYREGS+AR_Mixer
+	or   (hl)
+	rrca
+	ld   (hl),a
+	pop  hl
+	xor  a
+	or   CHNPRM_COnOff(ix)
+	ret z
+	dec  CHNPRM_COnOff(ix)
+	ret nz
+	xor  CHNPRM_Flags(ix)
+	ld   CHNPRM_Flags(ix),a
+	rra
+	ld   a,CHNPRM_OnOffD(ix)
+	jr   c,CH_ONDL
+	ld   a,CHNPRM_OffOnD(ix)
 CH_ONDL:
-  LD   CHNPRM_COnOff(IX),A
-	RET
-
-
-
-;------------------------------------------------------------------------------- DATAS
+  ld   CHNPRM_COnOff(ix),a
+	ret
 
 EMPTYSAMORN:
   .db 0,1,0,0x90
-;delete $90 if you dont need default sample  ; # pongo el 0 aqui
-
-
-
-; As there are four tables of notes available in Vortex Tracker,
-; this must be assigned externally, copying to the space reserved in the
-; variable NoteTable.
-
-;Note table 2
-;NoteTable:
-;  .dw 0x0D10,0x0C55,0x0BA4,0x0AFC,0x0A5F,0x09CA,0x093D,0x08B8,0x083B,0x07C5,0x0755,0x06EC
-;  .dw 0x0688,0x062A,0x05D2,0x057E,0x052F,0x04E5,0x049E,0x045C,0x041D,0x03E2,0x03AB,0x0376
-;  .dw 0x0344,0x0315,0x02E9,0x02BF,0x0298,0x0272,0x024F,0x022E,0x020F,0x01F1,0x01D5,0x01BB
-;  .dw 0x01A2,0x018B,0x0174,0x0160,0x014C,0x0139,0x0128,0x0117,0x0107,0x00F9,0x00EB,0x00DD
-;  .dw 0x00D1,0x00C5,0x00BA,0x00B0,0x00A6,0x009D,0x0094,0x008C,0x0084,0x007C,0x0075,0x006F
-;  .dw 0x0069,0x0063,0x005D,0x0058,0x0053,0x004E,0x004A,0x0046,0x0042,0x003E,0x003B,0x0037
-;  .dw 0x0034,0x0031,0x002F,0x002C,0x0029,0x0027,0x0025,0x0023,0x0021,0x001F,0x001D,0x001C
-;  .dw 0x001A,0x0019,0x0017,0x0016,0x0015,0x0014,0x0012,0x0011,0x0010,0x000F,0x000E,0x000D
-
-
 
 __endasm;
 }
-// ----------------------------------------------------------------------------- END

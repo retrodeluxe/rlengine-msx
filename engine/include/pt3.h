@@ -62,42 +62,6 @@
 #define AR_Env 11
 #define AR_EnvTp 13
 
-extern char ChanA[29]; // CHNPRM_Size
-extern char ChanB[29];
-extern char ChanC[29];
-
-extern char DelyCnt;
-extern unsigned int CurESld;
-extern char CurEDel;
-extern char Ns_Base;
-extern char AddToNs;
-extern char VT_[14];
-extern char AYREGS[14];
-extern unsigned int EnvBase;
-extern char VAR0END[240];
-
-extern char PT3_SETUP;
-extern unsigned int PT3_MODADDR;
-extern unsigned int PT3_CrPsPtr;
-extern unsigned int PT3_SAMPTRS;
-extern unsigned int PT3_OrnPtrs;
-extern unsigned int PT3_PDSP;
-extern unsigned int PT3_CSP;
-extern unsigned int PT3_PSP;
-
-extern char PT3_PrNote;
-extern unsigned int PT3_PrSlide;
-extern unsigned int PT3_AdInPtA; // play data pattern
-extern unsigned int PT3_AdInPtB; // play data
-extern unsigned int PT3_AdInPtC; // play data
-extern unsigned int PT3_LPosPtr; // Position Ptr?
-extern unsigned int PT3_PatsPtr; // Pat Ptr
-extern char PT3_Delay;           // delay
-extern char PT3_AddToEn;         // Envelope data
-extern char PT3_Env_Del;         // Envelope data (idem)
-extern unsigned int PT3_ESldAdd; // Envelope data (idem)
-extern char NoteTable[192];      // Note table
-
 void pt3_init(uint8_t *song, uint8_t loop);
 void pt3_play() __nonbanked;
 void pt3_decode() __nonbanked;
