@@ -25,7 +25,7 @@
 #define HASH() HASH_LITERAL
 
 /**
- * Gets the ASCII8 ROM page of a symbol and stores it in ascii8_page
+ * Gets the ASCII8 ROM page from a symbol and stores it in ascii8_page
  */
 #define ascii8_get_page(SYMBOL)                                                 \
   __asm                                                                         \
@@ -37,6 +37,9 @@
 
 extern uint8_t ascii8_page;
 
+/**
+ * Set ASCII8 mapper DATA bank to the specified page (0xA000-0xBFFF)
+ */
 extern void ascii8_set_data(uint8_t page) __nonbanked;
 
 /*
@@ -46,7 +49,13 @@ extern void ascii8_set_data(uint8_t page) __nonbanked;
 extern void ascii8_set_code(uint8_t page) __nonbanked;
 extern void ascii8_restore() __nonbanked;
 #else
+/**
+ * Set ASCII8 mapper CODE bank to the specified page (0x8000-0x9FFF)
+ */
 #define ascii8_set_code(page)
+/**
+ * Restore ASCII8 mapper code bank to the last used page
+ */
 #define ascii8_restore()
 #endif
 

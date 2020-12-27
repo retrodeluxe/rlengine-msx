@@ -57,7 +57,7 @@ extern void sys_sleep(uint16_t secs) __nonbanked;
 extern uint16_t sys_gettime_secs() __nonbanked;
 extern uint16_t sys_gettime_msec() __nonbanked;
 extern uint16_t sys_get_ticks() __nonbanked;
-extern uint8_t sys_rand_init(uint8_t *seed) __nonbanked;
+extern void sys_rand_init(uint8_t *seed) __nonbanked;
 extern uint8_t sys_rand() __nonbanked;
 extern bool sys_is60Hz() __nonbanked;
 extern void sys_disable_kbd_click();

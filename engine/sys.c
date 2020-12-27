@@ -33,6 +33,9 @@ struct sys_pr {
     struct sys_proc  proc[MAX_PROCS];
 } sys_procs;
 
+/**
+ * Reboot the machine.
+ */
 void sys_reboot()
 {
         __asm
@@ -40,6 +43,9 @@ void sys_reboot()
         __endasm;
 }
 
+/**
+ * Disable keyboard click sound using BIOS
+ */
 void sys_disable_kbd_click()
 {
 	__asm
@@ -48,6 +54,9 @@ void sys_disable_kbd_click()
 	__endasm;
 }
 
+/**
+ * Read Keyboard Matrix status using BIOS
+ */
 uint8_t sys_get_key(uint8_t line) __nonbanked
 {
         line;
@@ -60,6 +69,9 @@ uint8_t sys_get_key(uint8_t line) __nonbanked
         __endasm;
 }
 
+/**
+ *
+ */
 uint8_t sys_get_char(void)
 {
         __asm
@@ -69,6 +81,9 @@ uint8_t sys_get_char(void)
         __endasm;
 }
 
+/**
+ * Get trigger status using BIOS
+ */
 uint8_t sys_get_trigger(uint8_t port) __nonbanked
 {
         port;
@@ -80,6 +95,9 @@ uint8_t sys_get_trigger(uint8_t port) __nonbanked
         __endasm;
 }
 
+/**
+ * Get Joystick status using BIOS
+ */
 uint8_t sys_get_stick(uint8_t port) __nonbanked
 {
         port;
@@ -91,6 +109,9 @@ uint8_t sys_get_stick(uint8_t port) __nonbanked
         __endasm;
 }
 
+/**
+ * Copy memory
+ */
 void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked
 {
         src;
@@ -107,27 +128,6 @@ void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked
         ldir
         __endasm;
 }
-
-// void sys_memset (void *dst, uint8_t c, uint16_t size)
-// {
-// 	dst;
-// 	c;
-// 	size;
-//
-// 	__asm
-// 	ld l,4(ix)
-//         ld h,5(ix)
-//         ld e,l
-//         ld d,h
-// 	inc de
-// 	ld a,6(ix)
-// 	ld (hl),a
-//         ld c,7(ix)
-//         ld b,8(ix)
-//         ldir
-// 	__endasm;
-// }
-
 
 /**
  * sys_irq_register:
@@ -149,7 +149,7 @@ static void sys_remove_callback(uint8_t index) __nonbanked
 }
 
 /**
- * sys_irq_unregister
+ * Unregister secondary
  */
 void sys_irq_unregister(void (*func)()) __nonbanked
 {
@@ -161,7 +161,7 @@ void sys_irq_unregister(void (*func)()) __nonbanked
 }
 
 
-/**
+/*
  * sys_irq_handler:
  *      irq handler using
  */
@@ -178,8 +178,9 @@ static void sys_irq_handler(void) __nonbanked
 }
 
 /**
- * sys_irq_init
- *      register irq handler using BIOS hook
+ * Initialize the engine IRQ handler.
+ *
+ * Calling this function is necessary for
  */
 void sys_irq_init()
 {
@@ -207,8 +208,9 @@ void sys_irq_init()
 
 
 /**
- * sys_sleep_ms
- *   FIXME: currently can sleep a max of 1000ms
+ * Blocks main thread for an amount of miliseconds.
+ *
+ * :param msecs: amount of miliseconds to sleep
  */
 void sys_sleep_ms(uint16_t msecs) __nonbanked
 {
@@ -217,6 +219,12 @@ void sys_sleep_ms(uint16_t msecs) __nonbanked
     };
 }
 
+/**
+ * Blocks main thread for an amount of seconds. During this time
+ * only the IRQ handler is run.
+ *
+ * :param secs: number of seconds to sleep
+ */
 void sys_sleep(uint16_t secs) __nonbanked
 {
     uint16_t start_secs = sys_secs;
@@ -224,31 +232,52 @@ void sys_sleep(uint16_t secs) __nonbanked
     };
 }
 
+/**
+ * Returns elapsed time since call to sys_irq_init
+ */
 uint16_t sys_gettime_secs() __nonbanked
 {
     return sys_secs;
 }
 
+/**
+ * Returns elapsed time miliseconds
+ */
 uint16_t sys_gettime_msec() __nonbanked
 {
     return sys_msec;
 }
 
+/**
+ * Returns current system ticks count
+ *
+ * :returns: system ticks (50/60Hz)
+ */
 uint16_t sys_get_ticks() __nonbanked
 {
     return sys_ticks;
 }
 
-/**
+/*
  *  LFSR RNG
  */
 uint8_t rng_seed[8];
 
-uint8_t sys_rand_init(uint8_t *seed) __nonbanked
+/**
+ * Initialized seed of random number generator
+ *
+ * :param seed: pointer to a 64bit seed
+ */
+void sys_rand_init(uint8_t *seed) __nonbanked
 {
 	sys_memcpy(rng_seed, seed, 8);
 }
 
+/**
+ * Generates a random number using LFSR
+ *
+ * :returns: random byte
+ */
 uint8_t sys_rand() __nonbanked
 {
 	__asm
@@ -284,6 +313,9 @@ uint8_t sys_rand() __nonbanked
 	__endasm;
 }
 
+/**
+ * Returns true if running on a 60Hz MSX machine
+ */
 bool sys_is60Hz() __nonbanked
 {
 	uint8_t *info =(uint8_t *) SYS_INFO1;

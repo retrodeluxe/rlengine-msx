@@ -104,12 +104,6 @@ RAM to VRAM.
 .. c:autodoc:: ../../engine/include/vdp.h
 .. c:autodoc:: ../../engine/vdp.c
 
-Timer Module
-------------
-
-.. c:autodoc:: ../../engine/include/timer.h
-.. c:autodoc:: ../../engine/timer.c
-
 System Module
 -------------
 
@@ -133,3 +127,37 @@ Map Module
 
 .. c:autodoc:: ../../engine/include/map.h
 .. c:autodoc:: ../../engine/map.c
+
+Utility Modules
+--------------
+
+ROM Mapper
+~~~~~~~~~~
+
+.. c:autodoc:: ../../engine/include/ascii8.h
+
+Timers
+~~~~~~
+
+.. c:autodoc:: ../../engine/include/timer.h
+.. c:autodoc:: ../../engine/timer.c
+
+
+Bitmaps
+~~~~~~~
+
+.. c:autodoc:: ../../engine/include/bitmap.h
+.. c:autodoc:: ../../engine/bitmap.c
+
+
+Lists
+~~~~~
+
+.. c:autodoc:: ../../engine/include/list.h
+.. c:autodoc:: ../../engine/list.c
+
+Debug
+~~~~~
+
+.. c:autodoc:: ../../engine/include/log.h
+.. c:autodoc:: ../../engine/util.c
