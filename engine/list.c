@@ -17,20 +17,26 @@
  *
  */
 
+#include "msx.h"
 #include "list.h"
 
+
+/**
+ * Initialize a List object
+ *
+ * :param list: pointer to the List object
+ */
 void INIT_LIST_HEAD(List *list) __nonbanked {
   list->next = 0;
   list->prev = 0;
 }
 
 /**
- * list_add - add a new entry
- * @new: new entry to be added
- * @head: list head to add it after
+ * Add a new entry to a List after the specified head.
  *
- * Insert a new entry after the specified head.
- * This is good for implementing stacks.
+ * :param new: new entry to be added
+ * :param head: List head to add it after
+ *
  */
 void list_add(List *new, List *head) __nonbanked {
   List *next = head->next;
@@ -42,10 +48,9 @@ void list_add(List *new, List *head) __nonbanked {
 }
 
 /**
- * list_del - deletes entry from list.
- * @entry: the element to delete from the list.
- * Note: list_empty() on entry does not return true after this, the entry is
- * in an undefined state.
+ * Deletes entry from a list
+ *
+ * :param entry: the element to delete from the list.
  */
 void list_del(List *entry) __nonbanked {
   entry->next->prev = entry->prev;

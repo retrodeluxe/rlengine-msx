@@ -27,24 +27,35 @@
 #define container_of(_ptr, _type, _member)                                     \
   ((_type *)((char *)_ptr - offsetof(_type, _member)))
 
+/**
+ * Defines a List Object
+ */
 typedef struct List List;
+
+/**
+ * Contents of a List
+ */
 struct List {
+  /** pointer to the next element */
   List *next;
+  /** pointer to the previous element */
   List *prev;
 };
 
 /**
- * list_entry - get the struct for this entry
- * @ptr:	the &List pointer.
- * @type:	the type of the struct this is embedded in.
- * @member:	the name of the list_head within the struct.
+ * Get the current object pointed to by a list entry
+ *
+ * :param ptr:	the List entry pointer.
+ * :param type:	the type of object embedded in.
+ * :param member:	the name of the List within the struct.
  */
 #define list_entry(ptr, type, member) container_of(ptr, type, member)
 
 /**
- * list_for_each	-	iterate over a list
- * @pos:	the &List to use as a loop cursor.
- * @head:	the head for your list.
+ * Iterate over a list
+ *
+ * :param pos:	the &List to use as a loop cursor.
+ * :param head:	the head for your list.
  */
 #define list_for_each(pos, head) for (pos = (head)->next; pos; pos = pos->next)
 
