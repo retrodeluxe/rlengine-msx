@@ -47,6 +47,7 @@ export ENGINE_CFLAGS := -mz80
 export ROM_CFLAGS := -mz80
 
 ifeq ($(BANKED_CALLS),enabled)
+	ENGINE_CFLAGS += -DBANKED_CALLS
 	ROM_CFLAGS += --model-large -DBANKED_CALLS
 endif
 
