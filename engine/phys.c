@@ -220,9 +220,9 @@ void phys_set_masked_colliding_tile_object(DisplayObject *dpo,
   uint8_t i, j, k;
   TileSet *ts = dpo->tob->tileset;
   uint8_t base_tile = ts->pidx;
-  uint8_t num_tiles = ts->frame_w * ts->frame_h * ts->frames * ts->states;
-  uint8_t tiles_in_row = ts->frame_w * ts->frames * ts->states;
   uint8_t num_frames = ts->frames * ts->states;
+  uint8_t tiles_in_row = ts->frame_w * num_frames;
+  uint8_t num_tiles = ts->frame_h * tiles_in_row;
   uint8_t frame_base;
 
   for (i = 0; i < num_frames; i++) {
