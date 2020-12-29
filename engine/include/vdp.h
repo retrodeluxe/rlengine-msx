@@ -44,7 +44,14 @@ typedef enum {
   /**
    * Multicolor Mode (Screen 3)
    */
-  MODE_MULT
+  MODE_MULT,
+
+  /**
+   * Graphics Mode 3 (Screen 4)
+   *
+   * .. note:: MSX2 and above only.
+   */
+   MODE_GRP3
 } VdpMode;
 
 /**
