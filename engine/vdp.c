@@ -118,6 +118,47 @@ void vdp_set_color(VdpColor ink, VdpColor border)
 }
 
 /**
+ * Sets a complete palette and saves it to VRAM (MSX2)
+ *
+ * :param palette: a RGB color array with 16 elements
+ *
+ */
+void vdp_set_palette(VdpRGBColor *palette) {
+  uint8_t i;
+  for (i = 0; i < MAX_COLORS; i++)
+    vdp_set_palette_color(i, &palette[i]);
+}
+
+/**
+ * Sets a palette color and saves it to VRAM (MSX2)
+ *
+ * :param index: palette index to set (0 to 15)
+ * :param color: RGB color definition
+ */
+void vdp_set_palette_color(uint8_t index, VdpRGBColor *color)
+{
+  unused(index);
+  unused(color);
+
+  __asm
+  ld d,4(ix)
+  ld h,6(ix)
+  ld l,5(ix)
+  ld a,(hl)
+  sla a
+  sla a
+  sla a
+  sla a
+  inc hl
+  ld e,(hl)
+  inc hl
+  or (hl)
+  ld ix, #BIOS_SETPLT
+  call BIOS_EXTROM
+  __endasm;
+}
+
+/**
  * Write a single byte to VRAM
  *
  * :param address: VRAM address (0 to 16384)

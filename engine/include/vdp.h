@@ -47,9 +47,7 @@ typedef enum {
   MODE_MULT,
 
   /**
-   * Graphics Mode 3 (Screen 4)
-   *
-   * .. note:: MSX2 and above only.
+   * Graphics Mode 3 (Screen 4, MSX2)
    */
    MODE_GRP3
 } VdpMode;
@@ -118,7 +116,8 @@ typedef enum {
   /** */
   COLOR_GREY,
   /** */
-  COLOR_WHITE
+  COLOR_WHITE,
+  MAX_COLORS
 } VdpColor;
 
 #define VRAM_BASE_NAME 0x1800
@@ -137,6 +136,22 @@ struct VdpSpriteAttr {
   uint8_t x;
   uint8_t pattern;
   uint8_t color;
+};
+
+/**
+ * Defines an 9-bit RGB color
+ */
+typedef struct VdpRGBColor VdpRGBColor;
+/**
+ * Contains an 9-bit RGB color
+ */
+struct VdpRGBColor {
+  /** red component (0 to 7) */
+  uint8_t r;
+  /** green component (0 to 7) */
+  uint8_t g;
+  /** blue component (0 to 7) */
+  uint8_t b;
 };
 
 #define vdp_poke_names(OFFSET, PATTERN)                                        \
@@ -158,5 +173,9 @@ extern void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom);
 extern void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked;
 extern void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size);
 extern uint8_t vdp_5th_sprite() __nonbanked;
+
+/* MSX2 and above */
+extern void vdp_set_palette(VdpRGBColor *palette);
+extern void vdp_set_palette_color(uint8_t index, VdpRGBColor *color);
 
 #endif

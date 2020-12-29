@@ -31,11 +31,16 @@
 #define SYS_CLIKSW 0xF3DB
 #define SYS_5TH_SPRITE 0xF3E7
 
+#define BIOS_EXTROM 0x015F
 #define BIOS_DISSCR 0x0041
 #define BIOS_ENASCR 0x0044
 #define BIOS_CHGMOD 0x005F
 #define BIOS_WRTPSG 0x0093
 #define BIOS_RDPSG 0x0096
+#define BIOS_INIPLT 0x0141
+#define BIOS_RSTPLT 0x0145
+#define BIOS_SETPLT 0x014D
+
 
 /**
  * Disable interrupts
