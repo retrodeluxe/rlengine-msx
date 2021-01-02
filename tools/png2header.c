@@ -146,7 +146,7 @@ struct scr2 match_line(uint16_t x,  uint16_t y)
 /**
  * XXX: we don't actually do floyd
  */
-int tga2msx_scr2_tiles()
+int rgb2msx_scr2_tiles()
 {
     uint16_t x, y, j;
     uint16_t yy, qe;
@@ -240,7 +240,9 @@ void usage(void)
            "                          TILE    : scr2/4 pattern & color C source,\n"
            "                          TILEH   : scr2/4 pattern & color H source (no data),\n"
            "                          SPRITE  : msx1 16x16 sprite planes C source,\n"
+           "                          SPRITE2 : msx2 16x16 sprite planes C source (without OR mode),\n"
            "                          SPRITEH : msx1 16x16 sprite planes H source (no data),\n"
+           "                          SPRITE2H : msx2 16x16 sprite planes H source (no data),\n"
            "                          SCR5    : scr5 bitmap C source,\n"
            "                          SCR5H   : scr5 bitmap H source (no data),\n"
            " -o, --output=FILE    output file,\n"
@@ -320,6 +322,32 @@ void dump_sprite_8x8_block(FILE *fd, struct fbit *base, uint8_t color)
     fprintf(fd, "\n");
 }
 
+struct pattern_colors {
+   uint8_t line_colors[16][8];
+   uint8_t n_cols[16];
+   uint8_t max_cols;
+};
+
+
+void dump_sprite2_8x8_block(FILE *fd, struct fbit *base, struct pattern_colors *colors, uint8_t cidx, uint8_t offset)
+{
+    uint8_t i,j, enabled;
+    uint8_t byte = 0, color;
+
+    for (j = 0; j < 8; j++) {
+        byte = 0;
+        if (cidx < colors->n_cols[j + offset]) {
+          color = colors->line_colors[j + offset][cidx];
+          for (i = 0; i < 8; i++) {
+              enabled = (base + i + j * png_img.width)->color == color ? 1 : 0;
+              byte = byte << 1 | enabled;
+          }
+        }
+        fprintf(fd, "0x%2.2X,",byte);
+    }
+    fprintf(fd, "\n");
+}
+
 int block_8x8_has_color(struct fbit *base, uint8_t color)
 {
     uint8_t i,j;
@@ -341,6 +369,108 @@ int pattern_has_color(struct fbit *idx, uint8_t color)
            block_8x8_has_color(idx + 8 + png_img.width * 8 ,color);
     return 1;
 }
+
+
+int pattern_line_has_color(struct fbit *idx, uint8_t color)
+{
+  uint8_t i;
+  for (i = 0; i < 16; i++) {
+    if ((idx + i)->color == color)
+      return 1;
+  }
+  return 0;
+}
+
+
+/**
+ * Dump Sprite Mode 2 Data
+ */
+void dump_sprite_file2(FILE *fd, int only_header)
+{
+  struct fbit *idx = image_out_4bit;
+  uint8_t color, colcnt = 0, np = 0;
+  uint16_t line, i;
+  char *dataname, *filename, *path;
+  struct pattern_colors pcolors[64];
+
+  path = strdup(input_file);
+  filename = basename(path);
+  dataname = strdup(filename);
+  dataname[strlen(dataname)-4]='\0';
+
+  fprintf(fd, "#ifndef _GENERATED_SPRITES_H_%s\n", dataname);
+  fprintf(fd, "#define _GENERATED_SPRITES_H_%s\n", dataname);
+
+  if (only_header) {
+          fprintf(fd, "extern const unsigned char %s_color[];", dataname);
+          fprintf(fd, "extern const unsigned char %s[];\n", dataname);
+          fprintf(fd, "#endif\n");
+          return;
+  }
+
+  fprintf(fd, "const unsigned char %s_color[] = { ", dataname);
+
+  do {
+      // ignore transparent color for sprites
+      for (color = 1; color < 16; color++) {
+        for(line = 0; line < 16; line++) {
+          if (pattern_line_has_color(idx + line * png_img.width, color)) {
+              pcolors[np].line_colors[line][pcolors[np].n_cols[line]] = color;
+              pcolors[np].n_cols[line] = pcolors[np].n_cols[line] + 1;
+              if(pcolors[np].n_cols[line] > pcolors[np].max_cols)
+                pcolors[np].max_cols = pcolors[np].n_cols[line];
+          }
+        }
+      }
+      // print now based on the colors
+      for ( i= 0; i < pcolors[np].max_cols; i++) {
+        for(line = 0; line < 16; line++) {
+          color = 0;
+          if (i < pcolors[np].n_cols[line])
+            color = pcolors[np].line_colors[line][i];
+          fprintf(fd, "%d,", color);
+        }
+      }
+
+      // we move around the image in blocks of 16x16
+      if (++colcnt > (png_img.width / 16) - 1) {
+         colcnt = 0;
+         idx += png_img.width * 15 + 16;
+     } else {
+         idx += 16;
+     }
+      np++;
+  } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+
+  fprintf(fd, "0 };\n");
+
+  colcnt = 0; idx = image_out_4bit; np = 0;
+
+  fprintf(fd, "const unsigned char %s[] = {\n", dataname);
+
+  do {
+      for ( i= 0; i < pcolors[np].max_cols; i++) {
+        fprintf(fd, "/* ---- pattern: %d ---- */\n", np);
+        dump_sprite2_8x8_block(fd, idx, &pcolors[np], i,  0);
+        dump_sprite2_8x8_block(fd, idx + png_img.width * 8, &pcolors[np], i, 8);
+        dump_sprite2_8x8_block(fd, idx + 8, &pcolors[np], i, 0);
+        dump_sprite2_8x8_block(fd, idx + 8 + png_img.width * 8, &pcolors[np], i, 8);
+      }
+      /* move to the next block */
+      if (++colcnt > (png_img.width / 16) - 1) {
+         colcnt = 0;
+         idx += png_img.width * 15 + 16;
+      } else {
+         idx += 16;
+      }
+      np++;
+  } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+
+  fprintf(fd, "0x00};\n");
+  fprintf(fd, "#endif\n");
+
+}
+
 
 void dump_sprite_file(FILE *fd, int only_header)
 {
@@ -544,6 +674,7 @@ int generate_header(char *outfile, char *type)
 {
 	int do_tile = 0;
 	int do_sprite = 0;
+  int do_sprite2 = 0;
 	int do_only_header = 0;
 	int do_scr5 = 0;
 	FILE *file;
@@ -552,11 +683,16 @@ int generate_header(char *outfile, char *type)
 		do_tile = 1;
 	} else if (!strcmp(type, "SPRITE")) {
 		do_sprite = 1;
+  } else if (!strcmp(type, "SPRITE2")) {
+		do_sprite2 = 1;
 	} else if (!strcmp(type, "TILEH")) {
 		do_tile = 1;
 		do_only_header = 1;
 	} else if (!strcmp(type, "SPRITEH")) {
 		do_sprite = 1;
+		do_only_header = 1;
+  } else if (!strcmp(type, "SPRITE2H")) {
+		do_sprite2 = 1;
 		do_only_header = 1;
 	} else if (!strcmp(type, "SCR5")) {
 		do_scr5 = 1;
@@ -577,6 +713,8 @@ int generate_header(char *outfile, char *type)
 
 	if (do_sprite)
 		dump_sprite_file(file, do_only_header);
+  else if (do_sprite2)
+    dump_sprite_file2(file, do_only_header);
 	else if (do_tile)
 		dump_tile_file(file, do_only_header);
 	//else if (do_scr5)
@@ -685,7 +823,7 @@ int main(int argc, char **argv)
 	if ((result == 0) && do_full) {
 	 	result = rgb2msx_palette();
 	 	//dump_4bitimage();
-	 	result = tga2msx_scr2_tiles();
+	 	result = rgb2msx_scr2_tiles();
 	 }
 
   // sprites
