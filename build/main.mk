@@ -46,6 +46,10 @@ export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
 export ENGINE_CFLAGS := -mz80
 export ROM_CFLAGS := -mz80
 
+ifeq ($(MACHINE),msx2)
+	ENGINE_CFLAGS += -DMSX2
+endif
+
 ifeq ($(BANKED_CALLS),enabled)
 	ENGINE_CFLAGS += -DBANKED_CALLS
 	ROM_CFLAGS += --model-large -DBANKED_CALLS
