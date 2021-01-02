@@ -22,6 +22,9 @@
 
 #include "vdp.h"
 
+#define SPR_MODE1 0
+#define SPR_MODE2 1
+
 /**
  * Size of a Sprite
  */
@@ -52,6 +55,9 @@ typedef enum {
 
 /** Max number of states per sprites */
 #define SPR_STATES_MAX 8
+
+/** Number of color lines per sprite in MODE 2 */
+#define SPR_PATRN_COLORS 16
 
 /**
  * Set of predefined sprite states that can be used with :c:func:`spr_animate`

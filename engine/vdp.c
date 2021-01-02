@@ -24,6 +24,7 @@
 
 uint8_t rle_prev;
 uint8_t rle_prev_run;
+uint8_t vdp_mode;
 
 /**
  * Disable Screen
@@ -53,13 +54,24 @@ void vdp_screen_enable(void)
  */
 void vdp_set_mode(VdpMode mode)
 {
-	unused(mode);
+  vdp_mode = mode;
 
 	__asm
 	ld	a,4(ix)
 	call	BIOS_CHGMOD
 	__endasm;
 }
+
+/**
+ * Gets currently set mode
+ *
+ * :returns: mode see :c:enum:`VdpMode`
+ */
+VdpMode vdp_get_mode(void)
+{
+  return vdp_mode;
+}
+
 
 /**
  * Checks 5th sprite collision flag

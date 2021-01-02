@@ -126,6 +126,9 @@ typedef enum {
 #define VRAM_BASE_SATR 0x1b00
 #define VRAM_BASE_SPAT 0x3800
 
+#define VRAM_BASE_GRP3_SATR 0x1e00 // SATR moves down to accomodate colors
+#define VRAM_BASE_GRP3_SCOL 0x1c00 // 512 bytes before SATR
+
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
 #define SPR_OFF 208
@@ -162,6 +165,7 @@ extern void vdp_puts(char x, char y, char *msg);
 extern void vdp_screen_disable(void);
 extern void vdp_screen_enable(void);
 extern void vdp_set_mode(VdpMode mode);
+extern VdpMode vdp_get_mode(void);
 extern void vdp_set_color(VdpColor ink, VdpColor border);
 extern void vdp_write(uint16_t address, uint8_t value) __nonbanked;
 extern void vdp_memset(uint16_t vaddress, uint16_t size,

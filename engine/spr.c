@@ -37,17 +37,33 @@ SpritePattern spr_pattern[SPR_PATRN_MAX];
 // spr pattern attr
 VdpSpriteAttr spr_attr[MAX_SPR_ATTR];
 
+#ifdef MSX2
+  // spr color for Sprite Mode 2
+  uint8_t spr_color[MAX_SPR_ATTR * SPR_PATRN_COLORS];
+#endif
+
+// current sprite mode
+uint8_t spr_mode;
+
 /**
  * Initialize Sprite module
  *  Calling this function clears all defined patters and frees allocations.
  */
 void spr_init(void) {
+
+  spr_mode = SPR_MODE1;
+
+#ifdef MSX2
+  // Sprite mode is linked to display mode
+  if (vdp_get_mode() >= MODE_GRP3)
+    spr_mode = SPR_MODE2;
+#endif
+
   spr_clear();
   sys_memset(spr_pattern, 0, sizeof(SpritePattern) * SPR_PATRN_MAX);
 }
 
 bool flip;
-
 /**
  * Apply changes made to SpriteDefs into VRAM
 
@@ -56,6 +72,12 @@ bool flip;
  */
 void spr_refresh(void) {
   uint8_t _5th_sprite, i, ct;
+  uint16_t base = VRAM_BASE_SATR;
+
+#ifdef MSX2
+  if(spr_mode == SPR_MODE2)
+    base = VRAM_BASE_GRP3_SATR;
+#endif
 
   /**
    * This fuction does 5th sprite detection and interleaving
@@ -70,16 +92,21 @@ void spr_refresh(void) {
   if(_5th_sprite && flip) {
     for (i = MAX_SPR_ATTR - 1, ct = 3; i > 2; i--) {
         if (spr_attr[i].y != SPR_OFF)
-          vdp_memcpy(VRAM_BASE_SATR + sizeof(VdpSpriteAttr) * ct++,
+          vdp_memcpy(base + sizeof(VdpSpriteAttr) * ct++,
             (uint8_t *)&spr_attr[i],
             sizeof(VdpSpriteAttr));
     }
-    vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
+    vdp_memcpy(base, (uint8_t *)&spr_attr,
             sizeof(VdpSpriteAttr) * 3);
     flip = false;
   } else {
-    vdp_memcpy(VRAM_BASE_SATR, (uint8_t *)&spr_attr,
+    vdp_memcpy(base, (uint8_t *)&spr_attr,
             sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
+#ifdef MSX2
+    if (spr_mode == SPR_MODE2)
+      vdp_memcpy(VRAM_BASE_GRP3_SCOL, spr_color, MAX_SPR_ATTR * SPR_PATRN_COLORS);
+#endif
+
     flip = true;
   }
 }
@@ -102,6 +129,11 @@ void spr_clear(void) {
   // free pattern sets
   for (i = 0; i < SPR_PATRN_MAX; i++)
     spr_vfree_pattern_set(i);
+
+#ifdef MSX2
+  sys_memset(spr_color, 0, SPR_PATRN_COLORS * MAX_SPR_ATTR);
+#endif
+
 }
 
 /**
@@ -118,6 +150,7 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
   sp->state = 0;
   sp->anim_ctr_treshold = 5;
   sp->anim_ctr = 0;
+  // FIXME: only for sprite mode 1
   spr_set_plane_colors(sp, spr_pattern[patrn_idx].colors);
 }
 
@@ -159,7 +192,8 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
       idx = i - npat + 1;
       sys_memset(&spr_patt_valloc[idx], 0, npat);
       vdp_memcpy(VRAM_BASE_SPAT + idx * 8, ps->patterns, npat * 8);
-      sys_memcpy(ps->colors2, ps->colors, npat / 4);
+      if (spr_mode == SPR_MODE1)
+        sys_memcpy(ps->colors2, ps->colors, npat / 4);
       ps->pidx = idx;
       ps->allocated = true;
       return true;
@@ -203,6 +237,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
   as = sp->frame;
   cf = (base + as) * np;
 
+  // the color part can be ignored in MODE 2 (?)
   switch (sz) {
   case SPR_SIZE_16x16:
     base *= (sz * np);
@@ -252,14 +287,28 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
  * :param sp: a SpriteDef object
  */
 void spr_update(SpriteDef *sp) __nonbanked {
-  uint8_t i, np, sz;
+  uint8_t i, np, sz, as, cf, base = 0;
 
-  np = sp->pattern_set->planes;
-  sz = sp->pattern_set->size;
+  SpritePattern *ps = sp->pattern_set;
+  for (i = 0; i < sp->state; i++) {
+    base += ps->state_steps[i];
+  }
+
+  np = ps->planes;
+  sz = ps->size;
+  as = sp->frame;
+  cf = (base + as) * np;
 
   spr_calc_patterns(sp);
   for (i = 0; i < np; i++) {
     sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i], 4);
+
+#ifdef MSX2
+    if (spr_mode == SPR_MODE2)
+      sys_memcpy(&spr_color[sp->aidx + i * SPR_PATRN_COLORS],
+        sp->pattern_set->colors + (cf + i) * SPR_PATRN_COLORS, SPR_PATRN_COLORS);
+#endif
+
     if (sz == SPR_SIZE_16x32 ||
         sz == SPR_SIZE_32x16) {
       sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i + np],
@@ -391,6 +440,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
     }
   }
 
+  // TODO: update EC bits for MODE2 sprites
   for (i = 0; i < np; i++) {
     SET_PLANE_ATTR(sp, i, x, y, ec);
     if (sz == SPR_SIZE_16x32) {

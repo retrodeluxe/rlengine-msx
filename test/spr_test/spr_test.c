@@ -52,6 +52,7 @@ void test_16x32_2layers();
 void test_32x16_1layers();
 void test_32x32_1layer();
 void test_5th_sprite();
+void test_16x16_mode2();
 
 void main()
 {
@@ -66,6 +67,13 @@ void main()
   test_32x16_1layers();
   test_32x32_1layer();
   test_5th_sprite();
+
+  // sprite mode 2
+  vdp_set_mode(MODE_GRP3);
+	vdp_set_color(COLOR_WHITE, COLOR_BLUE);
+	vdp_clear(0);
+
+  test_16x16_mode2();
 
 	do {
 	} while (sys_get_key(8) & 1);
@@ -251,4 +259,37 @@ void test_5th_sprite() {
     }
   } while (sys_get_key(8) & 1);
 
+}
+
+void test_16x16_mode2() {
+  int8_t dir;
+  uint16_t ctr;
+
+  spr_init();
+  vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_ON);
+  SPR_DEFINE_PATTERN_SET(PATRN_KVALLEY, SPR_SIZE_16x16, 3, 2, kv_states, valley3);
+  spr_valloc_pattern_set(PATRN_KVALLEY);
+
+  xpos[0] = 200; ypos [0] = 100;
+  spr_init_sprite(&kvalley, PATRN_KVALLEY);
+  spr_set_pos(&kvalley, xpos[0], ypos[0]);
+  spr_show(&kvalley);
+
+  sys_irq_init();
+
+  dir = -1; ctr = 0;
+  do {
+    sys_wait_vsync();
+    spr_refresh();
+    spr_animate(&kvalley,dir,0);
+    xpos[0] += dir; ctr++;
+    if (xpos[0] < -16) xpos[0] = 255;
+    if (xpos[0] > 255) xpos[0] = -16;
+    if (ctr > 300) {
+      ctr = 0;
+      dir *= -1;
+    }
+    spr_set_pos(&kvalley, xpos[0], ypos[0]);
+    spr_update(&kvalley);
+  } while (sys_get_key(8) & 1);
 }

@@ -1,6 +1,7 @@
 include ../build.mk
 
 BUILD_TYPE := release
+MACHINE := msx2
 include $(SETUP_BUILD)
 
 include $(CONFIG_ROM)
