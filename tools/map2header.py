@@ -22,10 +22,11 @@ import os
 import ntpath
 from optparse import OptionParser
 
+
 class MapObject:
     """
-	Contains a Tiled Map object
-	"""
+    Contains a Tiled Map object
+    """
     def __init__(self, raw):
         self.w = raw['width']
         self.h = raw['height']
@@ -41,13 +42,13 @@ class MapObject:
             self.properties = raw['properties'];
 
     def dump(self):
-        print ("\tmapobject : [%s] [%s] [%s] (%s, %s)"  % \
-            (self.id, self.name, self.type, self.x, self.y))
+        print ("\tmapobject : [%s] [%s] [%s] (%s, %s)" % (self.id, self.name, self.type, self.x, self.y))
+
 
 class TileLayer:
     """
-	Contains a Tiled layer that contains tiles
-	"""
+    Contains a Tiled layer that contains tiles
+    """
     def __init__(self, raw, seg_w, seg_h, compr, segment):
         self.w = raw['width']
         self.h = raw['height']
@@ -304,9 +305,10 @@ class TileLayer:
         print >>file,("// TOTAL_SIZE %s" % total_size)
         return total_size
 
+
 class ObjectGroupLayer:
     """ Contains an object group layer
-	"""
+    """
     def __init__(self, raw):
         #self.w = raw['width']
         #self.h = raw['height']
@@ -408,7 +410,7 @@ class ObjectGroupLayer:
             total_size += len(self.object_properties[_type])
             ## add padding if needed (should never be neeeded anymore)
             ## something else is still wrong over here...
-			## problem is that we need to add padding for each type - to ensure consistency -
+            ## problem is that we need to add padding for each type - to ensure consistency -
 
             # padding = self.max_num_properties - len(self.object_properties[_type]) + 2
             # print padding
@@ -423,22 +425,23 @@ class ObjectGroupLayer:
             to interpret the data from C code.
         """
         if len(self.object_properties.keys()) > 0:
-			print "\nenum object_type {"
-			for key in self.object_properties.keys():
-				print ("    %s, " % key.upper())
-			print ("};\n")
+            print "\nenum object_type {"
+            for key in self.object_properties.keys():
+                print ("    %s, " % key.upper())
+            print ("};\n")
 
-			## enum_properties
-			for key in self.enum_properties:
-				print ("\nenum object_property_%s {" % key.encode('ascii', 'ignore'))
-				for _property in self.enum_properties[key]:
-					print ("    %s_%s, " % (key.encode('ascii', 'ignore').upper(), _property.upper()))
-				print ("};\n")
+            ## enum_properties
+            for key in self.enum_properties:
+                print ("\nenum object_property_%s {" % key.encode('ascii', 'ignore'))
+                for _property in self.enum_properties[key]:
+                    print ("    %s_%s, " % (key.encode('ascii', 'ignore').upper(), _property.upper()))
+                print ("};\n")
 
     def dump_initializer(self):
         """ Generate initialization code
         """
         pass
+
 
 class TiledMap:
         """ Contains Tiled Map Data """
@@ -486,6 +489,7 @@ class TiledMap:
                     self.tile_layers.append(TileLayer(layer, self.segment_w, self.segment_h, self.compr, self.segment))
                 elif 'objectgroup' in layer['type']:
                     self.objectgroup_layers.append(ObjectGroupLayer(layer))
+
 
 class TileMapWriter:
         """ writes a tile map to set of C header files
@@ -537,7 +541,6 @@ class TileMapWriter:
             self.write_tilelayers()
             self.write_objectgroup_layers()
             self.write_grouping_header()
-
 
         def write_initialization(self):
             """
@@ -632,17 +635,17 @@ class TileMapWriter:
                 print >>fout,("#endif")
 
             if len(self.object_properties.keys()) > 0:
-    			print >>fout, ("\nenum %s_object_type {" % self.basename)
-    			for key in self.object_properties.keys():
-    				print >>fout, ("    %s, " % key.upper())
-    			print >>fout,("};\n")
+                print >>fout, ("\nenum %s_object_type {" % self.basename)
+                for key in self.object_properties.keys():
+                    print >>fout, ("    %s, " % key.upper())
+                print >>fout,("};\n")
 
-    			## enum_properties
-    			for key in self.enum_properties:
-    				print >>fout,("\nenum %s_object_property_%s {" % (self.basename, key.encode('ascii', 'ignore')))
-    				for _property in self.enum_properties[key]:
-    					print >>fout,("    %s_%s, " % (key.encode('ascii', 'ignore').upper(), _property.upper()))
-    				print >>fout,("};\n")
+                ## enum_properties
+                for key in self.enum_properties:
+                    print >>fout,("\nenum %s_object_property_%s {" % (self.basename, key.encode('ascii', 'ignore')))
+                    for _property in self.enum_properties[key]:
+                        print >>fout,("    %s_%s, " % (key.encode('ascii', 'ignore').upper(), _property.upper()))
+                    print >>fout,("};\n")
 
             ## now additional structures and unions...
             for key in self.object_properties.keys():
@@ -683,7 +686,6 @@ class TileMapWriter:
             print >>fout,"};\n"
 
             print >>fout,"#endif"
-
 
         def write_tilelayers(self):
             """
@@ -733,6 +735,7 @@ class TileMapWriter:
 
             print >>fout,"#endif"
 
+
 class TiledMapJsonReader:
         """ reads a json file saved from tiled"""
         def __init__(self, filename):
@@ -742,6 +745,7 @@ class TiledMapJsonReader:
             self.data = open(self.filename)
             self.decoded = json.load(self.data)
             return TiledMap(self.decoded)
+
 
 if __name__ == '__main__':
 
