@@ -109,8 +109,8 @@ class TileLayer:
 
     def room_split(self, buf_in, w, h):
         buf_out = []
-        for by in range(0, self.h / h):
-            for bx in range(0, self.w / w):
+        for by in range(0, int(self.h / h)):
+            for bx in range(0, int(self.w / w)):
                 offset = bx * w + by * h * self.w
                 block = []
                 for y in range(0, h):
