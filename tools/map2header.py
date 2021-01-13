@@ -658,10 +658,10 @@ class TileMapWriter:
 
             ## enum_properties
             for key in self.enum_properties:
-                print(("\nenum %s_object_property_%s {" % (self.basename, key.encode('ascii', 'ignore'))), file=fout)
+                print(("\nenum %s_object_property_%s {" % (self.basename, key)), file=fout)
                 for _property in self.enum_properties[key]:
-                    print(("    %s_%s, " % (key.encode('ascii', 'ignore').upper(), _property.upper())), file=fout)
-                print(("};\n"), file=fout)
+                    print(("    %s_%s, " % (key.upper(), _property.decode('ascii').upper())), file=fout, flush=True)
+                print(("};\n"), file=fout, flush=True)
 
         ## now additional structures and unions...
         for key in list(self.object_properties.keys()):
