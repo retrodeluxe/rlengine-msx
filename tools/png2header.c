@@ -670,9 +670,9 @@ void dump_bitmap(struct fbit *buffer, FILE *file, int only_header)
             uint8_t scr5pix;
             p = buffer;
             for (cnt = 0; cnt < (png_img.width * png_img.height)/2 ; p++, cnt++) {
-                scr5pix = p->color;
+                scr5pix = p->color << 4;
                 p++;
-                scr5pix |= p->color << 4;
+                scr5pix |= p->color;
                 if(bytectr++ > 6) {
                     fprintf(file,"0x%2.2X,\n",scr5pix);
                     bytectr=0;
