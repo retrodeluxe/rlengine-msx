@@ -79,7 +79,7 @@ struct png_header
 
 png_bytepp png_rows;
 int rowbytes;
-struct png_header png_img;    /* input image png header        */
+struct png_header png_img;      /* input image png header        */
 struct rgb palette[PALSIZE];    /* target palette                */
 struct scr2 *image_out_scr2;    /* image out in scr2 format      */
 struct fbit *image_out_4bit;    /* image out in 4bit pal format  */
@@ -93,7 +93,6 @@ uint16_t rgb_square_error(uint8_t clr, uint16_t x, uint16_t y)
     int16_t u0,u1,u2;
     uint8_t col = image_out_4bit[ x + y * png_img.width].color;
 
-    /* confusing , but works */
     u0 = (palette[col].r - palette[clr].r);
     u1 = (palette[col].g - palette[clr].g);
     u2 = (palette[col].b - palette[clr].b);
@@ -134,9 +133,6 @@ struct scr2 match_line(uint16_t x,  uint16_t y)
         }
     }
 
-    //fprintf(stderr, "math pat col %d %d\n",bp, bc);
-
-
     match.patrn = bp;
     match.color = bc;
 
@@ -144,7 +140,6 @@ struct scr2 match_line(uint16_t x,  uint16_t y)
 }
 
 /**
- * XXX: we don't actually do floyd
  */
 int rgb2msx_scr2_tiles()
 {
@@ -171,9 +166,6 @@ uint8_t find_min_sqerr_color(struct rgb *col, struct rgb *pal)
     uint8_t i, best = PALSIZE;
     double er, eg, eb, se, least = INT_MAX;
 
-    // This requires fine tuning, is not accurate enough to
-    // match properly different shades of the same color.
-
     for (i = 0; i < PALSIZE; i++) {
         er = (col->b - pal[i].r) * 0.4;
         eg = (col->g - pal[i].g) * 0.75;
@@ -187,18 +179,6 @@ uint8_t find_min_sqerr_color(struct rgb *col, struct rgb *pal)
     }
 
     return best;
-}
-
-void dump_4bitimage()
-{
-    uint16_t i,j;
-
-    //for (j = 0; j < tga.height; j++) {
-    //    for(i = 0; i < tga.width; i++) {
-    //        printf("0x%2.2X,",(image_out_4bit + i + j * tga.width)->color);
-    //    }
-        printf("\n");
-  //  }
 }
 
 /**
@@ -248,9 +228,6 @@ void usage(void)
            " -o, --output=FILE    output file,\n"
            "\n");
 }
-
-
-/* -------------------------------------- */
 
 
 static int load_png_image(int fileidx, int argc, char **argv)
@@ -662,10 +639,63 @@ void dump_tiles(struct scr2 *buffer, FILE *file, int only_header)
     }
 }
 
+void dump_bitmap(struct fbit *buffer, FILE *file, int only_header)
+{
+    struct fbit *p;
+    int bytectr=0, cnt;
+    char *dataname, *filename, *path;
+
+    path = strdup(input_file);
+    filename = basename(path);
+    dataname = strdup(filename);
+    dataname[strlen(dataname)-4]='\0';
+
+    fprintf(file,"#ifndef _GENERATED_BITMAP_H_%s\n", dataname);
+    fprintf(file,"#define _GENERATED_BITMAP_H_%s\n", dataname);
+
+    if (only_header) {
+            fprintf(file,"extern const unsigned char %s_bitmap_w;\n", dataname);
+            fprintf(file,"extern const unsigned char %s_bitmap_h;\n", dataname);
+            fprintf(file,"extern const unsigned char %s_bitmap[];\n", dataname);
+            return;
+    }
+
+    fprintf(file,"const unsigned char %s_bitmap_w = %d;\n", dataname, png_img.width);
+    fprintf(file,"const unsigned char %s_bitmap_h = %d;\n", dataname, png_img.height);
+    fprintf(file,"const unsigned char %s_bitmap[]={\n",dataname);
+
+    //if (rle_encode)
+    //    dump_buffer_rle(buffer, file, 0);
+    //else {
+            uint8_t scr5pix;
+            p = buffer;
+            for (cnt = 0; cnt < (png_img.width * png_img.height)/2 ; p++, cnt++) {
+                scr5pix = p->color;
+                p++;
+                scr5pix |= p->color << 4;
+                if(bytectr++ > 6) {
+                    fprintf(file,"0x%2.2X,\n",scr5pix);
+                    bytectr=0;
+                } else {
+                    fprintf(file,"0x%2.2X,",scr5pix);
+                }
+            }
+            fprintf(file,"0x%2.2X};\n\n",scr5pix);
+    //}
+}
+
 void dump_tile_file(FILE *fd, int only_header)
 {
 
     dump_tiles(image_out_scr2, fd, only_header);
+
+    fprintf(fd,"#endif\n");
+}
+
+void dump_bitmap_file(FILE *fd, int only_header)
+{
+
+    dump_bitmap(image_out_4bit, fd, only_header);
 
     fprintf(fd,"#endif\n");
 }
@@ -717,8 +747,8 @@ int generate_header(char *outfile, char *type)
     dump_sprite_file2(file, do_only_header);
 	else if (do_tile)
 		dump_tile_file(file, do_only_header);
-	//else if (do_scr5)
-		//dump_bitmap_file(file, do_only_header);
+	else if (do_scr5)
+		dump_bitmap_file(file, do_only_header);
 
 	fclose(file);
 	return 0;
@@ -822,7 +852,6 @@ int main(int argc, char **argv)
 	// if source is rgb and output is scr2/scr4
 	if ((result == 0) && do_full) {
 	 	result = rgb2msx_palette();
-	 	//dump_4bitimage();
 	 	result = rgb2msx_scr2_tiles();
 	 }
 
@@ -831,12 +860,9 @@ int main(int argc, char **argv)
 	 	result = rgb2msx_palette();
 	}
 
-	// if source is indexed, we can just output it without palette processing
-
 	if (result == 0) {
 		result = generate_header(outfile, type);
 	}
-
 
 	fflush(stdout);
 	fflush(stderr);
