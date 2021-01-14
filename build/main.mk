@@ -64,7 +64,6 @@ ENGINE_CFLAGS += --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-w
 ROM_CFLAGS += --std-c99 --opt-code-speed --fno-omit-frame-pointer --disable-warning 59 --disable-warning 196 -I $(TOP)/engine/include -I $(SDCC_INCLUDE)
 
 export HOSTCC	:= gcc
-export TILED2H  := $(RLE_TOOLS)/map2header.py
 
 # Build Commands
 #

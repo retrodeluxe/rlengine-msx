@@ -20,6 +20,8 @@ VDA_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_SCR)/*.vda)
 FNT_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_FNT)/*.tga)
 FNT_RES_FILES_PNG := $(wildcard $(LOCAL_BUILD_RES_FNT)/*.png)
 BMP_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_BMP)/*.png)
+PAL_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_PAL)/*.pal)
+
 built_spr_res := $(patsubst $(LOCAL_BUILD_RES_SPR)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SPR_RES_FILES))
 built_spr_res_png := $(patsubst $(LOCAL_BUILD_RES_SPR)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SPR_RES_FILES_PNG))
 built_spr2_res_png := $(patsubst $(LOCAL_BUILD_RES_SPR2)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SPR2_RES_FILES_PNG))
@@ -36,6 +38,7 @@ built_vda_res := $(patsubst $(LOCAL_BUILD_RES_SCR)/%.vda,$(LOCAL_BUILD_OUT_GEN)/
 built_fnt_res := $(patsubst $(LOCAL_BUILD_RES_FNT)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%.h,$(FNT_RES_FILES))
 built_fnt_res_png := $(patsubst $(LOCAL_BUILD_RES_FNT)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(FNT_RES_FILES_PNG))
 built_bmp_res := $(patsubst $(LOCAL_BUILD_RES_BMP)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(BMP_RES_FILES))
+built_pal_res := $(patsubst $(LOCAL_BUILD_RES_PAL)/%.pal,$(LOCAL_BUILD_OUT_GEN)/%.h,$(PAL_RES_FILES))
 
 built_spr_ext_res := $(patsubst $(LOCAL_BUILD_RES_SPR)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%_ext.h,$(SPR_RES_FILES))
 built_til_ext_res := $(patsubst $(LOCAL_BUILD_RES_TIL)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%_ext.h,$(TIL_RES_FILES))
@@ -53,7 +56,8 @@ all: $(built_spr_res) $(built_map_res) $(built_til_res) $(built_spr_ext_res) $(b
 	$(built_vda_res) $(built_fnt_ext_res) $(built_raw_res) $(built_raw_ext_res) \
 	$(built_spr_ext_res_png) $(built_til_ext_res_png) $(built_raw_ext_res_png) \
 	$(built_fnt_ext_res_png) $(built_spr_res_png) $(built_spr2_res_png) $(built_til_res_png) \
-	$(built_raw_res_png) $(built_fnt_res_png) $(built_bmp_res) $(built_bmp_ext_res) | $(TGA2H) $(TILED2H)
+	$(built_raw_res_png) $(built_fnt_res_png) $(built_bmp_res) $(built_bmp_ext_res) \
+	$(built_pal_res) | $(TGA2H) $(TILED2H)
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
@@ -125,7 +129,7 @@ $(built_sfx_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SFX)/%.afb
 $(built_til_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_TIL)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(hide) $(TGA2H) -t TILEH -f $^ -o $@
-	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles_ext.h
+	$(hide) @echo '#include "$@"' >built_bmp_res := $(patsubst $(LOCAL_BUILD_RES_BMP)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(BMP_RES_FILES))> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles_ext.h
 
 $(built_raw_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_RAW)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
@@ -208,3 +212,9 @@ $(built_bmp_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_BMP)/%.
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(hide) $(PNG2H) -p -t SCR5H -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_bitmaps_ext.h
+
+$(built_pal_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_PAL)/%.pal
+	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, pal, $^)
+	$(hide) $(PAL2H) -s $^ -o $@
+	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h

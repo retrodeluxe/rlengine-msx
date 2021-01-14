@@ -9,6 +9,8 @@ export TMU2H := $(BUILD_OUT_TOOLS)/tmu2header
 export XXD   := $(BUILD_OUT_TOOLS)/xxd
 export HEX2ROM := $(BUILD_OUT_TOOLS)/hex2rom
 export GRAPHX := $(BUILD_OUT_TOOLS)/graphx
+export TILED2H  := $(RLE_TOOLS)/map2header.py
+export PAL2H  := $(RLE_TOOLS)/pal2header.py
 
 export BUILT_TOOLS := $(HEX2BIN) $(TGA2H) $(TMU2H) $(XXD) $(GRAPHX) $(PNG2H)
 
