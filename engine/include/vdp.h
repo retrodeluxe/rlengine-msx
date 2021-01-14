@@ -49,7 +49,23 @@ typedef enum {
   /**
    * Graphics Mode 3 (Screen 4, MSX2)
    */
-   MODE_GRP3
+   MODE_GRP3,
+
+  /**
+   * Graphics Mode 4 (Screen 5, MSX2)
+   */
+   MODE_GRP4,
+
+  /**
+   * Graphics Mode 5 (Screen 6, MSX2)
+   */
+   MODE_GRP5,
+
+  /**
+   * Graphics Mode 6 (Screen 7, MSX2)
+   */
+   MODE_GRP6
+
 } VdpMode;
 
 /**
