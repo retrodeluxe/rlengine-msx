@@ -469,7 +469,7 @@ class TiledMap:
             if self.compr!= 'rle' and self.compr != 'block':
                 self.compr = None
             if self.segment != 'true':
-                self.segment == False
+                self.segment = False
             self.tile_layers = []
             self.objectgroup_layers = []
             self.process_layers()
