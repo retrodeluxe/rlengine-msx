@@ -200,6 +200,55 @@ void vdp_set_vram_page(uint8_t page) __nonbanked
   vdp_write_reg(V99xx_SET_VRAM_PAGE, page & 0x7);
 }
 
+/**
+ * Execute a VDP command
+ *
+ * :param cmd: see :c:typedef:`VdpCommand`
+ */
+void vdp_exec(VdpCommand *cmd) __nonbanked
+{
+   /* from http://map.grauw.nl/articles/vdp_tut.php#vram */
+  __asm
+  ld l,4(ix)
+  ld h,5(ix)
+  ld a,#32
+  di
+  out (#0x99),a
+  ld a,#(17 + 128)
+  out (0x99),a
+  ld c,#0x9B
+vdp_ready:
+  ld a,#2
+  di
+  out (0x99),a     ; select s#2
+  ld a,#(15 + 128)
+  out (0x99),a
+  in a,(0x99)
+  rra
+  ld a,#0          ; back to s#0, enable ints
+  out (0x99),a
+  ld a,#(15 + 128)
+  ei
+  out (0x99),a     ; loop if vdp not ready (CE)
+  jp c,vdp_ready
+  outi            ; 15x OUTI
+  outi            ; (faster than OTIR)
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  outi
+  __endasm;
+}
+
 #endif
 
 /**

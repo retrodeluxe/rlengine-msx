@@ -17,6 +17,7 @@ void main()
 {
   uint8_t *src,i;
   VdpRGBColor *pal;
+  VdpCommand cmd;
 
   vdp_set_mode(MODE_GRP4);
   vdp_set_color(COLOR_WHITE, COLOR_BLACK);
@@ -35,6 +36,17 @@ void main()
     dst += MODE_GRP4_SCR_WIDTH / MODE_GRP4_PIX_PER_BYTE;
     src += knight_bitmap_w / MODE_GRP4_PIX_PER_BYTE;
   }
+
+  cmd.sx = 0;
+  cmd.sy = 0;
+  cmd.dx = 100;
+  cmd.dy = 100;
+  cmd.nx = 16;
+  cmd.ny = 24;
+  cmd.destdir = 0;
+  cmd.command = (LMMM << 4) | TIMP;
+
+  vdp_exec(&cmd);
 
   for(;;);
 }

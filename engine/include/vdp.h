@@ -185,6 +185,88 @@ struct VdpRGBColor {
   uint8_t b;
 };
 
+/**
+ * Vdp Blit Command Types
+ */
+typedef enum {
+  STOP,
+  POINT = 4,
+  PSET,
+  SRCH,
+  LINE,
+  LMMV,
+  LMMM,
+  LMCM,
+  LMMC,
+  HMMV,
+  HMMM,
+  YMMM,
+  HMMC
+} VdpCommandType;
+
+/**
+ *  Vdp Logical modifiers for Logical operations
+ */
+ typedef enum {
+   IMP,
+   AND,
+   OR,
+   XOR,
+   NOT,
+   TIMP = 8,
+   TAND,
+   TOR,
+   TXOR,
+   TNOT
+} VdpCommandLogicType;
+
+/**
+ * Defines an vdp command
+ */
+typedef struct VdpCommand VdpCommand;
+/**
+ * Contains a vdp command definition
+ */
+struct VdpCommand {
+  /**
+   * Source screen coordinate x
+   */
+  uint16_t sx;
+  /**
+   * Source screen coordinate y
+   */
+  uint16_t sy;
+  /**
+   * Destination screen coordinate x
+   */
+  uint16_t dx;
+  /**
+   * Destination screen coordinate y
+   */
+  uint16_t dy;
+  /**
+   * Number of pixels in x axis
+   */
+  uint16_t nx;
+  /**
+   * Number of pixels in y axis
+   */
+  uint16_t ny;
+  /**
+   * Color
+   */
+  uint8_t color;
+  /**
+   * Transfer destination and direction
+   */
+  uint8_t destdir;
+  /**
+   * Actual command to be executed
+   */
+  uint8_t command;
+};
+
+
 #define vdp_poke_names(OFFSET, PATTERN)                                        \
   vdp_write(VRAM_BASE_NAME + (OFFSET), PATTERN)
 
@@ -211,4 +293,5 @@ extern void vdp_set_palette(VdpRGBColor *palette);
 extern void vdp_set_palette_color(uint8_t index, VdpRGBColor *color);
 extern void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked;
 extern void vdp_set_vram_page(uint8_t page) __nonbanked;
+extern void vdp_exec(VdpCommand *cmd) __nonbanked;
 #endif
