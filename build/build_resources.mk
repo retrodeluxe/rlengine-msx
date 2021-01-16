@@ -129,7 +129,7 @@ $(built_sfx_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SFX)/%.afb
 $(built_til_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_TIL)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(hide) $(TGA2H) -t TILEH -f $^ -o $@
-	$(hide) @echo '#include "$@"' >built_bmp_res := $(patsubst $(LOCAL_BUILD_RES_BMP)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(BMP_RES_FILES))> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles_ext.h
+	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles_ext.h
 
 $(built_raw_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_RAW)/%.tga
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
