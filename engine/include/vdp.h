@@ -145,7 +145,11 @@ typedef enum {
 #define VRAM_BASE_GRP3_SATR 0x1e00 // SATR moves down to accomodate colors
 #define VRAM_BASE_GRP3_SCOL 0x1c00 // 512 bytes before SATR
 
-#define VRAM_BASE_GRP4_PTRN 0
+#define VRAM_BASE_GRP4_PTRN 0x0000
+
+#define MODE_GRP4_SCR_WIDTH 256
+#define MODE_GRP4_PIX_PER_BYTE 2
+#define MODE_GRP6_SCR_WIDTH 512
 
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
