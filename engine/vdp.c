@@ -190,6 +190,11 @@ void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked
   __endasm;
 }
 
+/**
+ * Sets current VRAM 16Kb page to access up to 128Kb
+ *
+ * :param page: vram page to be selected (0 to 7)
+ */
 void vdp_set_vram_page(uint8_t page) __nonbanked
 {
   vdp_write_reg(V99xx_SET_VRAM_PAGE, page & 0x7);
