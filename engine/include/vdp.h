@@ -151,6 +151,12 @@ typedef enum {
 #define MODE_GRP4_PIX_PER_BYTE 2
 #define MODE_GRP6_SCR_WIDTH 512
 
+/* v99xx access registers */
+#define V99xx_SET_VRAM_PAGE   0x0E
+#define V99xx_SET_STATUS_REG  0x0F
+#define V99xx_SET_PALETTE_REG 0x10
+#define V99xx_SET_CONTROL_REG 0x1
+
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
 #define SPR_OFF 208
@@ -203,5 +209,6 @@ extern uint8_t vdp_5th_sprite() __nonbanked;
 /* MSX2 and above */
 extern void vdp_set_palette(VdpRGBColor *palette);
 extern void vdp_set_palette_color(uint8_t index, VdpRGBColor *color);
-
+extern void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked;
+extern void vdp_set_vram_page(uint8_t page) __nonbanked;
 #endif

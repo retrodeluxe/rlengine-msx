@@ -26,6 +26,8 @@ void main()
   for (i = 0; i <8; i++)
       vdp_set_palette_color(i, pal++);
 
+  vdp_set_vram_page(0);
+
   dst = 0;
   src = knight_bitmap;
   for (i = 0; i < knight_bitmap_h; i ++) {

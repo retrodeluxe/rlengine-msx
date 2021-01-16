@@ -129,6 +129,8 @@ void vdp_set_color(VdpColor ink, VdpColor border)
 	__endasm;
 }
 
+
+#ifdef MSX2
 /**
  * Sets a complete palette and saves it to VRAM (MSX2)
  *
@@ -169,6 +171,31 @@ void vdp_set_palette_color(uint8_t index, VdpRGBColor *color)
   call BIOS_EXTROM
   __endasm;
 }
+
+void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked
+{
+  unused(reg);
+  unused(val);
+
+  __asm
+  ld d,5(ix)
+  ld e,4(ix)
+  ld a,(VDP_DW)
+  inc a
+  ld c,a
+  out (c), d
+  ld a,e
+  or #0x80
+  out (c), a
+  __endasm;
+}
+
+void vdp_set_vram_page(uint8_t page) __nonbanked
+{
+  vdp_write_reg(V99xx_SET_VRAM_PAGE, page & 0x7);
+}
+
+#endif
 
 /**
  * Write a single byte to VRAM
