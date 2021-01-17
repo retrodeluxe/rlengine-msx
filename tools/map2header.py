@@ -278,7 +278,7 @@ class TileLayer:
             room_cnt = 0
             for room_data in self.data_rooms_rle:
                 print(("const unsigned char %s_%s_segment%s_rle_size = %s;" % (
-                basename, self.name, room_cnt, len(room_data))), file=file)
+                    basename, self.name, room_cnt, len(room_data))), file=file)
                 print(("const unsigned char %s_%s_segment%s_rle[] = {" % (basename, self.name, room_cnt)), file=file)
                 total_size += len(room_data)
                 for tile in room_data:
@@ -298,7 +298,7 @@ class TileLayer:
             room_cnt = 0
             for room_data in self.data_rooms_compr_4x4:
                 print(("const unsigned char %s_%s_segment%s_size = %s;" % (
-                basename, self.name, room_cnt, len(room_data))), file=file)
+                    basename, self.name, room_cnt, len(room_data))), file=file)
                 print(("const unsigned char %s_%s_segment%s[] = {" % (basename, self.name, room_cnt)), end=' ',
                       file=file)
                 total_size += len(room_data)
