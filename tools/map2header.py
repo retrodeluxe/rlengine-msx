@@ -401,7 +401,7 @@ class ObjectGroupLayer:
                 _type = item['name']
             # type is like MOVABLE, coordinates should be able to be negative up to -32
             print(("%s, %s, %s, %s, %s, %s," % (_type.upper(),
-                                                item['x'] % 256, item['y'] % 176, item['width'],
+                                                round(item['x'] % 256, 10), round(item['y'] % 176, 10), item['width'],
                                                 item['height'], 1 if item['visible'] else 0)), end=' ', file=file)
             total_size += 6
             for _property in global_properties[_type]:
