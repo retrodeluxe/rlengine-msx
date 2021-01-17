@@ -157,6 +157,7 @@ typedef enum {
 #define V99xx_SET_STATUS_REG  0x0F
 #define V99xx_SET_PALETTE_REG 0x10
 #define V99xx_SET_CONTROL_REG 0x1
+#define V99xx_MODE_REG_8 0x8
 
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
@@ -295,4 +296,5 @@ extern void vdp_set_palette_color(uint8_t index, VdpRGBColor *color);
 extern void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked;
 extern void vdp_set_vram_page(uint8_t page) __nonbanked;
 extern void vdp_exec(VdpCommand *cmd) __nonbanked;
+extern void vdp_sprite_disable(void) __nonbanked;
 #endif

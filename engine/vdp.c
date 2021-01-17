@@ -190,6 +190,11 @@ void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked
   __endasm;
 }
 
+void vdp_sprite_disable(void) __nonbanked
+{
+  vdp_write_reg(V99xx_MODE_REG_8, 10);
+}
+
 /**
  * Sets current VRAM 16Kb page to access up to 128Kb
  *
