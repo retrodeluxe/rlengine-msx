@@ -208,6 +208,8 @@ void vdp_set_vram_page(uint8_t page) __nonbanked
 void vdp_exec(VdpCommand *cmd) __nonbanked
 {
    /* from http://map.grauw.nl/articles/vdp_tut.php#vram */
+   unused(cmd);
+
   __asm
   ld l,4(ix)
   ld h,5(ix)

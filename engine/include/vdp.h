@@ -150,6 +150,7 @@ typedef enum {
 #define MODE_GRP4_SCR_WIDTH 256
 #define MODE_GRP4_PIX_PER_BYTE 2
 #define MODE_GRP6_SCR_WIDTH 512
+#define MODE_GRP6_PIX_PER_BYTE 2
 
 /* v99xx access registers */
 #define V99xx_SET_VRAM_PAGE   0x0E

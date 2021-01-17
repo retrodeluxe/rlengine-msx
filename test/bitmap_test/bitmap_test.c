@@ -8,16 +8,20 @@
 #include "sys.h"
 #include "vdp.h"
 #include "log.h"
+#include "blit.h"
 #include "gen/bitmap_test.h"
 #include <stdlib.h>
+
 
 uint16_t dst;
 
 void main()
 {
-  uint8_t *src,i;
+  uint8_t i;
   VdpRGBColor *pal;
-  VdpCommand cmd;
+
+  BlitSet knight_bs;
+  BlitObject knight_bo;
 
   vdp_set_mode(MODE_GRP4);
   vdp_set_color(COLOR_WHITE, COLOR_BLACK);
@@ -27,26 +31,17 @@ void main()
   for (i = 0; i <8; i++)
       vdp_set_palette_color(i, pal++);
 
-  vdp_set_vram_page(0);
+  INIT_DYNAMIC_BLIT_SET(knight_bs, knight, 16, 24, 2, 2);
 
-  dst = 0;
-  src = knight_bitmap;
-  for (i = 0; i < knight_bitmap_h; i ++) {
-    vdp_memcpy(dst, src, knight_bitmap_w / MODE_GRP4_PIX_PER_BYTE);
-    dst += MODE_GRP4_SCR_WIDTH / MODE_GRP4_PIX_PER_BYTE;
-    src += knight_bitmap_w / MODE_GRP4_PIX_PER_BYTE;
-  }
+  blit_set_to_vram(&knight_bs, 1, 0, 0);
 
-  cmd.sx = 0;
-  cmd.sy = 0;
-  cmd.dx = 100;
-  cmd.dy = 100;
-  cmd.nx = 16;
-  cmd.ny = 24;
-  cmd.destdir = 0;
-  cmd.command = (LMMM << 4) | TIMP;
+  knight_bo.x = 100;
+  knight_bo.y = 100;
+  knight_bo.state = 0;
+  knight_bo.frame = 0;
+  knight_bo.blitset = &knight_bs;
 
-  vdp_exec(&cmd);
+  blit_object_show(&knight_bo);
 
   for(;;);
 }
