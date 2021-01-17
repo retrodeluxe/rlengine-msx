@@ -380,7 +380,7 @@ class ObjectGroupLayer:
         count = 0
         # print >>file,("extern const unsigned char %s_%s_size;\n" % (basename, self.name))
         for item in self.raw_objects:
-            print(("extern const unsigned char %s_%s_objs[];\n" % (basename, self.name)), end=' ', file=file)
+            print(("extern const unsigned char %s_%s_objs[];\n" % (basename, self.name)), end='', file=file)
             # count = count + 1
 
     def dump_as_c_header(self, file, basename, global_properties):
