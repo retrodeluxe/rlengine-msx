@@ -195,6 +195,11 @@ void vdp_sprite_disable(void) __nonbanked
   vdp_write_reg(V99xx_MODE_REG_8, 10);
 }
 
+void vdp_set_192_lines(void) __nonbanked
+{
+  vdp_write_reg(V99xx_MODE_REG_9, 0);
+}
+
 /**
  * Sets current VRAM 16Kb page to access up to 128Kb
  *
