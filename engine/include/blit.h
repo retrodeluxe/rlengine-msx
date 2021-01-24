@@ -31,7 +31,7 @@ struct BlitSet {
   /**
    * BlitSet width in pixels
    */
-  uint8_t w;
+  uint16_t w;
   /**
    * BlitSet height in pixels
    */
@@ -95,6 +95,26 @@ struct BlitObject {
    */
   uint16_t y;
   /**
+   * Previous screen X position in pixel coordinates
+   */
+  uint16_t prev_x;
+  /**
+   * Previous screen Y position in pixel coordinates
+   */
+  uint16_t prev_y;
+  /**
+   * mask X position in pixel coordinates
+   */
+  uint16_t mask_x;
+  /**
+   * mask Y position in pixel coordinates
+   */
+  uint16_t mask_y;
+  /**
+   * mask page
+   */
+  uint8_t mask_page;
+  /**
    * Current animation state
    */
   uint8_t state;
@@ -102,6 +122,11 @@ struct BlitObject {
    * Current animation frame
    */
   uint8_t frame;
+
+  /**
+   * Animation counter
+   */
+  uint8_t anim_ctr;
   /**
    * BlitSet data
    */
@@ -114,11 +139,13 @@ struct BlitObject {
  * :param TS: a BlitSet object
  * :param DATA: name of data asset
  */
-#define INIT_BLIT_SET(TS, DATA)                                                 \
+#define INIT_BLIT_SET(TS, DATA, W, H)                                           \
   (TS).w = DATA##_bitmap_w;                                                     \
   (TS).h = DATA##_bitmap_h;                                                     \
   (TS).bitmap = DATA##_bitmap;                                                  \
   (TS).allocated = false;                                                       \
+  (TS).frame_w = W;                                                             \
+  (TS).frame_h = H;                                                             \
   (TS).raw = false;
 
  /**
@@ -146,8 +173,10 @@ extern void blit_init();
 extern rle_result blit_set_valloc(BlitSet *blitset);
 extern void blit_set_vfree(BlitSet *blitset);
 extern void blit_set_to_vram(BlitSet *blitset, uint8_t page,
-                    uint16_t xpos, uint16_t ypos);
+                    uint16_t xpos, uint16_t ypos) __nonbanked;
 extern void blit_object_show(BlitObject *blitobject) __nonbanked;
 extern void blit_object_hide(BlitObject *blitobject) __nonbanked;
+extern void blit_object_update(BlitObject *blitobject) __nonbanked;
+extern void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs) __nonbanked;
 
 #endif /* _BLIT_H_ */

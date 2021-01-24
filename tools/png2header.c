@@ -654,13 +654,13 @@ void dump_bitmap(struct fbit *buffer, FILE *file, int only_header)
     fprintf(file,"#define _GENERATED_BITMAP_H_%s\n", dataname);
 
     if (only_header) {
-            fprintf(file,"extern const unsigned char %s_bitmap_w;\n", dataname);
+            fprintf(file,"extern const unsigned int %s_bitmap_w;\n", dataname);
             fprintf(file,"extern const unsigned char %s_bitmap_h;\n", dataname);
             fprintf(file,"extern const unsigned char %s_bitmap[];\n", dataname);
             return;
     }
 
-    fprintf(file,"const unsigned char %s_bitmap_w = %d;\n", dataname, png_img.width);
+    fprintf(file,"const unsigned int %s_bitmap_w = %d;\n", dataname, png_img.width);
     fprintf(file,"const unsigned char %s_bitmap_h = %d;\n", dataname, png_img.height);
     fprintf(file,"const unsigned char %s_bitmap[]={\n",dataname);
 
