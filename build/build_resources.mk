@@ -204,7 +204,7 @@ $(built_fnt_ext_res_png) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_FNT
 $(built_bmp_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_BMP)/%.png
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(call print_res, bmp, $^)
-	$(hide) $(PNG2H) -p -t SCR5 -f $^ -o $@
+	$(hide) $(PNG2H) -p -t SCR5 -z -f $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_bitmaps.h
 

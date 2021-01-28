@@ -74,10 +74,14 @@ void blit_set_to_vram(BlitSet *blitset, uint8_t page, uint16_t xpos, uint16_t yp
   src = blitset->bitmap;
 
   offset = xpos + ypos * scr_w / ppb;
-  for (i = 0; i < blitset->h; i ++) {
-    vdp_memcpy(offset, src, blitset->w / ppb);
-    offset += scr_w / ppb;
-    src += blitset->w / ppb;
+  if (blitset->raw) {
+    for (i = 0; i < blitset->h; i ++) {
+      vdp_memcpy(offset, src, blitset->w / ppb);
+      src += blitset->w / ppb;
+      offset += scr_w / ppb;
+    }
+  } else {
+      vdp_rle_inflate(offset, src, blitset->w * blitset->h / ppb);
   }
 
   blitset->allocated = true;

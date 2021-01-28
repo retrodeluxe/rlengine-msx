@@ -76,6 +76,7 @@ struct png_header
 };
 
 #define IMAGE_SIZE_B  (png_img.width * png_img.height / 8)
+#define IMAGE_SIZE  (png_img.width * png_img.height / 2)
 
 png_bytepp png_rows;
 int rowbytes;
@@ -524,6 +525,62 @@ void dump_sprite_file(FILE *fd, int only_header)
 }
 
 
+void dump_4bitbuffer_rle(struct fbit *buffer, FILE *file, int type)
+{
+  int16_t curr_byte, prev_byte, cnt = 0;
+  uint8_t run_cnt = 0;
+  struct fbit *p;
+
+  prev_byte = -1;
+
+  p = buffer;
+  while (cnt < IMAGE_SIZE) {
+    curr_byte = p->color << 4;
+    p++;
+    curr_byte |= p->color;
+    p++;
+    cnt++;
+    if (cnt == IMAGE_SIZE)
+            fprintf(file,"0x%2.2X};\n\n", curr_byte);
+    else
+            fprintf(file,"0x%2.2X,", curr_byte);
+    if (curr_byte == prev_byte) {
+      run_cnt = 0;
+      while (cnt < IMAGE_SIZE) {
+        curr_byte = p->color << 4;
+        p++;
+        curr_byte |= p->color;
+        p++;
+        cnt++;
+        if (curr_byte == prev_byte) {
+                run_cnt++;
+                if (run_cnt == 255) {
+                        fprintf(file,"0x%2.2X,", run_cnt);
+                        prev_byte = -1;
+                        break;
+                }
+        } else {
+                fprintf(file,"0x%2.2X,", run_cnt);
+                if (cnt == IMAGE_SIZE)
+                        fprintf(file,"0x%2.2X};\n\n", curr_byte);
+                else
+                        fprintf(file,"0x%2.2X,", curr_byte);
+                prev_byte = curr_byte;
+                run_cnt = 0;
+                break;
+        }
+      }
+    } else {
+            prev_byte = curr_byte;
+    }
+    if (cnt == IMAGE_SIZE) {
+            if (run_cnt != 0)
+                    fprintf(file,"0x%2.2X};\n\n", run_cnt);
+            break;
+    }
+  }
+}
+
 void dump_buffer_rle(struct scr2 *buffer, FILE *file, int type)
 {
         int16_t curr_byte, prev_byte, cnt = 0;
@@ -664,9 +721,9 @@ void dump_bitmap(struct fbit *buffer, FILE *file, int only_header)
     fprintf(file,"const unsigned char %s_bitmap_h = %d;\n", dataname, png_img.height);
     fprintf(file,"const unsigned char %s_bitmap[]={\n",dataname);
 
-    //if (rle_encode)
-    //    dump_buffer_rle(buffer, file, 0);
-    //else {
+    if (rle_encode)
+        dump_4bitbuffer_rle(buffer, file, 0);
+    else {
             uint8_t scr5pix;
             p = buffer;
             for (cnt = 0; cnt < (png_img.width * png_img.height)/2 ; p++, cnt++) {
@@ -681,7 +738,7 @@ void dump_bitmap(struct fbit *buffer, FILE *file, int only_header)
                 }
             }
             fprintf(file,"0x%2.2X};\n\n",scr5pix);
-    //}
+    }
 }
 
 void dump_tile_file(FILE *fd, int only_header)
