@@ -177,6 +177,6 @@ extern void blit_set_to_vram(BlitSet *blitset, uint8_t page,
 extern void blit_object_show(BlitObject *blitobject) __nonbanked;
 extern void blit_object_hide(BlitObject *blitobject) __nonbanked;
 extern void blit_object_update(BlitObject *blitobject) __nonbanked;
-extern void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs) __nonbanked;
+extern void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs, uint8_t page) __nonbanked;
 
 #endif /* _BLIT_H_ */

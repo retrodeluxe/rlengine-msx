@@ -42,7 +42,7 @@ void main() __nonbanked
   vdp_set_palette((VdpRGBColor *)abbaye_pal_palette);
 
   INIT_DYNAMIC_BLIT_SET(knight_bs, knight, 16, 24, 2, 2);
-  blit_set_to_vram(&knight_bs, 1, 0, 0);
+  blit_set_to_vram(&knight_bs, 3, 0, 0);
 
   ascii8_get_page(abbaye_bitmap);
   ascii8_set_data(ascii8_page);
@@ -55,29 +55,31 @@ void main() __nonbanked
   vdp_screen_disable();
   reftick = sys_get_ticks();
 
-  blit_map_tilebuffer(abbaye_map_map + 64 * 22 + 32, &abbaye_bs);
+  blit_map_tilebuffer(abbaye_map_map + 64 * 22 + 32, &abbaye_bs, 1);
+  blit_map_tilebuffer(abbaye_map_map + 64 * 22 + 32, &abbaye_bs, 0);
   vdp_screen_enable();
   vdp_set_192_lines();
   vdp_sprite_disable();
 
   log_e("took %d ticks \n", sys_get_ticks() - reftick);
 
-  for (i = 0; i < 4; i++) {
+  for (i = 0; i < 5; i++) {
     knight_bo[i].x = 10 + i * 24;
     knight_bo[i].y = 136;
+    knight_bo[i].prev_x = 10 + i * 24;
+    knight_bo[i].prev_y = 136;
     knight_bo[i].state = 1;
     knight_bo[i].frame = 0;
     knight_bo[i].blitset = &knight_bs;
-    knight_bo[i].mask_x = 100 + i * 24;
+    knight_bo[i].mask_x = 100 + i * 32;
     knight_bo[i].mask_y = 0;
-    knight_bo[i].mask_page = 1;
+    knight_bo[i].mask_page = 3;
     knight_bo[i].anim_ctr = i % 2;
     blit_object_show(&knight_bo[i]);
   }
 
   for (x = 10; x < 150; x++) {
-    sys_wait_vsync();
-    for (i =0 ; i < 4; i++) {
+    for (i =0 ; i < 5; i++) {
       knight_bo[i].x++;
       if (knight_bo[i].anim_ctr++ > 10) {
         if(++knight_bo[i].frame >= knight_bo[i].blitset->frames)

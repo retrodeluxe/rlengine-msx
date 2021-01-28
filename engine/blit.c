@@ -94,36 +94,47 @@ void blit_object_show(BlitObject *bo) __nonbanked
 {
   uint16_t frame_offset;
 
-  bo->prev_x = bo->x;
-  bo->prev_y = bo->y;
-
-  cmd.sx = bo->x - 1;
-  cmd.sy = bo->y - 1;
+  // copy background to mask
+  cmd.sx = bo->prev_x;
+  cmd.sy = bo->prev_y + 255;
   cmd.dx = bo->mask_x;
   cmd.dy = bo->mask_y + bo->mask_page * 256;
-  cmd.nx = bo->blitset->frame_w + 2;
-  cmd.ny = bo->blitset->frame_h + 2;
+  cmd.nx = bo->blitset->frame_w + 4;
+  cmd.ny = bo->blitset->frame_h + 4;
   cmd.destdir = 0;
   cmd.command = (HMMM << 4);
   vdp_exec(&cmd);
 
+  // logic copy bitmap on top of mask
   frame_offset = (bo->state * bo->blitset->frames + bo->frame) * bo->blitset->frame_w;
 
   cmd.sx = bo->blitset->xpos + frame_offset;
   cmd.sy = bo->blitset->ypos + bo->blitset->page * 256;
-  cmd.dx = bo->x;
-  cmd.dy = bo->y;
+  cmd.dx = bo->mask_x + 2;
+  cmd.dy = bo->mask_y + 2 + bo->mask_page * 256;
   cmd.nx = bo->blitset->frame_w;
   cmd.ny = bo->blitset->frame_h;
   cmd.destdir = 0;
   cmd.command = (LMMM << 4) | TIMP;
-
   vdp_exec(&cmd);
+
+  // copy over set to page 0
+  cmd.sx = bo->mask_x;
+  cmd.sy = bo->mask_y + bo->mask_page * 256;
+  cmd.dx = bo->prev_x;
+  cmd.dy = bo->prev_y;
+  cmd.nx = bo->blitset->frame_w + 4;
+  cmd.ny = bo->blitset->frame_h + 4;
+  cmd.destdir = 0;
+  cmd.command = (HMMM << 4);
+  vdp_exec(&cmd);
+
+  bo->prev_x = bo->x;
+  bo->prev_y = bo->y;
 }
 
 void blit_object_update(BlitObject *bo) __nonbanked
 {
-  blit_object_hide(bo);
   blit_object_show(bo);
 }
 
@@ -131,12 +142,13 @@ void blit_object_hide(BlitObject *bo) __nonbanked
 {
   uint16_t frame_offset;
 
-  cmd.sx = bo->mask_x;
-  cmd.sy = bo->mask_y + bo->mask_page * 256;
-  cmd.dx = bo->prev_x - 1;
-  cmd.dy = bo->prev_y - 1;
-  cmd.nx = bo->blitset->frame_w + 2;
-  cmd.ny = bo->blitset->frame_h + 2;
+  // just copy over from page 1 to page 0
+  cmd.sx = bo->prev_x;
+  cmd.sy = bo->prev_y + 256;
+  cmd.dx = bo->prev_x;
+  cmd.dy = bo->prev_y;
+  cmd.nx = bo->blitset->frame_w;
+  cmd.ny = bo->blitset->frame_h;
   cmd.color = 0;
   cmd.destdir = 0;
   cmd.command = (HMMM << 4);
@@ -150,17 +162,17 @@ void blit_object_hide(BlitObject *bo) __nonbanked
  * :param buffer: tilebuffer
  * :param bs: the blitset to be used
  */
-void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs) __nonbanked
+void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs, uint8_t page) __nonbanked
 {
   uint8_t i, j, offset_x, offset_y;
-  uint16_t page = bs->page * 256;
+  uint16_t dp = page * 256;
 
   cmd.nx = bs->frame_w;
   cmd.ny = bs->frame_h;
   cmd.destdir = 0;
   cmd.command = (HMMM << 4);
   for (j = 0; j < 24; j++) {
-    cmd.dy = j << 3;
+    cmd.dy = (j << 3) + dp;
     for (i = 0; i < 32; i++) {
       offset_x = ((*buffer -1) & 31) << 3;
       offset_y = ((*buffer -1) >> 5) << 3;

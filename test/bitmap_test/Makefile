@@ -2,6 +2,7 @@ include ../build.mk
 
 MACHINE := msx2
 BANKED_CALLS := enabled
+BUILD_TYPE := debug
 include $(SETUP_BUILD)
 
 include $(CONFIG_ROM)
