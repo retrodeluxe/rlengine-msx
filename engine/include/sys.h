@@ -46,6 +46,7 @@ extern uint8_t sys_get_key(uint8_t line) __nonbanked;
 extern uint8_t sys_get_char(void);
 extern uint8_t sys_get_stick(uint8_t port) __nonbanked;
 extern uint8_t sys_get_trigger(uint8_t port) __nonbanked;
+extern uint16_t sys_get_mouse(uint8_t port) __nonbanked;
 extern void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked;
 #define sys_memset __builtin_memset
 
@@ -62,5 +63,6 @@ extern uint8_t sys_rand() __nonbanked;
 extern bool sys_is60Hz() __nonbanked;
 extern void sys_disable_kbd_click();
 extern void sys_set_turbo();
+
 
 #endif

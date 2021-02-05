@@ -83,6 +83,36 @@ uint8_t sys_get_key(uint8_t line) __nonbanked
 }
 
 /**
+ * Read Mouse Offset
+ *
+ * :param port: device port (12 for port A, 16 for port B)
+ *
+ * :returns: 16bits containing signed offset for X (MSB) and Y (LSB) relative to
+ *           last mouse position.
+ */
+uint16_t sys_get_mouse(uint8_t port) __nonbanked
+{
+  unused(port);
+
+  __asm
+  ld a,4(ix)
+  push af
+  call BIOS_GTPAD
+  pop af
+  add a,#2
+  push af
+  call BIOS_GTPAD
+  pop hl
+  push af
+  ld a,h
+  dec a
+  call BIOS_GTPAD
+  pop hl
+  ld l,a
+  __endasm;
+}
+
+/**
  *
  */
 uint8_t sys_get_char(void)

@@ -41,6 +41,7 @@
 #define BIOS_RSTPLT 0x0145
 #define BIOS_SETPLT 0x014D
 #define BIOS_CHGCPU 0x0180
+#define BIOS_GTPAD  0x00DB
 
 
 /**
