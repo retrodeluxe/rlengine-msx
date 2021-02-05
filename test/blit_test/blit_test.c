@@ -36,6 +36,8 @@ void main() __nonbanked
   uint8_t *dst, *src;
   VdpRGBColor *pal;
 
+  sys_set_turbo();
+
   vdp_set_mode(MODE_GRP4);
   vdp_set_color(COLOR_WHITE, COLOR_BLACK);
 
@@ -71,6 +73,7 @@ void main() __nonbanked
     knight_bo[i].state = 1;
     knight_bo[i].frame = 0;
     knight_bo[i].blitset = &knight_bs;
+    knight_bo[i].blitset2 = NULL;
     knight_bo[i].mask_x = 100 + i * 32;
     knight_bo[i].mask_y = 0;
     knight_bo[i].mask_page = 3;

@@ -10,6 +10,6 @@ include $(CONFIG_ROM)
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)
 
-LOCAL_ROM_NAME := bitmap_test
-LOCAL_SRC_FILES := bitmap_test.c data1.c
+LOCAL_ROM_NAME := blit_test
+LOCAL_SRC_FILES := blit_test.c data1.c
 include $(BUILD_ROM_ASCII8)
