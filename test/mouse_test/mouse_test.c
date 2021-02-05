@@ -24,9 +24,9 @@ void main()
   uint16_t mouse_offset;
   int8_t offset_x, offset_y;
 
-	vdp_set_mode(MODE_GRP1);
-	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
-	vdp_clear(0);
+  vdp_set_mode(MODE_GRP1);
+  vdp_set_color(COLOR_WHITE, COLOR_BLACK);
+  vdp_clear(0);
 
   spr_init();
   SPR_DEFINE_PATTERN_SET(PATRN_POINTER, SPR_SIZE_16x16, 1, 1, pointer_states, pointer);
@@ -37,9 +37,9 @@ void main()
   spr_set_pos(&pointer_spr, xpos, ypos);
   spr_show(&pointer_spr);
 
-	sys_irq_init();
+  sys_irq_init();
 
-	for (;;) {
+  for (;;) {
       sys_wait_vsync();
       spr_refresh();
       mouse_offset = sys_get_mouse(12);
@@ -54,5 +54,5 @@ void main()
 
       spr_set_pos(&pointer_spr, xpos, ypos);
       spr_update(&pointer_spr);
-	}
+  }
 }
