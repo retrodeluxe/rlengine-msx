@@ -50,8 +50,7 @@ void blit_set_vfree(BlitSet *blitset)
  * :param blitset: the BlitSet to be allocated
  * :param  page: the VRAM page to be used (0 to 3 MODE_GRP4, 0 to 1 for MODE_GRP6)
  * :param  xpos: x coordinate of the location inside the page (0 to 255 MODE_GRP4),
- *       (0 to 511  // TODO: make the queue circular, stop if full
-  cmd = &bccb[bccb_write++]; in MODE_GRP6)
+ *       (0 to 511 MODE GRP6)
  */
 void blit_set_to_vram(BlitSet *blitset, uint8_t page, uint16_t xpos, uint16_t ypos) __nonbanked
 {
@@ -117,6 +116,21 @@ void blit_object_show(BlitObject *bo) __nonbanked
   cmd.destdir = 0;
   cmd.command = (LMMM << 4) | TIMP;
   vdp_exec(&cmd);
+
+  // composite object
+  if (bo->blitset2 != NULL) {
+    frame_offset = (bo->state2 * bo->blitset2->frames + bo->frame2) * bo->blitset2->frame_w;
+
+    cmd.sx = bo->blitset2->xpos + frame_offset;
+    cmd.sy = bo->blitset2->ypos + bo->blitset2->page * 256;
+    cmd.dx = bo->mask_x + 2 + bo->offsetx2;
+    cmd.dy = bo->mask_y + 2 + bo->offsety2 + bo->mask_page * 256;
+    cmd.nx = bo->blitset2->frame_w;
+    cmd.ny = bo->blitset2->frame_h;
+    cmd.destdir = 0;
+    cmd.command = (LMMM << 4) | TIMP;
+    vdp_exec(&cmd);
+  }
 
   // copy over set to page 0
   cmd.sx = bo->mask_x;

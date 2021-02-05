@@ -122,15 +122,34 @@ struct BlitObject {
    * Current animation frame
    */
   uint8_t frame;
-
   /**
    * Animation counter
    */
   uint8_t anim_ctr;
   /**
+   * Current animation state for composite objects
+   */
+  uint8_t state2;
+  /**
+   * Current animation frame for composite objects
+   */
+  uint8_t frame2;
+  /**
+   * X offset of blitset2
+   */
+  int8_t offsetx2;
+  /**
+   * y offset of blitset2
+   */
+  int8_t offsety2;
+  /**
    * BlitSet data
    */
   BlitSet *blitset;
+  /**
+   * BlitSet data
+   */
+  BlitSet *blitset2;
 };
 
  /**

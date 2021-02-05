@@ -552,6 +552,7 @@ static void vdp_write_internal() __naked
  * :param buffer: pointer to source RAM buffer
  * :param size: size of decompressed buffer
  */
+ // FIXME: this appears to be failing for long data?
 void vdp_rle_inflate(uint16_t vaddress, uint8_t *buffer, uint16_t size)
 {
 	rle_prev = 0;
