@@ -55,18 +55,31 @@ void sys_disable_kbd_click()
 }
 
 /**
+ * Sets CPU Mode to R800 DRAM
+ */
+void sys_set_turbo()
+{
+    __asm
+    ld  a,(BIOS_CHGCPU)
+    cp  #0xc3
+    ld  a,#0x82
+    call z,BIOS_CHGCPU
+    __endasm;
+}
+
+/**
  * Read Keyboard Matrix status using BIOS
  */
 uint8_t sys_get_key(uint8_t line) __nonbanked
 {
-        line;
+    unused(line);
 
-        __asm
-        ld a,4(ix)
-        call 0x0141
-        ld h,#0x00
-        ld l,a
-        __endasm;
+    __asm
+    ld a,4(ix)
+    call 0x0141
+    ld h,#0x00
+    ld l,a
+    __endasm;
 }
 
 /**

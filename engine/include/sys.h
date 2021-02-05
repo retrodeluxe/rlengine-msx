@@ -61,5 +61,6 @@ extern void sys_rand_init(uint8_t *seed) __nonbanked;
 extern uint8_t sys_rand() __nonbanked;
 extern bool sys_is60Hz() __nonbanked;
 extern void sys_disable_kbd_click();
+extern void sys_set_turbo();
 
 #endif
