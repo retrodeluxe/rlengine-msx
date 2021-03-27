@@ -33,3 +33,6 @@ endef
 define print_host_cc
 		@printf "$(bold)$(cyan)[gcc ] $(1) $(sgr0): $(2)\n"
 endef
+
+# recursive wildcard
+rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
