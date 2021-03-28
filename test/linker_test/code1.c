@@ -9,12 +9,15 @@
 
 extern char caca1[];
 
-int function_in_code1() __banked
+int function_in_code1(uint8_t val) __banked
 {
 	int b;
 
 	b = 5;
 	b++;
+
+
+  log_e("code1 received val %d\n", val);
 
 	// this will not work because "code 1" is defined as const data in this page
 	// when calling vpd_print_grp1 we switch to another page and the data is gone.

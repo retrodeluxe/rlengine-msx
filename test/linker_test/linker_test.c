@@ -11,15 +11,16 @@
 #include "ascii8.h"
 
 extern int function_in_code0();
-extern int function_in_code1();
+extern int function_in_code1(uint8_t val);
 extern const char caca1[];
 
-void something_else() __nonbanked;
-void something_else2() __nonbanked;
+void something_else(uint16_t val) __nonbanked;
+void something_else2(uint16_t val); // the modifier is screwing up parameters passing
+void something_else3() __nonbanked;
 
 void main() __nonbanked
 {
-  log_w("we are running");
+  log_w("we are running\n");
   vdp_set_mode(MODE_GRP1);
   vdp_set_color(COLOR_WHITE, COLOR_BLACK);
   vdp_clear(0);
@@ -37,11 +38,13 @@ void main() __nonbanked
 
   function_in_code0();
 
-  function_in_code1();
+  function_in_code1(77);
 
-  something_else2();
+  something_else2(88);
 
-  something_else();
+  something_else(66);
+
+  something_else3();
 
   do {
   } while (sys_get_key(8) & 1);
@@ -49,12 +52,19 @@ void main() __nonbanked
   sys_reboot();
 }
 
-void something_else() __nonbanked
+void something_else(uint16_t val) __nonbanked
 {
-  vdp_puts(10, 12, "something else");
+    log_e("sthing else received val %d\n", val);
+    vdp_puts(10, 12, "something else");
 }
 
-void something_else2() __nonbanked
+void something_else2(uint16_t val)
 {
+  log_e("sthing else2 received val %d\n", val);
   vdp_puts(10, 16, "something more");
+}
+
+void something_else3() __nonbanked
+{
+  log_e("nonbaked no params\n");
 }
