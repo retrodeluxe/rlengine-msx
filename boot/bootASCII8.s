@@ -104,6 +104,8 @@ __sdcc_banked_call:
 $1:
 		jp	(hl)
 __sdcc_banked_ret:
+    ; TODO: handle all possible return codes
+    push hl         ; save hl integer return code
 		ld	a,i
 		di
 		ld	iy,#0
@@ -117,10 +119,12 @@ __sdcc_banked_ret:
 		; restore bank
 		ld 	(ASCII8_PAGE2),a
 		ld 	(cur_page),a
-		inc 	hl
+		inc hl
 		inc	hl
 		inc	hl
+    pop de
 		push	hl
+    ex  de,hl      ; recover hl integer return code
 		ret	po
 		ei
 		ret
