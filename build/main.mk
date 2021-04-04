@@ -46,16 +46,16 @@ export SDCC_INCLUDE := $(SDCC_ROOT)/share/include
 export ENGINE_CFLAGS := -mz80
 export ROM_CFLAGS := -mz80
 
-ifeq ($(MACHINE),msx2)
+ifeq ($(CONFIG_MACHINE),msx2)
 	ENGINE_CFLAGS += -DMSX2
 endif
 
-ifeq ($(BANKED_CALLS),enabled)
+ifeq ($(CONFIG_BANKED_CALLS),enabled)
 	ENGINE_CFLAGS += --model-large -DBANKED_CALLS
 	ROM_CFLAGS += --model-large -DBANKED_CALLS
 endif
 
-ifeq ($(BUILD_TYPE),release)
+ifeq ($(CONFIG_BUILD_TYPE),release)
 	ENGINE_CFLAGS += -DNDEBUG --max-allocs-per-node 100000
 	ROM_CFLAGS += -DNDEBUG --max-allocs-per-node 100000
 endif

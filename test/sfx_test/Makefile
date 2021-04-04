@@ -1,4 +1,6 @@
 include ../build.mk
+
+CONFIG_BUILD_TYPE := debug
 include $(SETUP_BUILD)
 #
 # misc test rom
