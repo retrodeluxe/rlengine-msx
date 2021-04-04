@@ -58,6 +58,9 @@ static bool skip;
 /* tile buffer */
 static uint8_t tile[12];
 
+/** page switching */
+static uint8_t page;
+
 /*
  * Internal Sprite collision detection handler
  */
@@ -305,9 +308,9 @@ static void phys_tile_collision_notify(uint8_t tile, uint16_t x,
        * Call the handler by switching ROM page if necessary
        */
       if (tile_collision[i].callback.handler != NULL) {
-        ascii8_set_code(tile_collision[i].callback.page);
+        page = ascii8_set_code(tile_collision[i].callback.page);
         tile_collision[i].callback.handler(tile_collision[i].dpo, tile_collision[i].data);
-        ascii8_restore();
+        ascii8_restore_code(page);
       }
     }
   }

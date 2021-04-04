@@ -102,6 +102,7 @@ uint8_t v_frame;
 
 uint16_t reftick;
 bool fps_stall;
+uint8_t page;
 
 extern TileSet tileset_room_title[ROOM_MAX];
 extern TileSet tileset[TILE_MAX];
@@ -262,9 +263,9 @@ void animate_all() __nonbanked {
       /** XXX: hack for banked function pointers **/
       // log_e("dpo aidx:%d n:%d\n",dpo->spr->aidx,
       // dpo->spr->pattern_set->planes);
-      ascii8_set_code(anim->page);
+      page = ascii8_set_code(anim->page);
       anim->run(dpo);
-      ascii8_restore();
+      ascii8_restore_code(page);
     }
   }
 }
@@ -272,9 +273,9 @@ void animate_all() __nonbanked {
 void animate_jean() __nonbanked {
   list_for_each(elem2, &dpo_jean.animator_list) {
     anim = list_entry(elem2, Animator, list);
-    ascii8_set_code(anim->page);
+    page = ascii8_set_code(anim->page);
     anim->run(&dpo_jean);
-    ascii8_restore();
+    ascii8_restore_code(page);
   }
 }
 

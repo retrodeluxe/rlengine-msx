@@ -2,7 +2,7 @@
 		.globl _ascii8_page
 		.globl _ascii8_set_data
 		.globl _ascii8_set_code
-		.globl _ascii8_restore
+		.globl _ascii8_restore_code
 
 		.area _BOOT
 
@@ -29,7 +29,7 @@ _ascii8_set_code:
 		ld	ix,#0
 		add 	ix,sp
 		ld	a,(cur_page)
-		ld	(cur_page2),a
+		ld	l,a
 		ld	a,4(ix)
 		ld 	(ASCII8_PAGE2),a
 		ld	(cur_page),a
@@ -43,9 +43,12 @@ _ascii8_set_data:
 		ld 	(ASCII8_PAGE3),a
 		pop 	ix
 		ret
-_ascii8_restore:
+_ascii8_restore_code:
 		push 	ix
-		ld	a,(cur_page2)
+		ld	ix,#0
+		add	ix,sp
+		ld	a,4(ix)
+		ld	(cur_page),a
 		ld	(ASCII8_PAGE2),a
 		pop	ix
 		ret

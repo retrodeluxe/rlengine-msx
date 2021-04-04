@@ -46,8 +46,8 @@ extern void ascii8_set_data(uint8_t page) __nonbanked;
  * code page switching has no effect unless BANKED_CALLS is enabled
  */
 #ifdef BANKED_CALLS
-extern void ascii8_set_code(uint8_t page) __nonbanked;
-extern void ascii8_restore() __nonbanked;
+extern uint8_t ascii8_set_code(uint8_t page) __nonbanked;
+extern void ascii8_restore_code(uint8_t page) __nonbanked;
 #else
 /**
  * Set ASCII8 mapper CODE bank to the specified page (0x8000-0x9FFF)
@@ -56,7 +56,7 @@ extern void ascii8_restore() __nonbanked;
 /**
  * Restore ASCII8 mapper code bank to the last used page
  */
-#define ascii8_restore()
+#define ascii8_restore_code(page)
 #endif
 
 
