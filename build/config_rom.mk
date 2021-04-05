@@ -15,11 +15,15 @@ export LOCAL_BUILD_RES_PAL = $(LOCAL_BUILD_RES)/pal
 export LOCAL_BUILD_OUT_GEN = $(CURDIR)/gen
 export LOCAL_BUILD_OUT_ROM = $(LOCAL_BUILD_OUT)/rom
 export LOCAL_BUILD_OUT_BIN = $(LOCAL_BUILD_OUT)/bin
+export LOCAL_BUILD_OUT_COM = $(LOCAL_BUILD_OUT)/com
 
 $(LOCAL_BUILD_OUT_BIN):
 	@mkdir -p $@
 
 $(LOCAL_BUILD_OUT_ROM):
+	@mkdir -p $@
+
+$(LOCAL_BUILD_OUT_COM):
 	@mkdir -p $@
 
 $(LOCAL_BUILD_OUT_GEN):
