@@ -76,7 +76,7 @@ uint8_t sys_get_key(uint8_t line) __nonbanked
 
     __asm
     ld a,4(ix)
-    call 0x0141
+    call_bios(BIOS_SNSMAT)
     ld h,#0x00
     ld l,a
     __endasm;
