@@ -8,6 +8,8 @@ built_com_ihx = $(LOCAL_BUILD_OUT_BIN)/$(LOCAL_COM_NAME).ihx
 built_com_bin = $(LOCAL_BUILD_OUT_BIN)/$(LOCAL_COM_NAME).bin
 built_com_exe = $(LOCAL_BUILD_OUT_COM)/$(LOCAL_COM_NAME).com
 
+ENGINE_CFLAGS += -DMSXDOS
+
 all: $(built_com_exe)
 
 # Build local sourcess

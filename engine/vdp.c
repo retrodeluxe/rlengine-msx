@@ -32,7 +32,7 @@ uint8_t vdp_mode;
 void vdp_screen_disable(void)
 {
 	__asm
-	call BIOS_DISSCR
+	call_bios(BIOS_DISSCR)
 	__endasm;
 }
 
@@ -42,7 +42,7 @@ void vdp_screen_disable(void)
 void vdp_screen_enable(void)
 {
 	__asm
-	call BIOS_ENASCR
+	call_bios(BIOS_ENASCR)
 	__endasm;
 }
 
@@ -58,7 +58,7 @@ void vdp_set_mode(VdpMode mode)
 
 	__asm
 	ld	a,4(ix)
-	call	BIOS_CHGMOD
+	call_bios(BIOS_CHGMOD)
 	__endasm;
 }
 
@@ -111,7 +111,7 @@ void vdp_set_color(VdpColor ink, VdpColor border)
 	unused(border);
 
 	__asm
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc 	a
 	ld	c,a
 	ld	a,4(ix)
@@ -168,7 +168,7 @@ void vdp_set_palette_color(uint8_t index, VdpRGBColor *color)
   inc hl
   or (hl)
   ld ix, #BIOS_SETPLT
-  call BIOS_EXTROM
+  call_bios(BIOS_EXTROM)
   __endasm;
 }
 
@@ -180,7 +180,7 @@ void vdp_write_reg(uint8_t reg, uint8_t val) __nonbanked
   __asm
   ld d,5(ix)
   ld e,4(ix)
-  ld a,(VDP_DW)
+  lda_main_rom(VDP_DW)
   inc a
   ld c,a
   out (c), d
@@ -275,7 +275,7 @@ void vdp_write(uint16_t address, uint8_t value) __nonbanked
 	unused(value);
 
 	__asm
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc	a
 	ld	c,a
 	di
@@ -308,7 +308,7 @@ void vdp_memset(uint16_t vaddress, uint16_t size, uint8_t value) __nonbanked
 	unused(value);
 
 	__asm
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc	a
 	ld	c,a
 	ld	l,4(ix)
@@ -350,7 +350,7 @@ void vdp_memcpy(uint16_t vaddress, uint8_t *buffer, uint16_t size) __nonbanked
 	unused(size);
 
 	__asm
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc	a
 	ld	c,a
 	ld	l,4(ix)
@@ -396,7 +396,7 @@ void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
 	ld	e, (hl)
 	inc 	hl
 	ld	d, (hl)
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc 	a
 	ld	c,a
 	ld	a,e
@@ -424,7 +424,7 @@ void vdp_memcpy_vda(uint8_t *buffer) __nonbanked
 	ex 	de,hl
 	inc	de
 	pop 	hl
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	ld	c,a
 	ld	b,e
 	dec	de
@@ -450,7 +450,7 @@ void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom)
   unused(spritesize);
 
 	__asm
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc	a
 	ld	c,a
 	ld	b,#0x00
@@ -490,7 +490,7 @@ void vdp_fastcopy_nametable(uint8_t *buffer) __nonbanked
 	unused(buffer);
 
 	__asm
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc	a
 	ld	c,a
 	ld	hl,#VRAM_BASE_NAME
@@ -526,7 +526,7 @@ static void vdp_write_internal() __naked
 {
 	__asm
 	ex	af,af'    ;'
-	ld	a,(VDP_DW)
+	lda_main_rom(VDP_DW)
 	inc	a
 	ld	c,a
 	ld 	a,e

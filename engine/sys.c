@@ -38,9 +38,9 @@ struct sys_pr {
  */
 void sys_reboot()
 {
-        __asm
-        call 0x0000
-        __endasm;
+  __asm
+  call 0x0000
+  __endasm;
 }
 
 /**
@@ -97,16 +97,16 @@ uint16_t sys_get_mouse(uint8_t port) __nonbanked
   __asm
   ld a,4(ix)
   push af
-  call BIOS_GTPAD
+  call_bios(BIOS_GTPAD)
   pop af
   add a,#2
   push af
-  call BIOS_GTPAD
+  call_bios(BIOS_GTPAD)
   pop hl
   push af
   ld a,h
   dec a
-  call BIOS_GTPAD
+  call_bios(BIOS_GTPAD)
   pop hl
   ld l,a
   __endasm;
@@ -117,11 +117,11 @@ uint16_t sys_get_mouse(uint8_t port) __nonbanked
  */
 uint8_t sys_get_char(void)
 {
-        __asm
-        call 0x009f
-        ld h,#0x00
-        ld l,a
-        __endasm;
+  __asm
+  call_bios(BIOS_SNSMAT)
+  ld h,#0x00
+  ld l,a
+  __endasm;
 }
 
 /**
@@ -129,13 +129,13 @@ uint8_t sys_get_char(void)
  */
 uint8_t sys_get_trigger(uint8_t port) __nonbanked
 {
-        port;
+  unused(port);
 
-        __asm
-        ld a,4(ix)
-        call 0x00d8
-        ld l,a
-        __endasm;
+  __asm
+  ld a,4(ix)
+  call_bios(BIOS_GTTRIG)
+  ld l,a
+  __endasm;
 }
 
 /**
@@ -143,13 +143,13 @@ uint8_t sys_get_trigger(uint8_t port) __nonbanked
  */
 uint8_t sys_get_stick(uint8_t port) __nonbanked
 {
-        port;
+  unused(port);
 
-        __asm
-        ld a,4(ix)
-        call 0x00d5
-        ld l,a
-        __endasm;
+  __asm
+  ld a,4(ix)
+  call_bios(BIOS_GTSTCK)
+  ld l,a
+  __endasm;
 }
 
 /**
@@ -157,19 +157,19 @@ uint8_t sys_get_stick(uint8_t port) __nonbanked
  */
 void sys_memcpy(uint8_t *dst, uint8_t *src, uint16_t size) __nonbanked
 {
-        src;
-        dst;
-        size;
+  src;
+  dst;
+  size;
 
-        __asm
-        ld l,6(ix)
-        ld h,7(ix)
-        ld e,4(ix)
-        ld d,5(ix)
-        ld c,8(ix)
-        ld b,9(ix) ;#0x00
-        ldir
-        __endasm;
+  __asm
+  ld l,6(ix)
+  ld h,7(ix)
+  ld e,4(ix)
+  ld d,5(ix)
+  ld c,8(ix)
+  ld b,9(ix) ;#0x00
+  ldir
+  __endasm;
 }
 
 /**

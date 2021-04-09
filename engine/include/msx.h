@@ -23,6 +23,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define HASH_LITERAL #
+#define HASH() HASH_LITERAL
+
+/* system variables are only available in main ROM */
 #define VDP_DR 0x0006
 #define VDP_DW 0x0007
 #define SYS_INFO1 0x002B
@@ -42,7 +46,24 @@
 #define BIOS_SETPLT 0x014D
 #define BIOS_CHGCPU 0x0180
 #define BIOS_GTPAD  0x00DB
+#define BIOS_SNSMAT 0x0141
+#define BIOS_CHGET  0x009f
+#define BIOS_GTTRIG 0x00d8
+#define BIOS_GTSTCK 0x00d5
 
+#ifdef MSXDOS
+#define call_bios(ADDR) \
+        ld iy,(0xfcc0) \
+        ld ix,HASH()ADDR \
+        call 0x001c
+#define lda_main_rom(ADDR) \
+        ld a,(0xfcc1) \
+        ld hl,HASH()ADDR \
+        call 0x000c
+#else
+#define call_bios(ADDR) call (ADDR)
+#define lda_main_rom(ADDR) ld a,(ADDR)
+#endif
 
 /**
  * Disable interrupts

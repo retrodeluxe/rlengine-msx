@@ -21,9 +21,6 @@
 
 #include "msx.h"
 
-#define HASH_LITERAL #
-#define HASH() HASH_LITERAL
-
 /**
  * Gets the ASCII8 ROM page from a symbol and stores it in ascii8_page
  */
