@@ -3,9 +3,8 @@ include ../build.mk
 CONFIG_MACHINE := msx2
 CONFIG_BANKED_CALLS := enabled
 CONFIG_BUILD_TYPE := debug
-include $(SETUP_BUILD)
 
-include $(CONFIG_ROM)
+include $(SETUP_BUILD)
 
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)

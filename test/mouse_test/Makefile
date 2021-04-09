@@ -1,8 +1,5 @@
 include ../build.mk
 include $(SETUP_BUILD)
-#
-# misc test rom
-include $(CONFIG_ROM)
 
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)

@@ -2,9 +2,8 @@ include ../build.mk
 
 CONFIG_BUILD_TYPE := release
 CONFIG_MACHINE := msx2
-include $(SETUP_BUILD)
 
-include $(CONFIG_ROM)
+include $(SETUP_BUILD)
 
 LOCAL_RES_DIR := ./res
 include $(BUILD_RESOURCES)
