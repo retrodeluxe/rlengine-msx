@@ -27,6 +27,7 @@ $(built_com_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_MSXDOS) | $(BUILT_
 	@echo "-mwxuy" > $(LOCAL_BUILD_OUT_BIN)/com.lnk
 	@echo "-i ${@}" >> $(LOCAL_BUILD_OUT_BIN)/com.lnk
 	@echo "-b _CODE=0x0178" >> $(LOCAL_BUILD_OUT_BIN)/com.lnk
+	@echo "-b _CODE_PAGE_2=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/com.lnk
 	@echo "-b _BOOT=0x0100" >> $(LOCAL_BUILD_OUT_BIN)/com.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/com.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/com.lnk
