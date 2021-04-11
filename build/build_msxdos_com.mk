@@ -41,9 +41,19 @@ $(built_com_bin) : $(built_com_ihx) | $(HEX2BIN)
 	$(call print_pack, bin, $@)
 	$(hide) cd $(LOCAL_BUILD_OUT_BIN) && $(HEX2BIN) -e bin $(notdir $^)
 
-# Generate the actual ROM
+# Generate the actual executable
 #
 $(built_com_exe) : $(built_com_bin)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_COM)
 	$(call print_pack, com_exe, $@)
 	$(hide) mv $^ $@
+
+# Run executable on emulator
+#
+run: $(built_com_exe)
+	$(hide) cp $(TOOLS_ROOT)/msxdos/* $(LOCAL_BUILD_OUT_COM)
+	$(hide) echo $(notdir $(built_com_exe)) > $(LOCAL_BUILD_OUT_COM)/autoexec.bat
+	$(hide) /usr/bin/openmsx -extc debugdevice \
+		-machine Panasonic_FS-A1GT \
+		-diska $(LOCAL_BUILD_OUT_COM) \
+		-script $(TOOLS_ROOT)/msxdos/boot.tcl

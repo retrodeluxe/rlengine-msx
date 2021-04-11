@@ -1,0 +1,1 @@
+set fullspeedwhenloading on
