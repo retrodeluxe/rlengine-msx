@@ -47,3 +47,12 @@ $(built_rom_32k) : $(built_rom_bin)
 	$(call print_pack, rom32k, $@)
 	$(hide) tr "\000" "\377" < /dev/zero | (dd ibs=1k count=32 of=$@ ) > /dev/null 2>&1
 	$(hide) (dd if=$^ of=$@ conv=notrunc status=noxfer) > /dev/null 2>&1
+
+run: $(built_rom_32k)
+	$(hide) /usr/bin/openmsx -extb debugdevice -machine msx1 -carta $^
+
+run2: $(built_rom_32k)
+	$(hide) /usr/bin/openmsx -extb debugdevice -machine msx2 -carta $^
+
+runR: $(built_rom_32k)
+	$(hide) /usr/bin/openmsx -extb debugdevice -machine Panasonic_FS-A1GT -carta $^
