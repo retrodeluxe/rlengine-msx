@@ -3,9 +3,6 @@
  * Copyright (C) Retro DeLuxe 2017, All rights reserved.
  *
  */
-
-#define DEBUG
-
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
@@ -17,11 +14,14 @@
 #include "dpo.h"
 #include "phys.h"
 #include "list.h"
-#include "pt3.h"
-#include "pt3_nt2.h"
-#include "song.h"
+//#include "pt3.h"
+//#include "pt3_nt2.h"
+//#include "song.h"
+#include "ascii8.h"
 
-#include "gen/phys_test.h"
+#include "gen/phys_test_sprites_ext.h"
+#include "gen/kingsvalley_ext.h"
+#include "gen/map_defs.h"
 #include "gen/map_init.h"
 
 enum spr_patterns_t {
@@ -56,8 +56,6 @@ enum obj_state {
 	STATE_MOVING_UP
 };
 
-// SpritePattern spr_pattern[PATRN_MAX];
-
 SpriteDef enemy_sprites[32];
 SpriteDef arrow_sprite;
 SpriteDef bullet_sprite[2];
@@ -78,7 +76,7 @@ uint8_t stick;
 uint8_t music_ready;
 struct map_object_item *room_objs;
 
-void play_music();
+//void play_music();
 void anim_up_down(DisplayObject *obj);
 void anim_drop(DisplayObject *obj);
 void anim_falling_bullets(DisplayObject *obj);
@@ -95,26 +93,29 @@ void init_monk();
 uint8_t screen_buf[768];
 uint16_t reftick;
 
+const uint8_t two_step_state[] = {2,2};
+const uint8_t single_step_state[] = {1,1};
+const uint8_t three_step_state[] = {3,3};
+const uint8_t bullet_state[] = {1,1};
+const uint8_t plant_state[] = {2};
+const uint8_t waterdrop_state[] = {3};
+const uint8_t spider_state[]={2};
+const uint8_t archer_state[]={2,2};
+
+#pragma CODE_PAGE 3
+
 void init_patterns()
 {
-	uint8_t two_step_state[] = {2,2};
-	uint8_t single_step_state[] = {1,1};
-	uint8_t three_step_state[] = {3,3};
-	uint8_t bullet_state[] = {1,1};
-	uint8_t plant_state[] = {2};
-	uint8_t waterdrop_state[] = {3};
-	uint8_t spider_state[]={2};
-	uint8_t archer_state[]={2,2};
-
-	spr_define_pattern_set(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1, monk1_color);
-	spr_define_pattern_set(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, two_step_state, smiley, smiley_color);
-	spr_define_pattern_set(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, bullet_state, bullet, bullet_color);
-	spr_define_pattern_set(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, archer_state, archer_skeleton, archer_skeleton_color);
-	spr_define_pattern_set(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow, arrow_color);
-	spr_define_pattern_set(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, plant_state, plant, plant_color);
-	spr_define_pattern_set(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop, waterdrop_color);
-	spr_define_pattern_set(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, spider_state, spider, spider_color );
-	spr_define_pattern_set(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, two_step_state, monk_death, monk_death_color);
+  ascii8_set_data(4);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 1, 2, three_step_state, monk1);
+	SPR_DEFINE_PATTERN_SET(PATRN_SMILEY, SPR_SIZE_16x16, 1, 2, two_step_state, smiley);
+	SPR_DEFINE_PATTERN_SET(PATRN_BULLET, SPR_SIZE_16x16, 1, 2, bullet_state, bullet);
+	SPR_DEFINE_PATTERN_SET(PATRN_SKELETON, SPR_SIZE_16x32, 1, 2, archer_state, archer_skeleton);
+	SPR_DEFINE_PATTERN_SET(PATRN_ARROW, SPR_SIZE_16x16, 1, 2, single_step_state, arrow);
+	SPR_DEFINE_PATTERN_SET(PATRN_PLANT, SPR_SIZE_16x16, 1, 1, plant_state, plant);
+	SPR_DEFINE_PATTERN_SET(PATRN_WATERDROP, SPR_SIZE_16x16, 1, 1, waterdrop_state, waterdrop);
+	SPR_DEFINE_PATTERN_SET(PATRN_SPIDER, SPR_SIZE_16x16, 1, 1, spider_state, spider);
+	SPR_DEFINE_PATTERN_SET(PATRN_MONK_DEATH, SPR_SIZE_16x32, 1, 1, two_step_state, monk_death);
 }
 
 void init_animators()
@@ -142,9 +143,13 @@ static void add_animator(DisplayObject *dpo, enum anim_t animidx)
 static void add_sprite(DisplayObject *dpo, uint8_t objidx,
 	enum spr_patterns_t pattidx, uint8_t x, uint8_t y)
 {
+  SpritePattern *ps = &spr_pattern[pattidx];
+
+  ascii8_set_data(4);
 	spr_valloc_pattern_set(pattidx);
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
 	spr_set_pos(&enemy_sprites[objidx], x, y);
+  spr_update(&enemy_sprites[objidx]);
 	dpo->type = DISP_OBJECT_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
 	dpo->xpos = x;
@@ -157,22 +162,23 @@ static void add_sprite(DisplayObject *dpo, uint8_t objidx,
 }
 
 
-void play_music()
-{
-	pt3_decode();
-	pt3_play();
-}
+//void play_music()
+//{
+//	pt3_decode();
+//	pt3_play();
+//}
 
-void main()
+void main() __nonbanked
 {
 	uint8_t i,d, x, y;
 	enum map_object_property_type spr_type;
 
 	vdp_set_mode(MODE_GRP2);
 	vdp_set_color(COLOR_WHITE, COLOR_BLACK);
-	vdp_clear_grp1(0);
+	vdp_clear(0);
 	spr_init();
 
+  ascii8_set_data(4);
 	init_map_object_layers();
 
 	INIT_TILE_SET(tileset_kv, kingsvalley);
@@ -197,6 +203,7 @@ void main()
         if (map_object->type == SPRITE) {
             spr_type = map_object->object.sprite.type;
             x = map_object->x; y = map_object->y;
+            log_e("type %d\n", spr_type);
             switch(spr_type) {
                 case TYPE_SMILEY:
                     add_sprite(dpo, i, PATRN_SMILEY, x, y);
@@ -246,17 +253,18 @@ void main()
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, DisplayObject, list);
 		if (dpo->type == DISP_OBJECT_SPRITE) {
+      log_e("show\n");
 			spr_show(dpo->spr);
 		}
 	}
 
-	pt3_init_notes(NT);
-	pt3_init(SONG00 ,0);
+	//pt3_init_notes(NT);
+	//pt3_init(SONG00 ,0);
 
 	sys_irq_init();
 	phys_init();
-	music_ready = 0;
-	sys_irq_register(play_music);
+	//music_ready = 0;
+	//sys_irq_register(play_music);
 
 	phys_set_colliding_tile(1);
 	phys_set_colliding_tile(2);
@@ -266,6 +274,7 @@ void main()
 	/* game loop */
 	for(;;) {
 		sys_wait_vsync();
+    spr_refresh();
 		reftick = sys_get_ticks();
 		stick = sys_get_stick(0);
 		animate_all();
@@ -275,6 +284,11 @@ void main()
 		//sys_memcpy(screen_buf, map_tilemap, 768);
 	}
 }
+
+// NEED TO REMOVE ALL COLLISION DETECTION BECAUSE IS TOO EXPENSIVE
+// do the animations based on boundaries, then take advantage of this to
+// improve the animation API.
+
 
 void animate_all()
 {
@@ -291,7 +305,7 @@ void init_monk()
 {
 	spr_valloc_pattern_set(PATRN_MONK);
 	spr_init_sprite(&monk_sprite, PATRN_MONK);
-	dpo_monk.xpos = 100;
+  dpo_monk.xpos = 100;
 	dpo_monk.ypos = 192 - 48;
 	dpo_monk.type = DISP_OBJECT_SPRITE;
 	dpo_monk.state = 1;
@@ -494,7 +508,7 @@ void anim_joystick(DisplayObject *obj)
 			break;
 	}
 
-	phys_detect_tile_collisions(obj, map_tilemap, dx, dy);
+	phys_detect_tile_collisions(obj, map_tilemap, dx, dy, false, false);
 	dpo_simple_animate(obj, dx, dy);
 }
 
@@ -514,7 +528,7 @@ void anim_horizontal_projectile(DisplayObject *obj)
 			break;
 	}
 	dpo_simple_animate(obj, dx, 0);
-	phys_detect_tile_collisions(obj, map_tilemap, dx, 0);
+	phys_detect_tile_collisions(obj, map_tilemap, dx, 0, false, false);
 
 	if (is_colliding_left(obj) || is_colliding_right(obj)) {
 		spr_hide(obj->spr);
@@ -548,7 +562,7 @@ void anim_left_right(DisplayObject *obj)
 			}
 			break;
 	}
-	phys_detect_tile_collisions(obj, screen_buf, dx, 4);
+	phys_detect_tile_collisions(obj, screen_buf, dx, 4, false, false);
 	dpo_simple_animate(obj, dx, 0);
 }
 
@@ -598,7 +612,7 @@ void anim_drop(DisplayObject *obj) {
 	}
 	spr_update(obj->spr);
 
-	phys_detect_tile_collisions(obj, map_tilemap, 0, 4);
+	phys_detect_tile_collisions(obj, map_tilemap, 0, 4, false, false);
 }
 /*
  * Two state vertical translation with direction switch on collision
@@ -618,7 +632,7 @@ void anim_up_down(DisplayObject *obj)
 	}
 
 	dpo_simple_animate(obj, 0, dy);
-	phys_detect_tile_collisions(obj, map_tilemap, 0, dy);
+	phys_detect_tile_collisions(obj, map_tilemap, 0, dy, false, false);
 
 	if (is_colliding_down(obj)) {
 		obj->state = STATE_MOVING_UP;
@@ -647,7 +661,7 @@ void anim_falling_bullets(DisplayObject *obj)
 		dy = -3 + frame_cnt_b++ >> 3;
 	}
 	dpo_simple_animate(obj, dx, dy);
-	phys_detect_tile_collisions(obj, map_tilemap, dx, dy);
+	phys_detect_tile_collisions(obj, map_tilemap, dx, dy, false, false);
 
 	if (is_colliding_down(obj)) {
 		if (obj->state == 1) {
