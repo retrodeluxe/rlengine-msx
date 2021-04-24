@@ -18,7 +18,7 @@
  */
 
 #ifndef _MSX_FONT_H_
-#define _MSX_FONT_H
+#define _MSX_FONT_H_
 
 #include "tile.h"
 
