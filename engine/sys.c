@@ -113,12 +113,18 @@ uint16_t sys_get_mouse(uint8_t port) __nonbanked
 }
 
 /**
- *
+ * Gets character from keyboard buffer without wait
  */
 uint8_t sys_get_char(void)
 {
+  uint16_t *getpnt = (uint8_t *) SYS_GETPNT;
+  uint16_t *putpnt = (uint8_t *) SYS_PUTPNT;
+
+  if (*getpnt == *putpnt)
+    return 0;
+
   __asm
-  call_bios(BIOS_SNSMAT)
+  call_bios(BIOS_CHGET)
   ld h,#0x00
   ld l,a
   __endasm;
