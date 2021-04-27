@@ -66,6 +66,7 @@ typedef struct UiWidget UiWidget;
 struct UiWidget {
   uint8_t index;
   UiWidgetType type;
+  UiKeyCode keybinding;
   uint8_t xpos;
   uint8_t ypos;
   uint8_t w;
@@ -78,8 +79,8 @@ struct UiWidget {
   char *label;
   void (*on_draw)(UiWidget *widget);
   void (*on_handle_event)(UiWidget *widget, UiEvent *event);
-  void (*on_click)();
-  void (*on_keypressed)();
+  void (*on_click)(UiWidget *widget);
+  void (*on_keyevent)(UiWidget *widget, UiEvent *event);
 };
 
 #define UI_DEFINE_BUTTON(WIDGET, XPOS, YPOS, LABEL, ONCLICK) \

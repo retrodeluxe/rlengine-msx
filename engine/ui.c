@@ -40,6 +40,7 @@ UiWidget *widgets[MAX_WIDGETS];
 uint8_t nwidgets;
 
 uint8_t ui_hashmap[768];
+uint8_t ui_keymap[64];
 
 const UiKeyCode kbdmatrix[8][8] = {
   {KEY_7,  KEY_6,  KEY_5,  KEY_4,  KEY_3,    KEY_2,   KEY_1, KEY_0},
@@ -65,6 +66,7 @@ void ui_init(FontSet *fs, TileSet *ts, uint8_t mouse_ptrn_id) {
 
    ui_mouse_x = 128;
    ui_mouse_y = 107;
+   ui_key = KEY_NONE;
 
    spr_init_sprite(&ui_mouse, mouse_ptrn_id);
    spr_set_pos(&ui_mouse, ui_mouse_x, ui_mouse_y);
@@ -77,6 +79,8 @@ void ui_init(FontSet *fs, TileSet *ts, uint8_t mouse_ptrn_id) {
 void ui_register_widget(UiWidget *widget) {
   if (nwidgets < MAX_WIDGETS) {
     widget->index = nwidgets;
+    if (widget->keybinding)
+      ui_keymap[widget->keybinding] = nwidgets;
     widgets[nwidgets++] = widget;
   }
 }
@@ -238,66 +242,82 @@ void ui_draw() {
  * this one is static
  */
 void ui_handle_event(UiEvent *event) {
-  uint16_t hash = (event->y / 8) * 32 + event->x / 8;
-  uint8_t idx = ui_hashmap[hash];
-
+  uint16_t hash;
+  uint8_t idx;
   UiWidget *w;
 
-  // TODO: dispatch key events
+  if (event->type == EVENT_KEYDOWN
+    || event->type == EVENT_KEYUP) {
+    idx = ui_keymap[event->key];
+    if (idx != 255) {
+      w = widgets[idx];
+      switch (w->type) {
+        case WIDGET_BUTTON:
+          break;
+        case WIDGET_CUSTOM:
+          if (w->on_keyevent)
+            w->on_keyevent(w, event);
+          break;
+      }
+    }
+  }
 
-  if (idx != 255 &&
-    (event->type == EVENT_MOUSE_BUTTON_DOWN
-      || event->type == EVENT_MOUSE_BUTTON_UP)) {
-    w = widgets[idx];
-    switch(w->type) {
-      case WIDGET_BUTTON:
-        if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
-          w->state = 1;
-          if (w->on_click != NULL)
-            w->on_click();
-        } else {
-          w->state = 0;
-        }
-        draw_button(w);
-        break;
-      case WIDGET_SWITCH:
-        if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
-          if(w->state == 0)
+  if (event->type == EVENT_MOUSE_BUTTON_DOWN
+      || event->type == EVENT_MOUSE_BUTTON_UP) {
+    hash = (event->y / 8) * 32 + event->x / 8;
+    idx = ui_hashmap[hash];
+    if (idx != 255) {
+      w = widgets[idx];
+      switch(w->type) {
+        case WIDGET_BUTTON:
+          if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
             w->state = 1;
-          else
+            if (w->on_click)
+              w->on_click(w);
+          } else {
             w->state = 0;
-          draw_switch(w);
-          if (w->on_click != NULL)
-            w->on_click();
-        }
-        break;
-      case WIDGET_RANGE:
-        if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
-          if(w->state == 0) {
-            /* press, increase or decrease */
-            if (ui_hashmap[hash - 1] == 255) {
-              if (w->value > w->min) {
-                w->value--;
-                w->state = 1;
-              }
-            } else {
-              if (w->value < w->max) {
-                w->value++;
-                w->state = 2;
+          }
+          draw_button(w);
+          break;
+        case WIDGET_SWITCH:
+          if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
+            if(w->state == 0)
+              w->state = 1;
+            else
+              w->state = 0;
+            draw_switch(w);
+            if (w->on_click)
+              w->on_click(w);
+          }
+          break;
+        case WIDGET_RANGE:
+          if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
+            if(w->state == 0) {
+              /* press, increase or decrease */
+              if (ui_hashmap[hash - 1] == 255) {
+                if (w->value > w->min) {
+                  w->value--;
+                  w->state = 1;
+                }
+              } else {
+                if (w->value < w->max) {
+                  w->value++;
+                  w->state = 2;
+                }
               }
             }
+          } else {
+            w->state = 0;
           }
-        } else {
-          w->state = 0;
-        }
-        draw_range(w);
-        if (w->on_click != NULL)
-          w->on_click();
-        break;
-      case WIDGET_CUSTOM:
-        if(w->on_handle_event != NULL)
-          w->on_handle_event(w, event);
-        break;
+          draw_range(w);
+          if (w->on_click)
+            w->on_click(w);
+          break;
+        case WIDGET_CUSTOM:
+          if(w->on_handle_event)
+            w->on_handle_event(w, event);
+          break;
+      }
     }
   }
 }
@@ -350,7 +370,7 @@ void ui_handle_events() {
     if (key_data != 255) {
       key_col = 7;
       key_data = (uint8_t)(~key_data);
-      while ((key_data >>= 1) != 0) {
+      while (key_data >>= 1) {
         key_col--;
       }
       key = kbdmatrix[key_row][key_col];
@@ -359,12 +379,14 @@ void ui_handle_events() {
   }
 
   if (ui_key != key) {
-    ui_key = key;
-    if (key == KEY_NONE)
+    if (key == KEY_NONE) {
       e.type = EVENT_KEYUP;
-    else
+      e.key = ui_key;
+    } else {
       e.type = EVENT_KEYDOWN;
-    e.key = key;
+      e.key = key;
+    }
+    ui_key = key;
     ui_handle_event(&e);
   }
 }
