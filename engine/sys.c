@@ -70,7 +70,7 @@ void sys_set_turbo()
 /**
  * Read Keyboard Matrix status using BIOS
  */
-uint8_t sys_get_key(uint8_t line) __nonbanked
+uint8_t sys_get_keyrow(uint8_t line) __nonbanked
 {
     unused(line);
 

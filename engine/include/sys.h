@@ -42,7 +42,7 @@ struct sys_proc {
 #define STICK_UP_LEFT 8
 
 extern void sys_reboot();
-extern uint8_t sys_get_key(uint8_t line) __nonbanked;
+extern uint8_t sys_get_keyrow(uint8_t line) __nonbanked;
 extern uint8_t sys_get_char(void);
 extern uint8_t sys_get_stick(uint8_t port) __nonbanked;
 extern uint8_t sys_get_trigger(uint8_t port) __nonbanked;
