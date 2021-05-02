@@ -26,30 +26,35 @@
 #include "sys.h"
 #include "sprite.h"
 
-#pragma CODE_PAGE 2
+#pragma CODE_PAGE 3
+
+#define MAX_WIDGETS 80
 
 int16_t ui_mouse_x, ui_mouse_y;
 uint8_t ui_mouse_a, ui_mouse_b;
 UiKeyCode ui_key;
 UiWidget *w;
 SpriteDef ui_mouse;
-
-#define MAX_WIDGETS 80
-
+Font *ui_font;
 UiWidget *widgets[MAX_WIDGETS];
 uint8_t nwidgets;
-
 uint8_t ui_hashmap[768];
 uint8_t ui_keymap[64];
+uint8_t *ui_buffer;
+
+#define UI_TITLE_BASE 32
+#define UI_LABEL_BASE 64
+#define UI_BUTTON_BASE 0
+#define UI_PANEL_BASE 21
 
 const UiKeyCode kbdmatrix[8][8] = {
-  {KEY_7,  KEY_6,  KEY_5,  KEY_4,  KEY_3,    KEY_2,   KEY_1, KEY_0},
-  {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE,   KEY_EQU,  KEY_MIN, KEY_9, KEY_8},
-  {KEY_B,  KEY_A,  KEY_NONE,  KEY_NONE, KEY_NONE,  KEY_NONE,  KEY_NONE, KEY_NONE },
-  {KEY_J,  KEY_I,  KEY_H,  KEY_G,  KEY_F,    KEY_E,   KEY_D, KEY_C},
-  {KEY_R,  KEY_Q,  KEY_P,  KEY_O,  KEY_N,    KEY_M,   KEY_L, KEY_K},
-  {KEY_Z,  KEY_Y,  KEY_X,  KEY_W,  KEY_V,    KEY_U,   KEY_T, KEY_S},
-  {KEY_F3, KEY_F2, KEY_F1, KEY_NONE,   KEY_CAPS, KEY_GRP, KEY_CTRL, KEY_SHIFT},
+  {KEY_7, KEY_6, KEY_5, KEY_4, KEY_3, KEY_2, KEY_1, KEY_0},
+  {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE, KEY_EQU, KEY_MIN, KEY_9, KEY_8},
+  {KEY_B, KEY_A, KEY_NONE, KEY_NONE, KEY_NONE, KEY_COMMA, KEY_NONE, KEY_NONE},
+  {KEY_J, KEY_I, KEY_H, KEY_G, KEY_F, KEY_E, KEY_D, KEY_C},
+  {KEY_R, KEY_Q, KEY_P, KEY_O, KEY_N, KEY_M, KEY_L, KEY_K},
+  {KEY_Z, KEY_Y, KEY_X, KEY_W, KEY_V, KEY_U, KEY_T, KEY_S},
+  {KEY_F3, KEY_F2, KEY_F1, KEY_NONE, KEY_CAPS, KEY_GRP, KEY_CTRL, KEY_SHIFT},
   {KEY_RET, KEY_SEL, KEY_BS, KEY_STOP, KEY_TAB, KEY_ESC, KEY_F5, KEY_F4},
   {KEY_LEFT, KEY_DOWN, KEY_UP, KEY_RIGHT, KEY_DEL, KEY_INS, KEY_HOME, KEY_SPC}
 };
@@ -57,9 +62,7 @@ const UiKeyCode kbdmatrix[8][8] = {
 /**
  * Initializes data structures related to widgets
  */
-void ui_init(FontSet *fs, TileSet *ts, uint8_t mouse_ptrn_id) {
-   tile_set_to_vram(ts, 1);
-
+void ui_init(Font *font, uint8_t *scr_buffer, uint8_t mouse_ptrn_id) {
    sys_memset(widgets, 0, MAX_WIDGETS * 2);
    sys_memset(ui_hashmap, 255, 768);
    nwidgets = 0;
@@ -67,6 +70,10 @@ void ui_init(FontSet *fs, TileSet *ts, uint8_t mouse_ptrn_id) {
    ui_mouse_x = 128;
    ui_mouse_y = 107;
    ui_key = KEY_NONE;
+
+   font_to_vram(font, 1);
+   ui_font = font;
+   ui_buffer = scr_buffer;
 
    spr_init_sprite(&ui_mouse, mouse_ptrn_id);
    spr_set_pos(&ui_mouse, ui_mouse_x, ui_mouse_y);
@@ -77,10 +84,17 @@ void ui_init(FontSet *fs, TileSet *ts, uint8_t mouse_ptrn_id) {
  * Adds a widget to the display list
  */
 void ui_register_widget(UiWidget *widget) {
+  rle_result res;
   if (nwidgets < MAX_WIDGETS) {
     widget->index = nwidgets;
     if (widget->keybinding)
       ui_keymap[widget->keybinding] = nwidgets;
+    if (widget->tileset) {
+      res = tile_set_valloc(widget->tileset);
+      if (res == RLE_COULD_NOT_ALLOCATE_VRAM) {
+        log_e("ui: could not allocate tileset %d\n", res);
+      }
+    }
     widgets[nwidgets++] = widget;
   }
 }
@@ -89,123 +103,160 @@ void ui_set_hashmap(uint16_t hash, uint8_t value) {
   ui_hashmap[hash] = value;
 }
 
-#define UI_TITLE_BASE 32
-#define UI_LABEL_BASE 64
-#define UI_BUTTON_BASE 0
-
+// FIXME: there is no difference between title and label
+// keep label
 static void draw_title(UiWidget *widget) {
-  char c;
-	uint16_t addr = VRAM_BASE_NAME + widget->ypos * 32 + widget->xpos;
-
-  while ((c = *(widget->label++) ) != 0) {
-		vdp_write(addr++, c + UI_TITLE_BASE);
-	}
+  FontSet fs;
+  fs.upper = ui_font;
+  font_printf(&fs, widget->xpos, widget->ypos, ui_buffer, widget->label);
 }
 
 static void draw_label(UiWidget *widget) {
   char c;
-	uint16_t addr = VRAM_BASE_NAME + widget->ypos * 32 + widget->xpos;
+	uint8_t *addr = ui_buffer + widget->ypos * 32 + widget->xpos;
 
   while ((c = *(widget->label++)) != 0) {
     if (c >= CHR_A && c <= CHR_Z )
-		  vdp_write(addr++, c + UI_LABEL_BASE);
+		  *addr++ = c + UI_LABEL_BASE;
     else if (c >= CHR_a && c<= CHR_z)
-      vdp_write(addr++, c + UI_LABEL_BASE);
+      *addr++ = c + UI_LABEL_BASE;
   }
 }
 
-static void draw_button(UiWidget *widget) {
+static void draw_icon_button(UiWidget *widget) {
   char c;
+  uint16_t hash = widget->ypos * 32 + widget->xpos;
+  uint8_t *addr = ui_buffer + hash;
+  uint8_t *label = widget->label;
+  uint8_t idx = widget->index;
+  uint8_t base = 0, base2 = widget->tileset->pidx;
+
+  // here we need a tileset for the button
+  // and another for the icon
+
+  if (widget->state == 1) {
+    base = 32;
+    base2++;
+  }
+  if (widget->state == WIDGET_HOLD) {
+    *addr++ = 28 + 64 - base + 1;
+  } else {
+    *addr++ = 27 + 64 - base;
+  }
+  ui_hashmap[hash++] = idx;
+
+  // icon
+  *addr++ = base2;
+  ui_hashmap[hash++] = idx;
+
+  if (label) {
+    while ((c = *label++ ) != 0) {
+      *addr++ = c - base;
+      ui_hashmap[hash++] = idx;
+    }
+  }
+
+  *addr++ = 28 + 64 - base;
+  ui_hashmap[hash++] = idx;
+}
+
+static void draw_button(UiWidget *widget) {
   uint16_t hash = widget->ypos * 32 + widget->xpos;
   uint16_t addr = VRAM_BASE_NAME + hash;
   uint8_t *label = widget->label;
   uint8_t idx = widget->index;
-  uint8_t base = 0;
+  uint8_t base = widget->tileset->pidx;
+  char c;
 
-  if (widget->state != 0)
-    base = 32;
+  if (widget->state == 0)
+    base += 29; // length of button tileset
 
-  vdp_write(addr++, 27 + 64 - base);
+  vdp_write(addr++, 26 + base);
   ui_hashmap[hash++] = idx;
   while ((c = *label++ ) != 0) {
-		vdp_write(addr++, c - base);
+		vdp_write(addr++, c - 65 + base);
     ui_hashmap[hash++] = idx;
 	}
-  vdp_write(addr++, 28 + 64 - base);
+  vdp_write(addr++, 27 + base);
   ui_hashmap[hash++] = idx;
 }
 
 static void draw_range(UiWidget *widget) {
   uint16_t hash = widget->ypos * 32 + widget->xpos;
-  uint16_t addr2, addr = VRAM_BASE_NAME + hash;
+  uint8_t *addr2, *addr = ui_buffer + hash;
   uint8_t idx = widget->index;
   uint16_t n, v, d;
-  uint8_t base1 = 14, base2 = 16;
+  uint8_t base1 = 10, base2 = 12;
   uint8_t ndigits = 0;
+  uint8_t base = widget->tileset->pidx;
 
   n = widget->max;
   while (n != 0) {
     n = n / 10;
     ndigits++;
-    vdp_write(addr++, 4);
+    *addr++ = base;
     hash++;
   }
   addr2 = addr;
   v = widget->value;
   while (v != 0) {
-    vdp_write(--addr, 4 + v % 10);
+    *(--addr) =  base + v % 10;
     v = v / 10;
   }
-  if (widget->state == 1)
-    base1++;
-  if (widget->state == 2)
-    base2++;
 
-  vdp_write(addr2++, base1);
-  ui_hashmap[hash++] = idx;
-  vdp_write(addr2++, base2);
-  ui_hashmap[hash++] = idx;
+  if (widget->on_click) {
+    if (widget->state == 1)
+      base1++;
+    if (widget->state == 2)
+      base2++;
+
+    *addr2++ = base + base1;
+    ui_hashmap[hash++] = idx;
+    *addr2++ = base + base2;
+    ui_hashmap[hash++] = idx;
+  }
 }
 
 static void draw_switch(UiWidget *widget) {
   uint16_t hash = widget->ypos * 32 + widget->xpos;
-  uint16_t addr = VRAM_BASE_NAME + hash;
+  uint8_t *addr = ui_buffer + hash;
+  uint8_t base = widget->tileset->pidx;
   uint8_t idx = widget->index;
 
   if (widget->state == 0) {
-    vdp_write(addr++, 3);
+    *addr++ = base + 2;
     ui_hashmap[hash++] = idx;
-    vdp_write(addr++, 2);
+    *addr++ = base + 1;
     ui_hashmap[hash++] = idx;
   } else {
-    vdp_write(addr++, 1);
+    *addr++ = base;
     ui_hashmap[hash++] = idx;
-    vdp_write(addr++, 3);
+    *addr++ = base + 2;
     ui_hashmap[hash++] = idx;
   }
 }
 
-#define UI_PANEL_BASE 21
 static void draw_panel(UiWidget *widget) {
-  uint16_t addr = VRAM_BASE_NAME + widget->ypos * 32 + widget->xpos;
+  uint8_t *addr = ui_buffer + widget->ypos * 32 + widget->xpos;
+  uint16_t base = widget->tileset->pidx;
   uint16_t i, j;
 
-  vdp_write(addr++, UI_PANEL_BASE);
+  *addr++ = base;
   for (i = 0; i < widget->w - 2; i++)
-    vdp_write(addr++, UI_PANEL_BASE + 1);
-  vdp_write(addr++, UI_PANEL_BASE + 2);
+    *addr++ = base + 1;
+  *addr++ = base + 2;
   addr += 32 - widget->w;
   for (i = 1; i < widget->h - 2; i++) {
-    vdp_write(addr++, UI_PANEL_BASE + 6);
+    *addr++ = base + 6;
     for (j = 0; j < widget->w - 2; j++)
-      vdp_write(addr++, UI_PANEL_BASE + 7);
-    vdp_write(addr++, UI_PANEL_BASE + 8);
+      *addr++ = base + 7;
+    *addr++ = base + 8;
     addr += 32 - widget->w;
   }
-  vdp_write(addr++, UI_PANEL_BASE + 3);
+  *addr++ = base + 3;
   for (i = 0; i < widget->w - 2; i++)
-    vdp_write(addr++, UI_PANEL_BASE + 4);
-  vdp_write(addr++, UI_PANEL_BASE + 5);
+    *addr++ = base + 4;
+  *addr++ = base + 5;
 }
 
 void ui_draw() {
@@ -231,6 +282,11 @@ void ui_draw() {
       case WIDGET_PANEL:
         draw_panel(w);
         break;
+      case WIDGET_ICON_BUTTON:
+        draw_icon_button(w);
+        break;
+      case WIDGET_ICON:
+        break;
       case WIDGET_CUSTOM:
         w->on_draw(w);
         break;
@@ -238,10 +294,7 @@ void ui_draw() {
   }
 }
 
-/**
- * this one is static
- */
-void ui_handle_event(UiEvent *event) {
+static void ui_handle_event(UiEvent *event) {
   uint16_t hash;
   uint8_t idx;
   UiWidget *w;
@@ -255,27 +308,44 @@ void ui_handle_event(UiEvent *event) {
         case WIDGET_BUTTON:
           break;
         case WIDGET_CUSTOM:
-          if (w->on_keyevent)
-            w->on_keyevent(w, event);
+          if (w->on_key_event)
+            w->on_key_event(w, event);
           break;
       }
     }
   }
 
   if (event->type == EVENT_MOUSE_BUTTON_DOWN
-      || event->type == EVENT_MOUSE_BUTTON_UP) {
+      || event->type == EVENT_MOUSE_BUTTON_UP
+      || event->type == EVENT_MOUSE_DRAG) {
     hash = (event->y / 8) * 32 + event->x / 8;
     idx = ui_hashmap[hash];
     if (idx != 255) {
       w = widgets[idx];
       switch(w->type) {
+        case WIDGET_ICON_BUTTON:
+          if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
+            w->state = 1;
+            if (w->on_click)
+              w->on_click(w);
+          } else {
+            //if (w->state == 1)
+            w->state = 2;
+            //else
+            //  w->state = 0;
+          }
+          draw_icon_button(w);
+          break;
         case WIDGET_BUTTON:
           if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
             w->state = 1;
             if (w->on_click)
               w->on_click(w);
           } else {
-            w->state = 0;
+            if (w->state == 1)
+              w->state = 2;
+            else
+              w->state = 0;
           }
           draw_button(w);
           break;
@@ -314,8 +384,8 @@ void ui_handle_event(UiEvent *event) {
             w->on_click(w);
           break;
         case WIDGET_CUSTOM:
-          if(w->on_handle_event)
-            w->on_handle_event(w, event);
+          if(w->on_mouse_event)
+            w->on_mouse_event(w, event);
           break;
       }
     }
@@ -355,10 +425,21 @@ void ui_handle_events() {
     ui_mouse_a = mouse_a;
     e.x = ui_mouse_x;
     e.y = ui_mouse_y;
-    if (mouse_a == 0)
+    if (mouse_a == 0) {
       e.type = EVENT_MOUSE_BUTTON_UP;
-    else
+    } else {
       e.type = EVENT_MOUSE_BUTTON_DOWN;
+    }
+    ui_handle_event(&e);
+  }
+
+  /* send drag events */
+  if (ui_mouse_a) {
+    e.type = EVENT_MOUSE_DRAG;
+    e.dx = offset_x;
+    e.dy = offset_y;
+    e.x = ui_mouse_x;
+    e.y = ui_mouse_y;
     ui_handle_event(&e);
   }
 
@@ -370,6 +451,7 @@ void ui_handle_events() {
     if (key_data != 255) {
       key_col = 7;
       key_data = (uint8_t)(~key_data);
+      // FIXME: handle 2 keys in the same row
       while (key_data >>= 1) {
         key_col--;
       }
@@ -378,11 +460,18 @@ void ui_handle_events() {
     }
   }
 
+  // handling multiple keys
   if (ui_key != key) {
     if (key == KEY_NONE) {
       e.type = EVENT_KEYUP;
       e.key = ui_key;
     } else {
+      /* send key up for previously pressed key */
+      if (ui_key != KEY_NONE) {
+        e.type = EVENT_KEYUP;
+        e.key = ui_key;
+        ui_handle_event(&e);
+      }
       e.type = EVENT_KEYDOWN;
       e.key = key;
     }
