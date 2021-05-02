@@ -117,9 +117,6 @@ static void draw_icon_button(UiWidget *widget) {
   uint8_t idx = widget->index;
   uint8_t base = 0, base2 = widget->tileset->pidx;
 
-  // here we need a tileset for the button
-  // and another for the icon
-
   if (widget->state == 1) {
     base = 32;
     base2++;
@@ -148,7 +145,7 @@ static void draw_icon_button(UiWidget *widget) {
 
 static void draw_button(UiWidget *widget) {
   uint16_t hash = widget->ypos * 32 + widget->xpos;
-  uint16_t addr = VRAM_BASE_NAME + hash;
+  uint8_t *addr = ui_buffer + hash;
   uint8_t *label = widget->label;
   uint8_t idx = widget->index;
   uint8_t base = widget->tileset->pidx;
@@ -157,13 +154,13 @@ static void draw_button(UiWidget *widget) {
   if (widget->state == 0)
     base += 29; // length of button tileset
 
-  vdp_write(addr++, 26 + base);
+  *addr++ = 26 + base;
   ui_hashmap[hash++] = idx;
   while ((c = *label++ ) != 0) {
-		vdp_write(addr++, c - 65 + base);
+		*addr++ = c - 65 + base;
     ui_hashmap[hash++] = idx;
 	}
-  vdp_write(addr++, 27 + base);
+  *addr++ = 27 + base;
   ui_hashmap[hash++] = idx;
 }
 
