@@ -103,24 +103,10 @@ void ui_set_hashmap(uint16_t hash, uint8_t value) {
   ui_hashmap[hash] = value;
 }
 
-// FIXME: there is no difference between title and label
-// keep label
-static void draw_title(UiWidget *widget) {
+static void draw_label(UiWidget *widget) {
   FontSet fs;
   fs.upper = ui_font;
   font_printf(&fs, widget->xpos, widget->ypos, ui_buffer, widget->label);
-}
-
-static void draw_label(UiWidget *widget) {
-  char c;
-	uint8_t *addr = ui_buffer + widget->ypos * 32 + widget->xpos;
-
-  while ((c = *(widget->label++)) != 0) {
-    if (c >= CHR_A && c <= CHR_Z )
-		  *addr++ = c + UI_LABEL_BASE;
-    else if (c >= CHR_a && c<= CHR_z)
-      *addr++ = c + UI_LABEL_BASE;
-  }
 }
 
 static void draw_icon_button(UiWidget *widget) {
@@ -264,9 +250,6 @@ void ui_draw() {
   for (i = 0; i < nwidgets; i++) {
     w = widgets[i];
     switch (w->type) {
-      case WIDGET_TITLE:
-        draw_title(w);
-        break;
       case WIDGET_LABEL:
         draw_label(w);
         break;

@@ -25,7 +25,6 @@
 #include "list.h"
 
 typedef enum {
-  WIDGET_TITLE,
   WIDGET_LABEL,
   WIDGET_BUTTON,
   WIDGET_ICON_BUTTON,
@@ -120,13 +119,6 @@ struct UiWidget {
   WIDGET.ypos = YPOS; \
   WIDGET.state = 0; \
   WIDGET.tileset = TILESET;
-
-#define UI_DEFINE_TITLE(WIDGET, XPOS, YPOS, LABEL) \
-  WIDGET.type = WIDGET_TITLE; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.tileset = NULL; \
-  WIDGET.label = LABEL;
 
 #define UI_DEFINE_LABEL(WIDGET, XPOS, YPOS, LABEL) \
   WIDGET.type = WIDGET_LABEL; \
