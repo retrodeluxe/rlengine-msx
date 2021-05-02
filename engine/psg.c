@@ -99,6 +99,7 @@
 
 #include "msx.h"
 
+#pragma CODE_PAGE 3
 
 #define psg_set   #0xa0
 #define PSG_AMP_VOL_MASK    0x0F
@@ -201,6 +202,7 @@ void psg_set_mixer(uint8_t mixval)
     inc c
     inc c
     in a,(c)
+    and #0xC0
     or h
     dec c
     out (c),a
