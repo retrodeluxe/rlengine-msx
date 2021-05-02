@@ -155,7 +155,8 @@ struct UiWidget {
   WIDGET.on_click = ONCLICK;
 
 extern void ui_init(Font *font, uint8_t *scr_buf, uint8_t mouse_ptrn_id);
-extern void ui_register_widget(UiWidget *widget);
+extern UiWidget* ui_new_widget(UiWidgetType type, TileSet *ts, TileBank banks);
+extern void ui_set_keybinding(UiWidget *widget, UiKeyCode keycode);
 extern void ui_handle_events();
 extern void ui_set_hashmap(uint16_t hash, uint8_t value);
 #endif

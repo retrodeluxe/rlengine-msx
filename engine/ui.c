@@ -28,7 +28,7 @@
 
 #pragma CODE_PAGE 3
 
-#define MAX_WIDGETS 80
+#define MAX_WIDGETS 50
 
 int16_t ui_mouse_x, ui_mouse_y;
 uint8_t ui_mouse_a, ui_mouse_b;
@@ -36,7 +36,7 @@ UiKeyCode ui_key;
 UiWidget *w;
 SpriteDef ui_mouse;
 Font *ui_font;
-UiWidget *widgets[MAX_WIDGETS];
+UiWidget widgets[MAX_WIDGETS];
 uint8_t nwidgets;
 uint8_t ui_hashmap[768];
 uint8_t ui_keymap[64];
@@ -63,7 +63,7 @@ const UiKeyCode kbdmatrix[8][8] = {
  * Initializes data structures related to widgets
  */
 void ui_init(Font *font, uint8_t *scr_buffer, uint8_t mouse_ptrn_id) {
-   sys_memset(widgets, 0, MAX_WIDGETS * 2);
+   //sys_memset(widgets, 0, MAX_WIDGETS * 2);
    sys_memset(ui_hashmap, 255, 768);
    nwidgets = 0;
 
@@ -83,20 +83,29 @@ void ui_init(Font *font, uint8_t *scr_buffer, uint8_t mouse_ptrn_id) {
 /**
  * Adds a widget to the display list
  */
-void ui_register_widget(UiWidget *widget) {
+UiWidget* ui_new_widget(UiWidgetType type, TileSet *ts, TileBank banks) {
   rle_result res;
   if (nwidgets < MAX_WIDGETS) {
-    widget->index = nwidgets;
-    if (widget->keybinding)
-      ui_keymap[widget->keybinding] = nwidgets;
-    if (widget->tileset) {
-      res = tile_set_valloc(widget->tileset);
+    if (ts) {
+      // FIXME: ok this is a problem, need tileset_valloc with bank
+      // selection
+      res = tile_set_valloc(ts);
       if (res == RLE_COULD_NOT_ALLOCATE_VRAM) {
         log_e("ui: could not allocate tileset %d\n", res);
+        return NULL;
       }
     }
-    widgets[nwidgets++] = widget;
+    widgets[nwidgets].index = nwidgets;
+    widgets[nwidgets].type = type;
+    widgets[nwidgets].tileset = ts;
+    widgets[nwidgets].bank = banks;
+    return &widgets[nwidgets++];
   }
+  return NULL;
+}
+
+void ui_set_keybinding(UiWidget *widget, UiKeyCode keycode) {
+  ui_keymap[keycode] = widget->index;
 }
 
 void ui_set_hashmap(uint16_t hash, uint8_t value) {
@@ -245,7 +254,7 @@ static void draw_panel(UiWidget *widget) {
 void ui_draw() {
   uint8_t i;
   for (i = 0; i < nwidgets; i++) {
-    w = widgets[i];
+    w = &widgets[i];
     switch (w->type) {
       case WIDGET_LABEL:
         draw_label(w);
@@ -283,7 +292,7 @@ static void ui_handle_event(UiEvent *event) {
     || event->type == EVENT_KEYUP) {
     idx = ui_keymap[event->key];
     if (idx != 255) {
-      w = widgets[idx];
+      w = &widgets[idx];
       switch (w->type) {
         case WIDGET_BUTTON:
           break;
@@ -301,7 +310,7 @@ static void ui_handle_event(UiEvent *event) {
     hash = (event->y / 8) * 32 + event->x / 8;
     idx = ui_hashmap[hash];
     if (idx != 255) {
-      w = widgets[idx];
+      w = &widgets[idx];
       switch(w->type) {
         case WIDGET_ICON_BUTTON:
           if (event->type == EVENT_MOUSE_BUTTON_DOWN) {
