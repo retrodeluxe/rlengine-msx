@@ -32,6 +32,9 @@
 #define BITMAP_TILEBANK_SIZE 32 /* 32 * 8 tiles */
 
 uint8_t bitmap_tile_bank[BITMAP_TILEBANK_SIZE];
+uint8_t bitmap_tile_bank0[BITMAP_TILEBANK_SIZE];
+uint8_t bitmap_tile_bank1[BITMAP_TILEBANK_SIZE];
+uint8_t bitmap_tile_bank2[BITMAP_TILEBANK_SIZE];
 
 /**
  * This function clears all TileSet allocations.
@@ -39,9 +42,15 @@ uint8_t bitmap_tile_bank[BITMAP_TILEBANK_SIZE];
 void tile_init() {
   /* initialize bitmap to all ones : free */
   sys_memset(bitmap_tile_bank, 255, BITMAP_TILEBANK_SIZE);
+  sys_memset(bitmap_tile_bank0, 255, BITMAP_TILEBANK_SIZE);
+  sys_memset(bitmap_tile_bank1, 255, BITMAP_TILEBANK_SIZE);
+  sys_memset(bitmap_tile_bank2, 255, BITMAP_TILEBANK_SIZE);
 
   // first tile is reserved
   bitmap_reset(bitmap_tile_bank, 0);
+  bitmap_reset(bitmap_tile_bank0, 0);
+  bitmap_reset(bitmap_tile_bank1, 0);
+  bitmap_reset(bitmap_tile_bank2, 0);
 }
 
 /**
@@ -74,8 +83,16 @@ void tile_init() {
     vdp_rle_inflate(VRAM_BASE_PTRN + _offset + BANK2_OFFSET, tileset->pattern, size);
     vdp_rle_inflate(VRAM_BASE_COLR + _offset + BANK2_OFFSET, tileset->color, size);
   }
-  for (i = offset; i < offset + (size / 8); i++)
+  for (i = offset; i < offset + (size / 8); i++) {
     bitmap_reset(bitmap_tile_bank, i);
+    if (bank == BANK0)
+      bitmap_reset(bitmap_tile_bank0, i);
+    else if (bank == BANK1)
+      bitmap_reset(bitmap_tile_bank1, i);
+    else if (bank == BANK2)
+      bitmap_reset(bitmap_tile_bank2, i);
+  }
+
   tileset->allocated = true;
   tileset->pidx = offset;
 }
@@ -112,10 +129,52 @@ void tile_set_to_vram_bank_raw(TileSet *tileset, TileBank bank, uint8_t offset) 
     vdp_memcpy(VRAM_BASE_COLR + _offset + BANK2_OFFSET, tileset->color, size);
   }
 
-  for (i = offset; i < offset + (size / 8); i++)
+  for (i = offset; i < offset + (size / 8); i++) {
     bitmap_reset(bitmap_tile_bank, i);
+    if (bank == BANK0)
+      bitmap_reset(bitmap_tile_bank0, i);
+    else if (bank == BANK1)
+      bitmap_reset(bitmap_tile_bank1, i);
+    else if (bank == BANK2)
+      bitmap_reset(bitmap_tile_bank2, i);
+  }
+
   tileset->allocated = true;
   tileset->pidx = offset;
+}
+
+/**
+ * Allocates and transfers a TileSet to VRAM in a specific tile bank
+ *
+ * This function transders uncompressed TileSets to the first available
+ * gap in VRAM in the specified bank.
+ *
+ * :param tileset: the TileSet to be allocated and transferred
+ *
+ * :returns: see :c:type:`rle_result`
+ */
+rle_result tile_set_valloc_bank(TileSet *tileset, TileBank bank) {
+  uint16_t offset, vsize;
+  uint8_t i, pos, size;
+  bool f;
+
+  if (tileset->allocated) {
+    return RLE_ALREADY_ALLOCATED;
+  }
+
+  size = tileset->w * tileset->h;
+
+  if (bank == BANK0)
+   f = bitmap_find_gap(bitmap_tile_bank0, size, BITMAP_TILEBANK_SIZE - 1, &pos);
+  else if (bank == BANK1)
+   f = bitmap_find_gap(bitmap_tile_bank1, size, BITMAP_TILEBANK_SIZE - 1, &pos);
+  else if (bank == BANK2)
+   f = bitmap_find_gap(bitmap_tile_bank2, size, BITMAP_TILEBANK_SIZE - 1, &pos);
+
+  if (!f)
+    return RLE_COULD_NOT_ALLOCATE_VRAM;
+
+  tile_set_to_vram_bank(tileset, bank, pos);
 }
 
 /**
@@ -145,8 +204,12 @@ rle_result tile_set_valloc(TileSet *tileset) {
     return RLE_COULD_NOT_ALLOCATE_VRAM;
   }
 
-  for (i = pos; i < pos + size; i++)
+  for (i = pos; i < pos + size; i++) {
     bitmap_reset(bitmap_tile_bank, i);
+    bitmap_reset(bitmap_tile_bank0, i);
+    bitmap_reset(bitmap_tile_bank1, i);
+    bitmap_reset(bitmap_tile_bank2, i);
+  }
 
   offset = pos * 8;
   vsize = size * 8;
