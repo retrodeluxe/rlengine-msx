@@ -87,9 +87,10 @@ UiWidget* ui_new_widget(UiWidgetType type, TileSet *ts, TileBank banks) {
   rle_result res;
   if (nwidgets < MAX_WIDGETS) {
     if (ts) {
-      // FIXME: ok this is a problem, need tileset_valloc with bank
-      // selection
-      res = tile_set_valloc(ts);
+      if (banks == ALLBANKS)
+        res = tile_set_valloc(ts);
+      else
+        res = tile_set_valloc_bank(ts, banks);
       if (res == RLE_COULD_NOT_ALLOCATE_VRAM) {
         log_e("ui: could not allocate tileset %d\n", res);
         return NULL;
