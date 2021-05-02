@@ -95,65 +95,6 @@ struct UiWidget {
   void (*on_key_event)(UiWidget *widget, UiEvent *event);
 };
 
-#define UI_DEFINE_BUTTON(WIDGET, XPOS, YPOS, LABEL, TILESET, ONCLICK) \
-  WIDGET.type = WIDGET_BUTTON; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.state = 0; \
-  WIDGET.label = LABEL; \
-  WIDGET.tileset = TILESET; \
-  WIDGET.on_click = ONCLICK;
-
-#define UI_DEFINE_ICON_BUTTON(WIDGET, XPOS, YPOS, LABEL, TILESET, ONCLICK) \
-  WIDGET.type = WIDGET_ICON_BUTTON; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.state = 0; \
-  WIDGET.label = LABEL; \
-  WIDGET.tileset = TILESET; \
-  WIDGET.on_click = ONCLICK;
-
-#define UI_DEFINE_ICON(WIDGET, XPOS, YPOS, LABEL, TILESET) \
-  WIDGET.type = WIDGET_ICON; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.state = 0; \
-  WIDGET.tileset = TILESET;
-
-#define UI_DEFINE_LABEL(WIDGET, XPOS, YPOS, LABEL) \
-  WIDGET.type = WIDGET_LABEL; \
-  WIDGET.tileset = NULL; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.label = LABEL;
-
-#define UI_DEFINE_PANEL(WIDGET, XPOS, YPOS, W, H, TILESET) \
-  WIDGET.type = WIDGET_PANEL; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.tileset = TILESET; \
-  WIDGET.w = W; \
-  WIDGET.h  = H;
-
-#define UI_DEFINE_RANGE(WIDGET, XPOS, YPOS, MIN, MAX, TILESET, ONCLICK) \
-  WIDGET.type = WIDGET_RANGE; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.min = MIN; \
-  WIDGET.max  = MAX; \
-  WIDGET.state = 0; \
-  WIDGET.value = 0; \
-  WIDGET.tileset = TILESET; \
-  WIDGET.on_click = ONCLICK;
-
-#define UI_DEFINE_SWITCH(WIDGET, XPOS, YPOS, STATE, TILESET, ONCLICK) \
-  WIDGET.type = WIDGET_SWITCH; \
-  WIDGET.xpos = XPOS; \
-  WIDGET.ypos = YPOS; \
-  WIDGET.state = STATE; \
-  WIDGET.tileset = TILESET; \
-  WIDGET.on_click = ONCLICK;
-
 extern void ui_init(Font *font, uint8_t *scr_buf, uint8_t mouse_ptrn_id);
 extern UiWidget* ui_new_widget(UiWidgetType type, TileSet *ts, TileBank banks);
 extern void ui_set_keybinding(UiWidget *widget, UiKeyCode keycode);
