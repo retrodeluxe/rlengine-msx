@@ -84,6 +84,7 @@ struct png_header png_img;      /* input image png header        */
 struct rgb palette[PALSIZE];    /* target palette                */
 struct scr2 *image_out_scr2;    /* image out in scr2 format      */
 struct fbit *image_out_4bit;    /* image out in 4bit pal format  */
+uint8_t *image_out_8bit;
 
 char *input_file;               /* name of input file used to name data */
 
@@ -208,6 +209,25 @@ int rgb2msx_palette()
     return 0;
 }
 
+int rgb2msx_8bit()
+{
+    uint8_t *dst = image_out_8bit;
+    int j, count = 0;
+
+    for (j = 0; j < png_img.height; j++) {
+      int i;
+      png_bytep row;
+      row = png_rows[j];
+      for (i = 0; i < rowbytes; i++) {
+        png_byte pixel;
+        count++;
+	      pixel = row[i];
+        *(dst++) = pixel;
+      }
+    }
+    return 0;
+}
+
 void usage(void)
 {
     int i;
@@ -271,8 +291,8 @@ static int load_png_image(int fileidx, int argc, char **argv)
 		return -1;
 	}
 
-	if (png_img.bit_depth != 4) {
-		fprintf(stderr, "Only indexed PNG with 4bit depth is supported, found depth %d\n",png_img.bit_depth);
+	if (png_img.bit_depth != 4 && png_img.bit_depth != 8) {
+		fprintf(stderr, "Only indexed PNG with 4bit or 8bit depth is supported, found depth %d\n",png_img.bit_depth);
 		return -1;
 	}
 
@@ -741,6 +761,48 @@ void dump_bitmap(struct fbit *buffer, FILE *file, int only_header)
     }
 }
 
+void dump_bitmap_8bit(uint8_t *buffer, FILE *file, int only_header)
+{
+    uint8_t *p;
+    int bytectr=0, cnt;
+    char *dataname, *filename, *path;
+
+    path = strdup(input_file);
+    filename = basename(path);
+    dataname = strdup(filename);
+    dataname[strlen(dataname)-4]='\0';
+
+    fprintf(file,"#ifndef _GENERATED_BITMAP_H_%s\n", dataname);
+    fprintf(file,"#define _GENERATED_BITMAP_H_%s\n", dataname);
+
+    if (only_header) {
+            fprintf(file,"extern const unsigned int %s_bitmap_w;\n", dataname);
+            fprintf(file,"extern const unsigned char %s_bitmap_h;\n", dataname);
+            fprintf(file,"extern const unsigned char %s_bitmap[];\n", dataname);
+            return;
+    }
+    fprintf(file,"const unsigned int %s_bitmap_w = %d;\n", dataname, png_img.width);
+    fprintf(file,"const unsigned char %s_bitmap_h = %d;\n", dataname, png_img.height);
+    fprintf(file,"const unsigned char %s_bitmap[]={\n",dataname);
+    //if (rle_encode)
+    //    dump_4bitbuffer_rle(buffer, file, 0);
+    //else {
+            uint8_t pix;
+            p = buffer;
+            for (cnt = 0; cnt < png_img.width * png_img.height ; p++, cnt++) {
+                pix = *p;
+                if(bytectr++ > 6) {
+                    fprintf(file,"0x%2.2X,\n",pix);
+                    bytectr=0;
+                } else {
+                    fprintf(file,"0x%2.2X,",pix);
+                }
+            }
+            fprintf(file,"0x%2.2X};\n\n",pix); // I think this is wrong
+    //}
+}
+
+
 void dump_tile_file(FILE *fd, int only_header)
 {
 
@@ -751,10 +813,12 @@ void dump_tile_file(FILE *fd, int only_header)
 
 void dump_bitmap_file(FILE *fd, int only_header)
 {
-
+  if (png_img.bit_depth == 4) {
     dump_bitmap(image_out_4bit, fd, only_header);
-
-    fprintf(fd,"#endif\n");
+  } else if (png_img.bit_depth == 8) {
+    dump_bitmap_8bit(image_out_8bit, fd, only_header);
+  }
+  fprintf(fd,"#endif\n");
 }
 
 int generate_header(char *outfile, char *type)
@@ -903,17 +967,24 @@ int main(int argc, char **argv)
 
 	/** process image **/
   int imagesize = png_img.width * png_img.height;
-	image_out_4bit = malloc(imagesize * sizeof(struct fbit));
-	image_out_scr2 = malloc(MAX_SCR2_SIZE * sizeof(struct scr2));
+  if (png_img.bit_depth == 4) {
+    image_out_4bit = malloc(imagesize * sizeof(struct fbit));
+    image_out_scr2 = malloc(MAX_SCR2_SIZE * sizeof(struct scr2));
+  } else if (png_img.bit_depth == 8) {
+    image_out_8bit = malloc(imagesize * sizeof(uint8_t));
+  }
 
 	// if source is rgb and output is scr2/scr4
 	if ((result == 0) && do_full) {
-	 	result = rgb2msx_palette();
-	 	result = rgb2msx_scr2_tiles();
-	 }
-
+    if (png_img.bit_depth == 4) {
+      result = rgb2msx_palette();
+      result = rgb2msx_scr2_tiles();
+   } else if (png_img.bit_depth == 8) {
+      result = rgb2msx_8bit();
+   }
+ }
   // sprites
-	if ((result == 0) && do_palette) {
+	if ((result == 0) && do_palette && png_img.bit_depth == 4) {
 	 	result = rgb2msx_palette();
 	}
 
