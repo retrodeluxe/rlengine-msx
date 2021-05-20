@@ -47,7 +47,7 @@ void main() __nonbanked
   something_else3();
 
   do {
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 
   sys_reboot();
 }

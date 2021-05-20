@@ -33,7 +33,7 @@ void main()
 	sys_irq_register(play_music);
 	do {
 		sys_wait_vsync();
-	} while (sys_get_key(8) & 1);
+	} while (sys_get_keyrow(8) & 1);
 
 	pt3_mute();
 

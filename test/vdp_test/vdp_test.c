@@ -32,10 +32,10 @@ void main()
   /* this should show a stable pattern on screen in both msx1 and msx2 */
 	do {
 		vdp_memcpy(VRAM_BASE_NAME, buffer, 768);
-	} while (sys_get_key(8) & 1);
+	} while (sys_get_keyrow(8) & 1);
 
   do {
 		// FIXME: Current implementation is too fast for tms9918
 		vdp_fastcopy_nametable(buffer);
-	} while (sys_get_key(8) & 1);
+	} while (sys_get_keyrow(8) & 1);
 }

@@ -37,7 +37,7 @@ void main()
   vdp_puts(10, 13, local_string);
 
   do {
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 
   sys_reboot();
 }

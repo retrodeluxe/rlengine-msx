@@ -49,7 +49,7 @@ void main()
 			vdp_poke_names(11 + 9 * 32 + x + y * 32, i++);
 
 	do {
-	} while (sys_get_key(8) & 1);
+	} while (sys_get_keyrow(8) & 1);
 
 
     /*

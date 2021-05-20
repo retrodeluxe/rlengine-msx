@@ -76,7 +76,7 @@ void main()
   test_16x16_mode2();
 
 	do {
-	} while (sys_get_key(8) & 1);
+	} while (sys_get_keyrow(8) & 1);
 }
 
 /*
@@ -111,7 +111,7 @@ void test_16x16_3layers() {
     }
     spr_set_pos(&kvalley, xpos[0], ypos[0]);
     spr_update(&kvalley);
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 }
 
 /**
@@ -144,7 +144,7 @@ void test_16x32_2layers() {
     }
   	spr_set_pos(&monk, xpos[0], ypos[0]);
   	spr_update(&monk);
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 }
 
 /**
@@ -176,7 +176,7 @@ void test_32x16_1layers() {
     }
   	spr_set_pos(&bat, xpos[0], ypos[0]);
   	spr_update(&bat);
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 }
 
 /**
@@ -209,7 +209,7 @@ void test_32x32_1layer() {
     }
   	spr_set_pos(&death_spr, xpos[0], ypos[0]);
   	spr_update(&death_spr);
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
  }
 
 /**
@@ -257,7 +257,7 @@ void test_5th_sprite() {
       spr_update(&bee[i]);
       spr_update(&rats[i]);
     }
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 
 }
 
@@ -291,5 +291,5 @@ void test_16x16_mode2() {
     }
     spr_set_pos(&kvalley, xpos[0], ypos[0]);
     spr_update(&kvalley);
-  } while (sys_get_key(8) & 1);
+  } while (sys_get_keyrow(8) & 1);
 }

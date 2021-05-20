@@ -408,7 +408,7 @@ void show_title_screen() {
     }
     trigger = sys_get_trigger(3) | sys_get_trigger(4);
 
-  } while (!trigger && (sys_get_key(7) & 128));
+  } while (!trigger && (sys_get_keyrow(7) & 128));
 
   trigger = 0;
   vdp_screen_disable();
