@@ -85,11 +85,11 @@ void tile_init() {
   }
   for (i = offset; i < offset + (size / 8); i++) {
     bitmap_reset(bitmap_tile_bank, i);
-    if (bank == BANK0)
+    if (bank == BANK0 || bank == ALLBANKS)
       bitmap_reset(bitmap_tile_bank0, i);
-    else if (bank == BANK1)
+    else if (bank == BANK1 || bank == ALLBANKS)
       bitmap_reset(bitmap_tile_bank1, i);
-    else if (bank == BANK2)
+    else if (bank == BANK2 || bank == ALLBANKS)
       bitmap_reset(bitmap_tile_bank2, i);
   }
 
@@ -131,11 +131,11 @@ void tile_set_to_vram_bank_raw(TileSet *tileset, TileBank bank, uint8_t offset) 
 
   for (i = offset; i < offset + (size / 8); i++) {
     bitmap_reset(bitmap_tile_bank, i);
-    if (bank == BANK0)
+    if (bank == BANK0 || bank == ALLBANKS)
       bitmap_reset(bitmap_tile_bank0, i);
-    else if (bank == BANK1)
+    else if (bank == BANK1 || bank == ALLBANKS)
       bitmap_reset(bitmap_tile_bank1, i);
-    else if (bank == BANK2)
+    else if (bank == BANK2 || bank == ALLBANKS)
       bitmap_reset(bitmap_tile_bank2, i);
   }
 
