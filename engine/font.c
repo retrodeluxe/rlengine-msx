@@ -42,6 +42,9 @@ void init_font(Font *f, uint8_t *tile_pattern, uint8_t *tile_color,
   f->glyph_h = glyph_h;
   f->glyph_w = glyph_w;
 }
+
+// FIXME: add font_valloc
+
 /**
  *
  */
