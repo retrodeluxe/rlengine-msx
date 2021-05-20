@@ -63,7 +63,7 @@ const UiKeyCode kbdmatrix[8][8] = {
  * Initializes data structures related to widgets
  */
 void ui_init(Font *font, uint8_t *scr_buffer, uint8_t mouse_ptrn_id) {
-   //sys_memset(widgets, 0, MAX_WIDGETS * 2);
+   sys_memset(widgets, 0, MAX_WIDGETS * sizeof(UiWidget));
    sys_memset(ui_hashmap, 255, 768);
    nwidgets = 0;
 
@@ -366,7 +366,7 @@ static void ui_handle_event(UiEvent *event) {
                 }
               }
             }
-          } else {
+          } else if (event->type == EVENT_MOUSE_BUTTON_UP){
             w->state = 0;
           }
           draw_range(w);
