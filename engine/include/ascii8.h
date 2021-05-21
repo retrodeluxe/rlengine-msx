@@ -42,7 +42,7 @@ extern void ascii8_set_data(uint8_t page) __nonbanked;
 /*
  * code page switching has no effect unless BANKED_CALLS is enabled
  */
-#ifdef CONFIG_BANKED_CALLS
+#ifdef BANKED_CALLS
 extern uint8_t ascii8_set_code(uint8_t page) __nonbanked;
 extern void ascii8_restore_code(uint8_t page) __nonbanked;
 #else
