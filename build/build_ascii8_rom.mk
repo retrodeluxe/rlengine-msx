@@ -66,10 +66,10 @@ $(built_rom_1Mb) : $(built_rom_bin) | $(BUILT_ROM_PAGES)
 	$(hide) (dd if=$^ of=$@ conv=notrunc) > /dev/null 2>&1
 
 run: $(built_rom_1Mb)
-	$(hide) /usr/bin/openmsx -extb debugdevice -machine msx1 -carta $^
+	$(hide) $(OPENMSX) -extb debugdevice -machine msx1 -carta $^
 
 run2: $(built_rom_1Mb)
-	$(hide) /usr/bin/openmsx -extb debugdevice -machine msx2 -carta $^
+	$(hide) $(OPENMSX) -extb debugdevice -machine msx2 -carta $^
 
 runR: $(built_rom_1Mb)
-	$(hide) /usr/bin/openmsx -extb debugdevice -machine Panasonic_FS-A1GT -carta $^
+	$(hide) $(OPENMSX) -extb debugdevice -machine Panasonic_FS-A1GT -carta $^

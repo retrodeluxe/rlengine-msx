@@ -53,7 +53,7 @@ $(built_com_exe) : $(built_com_bin)
 run: $(built_com_exe)
 	$(hide) cp $(TOOLS_ROOT)/msxdos/* $(LOCAL_BUILD_OUT_COM)
 	$(hide) echo $(notdir $(built_com_exe)) > $(LOCAL_BUILD_OUT_COM)/autoexec.bat
-	$(hide) /usr/bin/openmsx -extc debugdevice \
+	$(hide) $(OPENMSX) -extc debugdevice \
 		-machine Panasonic_FS-A1GT \
 		-diska $(LOCAL_BUILD_OUT_COM) \
 		-script $(TOOLS_ROOT)/msxdos/boot.tcl

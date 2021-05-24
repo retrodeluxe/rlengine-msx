@@ -32,8 +32,10 @@ export ARCH := $(shell uname)
 
 ifeq ($(ARCH), Darwin)
 export SDCC_ROOT := $(TOP)/prebuilts/darwin/sdcc_3.8.5
+export OPENMSX := /Applications/openMSX.app/Contents/MacOS/openmsx
 else
 export SDCC_ROOT := $(TOP)/prebuilts/x86_64/sdcc_3.8.5
+export OPENMSX := /usr/bin/openmsx
 endif
 export CROSS_CC := $(SDCC_ROOT)/bin/sdcc
 export CROSS_AS := $(SDCC_ROOT)/bin/sdasz80
