@@ -17,7 +17,7 @@ void main()
 	vdp_puts(10, 10, "Hello MSX");
 
 	do {
-	} while (sys_get_key(8) & 1);
+	} while (sys_get_keyrow(8) & 1);
 
 	sys_reboot();
 }
