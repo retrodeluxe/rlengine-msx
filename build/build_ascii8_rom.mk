@@ -13,8 +13,8 @@ all: $(built_rom_1Mb)
 # Extract pages from local source
 #
 CODE_PAGES := 2 # Engine uses CODE_PAGE 2 for banked functions
-CODE_PAGES += $(shell rgrep CODE_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$$' | sort | uniq | tr '\n' ' ')
-DATA_PAGES := $(shell rgrep DATA_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$$' | sort | uniq | tr '\n' ' ')
+CODE_PAGES += $(shell grep -R CODE_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$$' | sort | uniq | tr '\n' ' ')
+DATA_PAGES := $(shell grep -R DATA_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$$' | sort | uniq | tr '\n' ' ')
 
 # Build local sources
 #
