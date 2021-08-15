@@ -494,21 +494,35 @@ void dump_sprite_file(FILE *fd, int only_header)
 
     fprintf(fd, "const unsigned char %s_color[] = { ", dataname);
 
-    do {
-        // ignore transparent color for sprites
-        for (color = 1; color < 16; color++) {
-            if (pattern_has_color(idx, color)) {
-                fprintf(fd, "%d,", color);
-            }
-        }
-        if (++colcnt > (png_img.width / 16) - 1) {
-           colcnt = 0;
-           idx += png_img.width * 15 + 16;
-       } else {
-           idx += 16;
-       }
-        np++;
-    } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+    /* handle 8x8 sprites in single blocks */
+    if (png_img.height == 8) {
+      do {
+          // ignore transparent color for sprites
+          for (color = 1; color < 16; color++) {
+              if (block_8x8_has_color(idx,color)) {
+                  fprintf(fd, "%d,", color);
+              }
+          }
+         idx += 8;
+         np++;
+      } while (idx < image_out_4bit + png_img.width - 1);
+    } else {
+      do {
+          // ignore transparent color for sprites
+          for (color = 1; color < 16; color++) {
+              if (pattern_has_color(idx, color)) {
+                  fprintf(fd, "%d,", color);
+              }
+          }
+          if (++colcnt > (png_img.width / 16) - 1) {
+             colcnt = 0;
+             idx += png_img.width * 15 + 16;
+         } else {
+             idx += 16;
+         }
+          np++;
+      } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+    }
 
     fprintf(fd, "0 };\n");
 
@@ -516,28 +530,46 @@ void dump_sprite_file(FILE *fd, int only_header)
 
     fprintf(fd, "const unsigned char %s[] = {\n", dataname);
 
-    do {
-        // ignore transparent color for sprites
-        for (color = 1; color < 16; color++) {
-            if (pattern_has_color(idx, color)) {
+    /* process 8x8 sprites in single blocks */
+    if (png_img.height == 8) {
+      do {
+          // ignore transparent color for sprites
+          for (color = 1; color < 16; color++) {
+              if (pattern_has_color(idx, color)) {
 
-                fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);
+                  fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);
+                  dump_sprite_8x8_block(fd, idx, color);
+              }
+          }
+          /* move to the next block */
+          idx += 8;
+          np++;
+      } while (idx < image_out_4bit + png_img.width - 1);
 
-                dump_sprite_8x8_block(fd, idx, color);
-                dump_sprite_8x8_block(fd, idx + png_img.width * 8, color);
-                dump_sprite_8x8_block(fd, idx + 8, color);
-                dump_sprite_8x8_block(fd, idx + 8 + png_img.width * 8, color);
-            }
-        }
-        /* move to the next block */
-        if (++colcnt > (png_img.width / 16) - 1) {
-           colcnt = 0;
-           idx += png_img.width * 15 + 16;
-        } else {
-           idx += 16;
-        }
-        np++;
-    } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+    } else {
+      do {
+          // ignore transparent color for sprites
+          for (color = 1; color < 16; color++) {
+              if (pattern_has_color(idx, color)) {
+
+                  fprintf(fd, "/* ---- pattern: %d color: %d ---- */\n", np, color);
+
+                  dump_sprite_8x8_block(fd, idx, color);
+                  dump_sprite_8x8_block(fd, idx + png_img.width * 8, color);
+                  dump_sprite_8x8_block(fd, idx + 8, color);
+                  dump_sprite_8x8_block(fd, idx + 8 + png_img.width * 8, color);
+              }
+          }
+          /* move to the next block */
+          if (++colcnt > (png_img.width / 16) - 1) {
+             colcnt = 0;
+             idx += png_img.width * 15 + 16;
+          } else {
+             idx += 16;
+          }
+          np++;
+      } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+    }
 
     fprintf(fd, "0x00};\n");
     fprintf(fd, "#endif\n");
