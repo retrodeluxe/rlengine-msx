@@ -58,7 +58,7 @@ typedef enum {
 #define SPR_PATRN_MAX 48
 
 /** Max number of states per sprites */
-#define SPR_STATES_MAX 8
+#define SPR_STATES_MAX 10
 
 /** Number of color lines per sprite in MODE 2 */
 #define SPR_PATRN_COLORS 16
@@ -125,7 +125,7 @@ struct SpritePattern {
   /** Raw hardware sprite color data */
   uint8_t *colors;
 
-  uint8_t colors2[24]; // FIXME: this requires some sort of dynamic allocation
+  uint8_t colors2[42]; // FIXME: this requires some sort of dynamic allocation
 };
 
 /**
