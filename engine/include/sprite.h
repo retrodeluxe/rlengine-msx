@@ -190,6 +190,7 @@ extern SpritePattern spr_pattern[SPR_PATRN_MAX];
     (SP->planes[P]).pattern = ps->pidx + PAT;
 
 extern void spr_init();
+extern void spr_init2(VdpSpriteSize size, VdpSpriteZoom zoom);
 extern void spr_clear();
 extern void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx);
 extern bool spr_valloc_pattern_set(uint8_t patrn_idx);

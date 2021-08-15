@@ -59,8 +59,18 @@ void spr_init(void) {
     spr_mode = SPR_MODE2;
 #endif
 
+  vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
+
   spr_clear();
   sys_memset(spr_pattern, 0, sizeof(SpritePattern) * SPR_PATRN_MAX);
+}
+
+/**
+ * Initialize Sprite module with non default hardware sprite settings
+ */
+void spr_init2(VdpSpriteSize size, VdpSpriteZoom zoom) {
+  spr_init();
+  vdp_init_hw_sprites(size, zoom);
 }
 
 bool flip;
@@ -117,9 +127,6 @@ void spr_refresh(void) {
  */
 void spr_clear(void) {
   uint8_t i;
-
-  // FIXME: why this dependency here?
-  vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
 
   /* entirely disable sprites by setting y=SPR_OFF */
   sys_memset(spr_attr, SPR_OFF, sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
