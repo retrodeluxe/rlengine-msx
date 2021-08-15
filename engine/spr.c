@@ -200,7 +200,10 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
       sys_memset(&spr_patt_valloc[idx], 0, npat);
       vdp_memcpy(VRAM_BASE_SPAT + idx * 8, ps->patterns, npat * 8);
       if (spr_mode == SPR_MODE1) {
-        sys_memcpy(ps->colors2, ps->colors, npat / size);
+        if (size != SPR_SIZE_8x8)
+          sys_memcpy(ps->colors2, ps->colors, npat / 4);
+        else
+          sys_memcpy(ps->colors2, ps->colors, npat);
       }
       ps->pidx = idx;
       ps->allocated = true;
