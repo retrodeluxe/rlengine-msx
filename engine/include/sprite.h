@@ -30,6 +30,10 @@
  */
 typedef enum {
   /**
+   * 8x8 pixel sprite, each frame is a superposition of 8x8 hardware sprites
+   */
+  SPR_SIZE_8x8 = 1,
+  /**
    * 16x16 pixel sprite, each frame is a superposition of 16x16 hardware sprites.
    */
   SPR_SIZE_16x16 = 4,

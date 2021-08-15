@@ -239,6 +239,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
 
   // the color part can be ignored in MODE 2 (?)
   switch (sz) {
+  case SPR_SIZE_8x8:
   case SPR_SIZE_16x16:
     base *= (sz * np);
     base += as * (sz * np); // current frame

@@ -455,8 +455,7 @@ void vdp_init_hw_sprites(VdpSpriteSize spritesize, VdpSpriteZoom zoom)
 	ld	c,a
 	ld	b,#0x00
 	ld	a,4(ix)
-	and	#0x0F
-	cp	#0x08
+	cp	#0x00
 	jr	z,$3
 	set	1,b
 $3:
