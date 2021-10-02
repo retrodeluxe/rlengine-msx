@@ -451,7 +451,7 @@ int main (int argc, char *argv[])
 				  p += 2;
 
 				  /* Overlapping record will erase the pad bytes */
-				  if (Memory_Block[Phys_Addr] != Pad_Byte) fprintf(stderr,"Overlapped record detected\n");
+				  if (Memory_Block[Phys_Addr] != Pad_Byte) fprintf(stderr,"Overlapped record detected at %x\n", Phys_Addr);
 
 				  Memory_Block[Phys_Addr++] = temp2;
 				  Checksum = (Checksum + temp2) & 0xFF;
