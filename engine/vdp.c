@@ -374,7 +374,11 @@ $2:
 	jp	nz,$2
 	dec	d
 	jr	nz,$2
+
+#ifndef BIOS_SWITCH
 	ei
+#endif
+
 	__endasm;
 }
 
@@ -626,7 +630,11 @@ skip:
 	or	c
 	jr	nz, loop1
 end_rle:
+
+#ifndef BIOS_SWITCH
 	ei
+#endif
+
 	__endasm;
 }
 

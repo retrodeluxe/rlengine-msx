@@ -28,7 +28,14 @@
 
 /* system variables are only available in main ROM */
 #define VDP_DR 0x0006
-#define VDP_DW 0x0007
+
+// if we are going to switch BIOS, use a RAM copy of VDP_DW
+#ifdef BIOS_SWITCH
+  #define VDP_DW 0xf379
+#else
+  #define VDP_DW 0x0007
+#endif
+
 #define SYS_INFO1 0x002B
 #define SYS_INFO2 0x002C
 #define SYS_INFO3 0x002D
