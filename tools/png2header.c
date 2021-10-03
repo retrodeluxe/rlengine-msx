@@ -379,6 +379,15 @@ int pattern_line_has_color(struct fbit *idx, uint8_t color)
   return 0;
 }
 
+int pattern_line8_has_color(struct fbit *idx, uint8_t color)
+{
+  uint8_t i;
+  for (i = 0; i < 8; i++) {
+    if ((idx + i)->color == color)
+      return 1;
+  }
+  return 0;
+}
 
 /**
  * Dump Sprite Mode 2 Data
@@ -390,6 +399,8 @@ void dump_sprite_file2(FILE *fd, int only_header)
   uint16_t line, i;
   char *dataname, *filename, *path;
   struct pattern_colors pcolors[64];
+
+  memset(pcolors, 0, sizeof(struct pattern_colors) * 64);
 
   path = strdup(input_file);
   filename = basename(path);
@@ -408,37 +419,67 @@ void dump_sprite_file2(FILE *fd, int only_header)
 
   fprintf(fd, "const unsigned char %s_color[] = { ", dataname);
 
-  do {
-      // ignore transparent color for sprites
-      for (color = 1; color < 16; color++) {
-        for(line = 0; line < 16; line++) {
-          if (pattern_line_has_color(idx + line * png_img.width, color)) {
-              pcolors[np].line_colors[line][pcolors[np].n_cols[line]] = color;
-              pcolors[np].n_cols[line] = pcolors[np].n_cols[line] + 1;
-              if(pcolors[np].n_cols[line] > pcolors[np].max_cols)
-                pcolors[np].max_cols = pcolors[np].n_cols[line];
+  // here need to handle as well 8x8 sprites, with different colors per line
+  if (png_img.height == 8) {
+    do {
+        // ignore transparent color for sprites
+        for (color = 1; color < 16; color++) {
+          for(line = 0; line < 8; line++) {
+            if (pattern_line8_has_color(idx + line * png_img.width, color)) {
+                pcolors[np].line_colors[line][pcolors[np].n_cols[line]] = color;
+                pcolors[np].n_cols[line] = pcolors[np].n_cols[line] + 1;
+                if(pcolors[np].n_cols[line] > pcolors[np].max_cols)
+                  pcolors[np].max_cols = pcolors[np].n_cols[line];
+            }
           }
         }
-      }
-      // print now based on the colors
-      for ( i= 0; i < pcolors[np].max_cols; i++) {
-        for(line = 0; line < 16; line++) {
-          color = 0;
-          if (i < pcolors[np].n_cols[line])
-            color = pcolors[np].line_colors[line][i];
-          fprintf(fd, "%d,", color);
+        // print now based on the colors
+        for ( i= 0; i < pcolors[np].max_cols; i++) {
+          for(line = 0; line < 8; line++) {
+            color = 0;
+            if (i < pcolors[np].n_cols[line])
+              color = pcolors[np].line_colors[line][i];
+            fprintf(fd, "%d,", color);
+          }
+          fprintf(fd,"\n");
         }
-      }
+        fprintf(fd,"// ---\n");
+       idx += 8;
+       np++;
+    } while (idx < image_out_4bit + png_img.width - 1);
+  } else {
+    do {
+        // ignore transparent color for sprites
+        for (color = 1; color < 16; color++) {
+          for(line = 0; line < 16; line++) {
+            if (pattern_line8_has_color(idx + line * png_img.width, color)) {
+                pcolors[np].line_colors[line][pcolors[np].n_cols[line]] = color;
+                pcolors[np].n_cols[line] = pcolors[np].n_cols[line] + 1;
+                if(pcolors[np].n_cols[line] > pcolors[np].max_cols)
+                  pcolors[np].max_cols = pcolors[np].n_cols[line];
+            }
+          }
+        }
+        // print now based on the colors
+        for ( i= 0; i < pcolors[np].max_cols; i++) {
+          for(line = 0; line < 16; line++) {
+            color = 0;
+            if (i < pcolors[np].n_cols[line])
+              color = pcolors[np].line_colors[line][i];
+            fprintf(fd, "%d,", color);
+          }
+        }
 
-      // we move around the image in blocks of 16x16
-      if (++colcnt > (png_img.width / 16) - 1) {
-         colcnt = 0;
-         idx += png_img.width * 15 + 16;
-     } else {
-         idx += 16;
-     }
-      np++;
-  } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+        // we move around the image in blocks of 16x16
+        if (++colcnt > (png_img.width / 16) - 1) {
+           colcnt = 0;
+           idx += png_img.width * 15 + 16;
+       } else {
+           idx += 16;
+       }
+        np++;
+    } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+  }
 
   fprintf(fd, "0 };\n");
 
@@ -446,24 +487,35 @@ void dump_sprite_file2(FILE *fd, int only_header)
 
   fprintf(fd, "const unsigned char %s[] = {\n", dataname);
 
-  do {
-      for ( i= 0; i < pcolors[np].max_cols; i++) {
-        fprintf(fd, "/* ---- pattern: %d ---- */\n", np);
-        dump_sprite2_8x8_block(fd, idx, &pcolors[np], i,  0);
-        dump_sprite2_8x8_block(fd, idx + png_img.width * 8, &pcolors[np], i, 8);
-        dump_sprite2_8x8_block(fd, idx + 8, &pcolors[np], i, 0);
-        dump_sprite2_8x8_block(fd, idx + 8 + png_img.width * 8, &pcolors[np], i, 8);
-      }
-      /* move to the next block */
-      if (++colcnt > (png_img.width / 16) - 1) {
-         colcnt = 0;
-         idx += png_img.width * 15 + 16;
-      } else {
-         idx += 16;
-      }
-      np++;
-  } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
-
+  if (png_img.height == 8) {
+      do {
+        for ( i= 0; i < pcolors[np].max_cols; i++) {
+          fprintf(fd, "/* ---- pattern: %d ---- */\n", np);
+          dump_sprite2_8x8_block(fd, idx, &pcolors[np], i,  0);
+        }
+        /* move to the next block */
+        idx += 8;
+        np++;
+      } while (idx < image_out_4bit + png_img.width - 1);
+  } else {
+    do {
+        for ( i= 0; i < pcolors[np].max_cols; i++) {
+          fprintf(fd, "/* ---- pattern: %d ---- */\n", np);
+          dump_sprite2_8x8_block(fd, idx, &pcolors[np], i,  0);
+          dump_sprite2_8x8_block(fd, idx + png_img.width * 8, &pcolors[np], i, 8);
+          dump_sprite2_8x8_block(fd, idx + 8, &pcolors[np], i, 0);
+          dump_sprite2_8x8_block(fd, idx + 8 + png_img.width * 8, &pcolors[np], i, 8);
+        }
+        /* move to the next block */
+        if (++colcnt > (png_img.width / 16) - 1) {
+           colcnt = 0;
+           idx += png_img.width * 15 + 16;
+        } else {
+           idx += 16;
+        }
+        np++;
+    } while (idx < image_out_4bit + (png_img.width * png_img.height) - 1);
+  }
   fprintf(fd, "0x00};\n");
   fprintf(fd, "#endif\n");
 
