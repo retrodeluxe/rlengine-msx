@@ -125,10 +125,8 @@ struct SpritePattern {
   /** Raw hardware sprite color data */
   uint8_t *colors;
 
-  // FIXME
-  // FIXME: this breaks backwards compatibility, requires dynamic allocation should be 24
-  // FIXME
-  uint8_t colors2[42];
+  // FIXME: this requires dynamic allocation, for now should be 24
+  uint8_t colors2[24];
 };
 
 /**

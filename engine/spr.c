@@ -157,8 +157,10 @@ void spr_init_sprite(SpriteDef *sp, uint8_t patrn_idx) {
   sp->state = 0;
   sp->anim_ctr_treshold = 5;
   sp->anim_ctr = 0;
-  // FIXME: only for sprite mode 1
+
+#ifndef MSX2
   spr_set_plane_colors(sp, spr_pattern[patrn_idx].colors);
+#endif
 }
 
 /**
@@ -299,7 +301,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
  * :param sp: a SpriteDef object
  */
 void spr_update(SpriteDef *sp) __nonbanked {
-  uint8_t i, np, sz, as, cf, base = 0;
+  uint8_t i, np, sz, as, cf, pc, base = 0;
 
   SpritePattern *ps = sp->pattern_set;
   for (i = 0; i < sp->state; i++) {
@@ -316,9 +318,13 @@ void spr_update(SpriteDef *sp) __nonbanked {
     sys_memcpy((uint8_t *)&spr_attr[sp->aidx + i], (uint8_t *)&sp->planes[i], 4);
 
 #ifdef MSX2
-    if (spr_mode == SPR_MODE2)
+    if (spr_mode == SPR_MODE2) {
+      pc = SPR_PATRN_COLORS;
+      if (sz == SPR_SIZE_8x8)
+        pc = SPR_PATRN_COLORS >> 1;
       sys_memcpy(&spr_color[sp->aidx + i * SPR_PATRN_COLORS],
-        sp->pattern_set->colors + (cf + i) * SPR_PATRN_COLORS, SPR_PATRN_COLORS);
+        sp->pattern_set->colors + (cf + i) * pc, pc);
+      }
 #endif
 
     if (sz == SPR_SIZE_16x32 ||
