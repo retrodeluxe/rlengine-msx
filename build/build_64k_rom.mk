@@ -48,9 +48,9 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_LOCAL_BANK0_SRC_FILES) $(BUI
 	@echo "-b _DATA_PAGE_1=0x0001" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
 	@echo "-b _DATA_PAGE_2=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
 	@echo "-b _BOOT=0x4000" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
-	@echo "-b _CODE=0x40e1" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
+	@echo "-b _CODE=0x4149" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
 	@echo "-b _CODE_PAGE_2=0x9000" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
-	@echo "-b _HOME=0x5160" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
+	@echo "-b _HOME=0x5400" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom64.lnk
