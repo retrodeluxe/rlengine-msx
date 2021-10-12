@@ -4,6 +4,7 @@
 
 		.area _BOOT
 
+RDSLT			.equ 0x000c
 RSLREG		.equ 0x0138
 EXPTBL		.equ 0xfcc1
 SLOT_SEL	.equ 0xa8
@@ -40,9 +41,56 @@ _sys_set_bios:
 		pop ix
 		ret
 
-    ; copy a buffer from rom in page 3 to ram in page 3
+		; copy a buffer from ROM page3 to RAM page3
+		; using RAM page2 as intermediate buffer.
+		; NOTE: this only works on MSX2 or MSX1 with at least 32Kb RAM
+
 _sys_memcpy_rom:
-    ret
+		push ix
+		ld ix,#0
+		add ix,sp
+		ld	e,4(ix)  ; dst
+		ld	d,5(ix)
+		ld	l,6(ix)  ; src
+		ld	h,7(ix)
+		ld  c,8(ix)  ; size
+		ld  b,9(ix)
+		exx
+		ld a,(ramslot)
+		ld h,#0x80
+		call enaslt
+		ld (backup_sp),sp
+		ld sp,#0xb000
+		ld a,(ramslot)
+		ex af,af
+		ld a,(romslot)
+		push af
+		ld h,#0xc0
+		call enaslt
+		exx
+		push bc
+		push de
+		ld de, #0x8000
+		ldir
+
+		; switch back page3 to RAM
+		ex af,af  ; ramslot
+		ld h,#0xc0
+		call enaslt
+
+		; copy over from page2 to page3
+		ld hl, #0x8000
+		pop de
+		pop bc
+		ldir
+
+		; switch back to ROM page2
+		pop af ; romslot
+		ld h,#0x80
+		ld sp,(backup_sp)
+		call enaslt
+		pop ix
+		ret
 
 		; set slot and subslot at target address
 		; (from msx bios listing)
@@ -155,9 +203,16 @@ nopret:		nop
 		rrca
 		call 	getslot
 		ld	(romslot),a
+		call #RSLREG
+		rrca
+		rrca
+		rrca
+		rrca
+		call getslot
+		ld  (ramslot),a
 		ld	h,#0x80
+		ld a,(romslot)
 		call 	enaslt
-
 		; backup VDP_RW to RAM
 		ld  a,(#VDP_DW)
 		ld  (#VDP_DW_RAM),a
@@ -186,4 +241,6 @@ done:
 
 		.area _DATA
 romslot:	.ds 1
+ramslot:	.ds 1
 biosslot:	.ds 1
+backup_sp:	.ds 2
