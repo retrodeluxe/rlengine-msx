@@ -200,6 +200,13 @@ void vdp_set_192_lines(void) __nonbanked
   vdp_write_reg(V99xx_MODE_REG_9, 0);
 }
 
+void vdp_set_sprite_page2(void) __nonbanked
+{
+  vdp_write_reg(V99xx_MODE_REG_5, 0x6F);
+  vdp_write_reg(V99xx_MODE_REG_11, 0x1);
+  vdp_write_reg(V99xx_MODE_REG_6, 0x17);
+}
+
 /**
  * Sets current VRAM 16Kb page to access up to 128Kb
  *
@@ -208,6 +215,12 @@ void vdp_set_192_lines(void) __nonbanked
 void vdp_set_vram_page(uint8_t page) __nonbanked
 {
   vdp_write_reg(V99xx_SET_VRAM_PAGE, page & 0x7);
+}
+
+
+void vdp_set_vert_offset(uint8_t offset) __nonbanked
+{
+  vdp_write_reg(V99xx_MODE_REG_23, offset);
 }
 
 /**

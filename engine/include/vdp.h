@@ -149,6 +149,9 @@ typedef enum {
 #define VRAM_BASE_GRP3_SCOL 0x1c00 // 512 bytes before SATR
 
 #define VRAM_BASE_GRP4_PTRN 0x0000
+#define VRAM_BASE_GRP4_SPAT 0x3800 // page 2
+#define VRAM_BASE_GRP4_SATR 0x3600 // page 2
+#define VRAM_BASE_GRP4_SCOL 0x3400 // page 2
 
 #define MODE_GRP4_SCR_WIDTH 256
 #define MODE_GRP4_PIX_PER_BYTE 2
@@ -160,8 +163,12 @@ typedef enum {
 #define V99xx_SET_STATUS_REG  0x0F
 #define V99xx_SET_PALETTE_REG 0x10
 #define V99xx_SET_CONTROL_REG 0x1
+#define V99xx_MODE_REG_5 5
+#define V99xx_MODE_REG_6 6
 #define V99xx_MODE_REG_8 0x8
 #define V99xx_MODE_REG_9 0x9
+#define V99xx_MODE_REG_11 11
+#define V99xx_MODE_REG_23 23
 
 #define MAX_SPR_ATTR 32
 #define MAX_SPR_PTRN 255
@@ -302,4 +309,6 @@ extern void vdp_set_vram_page(uint8_t page) __nonbanked;
 extern void vdp_exec(VdpCommand *cmd) __nonbanked;
 extern void vdp_sprite_disable(void) __nonbanked;
 extern void vdp_set_192_lines(void) __nonbanked;
+extern void vdp_set_vert_offset(uint8_t offset) __nonbanked;
+extern void vdp_set_sprite_page2(void) __nonbanked;
 #endif
