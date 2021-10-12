@@ -45,6 +45,8 @@ VdpSpriteAttr spr_attr[MAX_SPR_ATTR];
 // current sprite mode
 uint8_t spr_mode;
 
+extern uint8_t vdp_mode;
+
 /**
  * Initialize Sprite module
  *  Calling this function clears all defined patters and frees allocations.
@@ -57,6 +59,10 @@ void spr_init(void) {
   // Sprite mode is linked to display mode
   if (vdp_get_mode() >= MODE_GRP3)
     spr_mode = SPR_MODE2;
+
+  // Adjust pattern and attribute configuration in MODE_GRP4
+  if (vdp_mode == MODE_GRP4)
+    vdp_set_sprite_page2();
 #endif
 
   vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_OFF);
@@ -84,9 +90,14 @@ void spr_refresh(void) {
   uint8_t _5th_sprite, i, ct;
   uint16_t base = VRAM_BASE_SATR;
 
+// FIXME: move this to init
 #ifdef MSX2
-  if(spr_mode == SPR_MODE2)
-    base = VRAM_BASE_GRP3_SATR;
+  if(spr_mode == SPR_MODE2) {
+    if (vdp_mode == MODE_GRP3)
+      base = VRAM_BASE_GRP3_SATR;
+    else if (vdp_mode == MODE_GRP4)
+      base = VRAM_BASE_GRP4_SATR;
+  }
 #endif
 
   /**
@@ -113,8 +124,14 @@ void spr_refresh(void) {
     vdp_memcpy(base, (uint8_t *)&spr_attr,
             sizeof(VdpSpriteAttr) * MAX_SPR_ATTR);
 #ifdef MSX2
-    if (spr_mode == SPR_MODE2)
-      vdp_memcpy(VRAM_BASE_GRP3_SCOL, spr_color, MAX_SPR_ATTR * SPR_PATRN_COLORS);
+    if (spr_mode == SPR_MODE2) {
+      if (vdp_mode == MODE_GRP3)
+        vdp_memcpy(VRAM_BASE_GRP3_SCOL, spr_color, MAX_SPR_ATTR * SPR_PATRN_COLORS);
+      else if (vdp_mode == MODE_GRP4) {
+        vdp_set_vram_page(2);
+        vdp_memcpy(VRAM_BASE_GRP4_SCOL, spr_color, MAX_SPR_ATTR * SPR_PATRN_COLORS);
+      }
+    }
 #endif
 
     flip = true;
@@ -200,7 +217,11 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
     if (f == npat) {
       idx = i - npat + 1;
       sys_memset(&spr_patt_valloc[idx], 0, npat);
-      vdp_memcpy(VRAM_BASE_SPAT + idx * 8, ps->patterns, npat * 8);
+      if (vdp_mode == MODE_GRP4) {
+        vdp_set_vram_page(2);
+        vdp_memcpy(VRAM_BASE_GRP4_SPAT + idx * 8, ps->patterns, npat * 8);
+      } else
+        vdp_memcpy(VRAM_BASE_SPAT + idx * 8, ps->patterns, npat * 8);
       if (spr_mode == SPR_MODE1) {
         if (size != SPR_SIZE_8x8)
           sys_memcpy(ps->colors2, ps->colors, npat / 4);
