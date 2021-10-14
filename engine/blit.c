@@ -178,25 +178,76 @@ void blit_object_hide(BlitObject *bo) __nonbanked
  */
 void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs, uint8_t page) __nonbanked
 {
-  uint8_t i, j, offset_x, offset_y;
+  uint16_t i, j, offset_x, offset_y;
   uint16_t dp = page * 256;
 
   cmd.nx = bs->frame_w;
   cmd.ny = bs->frame_h;
   cmd.destdir = 0;
   cmd.command = (HMMM << 4);
-  for (j = 0; j < 24; j++) {
-    cmd.dy = (j << 3) + dp;
-    for (i = 0; i < 32; i++) {
-      offset_x = ((*buffer -1) & 31) << 3;
-      offset_y = ((*buffer -1) >> 5) << 3;
+  for (j = 0; j < 16; j++) {
+    cmd.dy = (j << 4) + dp; // maybe this should be 4?
+    for (i = 0; i < 16; i++) {
+      offset_x = ((*buffer -1) & 15) << 4;
+      offset_y = ((*buffer -1) >> 4) << 4;
+      cmd.sx = bs->xpos + offset_x;
+      cmd.sy = bs->ypos + offset_y + bs->page * 256;
+      cmd.dx = i << 4;
+      vdp_exec(&cmd);
+      buffer++;
+    }
+    buffer+=16;
+  }
+}
+
+void blit_map_tilebuffer_rect(uint8_t *buffer, BlitSet *bs, uint8_t page,
+  uint8_t x, uint8_t y, uint8_t w, uint8_t h) __nonbanked
+{
+  uint16_t i, j, offset_x, offset_y;
+  uint16_t dp = page * 256;
+
+  cmd.nx = bs->frame_w;
+  cmd.ny = bs->frame_h;
+  cmd.destdir = 0;
+  cmd.command = (HMMM << 4);
+  for (j = y; j < y + h; j += 2) {
+    cmd.dy = (j << 3) + dp; // maybe this should be 4?
+    for (i = x; i < x + w; i += 2) {
+      offset_x = ((*buffer -1) & 15) << 4;
+      offset_y = ((*buffer -1) >> 4) << 4;
       cmd.sx = bs->xpos + offset_x;
       cmd.sy = bs->ypos + offset_y + bs->page * 256;
       cmd.dx = i << 3;
       vdp_exec(&cmd);
       buffer++;
     }
-    buffer+=32;
+    //buffer+=16;
   }
 }
+
+void blit_font_vprintf(BlitSet *bs, uint8_t x, uint8_t y, uint8_t page, char *text) __nonbanked
+{
+  uint16_t dx, offset_x, offset_y;
+  uint16_t dp = page * 256;
+  char c;
+
+  cmd.nx = bs->frame_w;
+  cmd.ny = bs->frame_h;
+  cmd.destdir = 0;
+  cmd.command = (HMMM << 4);
+
+  dx = 0;
+  while ((c = *text++) != 0) {
+    c = c - 32;
+    cmd.dy = (y << 3) + dp;
+    offset_x = (c & 15) << 4;
+    offset_y = (c >> 4) << 4;
+    cmd.sx = bs->xpos + offset_x;
+    cmd.sy = bs->ypos + offset_y + bs->page * 256;
+    cmd.dx = (x + dx) << 3;
+    vdp_exec(&cmd);
+    dx += 1;
+  }
+}
+
 #endif /* MSX2 */

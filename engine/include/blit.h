@@ -197,5 +197,8 @@ extern void blit_object_show(BlitObject *blitobject) __nonbanked;
 extern void blit_object_hide(BlitObject *blitobject) __nonbanked;
 extern void blit_object_update(BlitObject *blitobject) __nonbanked;
 extern void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs, uint8_t page) __nonbanked;
-
+extern void blit_map_tilebuffer_rect(uint8_t *buffer, BlitSet *bs, uint8_t page,
+  uint8_t x, uint8_t y, uint8_t w, uint8_t h) __nonbanked;
+extern void blit_font_vprintf(BlitSet *bs, uint8_t x, uint8_t y, uint8_t page,
+  char *text) __nonbanked;
 #endif /* _BLIT_H_ */
