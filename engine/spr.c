@@ -133,8 +133,10 @@ void spr_refresh(void) {
       }
     }
 #endif
-
     flip = true;
+
+    // FIXME: disable flip until sorted out flip of color table in mode2
+    if (spr_mode == SPR_MODE2) flip = false;
   }
 }
 
