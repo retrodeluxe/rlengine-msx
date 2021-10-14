@@ -343,7 +343,7 @@ void spr_update(SpriteDef *sp) __nonbanked {
       pc = SPR_PATRN_COLORS;
       if (sz == SPR_SIZE_8x8)
         pc = SPR_PATRN_COLORS >> 1;
-      sys_memcpy(&spr_color[sp->aidx + i * SPR_PATRN_COLORS],
+      sys_memcpy(&spr_color[(sp->aidx + i) * SPR_PATRN_COLORS],
         sp->pattern_set->colors + (cf + i) * pc, pc);
       }
 #endif
