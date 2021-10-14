@@ -3,46 +3,228 @@
  * Copyright (C) Retro DeLuxe 2021, All rights reserved.
  *
  */
-#include "dpo.h"
-#include "font.h"
-#include "list.h"
-#include "log.h"
-#include "map.h"
 #include "msx.h"
-#include "phys.h"
-#include "pt3.h"
-#include "sfx.h"
+#include "log.h"
 #include "sprite.h"
 #include "sys.h"
 #include "tile.h"
 #include "vdp.h"
-#include "ascii8.h"
+#include "blit.h"
+#include "phys.h"
 
-#include <stdlib.h>
+#include "anim.h"
+#include "celeste.h"
+#include "scene.h"
+#include "init.h"
 
-#pragma CODE_PAGE 4
+/** scene display objects **/
+DisplayObject display_object[SCENE_MAX_DPO];
 
-// with this and the graphics we should be able to build static scenes
-// for the whole map.
+/** main character display object **/
+DisplayObject dpo_player;
 
-//-- object types --
-//------------------
-enum {
-	type_player_spawn = 1,
-	type_player,
-	type_platform,
-	type_key = 8,
-	type_spring = 18,
-	type_chest = 20,
-	type_balloon = 22,
-	type_fall_floor = 23,
-	type_fruit = 26,
-	type_fly_fruit = 28,
-	type_fake_wall = 64,
-	type_message = 86,
-	type_big_chest = 96,
-	type_flag = 118,
-	type_smoke,
-	type_orb,
-	type_lifeup
-};
+SpriteDef player_spr;
+SpriteDef snow_spr[20];
+
+uint8_t dpo_ct;
+
+void add_snow(DisplayObject *dpo, uint8_t sprid, enum spr_patterns_t pattidx)
+{
+  int16_t x,y;
+
+  spr_valloc_pattern_set(pattidx);
+  spr_init_sprite(&snow_spr[sprid], pattidx);
+
+  x = sprid * 16;
+  y = sprid * 16 + sys_rand() & 127;
+
+  spr_set_pos(&snow_spr[sprid], x, y);
+  spr_show(&snow_spr[sprid]);
+
+  dpo->type = DISP_OBJECT_SPRITE;
+  dpo->spr = &snow_spr[sprid];
+  dpo->xpos = x;
+  dpo->ypos = y;
+  dpo->state = 0;
+  dpo->aux = (sys_rand() & 15) + 1;
+  dpo->aux2 = (sys_rand() & 3) + 1;
+
+  dpo->visible = true;
+  dpo->collision_state = 0;
+  dpo->check_collision = false;
+
+  INIT_LIST_HEAD(&dpo->list);
+  list_add(&dpo->list, &display_list);
+  INIT_LIST_HEAD(&dpo->animator_list);
+}
+
+void add_player(uint8_t x, uint8_t y) {
+
+  spr_valloc_pattern_set(PATRN_PLAYER);
+  spr_init_sprite(&player_spr, PATRN_PLAYER);
+
+  dpo_player.xpos = x * 16;
+  dpo_player.ypos = (y - 5) * 16;
+  dpo_player.type = DISP_OBJECT_SPRITE;
+  dpo_player.state = 0;
+  dpo_player.spr = &player_spr;
+  dpo_player.visible = true;
+  dpo_player.collision_state = 0;
+  dpo_player.check_collision = false;
+  INIT_LIST_HEAD(&dpo_player.list);
+  list_add(&dpo_player.list, &display_list);
+  spr_set_pos(&player_spr, x * 16, (y - 4) * 16);
+  INIT_LIST_HEAD(&dpo_player.animator_list);
+  add_animator(&dpo_player, ANIM_PLAYER);
+}
+
+void show_intro()
+{
+  uint8_t fadein, snow_ct;
+  int16_t i;
+  bool done;
+
+  const uint8_t title[28] =
+    {58, 59, 60, 61, 62, 63, 64,
+     74, 75, 76, 77, 78, 79, 80,
+     90, 91, 92, 93, 94,95, 96,
+     106, 107, 108, 109, 110, 111, 112};
+
+  for(i = 0; i < 512; i++)
+    scr_buffer[i] = 58; // empty square
+
+  blit_map_tilebuffer(scr_buffer, &tiles_bs, 0);
+  blit_map_tilebuffer_rect(title, &tiles_bs, 0, 9, 4, 14, 8);
+
+  INIT_LIST_HEAD(&display_list);
+
+  snow_ct = 0; dpo_ct = 0;
+  dpo = display_object;
+
+  for (i = 0; i < NUM_SNOW_SMALL; i++) {
+    add_snow(dpo, snow_ct, PATRN_SNOW_SMALL);
+    add_animator(dpo, ANIM_SNOW);
+    dpo++; snow_ct++;
+  }
+
+  for (i = 0; i < NUM_SNOW_BIG; i++) {
+    add_snow(dpo, snow_ct, PATRN_SNOW_BIG);
+    add_animator(dpo, ANIM_SNOW);
+    dpo++; snow_ct++;
+  }
+
+  blit_font_vprintf(&font_bs, 14, 15, 0, "X+C");
+  blit_font_vprintf(&font_bs, 10, 19, 0, "MATT THORSON");
+  blit_font_vprintf(&font_bs, 11, 21, 0, "NOEL BERRY");
+  blit_font_vprintf(&font_bs, 7, 23, 0, "MSX BY RETRODELUXE");
+
+  vdp_screen_enable();
+
+  done = false;
+  fadein = 0;
+  do {
+    sys_irq_enable();
+    sys_wait_vsync();
+    spr_refresh();
+    reftick = sys_get_ticks();
+
+    trigger_a = sys_get_trigger(0) | sys_get_trigger(1);
+    trigger_b = sys_get_trigger(3);
+    animate_all();
+
+    sys_irq_enable();
+
+    if (trigger_a || trigger_b) fadein = 1;
+    if (fadein) {
+      if (fadein == 1 || fadein == 5) {
+        for (i = 2; i < 16; i++) {
+          palette[i].r = 7;
+          palette[i].g = 7;
+          palette[i].b = 7;
+        }
+        vdp_set_palette(palette);
+      } else if (fadein == 3 || fadein == 7) {
+        init_pal();
+        vdp_set_palette(palette);
+      } else if (fadein > 9) {
+        for (i = 2; i < 16; i++) {
+          if (palette[i].r > 0) palette[i].r--;
+          if (palette[i].g > 0) palette[i].g--;
+          if (palette[i].b > 0) palette[i].b--;
+        }
+        vdp_set_palette(palette);
+        if (fadein > 20) {
+          done = true;
+        }
+      }
+      fadein++;
+    }
+  } while (!done);
+}
+
+void load_room(uint8_t x, uint8_t y)
+{
+  uint8_t tx, ty, tile, tile2x = 0;
+  uint8_t *dst = scr_buffer;
+  uint8_t *dst_col = col_buffer;
+  uint16_t i = (x % 8 + y * 8) * 256; // 8192 - 256
+
+  init_pal();
+  vdp_set_palette(palette);
+
+  INIT_LIST_HEAD(&display_list);
+
+  dpo_ct = 0;
+  dpo = display_object;
+
+  for (ty = 0; ty < 16; ty ++) {
+    for (tx = 0; tx < 16; tx++) {
+      tile = map_data[i];
+
+      switch (tile) {
+        case TYPE_VERTICAL_SPIKES:
+        case TYPE_FAKE_WALL:
+        case TYPE_MESSAGE:
+        case TYPE_BIG_CHEST:
+        case TYPE_BIG_CHEST+1:
+        case TYPE_KEY:
+        case TYPE_CHEST:
+        case TYPE_FRUIT:
+        case TYPE_FLY_FRUIT:
+          break;
+        case TYPE_PLAYER_SPAWN:
+          add_player(tx, ty);
+        case TYPE_FALL_FLOOR:
+        case TYPE_SPRING:
+        case TYPE_BALLOON:
+        case TYPE_FLAG:
+        case TYPE_PLATFORM_A:
+        case TYPE_PLATFORM_B:
+          //tile = 1;
+        default:
+            tile2x = tile - 15;
+            *dst++ = tile2x;
+            *dst_col = tile2x;
+            *(dst_col+1) = tile2x;
+            *(dst_col+32) = tile2x;
+            *(dst_col+33) = tile2x;
+      }
+      dst_col+=2;
+      i++;
+    }
+    dst+=16;
+    dst_col+=32;
+  }
+
+  list_for_each(elem, &display_list) {
+    dpo = list_entry(elem, DisplayObject, list);
+    if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+      spr_show(dpo->spr);
+    } else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {
+      //tile_object_show(dpo->tob, scr_buffer + 256, false);
+    }
+  }
+
+  blit_map_tilebuffer(scr_buffer + 128, &tiles_bs, 0);
+  vdp_screen_enable();
+}
