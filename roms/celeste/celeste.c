@@ -30,7 +30,7 @@
 uint8_t rom_buffer[4320];
 
 /** screen buffer 16x16 tiles */
-uint8_t scr_buffer[512];
+uint8_t scr_buffer[256];
 
 /** colission buffer 32x32 tiles */
 uint8_t col_buffer[1024];
@@ -67,7 +67,7 @@ void main()
 
   show_intro();
 
-  rx = 0; ry = 0, refresh = 1; y_offset = 0;
+  rx = 0; ry = 0, refresh = 1; y_offset = 42;
 
   vdp_screen_disable();
   for(;;) {
@@ -89,7 +89,7 @@ void main()
 
     // if (stick == STICK_DOWN) {
     //   if (y_offset < 42) y_offset++;
-    //   vdp_set_vert_offset(y_offset);
+       vdp_set_vert_offset(y_offset);
     // } else if (stick == STICK_UP) {
     //   if (y_offset > 0) y_offset--;
     //   vdp_set_vert_offset(y_offset);

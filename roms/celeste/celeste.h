@@ -88,7 +88,7 @@ enum player_anim_state {
 /** rom buffer */
 extern uint8_t rom_buffer[4320];
 
-extern uint8_t scr_buffer[512];
+extern uint8_t scr_buffer[256];
 
 extern uint8_t col_buffer[1024];
 

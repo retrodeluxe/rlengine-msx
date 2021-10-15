@@ -212,9 +212,10 @@ void load_room(uint8_t x, uint8_t y)
       dst_col+=2;
       i++;
     }
-    dst+=16;
-    dst_col+=32;
+    dst_col+=16;
   }
+
+  //add_snow_storm();
 
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
@@ -225,6 +226,6 @@ void load_room(uint8_t x, uint8_t y)
     }
   }
 
-  blit_map_tilebuffer(scr_buffer + 128, &tiles_bs, 0);
+  blit_map_tilebuffer(scr_buffer, &tiles_bs, 0);
   vdp_screen_enable();
 }

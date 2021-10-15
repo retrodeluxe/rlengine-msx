@@ -186,7 +186,7 @@ void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs, uint8_t page) __nonbanked
   cmd.destdir = 0;
   cmd.command = (HMMM << 4);
   for (j = 0; j < 16; j++) {
-    cmd.dy = (j << 4) + dp; // maybe this should be 4?
+    cmd.dy = (j << 4) + dp;
     for (i = 0; i < 16; i++) {
       offset_x = ((*buffer -1) & 15) << 4;
       offset_y = ((*buffer -1) >> 4) << 4;
@@ -196,7 +196,6 @@ void blit_map_tilebuffer(uint8_t *buffer, BlitSet *bs, uint8_t page) __nonbanked
       vdp_exec(&cmd);
       buffer++;
     }
-    buffer+=16;
   }
 }
 
