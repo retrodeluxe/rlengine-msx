@@ -168,6 +168,7 @@ typedef enum {
 #define V99xx_MODE_REG_8 0x8
 #define V99xx_MODE_REG_9 0x9
 #define V99xx_MODE_REG_11 11
+#define V99xx_DISP_ADJUST 18
 #define V99xx_MODE_REG_23 23
 
 #define MAX_SPR_ATTR 32
@@ -311,4 +312,5 @@ extern void vdp_sprite_disable(void) __nonbanked;
 extern void vdp_set_192_lines(void) __nonbanked;
 extern void vdp_set_vert_offset(uint8_t offset) __nonbanked;
 extern void vdp_set_sprite_page2(void) __nonbanked;
+extern void vdp_display_adjust(int8_t dx, int8_t dy) __nonbanked;
 #endif

@@ -18,6 +18,7 @@
  */
 
 #include "msx.h"
+#include "log.h"
 #include "vdp.h"
 
 #pragma CODE_PAGE 2
@@ -205,6 +206,17 @@ void vdp_set_sprite_page2(void) __nonbanked
   vdp_write_reg(V99xx_MODE_REG_5, 0x6F);
   vdp_write_reg(V99xx_MODE_REG_11, 0x1);
   vdp_write_reg(V99xx_MODE_REG_6, 0x17);
+}
+
+void vdp_display_adjust(int8_t dx, int8_t dy) __nonbanked
+{
+	uint8_t adjust;
+
+	adjust = ((dy & 7) << 4) + (dx & 7);
+	if (dy < 0) adjust &= 128;
+	if (dx < 0) adjust &= 8;
+
+	vdp_write_reg(V99xx_DISP_ADJUST, adjust);
 }
 
 /**
