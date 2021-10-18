@@ -10,7 +10,7 @@
 #define NUM_SNOW_BIG 4
 
 #define LEVEL_IDX = (room.x % 8 + room.y * 8)
-#define SCENE_MAX_DPO 32
+#define SCENE_MAX_DPO 40
 
 enum map_tile_t {
     TYPE_PLAYER_SPAWN = 1,
@@ -49,7 +49,7 @@ enum spr_patterns_t {
     PATRN_PLAYER,
     PATRN_SNOW_SMALL,
     PATRN_SNOW_BIG,
-    PATRN_SMOKE,
+    PATRN_DUST,
     PATRN_BALLOON,
     PATRN_CLOUD,
     PATRN_MAX
@@ -57,7 +57,11 @@ enum spr_patterns_t {
 
 enum anim_t {
     ANIM_PLAYER,
+    ANIM_PLAYER_SPAWN,
     ANIM_SNOW,
+    ANIM_FAST_SNOW,
+    ANIM_DUST,
+    ANIM_SHAKE,
     MAX_ANIMATORS,
 };
 
@@ -111,6 +115,7 @@ extern const uint8_t player_state[];
 extern const uint8_t snow_state[];
 
 extern uint8_t stick, trigger_a, trigger_b;
+extern uint8_t y_offset;
 
 extern void sys_set_rom();
 extern void sys_set_bios();

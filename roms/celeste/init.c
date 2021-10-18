@@ -21,6 +21,7 @@
 #include "gen/player.h"
 #include "gen/snow_small.h"
 #include "gen/snow_big.h"
+#include "gen/dust.h"
 
 /** Blit Sets */
 BlitSet tiles_bs;
@@ -28,6 +29,7 @@ BlitSet font_bs;
 
 const uint8_t player_state[] = {4, 1, 1, 1, 1, 1, 1, 4};
 const uint8_t snow_state[] = {1};
+const uint8_t dust_state[] = {3};
 
 /** RAM palette */
 VdpRGBColor palette[MAX_COLORS];
@@ -81,11 +83,11 @@ void init_gfx()
   sys_memcpy_rom(rom_buffer, font_bitmap, 4320);
   blit_set_to_vram(&font_bs, 2, 0, 0);
 
-  for (i=1; i<32; i++)
-    phys_set_colliding_tile(i);
-  // for (i=32; i<32+16; i++)
-  //   phys_set_colliding_tile(i);
-  // for (i=64; i<64+16; i++)
+  //for (i = 1; i < 7; i++)
+  //  phys_set_colliding_tile(i);
+  for (i = 16; i < 16 + 8; i++)
+     phys_set_colliding_tile(i);
+  for (i = 32; i < 32 + 8; i++)
   //   phys_set_colliding_tile(i);
   // for (i=96; i<96+16; i++)
   //   phys_set_colliding_tile(i);
@@ -102,4 +104,5 @@ void init_gfx()
   SPR_DEFINE_PATTERN_SET(PATRN_PLAYER, SPR_SIZE_8x8, 2, 8, player_state, player);
   SPR_DEFINE_PATTERN_SET(PATRN_SNOW_SMALL, SPR_SIZE_8x8, 1, 1, snow_state, snow_small);
   SPR_DEFINE_PATTERN_SET(PATRN_SNOW_BIG, SPR_SIZE_8x8, 1, 1, snow_state, snow_big);
+  SPR_DEFINE_PATTERN_SET(PATRN_DUST, SPR_SIZE_8x8, 1, 1, dust_state, dust);
 }

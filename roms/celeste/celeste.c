@@ -65,9 +65,9 @@ void main()
 
   sys_irq_init();
 
-  show_intro();
+//  show_intro();
 
-  rx = 0; ry = 0, refresh = 1; y_offset = 42;
+  rx = 0; ry = 0, refresh = 1; y_offset = 44; // 256 - 212
 
   vdp_screen_disable();
   for(;;) {
@@ -96,11 +96,13 @@ void main()
     // }
 
     animate_all();
-
-    fps_stall = true;
-    while (sys_get_ticks() - reftick < 1) {
-      fps_stall = false;
-    }
+    // TODO: animate player independently at higher framerate
+    //       in order to get smoother animation.
+    
+    // fps_stall = true;
+    // while (sys_get_ticks() - reftick < 1) {
+    //   fps_stall = false;
+    // }
   }
 }
 

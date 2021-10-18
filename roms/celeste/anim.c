@@ -14,6 +14,7 @@
 #include "phys.h"
 
 #include "anim.h"
+#include "scene.h"
 #include "celeste.h"
 
 const uint8_t sine[MAX_SINE] = {
@@ -55,10 +56,116 @@ void anim_snow(DisplayObject *obj)
   spr_update(sp);
 }
 
+void anim_fast_snow(DisplayObject *obj)
+{
+  SpriteDef *sp;
+  int16_t y;
+  uint8_t amp, i, x, st;
+
+  if (obj->state++ > 1) {
+    for (i = 0; i< NUM_SNOW_SMALL + NUM_SNOW_BIG; i++) {
+      sp = &snow_spr[i];
+      x = (sp->planes[0]).x;
+      y = snow_y[i];
+      x += snow_aux[i];
+      st = snow_status[i];
+      st += snow_aux2[i];
+      if (st > MAX_SINE) snow_status[i] = 0; else snow_status[i] = st;
+      amp = sine[st];
+      spr_set_pos(sp, x, y + amp);
+      spr_update(sp);
+    }
+    obj->state = 0;
+  }
+}
+
+
+void anim_dust(DisplayObject *obj)
+{
+  SpriteDef *sp = obj->spr;
+  sp->anim_ctr++;
+  obj->xpos++;
+  if (sp->anim_ctr > 3) {
+    sp->frame++;
+    sp->anim_ctr = 0;
+  }
+  if (sp->frame > 2) {
+      spr_hide(obj->spr);
+      list_del(&obj->list);
+      dust_ct--;
+  } else {
+    spr_set_pos(sp, obj->xpos, obj->ypos);
+    spr_update(sp);
+  }
+}
+
+void anim_shake(DisplayObject *obj) {
+  int8_t dx = 0, dy = 0;
+
+  switch (obj->aux2++) {
+    case 2:
+      dy = 1;
+      break;
+    case 3:
+      dy = 0;
+      break;
+    case 4:
+      dx = 1;
+      break;
+    case 5:
+      dx = 0;
+      break;
+    case 6:
+      list_del(&animators[ANIM_SHAKE].list);
+      break;
+  }
+  vdp_display_adjust(dx, dy);
+}
+
+#define DX 2
+#define DY_JUMP 4
+#define DX_JUMP 4
+#define DY_FALL 4
+
+/**
+ * long jump from down the screen until y target coordinate
+ * then fall
+ */
+void anim_player_spawn(DisplayObject *obj) {
+
+  SpriteDef *sp = obj->spr;
+  SpritePattern *ps = sp->pattern_set;
+
+  if (obj->state == 0 && obj->ypos > obj->aux - 12) {
+    obj->ypos -= 6;
+  } else {
+    obj->state = 1;
+    obj->ypos += 2;
+  }
+
+  sp->anim_ctr++;
+  if (sp->anim_ctr > sp->anim_ctr_treshold) {
+    sp->frame++;
+    sp->anim_ctr = 0;
+  }
+  if (sp->frame > ps->state_steps[sp->state] - 1)
+    sp->frame = 0;
+
+  spr_set_pos(sp, obj->xpos, obj->ypos);
+  spr_update(sp);
+
+  if (obj->state == 1 && (obj->ypos > obj->aux)) {
+    obj->state = 0;
+    obj->aux2 = 1; // enable shake
+    list_del(&obj->animator_list);
+    add_animator(dpo, ANIM_PLAYER);
+  }
+}
+
 
 void anim_player(DisplayObject *obj) {
     int8_t dx, dy;
-    static int16_t jmp =0;
+    static int16_t jmp =0, jmp_ct = 0;
     uint8_t x, y;
 
     SpriteDef *sp = obj->spr;
@@ -94,6 +201,8 @@ void anim_player(DisplayObject *obj) {
           if (trigger_a) {
             obj->state = STATE_JUMPING;
             jmp = -DY_JUMP;
+            jmp_ct = 0;
+            add_dust(obj->xpos, obj->ypos);
           }
           if (trigger_b) {
             log_e("long jump\n");
@@ -103,9 +212,10 @@ void anim_player(DisplayObject *obj) {
           }
           break;
         case STATE_JUMPING:
-          dy = jmp++;
-          if (jmp == 0)
+          dy = jmp;
+          if (jmp++ == 0) {
             obj->state = STATE_FALLING;
+          }
           if (stick == STICK_LEFT) {
             dx = -DX_JUMP;
           } else if (stick == STICK_RIGHT) {
@@ -118,8 +228,8 @@ void anim_player(DisplayObject *obj) {
           break;
         case STATE_FALLING:
           dy = jmp;
-          if (jmp++ > 6)
-            jmp = DY_FALL;
+          if (jmp++ > DY_FALL)
+              jmp = DY_FALL;
           if (stick == STICK_LEFT) {
             dx = -DX_JUMP;
           } else if (stick == STICK_RIGHT) {
@@ -146,6 +256,11 @@ void anim_player(DisplayObject *obj) {
             //  sp->state = JANE_STATE_LEFT;
             //}
             obj->state = STATE_IDLE;
+            add_dust(obj->xpos, obj->ypos);
+            if (obj->aux2 == 1) {
+              obj->aux2 == 2;
+              add_animator(obj, ANIM_SHAKE);
+            }
           }
           break;
         case STATE_MOVING_LEFT:
@@ -240,7 +355,12 @@ void anim_player(DisplayObject *obj) {
           break;
     }
 
-    phys_detect_tile_collisions(obj, col_buffer + 256, dx, dy, false, true);
+    //log_e("pos x %d y %d\n", obj->xpos, obj->ypos);
+    // this is broken
+    phys_detect_tile_collisions(obj, col_buffer, dx, dy, false, true);
+
+  //  log_e("anim dx %d dy %d\n", dx, dy);
+    //log_e("pos x %d y %d\n", obj->xpos, obj->ypos);
 
     if (obj->state != STATE_IDLE) {
       sp->anim_ctr++;
@@ -255,11 +375,15 @@ void anim_player(DisplayObject *obj) {
     if ((dx > 0 && !is_colliding_right(obj)) ||
        (dx < 0 && !is_colliding_left(obj))) {
         obj->xpos += dx;
+        if (obj->xpos < 0) obj->xpos = 0;
     }
+
     if ((dy > 0 && !is_colliding_down(obj)) ||
-       (dy < 0 && !is_colliding_up(obj))) {
+      (dy < 0 && !is_colliding_up(obj))) {
         obj->ypos += dy;
     }
+
+    //log_e("pos x %d y %d\n", obj->xpos, obj->ypos);
 
     spr_set_pos(sp, obj->xpos, obj->ypos);
     spr_update(sp);
@@ -269,5 +393,9 @@ void init_animators() {
   uint8_t i;
 
   animators[ANIM_PLAYER].run = anim_player;
+  animators[ANIM_PLAYER_SPAWN].run = anim_player_spawn;
   animators[ANIM_SNOW].run = anim_snow;
+  animators[ANIM_FAST_SNOW].run = anim_fast_snow;
+  animators[ANIM_DUST].run = anim_dust;
+  animators[ANIM_SHAKE].run = anim_shake;
 }

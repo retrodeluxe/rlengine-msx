@@ -9,11 +9,6 @@
 
 #include "celeste.h"
 
-#define DX 2
-#define DY_JUMP 8
-#define DX_JUMP 4
-#define DY_FALL 1
-
 #define MAX_SINE 128
 
 extern Animator animators[MAX_ANIMATORS];

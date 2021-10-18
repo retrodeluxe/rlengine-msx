@@ -22,17 +22,27 @@ DisplayObject display_object[SCENE_MAX_DPO];
 
 /** main character display object **/
 DisplayObject dpo_player;
+DisplayObject dpo_dust[5];
 
 SpriteDef player_spr;
+SpriteDef dust_spr[5];
 SpriteDef snow_spr[20];
+
+uint8_t dust_ct;
+
+uint8_t snow_status[20];
+uint8_t snow_aux[20];
+uint8_t snow_aux2[20];
+int16_t snow_y[20];
 
 uint8_t dpo_ct;
 
-void add_snow(DisplayObject *dpo, uint8_t sprid, enum spr_patterns_t pattidx)
+void add_snow(DisplayObject *obj, uint8_t sprid, enum spr_patterns_t pattidx)
 {
   int16_t x,y;
 
   spr_valloc_pattern_set(pattidx);
+  sys_irq_enable();
   spr_init_sprite(&snow_spr[sprid], pattidx);
 
   x = sprid * 16;
@@ -41,22 +51,66 @@ void add_snow(DisplayObject *dpo, uint8_t sprid, enum spr_patterns_t pattidx)
   spr_set_pos(&snow_spr[sprid], x, y);
   spr_show(&snow_spr[sprid]);
 
-  dpo->type = DISP_OBJECT_SPRITE;
-  dpo->spr = &snow_spr[sprid];
-  dpo->xpos = x;
-  dpo->ypos = y;
-  dpo->state = 0;
-  dpo->aux = (sys_rand() & 15) + 1;
-  dpo->aux2 = (sys_rand() & 3) + 1;
+  obj->type = DISP_OBJECT_SPRITE;
+  obj->spr = &snow_spr[sprid];
+  obj->xpos = x;
+  obj->ypos = y;
+  obj->state = 0;
+  obj->aux = (sys_rand() & 15) + 1;
+  obj->aux2 = (sys_rand() & 3) + 1;
 
-  dpo->visible = true;
-  dpo->collision_state = 0;
-  dpo->check_collision = false;
+  obj->visible = true;
+  obj->collision_state = 0;
+  obj->check_collision = false;
 
-  INIT_LIST_HEAD(&dpo->list);
-  list_add(&dpo->list, &display_list);
-  INIT_LIST_HEAD(&dpo->animator_list);
+  INIT_LIST_HEAD(&obj->list);
+  list_add(&obj->list, &display_list);
+  INIT_LIST_HEAD(&obj->animator_list);
 }
+
+void add_fast_snow_storm(DisplayObject *obj)
+{
+  int16_t x,y;
+  uint8_t i, sprid = 0;
+
+  spr_valloc_pattern_set(PATRN_SNOW_BIG);
+  spr_valloc_pattern_set(PATRN_SNOW_SMALL);
+  sys_irq_enable();
+
+  obj->state = 0;
+
+  for (i = 0; i < NUM_SNOW_SMALL; i++) {
+    spr_init_sprite(&snow_spr[sprid], PATRN_SNOW_SMALL);
+    x = sprid * 16;
+    y = sprid * 16 + sys_rand() & 127;
+    spr_set_pos(&snow_spr[sprid], x, y);
+    spr_show(&snow_spr[sprid]);
+    snow_status[sprid] = 0;
+    snow_aux[sprid] = (sys_rand() & 15) + 1;
+    snow_aux2[sprid] = (sys_rand() & 3) + 1;
+    snow_y[sprid] = y;
+    sprid++;
+  }
+
+  for (i = 0; i < NUM_SNOW_BIG; i++) {
+    spr_init_sprite(&snow_spr[sprid], PATRN_SNOW_BIG);
+    x = sprid * 16;
+    y = sprid * 16 + sys_rand() & 127;
+    spr_set_pos(&snow_spr[sprid], x, y);
+    spr_show(&snow_spr[sprid]);
+    snow_status[sprid] = 0;
+    snow_aux[sprid] = (sys_rand() & 15) + 1;
+    snow_aux2[sprid] = (sys_rand() & 3) + 1;
+    snow_y[sprid] = y;
+    sprid++;
+  }
+
+  INIT_LIST_HEAD(&obj->list);
+  list_add(&obj->list, &display_list);
+  INIT_LIST_HEAD(&obj->animator_list);
+  add_animator(obj, ANIM_FAST_SNOW);
+}
+
 
 void add_player(uint8_t x, uint8_t y) {
 
@@ -64,7 +118,8 @@ void add_player(uint8_t x, uint8_t y) {
   spr_init_sprite(&player_spr, PATRN_PLAYER);
 
   dpo_player.xpos = x * 16;
-  dpo_player.ypos = (y - 5) * 16;
+  dpo_player.ypos = 255;
+  dpo_player.aux = y * 16;
   dpo_player.type = DISP_OBJECT_SPRITE;
   dpo_player.state = 0;
   dpo_player.spr = &player_spr;
@@ -73,14 +128,59 @@ void add_player(uint8_t x, uint8_t y) {
   dpo_player.check_collision = false;
   INIT_LIST_HEAD(&dpo_player.list);
   list_add(&dpo_player.list, &display_list);
-  spr_set_pos(&player_spr, x * 16, (y - 4) * 16);
+  spr_set_pos(&player_spr, x * 16, y * 16);
   INIT_LIST_HEAD(&dpo_player.animator_list);
-  add_animator(&dpo_player, ANIM_PLAYER);
+  add_animator(&dpo_player, ANIM_PLAYER_SPAWN);
+}
+
+void add_dust(uint16_t x, uint16_t y) {
+
+  spr_valloc_pattern_set(PATRN_DUST);
+
+  // FIXME: big problem with this.
+  sys_irq_enable();
+
+  spr_init_sprite(&dust_spr[dust_ct], PATRN_DUST);
+  dpo_dust[dust_ct].xpos = x;
+  dpo_dust[dust_ct].ypos = y + 4;
+  dpo_dust[dust_ct].type = DISP_OBJECT_SPRITE;
+  dpo_dust[dust_ct].state = 0;
+  dpo_dust[dust_ct].spr = &dust_spr[dust_ct];
+  dpo_dust[dust_ct].visible = true;
+  dpo_dust[dust_ct].collision_state = 0;
+  dpo_dust[dust_ct].check_collision = false;
+  INIT_LIST_HEAD(&dpo_dust[dust_ct].list);
+  INIT_LIST_HEAD(&dpo_dust[dust_ct].animator_list);
+  list_add(&dpo_dust[dust_ct].list, &display_list);
+  add_animator(&dpo_dust[dust_ct], ANIM_DUST);
+  spr_set_pos(&dust_spr[dust_ct], x, y + 8);
+  spr_show(&dust_spr[dust_ct]);
+
+  dust_ct++;
+}
+
+void add_snow_storm()
+{
+  int8_t i, snow_ct;
+
+  snow_ct = 0;
+
+  for (i = 0; i < NUM_SNOW_SMALL; i++) {
+    add_snow(dpo, snow_ct, PATRN_SNOW_SMALL);
+    add_animator(dpo, ANIM_SNOW);
+    dpo++; snow_ct++;
+  }
+
+  for (i = 0; i < NUM_SNOW_BIG; i++) {
+    add_snow(dpo, snow_ct, PATRN_SNOW_BIG);
+    add_animator(dpo, ANIM_SNOW);
+    dpo++; snow_ct++;
+  }
 }
 
 void show_intro()
 {
-  uint8_t fadein, snow_ct;
+  uint8_t fadein;
   int16_t i;
   bool done;
 
@@ -98,20 +198,10 @@ void show_intro()
 
   INIT_LIST_HEAD(&display_list);
 
-  snow_ct = 0; dpo_ct = 0;
+  dpo_ct = 0;
   dpo = display_object;
 
-  for (i = 0; i < NUM_SNOW_SMALL; i++) {
-    add_snow(dpo, snow_ct, PATRN_SNOW_SMALL);
-    add_animator(dpo, ANIM_SNOW);
-    dpo++; snow_ct++;
-  }
-
-  for (i = 0; i < NUM_SNOW_BIG; i++) {
-    add_snow(dpo, snow_ct, PATRN_SNOW_BIG);
-    add_animator(dpo, ANIM_SNOW);
-    dpo++; snow_ct++;
-  }
+  add_snow_storm();
 
   blit_font_vprintf(&font_bs, 14, 15, 0, "X+C");
   blit_font_vprintf(&font_bs, 10, 19, 0, "MATT THORSON");
@@ -169,15 +259,22 @@ void load_room(uint8_t x, uint8_t y)
   uint8_t *dst_col = col_buffer;
   uint16_t i = (x % 8 + y * 8) * 256; // 8192 - 256
 
+  dust_ct = 0;
+
   init_pal();
   vdp_set_palette(palette);
+
+  // need to clear the sprites from the intro....
+  spr_clear();
 
   INIT_LIST_HEAD(&display_list);
 
   dpo_ct = 0;
   dpo = display_object;
 
-  for (ty = 0; ty < 16; ty ++) {
+  add_fast_snow_storm(dpo);
+
+  for (ty = 0; ty < 16; ty++) {
     for (tx = 0; tx < 16; tx++) {
       tile = map_data[i];
 
@@ -193,6 +290,7 @@ void load_room(uint8_t x, uint8_t y)
         case TYPE_FLY_FRUIT:
           break;
         case TYPE_PLAYER_SPAWN:
+          log_e("add player %d %d\n", tx, ty);
           add_player(tx, ty);
         case TYPE_FALL_FLOOR:
         case TYPE_SPRING:
@@ -212,10 +310,10 @@ void load_room(uint8_t x, uint8_t y)
       dst_col+=2;
       i++;
     }
-    dst_col+=16;
+    dst_col+=32;
   }
 
-  //add_snow_storm();
+
 
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
