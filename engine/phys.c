@@ -494,29 +494,44 @@ static void phys_detect_tile_collisions_16x32(DisplayObject *obj, uint8_t *map,
 
 /*
  * compute tile colision based on future position
- * XXX: Enemies do not trigger collision callbacks with tob, need a flag.
  */
+
+extern uint8_t y_offset;
 static void phys_detect_tile_collisions_16x16(DisplayObject *obj, uint8_t *map,
                                               int8_t dx, int8_t dy, bool duck,
                                               bool notify) __nonbanked {
-  uint8_t x, y;
+  int16_t x, y;
+  int16_t xp, yp;
   uint8_t *base_tl, *base_bl, *base_tr, *base_br;
   uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
 
   unused(duck);
   unused(notify);
 
-  x = obj->xpos + dx;
-  y = obj->ypos + dy;
+  xp = obj->xpos + dx;
+  yp = obj->ypos + dy;
+
+  /* truncate tile positions to screen borders **/
+  /* and add logic to handle corner cases **/
+  // if (xp < 0)
+  //   x = 0;
+  // else if (xp > 240)
+  //   x = 240;
+  // else
+    x = xp;
+  // if (dy < 0 && yp < -12)
+  //   y = -12;
+  // else if (yp > 143)
+  //   y = 143;
+  // else
+    y = yp;
 
   base_tl = map + x / 8 + y / 8 * TILE_WIDTH;
-  base_bl = map + x / 8 + (y + 15) / 8 * TILE_WIDTH;
-  base_ml = map + x / 8 + (y + 7) / 8 * TILE_WIDTH;
+  base_bl = map + x / 8 + (y + 16) / 8 * TILE_WIDTH;
+  base_ml = map + (x + 4) / 8 + (y + 8) / 8 * TILE_WIDTH;
   base_tr = map + (x + 15) / 8 + y / 8 * TILE_WIDTH;
-  base_br = map + (x + 15) / 8 + (y + 15) / 8 * TILE_WIDTH;
-  base_mr = map + (x + 15) / 8 + (y + 7) / 8 * TILE_WIDTH;
-  base_mt = map + (x + 7) / 8 + y / 8 * TILE_WIDTH;
-  base_mb = map + (x + 7) / 8 + (y + 15) / 8 * TILE_WIDTH;
+  base_br = map + (x + 8) / 8 + (y + 16) / 8 * TILE_WIDTH;
+  base_mr = map + (x + 15) / 8 + (y + 8) / 8 * TILE_WIDTH;
 
   tile[0] = *(base_tl);
   tile[1] = *(base_ml);
@@ -524,24 +539,26 @@ static void phys_detect_tile_collisions_16x16(DisplayObject *obj, uint8_t *map,
   tile[3] = *(base_tr);
   tile[4] = *(base_mr);
   tile[5] = *(base_br);
-  tile[6] = *(base_mt);
-  tile[7] = *(base_mb);
 
   obj->collision_state = 0;
-  if (dx < 0 && is_coliding_tile_pair(tile[0], tile[1])) {
+  if (is_coliding_tile_pair(tile[0], tile[1])) {
     obj->collision_state |= COLLISION_LEFT;
   }
-  if (dx > 0 && is_coliding_tile_pair(tile[3], tile[4])) {
+  if (is_coliding_tile_pair(tile[3], tile[4])) {
     obj->collision_state |= COLLISION_RIGHT;
   }
-  if (dy < 0 && is_coliding_tile_triplet(tile[0], tile[3], tile[6])) {
+  if (is_coliding_tile_pair(tile[0], tile[3])) {
     obj->collision_state |= COLLISION_UP;
   }
-  if (dy > 0) {
-    if ((dx >= 0 && is_coliding_tile_pair(tile[5], tile[7])) ||
-        (dx < 0 && is_coliding_tile_pair(tile[2], tile[5])))
-      obj->collision_state |= COLLISION_DOWN;
+
+  if (is_coliding_tile_pair(tile[2], tile[5])) {
+    obj->collision_state |= COLLISION_DOWN;
   }
+
+  //if (dy > 0 && yp < 0)
+  //  obj->ypos = (int16_t)(((y / 8) - 1) * 8);
+  //  else
+    obj->ypos = (int16_t)((yp / 8) * 8);
 }
 
 /**
@@ -567,7 +584,8 @@ void phys_detect_tile_collisions(DisplayObject *dpo, uint8_t *map, int8_t dx,
                                  bool notify) __nonbanked {
   uint8_t size = dpo->spr->pattern_set->size;
 
-  if (size == SPR_SIZE_16x16) {
+  // TODO: handle 8x8 sprites without zoom as well
+  if (size == SPR_SIZE_16x16 || size == SPR_SIZE_8x8) {
     phys_detect_tile_collisions_16x16(dpo, map, dx, dy, duck, notify);
   } else if (size = SPR_SIZE_16x32) {
     phys_detect_tile_collisions_16x32(dpo, map, dx, dy, duck, notify);
