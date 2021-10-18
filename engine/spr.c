@@ -407,7 +407,7 @@ bool spr_show(SpriteDef *sp) __nonbanked {
  */
 void spr_hide(SpriteDef *sp) __nonbanked {
   VdpSpriteAttr null_spr;
-  uint8_t n, idx, sz;
+  uint8_t n, idx, sz, pc;
 
   sz = sp->pattern_set->size;
   n = sp->pattern_set->planes;
@@ -423,7 +423,7 @@ void spr_hide(SpriteDef *sp) __nonbanked {
   //        attributes so that only active sprites remain
 
   /* set sprite outside screen using EC bit */
-  null_spr.y = 193;
+  null_spr.y = 192;
   null_spr.x = 0;
   null_spr.pattern = 0;
   null_spr.color = 128; // EC bit
@@ -438,6 +438,15 @@ void spr_hide(SpriteDef *sp) __nonbanked {
   } else if (sz == SPR_SIZE_32x32) {
     // TODO
   }
+
+
+#ifdef MSX2
+  //  FIXME: handle multiple planes
+  if (spr_mode == SPR_MODE2) {
+    sys_memset(&spr_color[sp->aidx * SPR_PATRN_COLORS], 1, SPR_PATRN_COLORS);
+  }
+#endif
+
 }
 
 /**
@@ -461,7 +470,7 @@ void spr_set_pos(SpriteDef *sp, int16_t xp, int16_t yp) __nonbanked {
     y = (int8_t)yp;
   else if (yp == 0)
     y = 0xFF;
-  else if (yp > 0 && yp < 193)
+  else if (yp > 0 && yp < 255) // need to adjust for screen 2 size (193)
     y = yp - 1;
 
   x = (uint8_t) xp;
