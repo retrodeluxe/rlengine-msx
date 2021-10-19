@@ -55,8 +55,9 @@ all: $(built_spr_res) $(built_map_res) $(built_til_res) $(built_spr_ext_res) $(b
 	$(built_pt3_res) $(built_sfx_res) $(built_pat_res) $(built_col_res) $(built_fnt_res) \
 	$(built_vda_res) $(built_fnt_ext_res) $(built_raw_res) $(built_raw_ext_res) \
 	$(built_spr_ext_res_png) $(built_til_ext_res_png) $(built_raw_ext_res_png) \
-	$(built_fnt_ext_res_png) $(built_spr_res_png) $(built_spr2_res_png) $(built_til_res_png) \
-	$(built_raw_res_png) $(built_fnt_res_png) $(built_bmp_res) $(built_bmp_ext_res) \
+	$(built_fnt_ext_res_png) $(built_spr_res_png) $(built_spr2_res_png) \
+	$(built_spr2_ext_res_png) $(built_til_res_png) $(built_raw_res_png) \
+	$(built_fnt_res_png) $(built_bmp_res) $(built_bmp_ext_res) \
 	$(built_pal_res) | $(TGA2H) $(TILED2H)
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json
