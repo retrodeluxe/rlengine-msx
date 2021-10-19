@@ -4,7 +4,7 @@
  *
  */
 
-#pragma DATA_PAGE 1
+#pragma DATA_PAGE 6
 
 #include "gen/tileset.h"
 //#include "gen/celeste_raw_tiles.h"

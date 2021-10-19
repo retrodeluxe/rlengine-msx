@@ -12,27 +12,28 @@
 #include "vdp.h"
 #include "blit.h"
 #include "phys.h"
+#include "ascii8.h"
 
 #include "celeste.h"
+
+#include "init.h"
 
 #include "gen/tileset_ext.h"
 #include "gen/font_ext.h"
 #include "gen/celeste_pal.h"
-#include "gen/player.h"
-#include "gen/snow_small.h"
-#include "gen/snow_big.h"
-#include "gen/dust.h"
+#include "gen/player_ext.h"
+#include "gen/snow_small_ext.h"
+#include "gen/snow_big_ext.h"
+#include "gen/dust_ext.h"
 
 /** Blit Sets */
 BlitSet tiles_bs;
 BlitSet font_bs;
 
-const uint8_t player_state[] = {4, 1, 1, 1, 1, 1, 1, 4};
-const uint8_t snow_state[] = {1};
-const uint8_t dust_state[] = {3};
-
 /** RAM palette */
 VdpRGBColor palette[MAX_COLORS];
+
+#pragma CODE_PAGE 3
 
 void init_pal()
 {
@@ -42,11 +43,15 @@ void init_pal()
   palette[1].r = 0;
   palette[1].g = 0;
   palette[1].b = 0;
+
+  log_e("01\n");
 }
 
 void init_gfx()
 {
   uint8_t i;
+
+  log_e("here?\n");
 
   vdp_set_mode(MODE_GRP4);
   vdp_set_color(COLOR_WHITE, COLOR_BLACK);
@@ -54,33 +59,15 @@ void init_gfx()
   spr_init2(SPR_SIZE_8, SPR_ZOOM_ON);
   vdp_clear(0);
 
-  tile_init();
   phys_init();
-
   vdp_set_palette(palette);
 
-  sys_set_rom();
-  {
-    INIT_BLIT_SET(tiles_bs, tileset, 16, 16);
-    blit_set_to_vram(&tiles_bs, 3, 0, 0);
-  }
-  sys_set_bios();
+  ascii8_set_data(6);
+  INIT_BLIT_SET(tiles_bs, tileset, 16, 16);
+  blit_set_to_vram(&tiles_bs, 3, 0, 0);
 
-  sys_set_rom();
-  {
-    sys_memcpy(map_data, MAP_DATA, 1024);
-  }
-  sys_set_bios();
-
-  // font needs to be copied from ROM page3 to RAM before transfer
-  font_bs.w = 256;
-  font_bs.h = 96;
-  font_bs.bitmap = rom_buffer;
-  font_bs.raw = false;
-  font_bs.allocated = false;
-  font_bs.frame_w = 16;
-  font_bs.frame_h = 16;
-  sys_memcpy_rom(rom_buffer, font_bitmap, 4320);
+  ascii8_set_data(8);
+  INIT_BLIT_SET(font_bs, font, 16, 16);
   blit_set_to_vram(&font_bs, 2, 0, 0);
 
   //for (i = 1; i < 7; i++)
@@ -101,6 +88,7 @@ void init_gfx()
   // sys_set_bios();
 
   /* init sprites */
+  ascii8_set_data(9);
   SPR_DEFINE_PATTERN_SET(PATRN_PLAYER, SPR_SIZE_8x8, 2, 8, player_state, player);
   SPR_DEFINE_PATTERN_SET(PATRN_SNOW_SMALL, SPR_SIZE_8x8, 1, 1, snow_state, snow_small);
   SPR_DEFINE_PATTERN_SET(PATRN_SNOW_BIG, SPR_SIZE_8x8, 1, 1, snow_state, snow_big);

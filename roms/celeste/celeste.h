@@ -89,18 +89,12 @@ enum player_anim_state {
     PLAYER_ANIM_LEFT,
 };
 
-/** rom buffer */
-extern uint8_t rom_buffer[4320];
-
 extern uint8_t scr_buffer[256];
 
 extern uint8_t col_buffer[1024];
 
 /** map data */
 extern const uint8_t MAP_DATA[8192];
-
-/** current map data buffer */
-extern uint8_t map_data[1024];
 
 /** main display list */
 extern List display_list;

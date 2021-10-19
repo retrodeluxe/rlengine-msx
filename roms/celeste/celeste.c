@@ -18,6 +18,7 @@
 #include "tile.h"
 #include "vdp.h"
 #include "blit.h"
+#include "ascii8.h"
 
 #include <stdlib.h>
 
@@ -26,17 +27,11 @@
 #include "anim.h"
 #include "scene.h"
 
-/** rom buffer */
-uint8_t rom_buffer[4320];
-
 /** screen buffer 16x16 tiles */
 uint8_t scr_buffer[256];
 
 /** colission buffer 32x32 tiles */
 uint8_t col_buffer[1024];
-
-/** current map data buffer */
-uint8_t map_data[1024];
 
 /** main display list **/
 List display_list;
@@ -49,23 +44,26 @@ uint8_t rx, ry, refresh, y_offset;
 uint8_t stick, trigger_a, trigger_b;
 uint16_t reftick;
 bool fps_stall;
+uint8_t page;
 
 void load_room(uint8_t x, uint8_t y);
-void animate_all();
+void animate_all() __nonbanked;
 void show_intro();
 
-void main()
+#pragma CODE_PAGE 3
+
+void main() __nonbanked
 {
   sys_disable_kbd_click();
   sys_rand_init((uint8_t *)&main);
+  sys_irq_init();
 
   init_pal();
+
   init_gfx();
   init_animators();
 
-  sys_irq_init();
-
-//  show_intro();
+  show_intro();
 
   rx = 0; ry = 0, refresh = 1; y_offset = 44; // 256 - 212
 
@@ -98,7 +96,7 @@ void main()
     animate_all();
     // TODO: animate player independently at higher framerate
     //       in order to get smoother animation.
-    
+
     // fps_stall = true;
     // while (sys_get_ticks() - reftick < 1) {
     //   fps_stall = false;
@@ -106,12 +104,14 @@ void main()
   }
 }
 
-void animate_all() {
+void animate_all() __nonbanked {
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
     list_for_each(elem2, &dpo->animator_list) {
       anim = list_entry(elem2, Animator, list);
+      page = ascii8_set_code(anim->page);
       anim->run(dpo);
+      ascii8_restore_code(page);
     }
   }
 }

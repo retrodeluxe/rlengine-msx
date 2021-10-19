@@ -10,7 +10,7 @@
 
 #define MAP_SIZE 8192
 
-#pragma DATA_PAGE 1
+#pragma DATA_PAGE 7
 
 // need to convert to bytes...
 

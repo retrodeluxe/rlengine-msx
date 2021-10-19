@@ -19,4 +19,8 @@ extern void init_pal();
 
 extern VdpRGBColor palette[];
 
+extern const uint8_t player_state[];
+extern const uint8_t snow_state[];
+extern const uint8_t dust_state[];
+
 #endif

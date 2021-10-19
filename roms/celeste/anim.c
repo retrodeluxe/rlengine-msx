@@ -39,6 +39,8 @@ const uint8_t sine[MAX_SINE] = {
 Animator animators[MAX_ANIMATORS];
 Animator *anim;
 
+#pragma CODE_PAGE 4
+
 void add_animator(DisplayObject *dpo, enum anim_t animidx) {
   list_add(&animators[animidx].list, &dpo->animator_list);
 }
@@ -391,6 +393,10 @@ void anim_player(DisplayObject *obj) {
 
 void init_animators() {
   uint8_t i;
+
+  for (i = 0; i < MAX_ANIMATORS; i++) {
+    animators[i].page = 4;
+  }
 
   animators[ANIM_PLAYER].run = anim_player;
   animators[ANIM_PLAYER_SPAWN].run = anim_player_spawn;

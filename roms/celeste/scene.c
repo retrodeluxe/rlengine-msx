@@ -11,6 +11,7 @@
 #include "vdp.h"
 #include "blit.h"
 #include "phys.h"
+#include "ascii8.h"
 
 #include "anim.h"
 #include "celeste.h"
@@ -37,12 +38,14 @@ int16_t snow_y[20];
 
 uint8_t dpo_ct;
 
+#pragma CODE_PAGE 4
+
 void add_snow(DisplayObject *obj, uint8_t sprid, enum spr_patterns_t pattidx)
 {
   int16_t x,y;
 
+  ascii8_set_data(9);
   spr_valloc_pattern_set(pattidx);
-  sys_irq_enable();
   spr_init_sprite(&snow_spr[sprid], pattidx);
 
   x = sprid * 16;
@@ -73,9 +76,9 @@ void add_fast_snow_storm(DisplayObject *obj)
   int16_t x,y;
   uint8_t i, sprid = 0;
 
+  ascii8_set_data(9);
   spr_valloc_pattern_set(PATRN_SNOW_BIG);
   spr_valloc_pattern_set(PATRN_SNOW_SMALL);
-  sys_irq_enable();
 
   obj->state = 0;
 
@@ -114,6 +117,7 @@ void add_fast_snow_storm(DisplayObject *obj)
 
 void add_player(uint8_t x, uint8_t y) {
 
+  ascii8_set_data(9);
   spr_valloc_pattern_set(PATRN_PLAYER);
   spr_init_sprite(&player_spr, PATRN_PLAYER);
 
@@ -134,12 +138,8 @@ void add_player(uint8_t x, uint8_t y) {
 }
 
 void add_dust(uint16_t x, uint16_t y) {
-
+  ascii8_set_data(9);
   spr_valloc_pattern_set(PATRN_DUST);
-
-  // FIXME: big problem with this.
-  sys_irq_enable();
-
   spr_init_sprite(&dust_spr[dust_ct], PATRN_DUST);
   dpo_dust[dust_ct].xpos = x;
   dpo_dust[dust_ct].ypos = y + 4;
@@ -222,8 +222,6 @@ void show_intro()
     trigger_b = sys_get_trigger(3);
     animate_all();
 
-    sys_irq_enable();
-
     if (trigger_a || trigger_b) fadein = 1;
     if (fadein) {
       if (fadein == 1 || fadein == 5) {
@@ -276,7 +274,8 @@ void load_room(uint8_t x, uint8_t y)
 
   for (ty = 0; ty < 16; ty++) {
     for (tx = 0; tx < 16; tx++) {
-      tile = map_data[i];
+      ascii8_set_data(7);
+      tile = MAP_DATA[i];
 
       switch (tile) {
         case TYPE_VERTICAL_SPIKES:
@@ -312,8 +311,6 @@ void load_room(uint8_t x, uint8_t y)
     }
     dst_col+=32;
   }
-
-
 
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
