@@ -219,10 +219,12 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
     if (f == npat) {
       idx = i - npat + 1;
       sys_memset(&spr_patt_valloc[idx], 0, npat);
+#ifdef MSX2
       if (vdp_mode == MODE_GRP4) {
         vdp_set_vram_page(2);
         vdp_memcpy(VRAM_BASE_GRP4_SPAT + idx * 8, ps->patterns, npat * 8);
       } else
+#endif
         vdp_memcpy(VRAM_BASE_SPAT + idx * 8, ps->patterns, npat * 8);
       if (spr_mode == SPR_MODE1) {
         if (size != SPR_SIZE_8x8)
