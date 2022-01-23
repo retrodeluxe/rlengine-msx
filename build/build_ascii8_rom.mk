@@ -20,7 +20,7 @@ DATA_PAGES := $(shell grep -R DATA_PAGE $(LOCAL_SRC_FILES) | grep -oE '[^ ]+$$' 
 #
 BUILT_LOCAL_SRC_FILES := $(patsubst %.c, $(LOCAL_BUILD_OUT_BIN)/%.rel, $(LOCAL_SRC_FILES))
 
-$(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c
+$(BUILT_LOCAL_SRC_FILES): $(LOCAL_BUILD_OUT_BIN)/%.rel: $(LOCAL_BUILD_SRC)/%.c | resources
 	@mkdir -p $(LOCAL_BUILD_OUT_BIN)
 	$(call print_cc, local, $^)
 	$(hide) $(CROSS_CC) $(ROM_CFLAGS) -c -o $@ $^
