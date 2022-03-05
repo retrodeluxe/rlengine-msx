@@ -154,9 +154,8 @@ void tile_set_to_vram_bank_raw(TileSet *tileset, TileBank bank, uint8_t offset) 
  * :returns: see :c:type:`rle_result`
  */
 rle_result tile_set_valloc_bank(TileSet *tileset, TileBank bank) {
-  uint16_t offset, vsize;
-  uint8_t i, pos, size;
-  bool f;
+  uint8_t pos = 0, size;
+  bool f = false;
 
   if (tileset->allocated) {
     return RLE_ALREADY_ALLOCATED;

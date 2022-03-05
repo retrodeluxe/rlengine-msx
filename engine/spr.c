@@ -157,9 +157,8 @@ void spr_clear(void) {
     spr_vfree_pattern_set(i);
 
 #ifdef MSX2
-  sys_memset(spr_color, 0, SPR_PATRN_COLORS * MAX_SPR_ATTR);
+//  sys_memset(spr_color, 0, SPR_PATRN_COLORS * MAX_SPR_ATTR);
 #endif
-
 }
 
 /**
@@ -230,10 +229,13 @@ bool spr_valloc_pattern_set(uint8_t patrn_idx) {
         if (size != SPR_SIZE_8x8)
           sys_memcpy(ps->colors2, ps->colors, npat / 4);
         else
-          sys_memcpy(ps->colors2, ps->colors, npat);
+          sys_memcpy(ps->colors2, ps->colors, npat); // should be 24
       }
       ps->pidx = idx;
       ps->allocated = true;
+      // for (j = 1; j <24; j++) {
+      //   log_e("color %d - %d\n", j, ps->colors2[j]);
+      // }
       return true;
     }
   }
@@ -326,7 +328,7 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
  * :param sp: a SpriteDef object
  */
 void spr_update(SpriteDef *sp) __nonbanked {
-  uint8_t i, np, sz, as, cf, pc, base = 0;
+  uint8_t i, np, sz, as, cf, base = 0;
 
   SpritePattern *ps = sp->pattern_set;
   for (i = 0; i < sp->state; i++) {
@@ -409,7 +411,7 @@ bool spr_show(SpriteDef *sp) __nonbanked {
  */
 void spr_hide(SpriteDef *sp) __nonbanked {
   VdpSpriteAttr null_spr;
-  uint8_t n, idx, sz, pc;
+  uint8_t n, idx, sz;
 
   sz = sp->pattern_set->size;
   n = sp->pattern_set->planes;
