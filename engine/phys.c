@@ -503,7 +503,7 @@ static void phys_detect_tile_collisions_16x16(DisplayObject *obj, uint8_t *map,
   int16_t x, y;
   int16_t xp, yp;
   uint8_t *base_tl, *base_bl, *base_tr, *base_br;
-  uint8_t *base_mr, *base_ml, *base_mt, *base_mb;
+  uint8_t *base_mr, *base_ml;
 
   unused(duck);
   unused(notify);
