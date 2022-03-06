@@ -72,4 +72,4 @@ run2: $(built_rom_1Mb)
 	$(hide) $(OPENMSX) -extb debugdevice -machine msx2 -carta $^
 
 runR: $(built_rom_1Mb)
-	$(hide) $(OPENMSX) -extb debugdevice -machine Panasonic_FS-A1GT -carta $^
+	$(hide) $(OPENMSX) -extb debugdevice -machine Panasonic_FS-A1GT -carta $^ -script $(TOOLS_ROOT)/openmsx/boot.tcl
