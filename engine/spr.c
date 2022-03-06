@@ -329,6 +329,9 @@ static void spr_calc_patterns(SpriteDef *sp) __nonbanked {
  */
 void spr_update(SpriteDef *sp) __nonbanked {
   uint8_t i, np, sz, as, cf, base = 0;
+#ifdef MSX2
+  uint8_t pc;
+#endif
 
   SpritePattern *ps = sp->pattern_set;
   for (i = 0; i < sp->state; i++) {
