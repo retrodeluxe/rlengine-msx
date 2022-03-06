@@ -145,6 +145,7 @@ void anim_player_spawn(DisplayObject *obj) {
     obj->ypos += 2;
   }
 
+  sp->state = PLAYER_ANIM_RIGHT;
   sp->anim_ctr++;
   if (sp->anim_ctr > sp->anim_ctr_treshold) {
     sp->frame++;
@@ -155,12 +156,11 @@ void anim_player_spawn(DisplayObject *obj) {
 
   spr_set_pos(sp, obj->xpos, obj->ypos);
   spr_update(sp);
-
   if (obj->state == 1 && (obj->ypos > obj->aux)) {
     obj->state = 0;
     obj->aux2 = 1; // enable shake
     list_del(&obj->animator_list);
-    add_animator(dpo, ANIM_PLAYER);
+    add_animator(obj, ANIM_PLAYER);
   }
 }
 
@@ -175,7 +175,6 @@ void anim_player(DisplayObject *obj) {
 
     dx = 0;
     dy = 0;
-
     x = (sp->planes[0]).x;
     y = (sp->planes[0]).y;
 
@@ -249,7 +248,7 @@ void anim_player(DisplayObject *obj) {
           //   dx = -JEAN_DX;
           // } else if (stick == STICK_RIGHT) {
           //   sp->state = JANE_STATE_RIGHT_JUMP;
-          //   dx = JEAN_DX;
+           //   dx = JEAN_DX;
           // }
           if (is_colliding_down(obj)) {
             //if (sp->state == JANE_STATE_RIGHT_JUMP) {

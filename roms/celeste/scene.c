@@ -17,6 +17,7 @@
 #include "celeste.h"
 #include "scene.h"
 #include "init.h"
+#include "pico8sfx.h"
 
 /** scene display objects **/
 DisplayObject display_object[SCENE_MAX_DPO];
@@ -119,6 +120,9 @@ void add_player(uint8_t x, uint8_t y) {
 
   ascii8_set_data(9);
   spr_valloc_pattern_set(PATRN_PLAYER);
+  spr_valloc_pattern_set(PATRN_HAIR_BIG);
+  spr_valloc_pattern_set(PATRN_HAIR_SMALL);
+
   spr_init_sprite(&player_spr, PATRN_PLAYER);
 
   dpo_player.xpos = x * 16;
@@ -132,9 +136,10 @@ void add_player(uint8_t x, uint8_t y) {
   dpo_player.check_collision = false;
   INIT_LIST_HEAD(&dpo_player.list);
   list_add(&dpo_player.list, &display_list);
-  spr_set_pos(&player_spr, x * 16, y * 16);
   INIT_LIST_HEAD(&dpo_player.animator_list);
   add_animator(&dpo_player, ANIM_PLAYER_SPAWN);
+  spr_set_pos(&player_spr, x * 16, 255);
+  spr_show(&player_spr);
 }
 
 void add_dust(uint16_t x, uint16_t y) {
@@ -209,6 +214,9 @@ void show_intro()
   blit_font_vprintf(&font_bs, 7, 23, 0, "MSX BY RETRODELUXE");
 
   vdp_screen_enable();
+
+  // play one note every time
+  //sys_irq_register(play_music);
 
   done = false;
   fadein = 0;

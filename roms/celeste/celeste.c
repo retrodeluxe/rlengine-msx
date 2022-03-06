@@ -61,6 +61,7 @@ void main() __nonbanked
   init_pal();
 
   init_gfx();
+  init_sfx();
   init_animators();
 
   show_intro();

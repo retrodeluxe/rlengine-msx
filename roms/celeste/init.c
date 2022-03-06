@@ -17,14 +17,15 @@
 #include "celeste.h"
 
 #include "init.h"
+#include "pico8sfx.h"
 
 #include "gen/tileset_ext.h"
 #include "gen/font_ext.h"
 #include "gen/celeste_pal.h"
-#include "gen/player_ext.h"
-#include "gen/snow_small_ext.h"
-#include "gen/snow_big_ext.h"
-#include "gen/dust_ext.h"
+#include "gen/celeste_sprites_ext.h"
+
+extern const uint8_t core_sfx[];
+extern const uint8_t core_music[];
 
 /** Blit Sets */
 BlitSet tiles_bs;
@@ -47,11 +48,16 @@ void init_pal()
   log_e("01\n");
 }
 
+void init_sfx()
+{
+  ascii8_set_data(9);
+//  unpack_sfx(core_sfx);
+  // unpack_music(core_music);
+}
+
 void init_gfx()
 {
   uint8_t i;
-
-  log_e("here?\n");
 
   vdp_set_mode(MODE_GRP4);
   vdp_set_color(COLOR_WHITE, COLOR_BLACK);
@@ -93,4 +99,6 @@ void init_gfx()
   SPR_DEFINE_PATTERN_SET(PATRN_SNOW_SMALL, SPR_SIZE_8x8, 1, 1, snow_state, snow_small);
   SPR_DEFINE_PATTERN_SET(PATRN_SNOW_BIG, SPR_SIZE_8x8, 1, 1, snow_state, snow_big);
   SPR_DEFINE_PATTERN_SET(PATRN_DUST, SPR_SIZE_8x8, 1, 1, dust_state, dust);
+  SPR_DEFINE_PATTERN_SET(PATRN_HAIR_BIG, SPR_SIZE_8x8, 1, 1, hair_state, hair_big);
+  SPR_DEFINE_PATTERN_SET(PATRN_HAIR_SMALL, SPR_SIZE_8x8, 1, 1, hair_state, hair_small);
 }

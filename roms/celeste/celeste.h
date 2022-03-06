@@ -52,6 +52,8 @@ enum spr_patterns_t {
     PATRN_DUST,
     PATRN_BALLOON,
     PATRN_CLOUD,
+    PATRN_HAIR_BIG,
+    PATRN_HAIR_SMALL,
     PATRN_MAX
 };
 
