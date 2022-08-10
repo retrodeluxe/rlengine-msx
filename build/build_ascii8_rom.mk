@@ -44,7 +44,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_ASCII8) $(BUILT_LO
 	@echo "-b _CODE=0x7C00" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	$(hide) $(foreach page,$(CODE_PAGES),$(call emit_link_code_page,$(page)))
 	$(hide) $(foreach page,$(DATA_PAGES),$(call emit_link_data_page,$(page)))
-	@echo "-b _HOME=0x4120" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
+	@echo "-b _HOME=0x412C" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom_ascii8.lnk
@@ -72,4 +72,4 @@ run2: $(built_rom_1Mb)
 	$(hide) $(OPENMSX) -extb debugdevice -machine msx2 -carta $^
 
 runR: $(built_rom_1Mb)
-	$(hide) $(OPENMSX) -extb debugdevice -machine Panasonic_FS-A1GT -carta $^ -script $(TOOLS_ROOT)/openmsx/boot.tcl
+	$(hide) $(OPENMSX) -extb scc -exta debugdevice -machine Panasonic_FS-A1GT -carta $^ -script $(TOOLS_ROOT)/openmsx/boot.tcl

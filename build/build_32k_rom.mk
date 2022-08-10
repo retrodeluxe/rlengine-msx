@@ -29,6 +29,7 @@ $(built_rom_ihx) : $(BUILT_LOCAL_SRC_FILES) $(BUILT_BOOTSTRAP_32K) | $(BUILT_ENG
 	@echo "-b _HOME=0x6000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-b _DATA=0xC000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-b _CODE_PAGE_2=0x8000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
+	@echo "-b _CODE_PAGE_3=0xA000" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-l z80" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo "-l rdl_engine" >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
 	@echo $^ | tr ' ' '\n' >> $(LOCAL_BUILD_OUT_BIN)/rom32.lnk
@@ -55,4 +56,4 @@ run2: $(built_rom_32k)
 	$(hide) $(OPENMSX) -extb debugdevice -machine msx2 -carta $^
 
 runR: $(built_rom_32k)
-	$(hide) $(OPENMSX) -extb debugdevice -machine Panasonic_FS-A1GT -carta $^
+	$(hide) $(OPENMSX) -extb scc -exta debugdevice -machine Panasonic_FS-A1GT -carta $^
