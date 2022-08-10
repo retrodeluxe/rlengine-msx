@@ -56,5 +56,7 @@ extern void ascii8_restore_code(uint8_t page) __nonbanked;
 #define ascii8_restore_code(page)
 #endif
 
+extern void ascii8_set_rom_page2();
+extern void ascii8_set_slot_page2(uint8_t slot);
 
 #endif // ASCII8_H_
