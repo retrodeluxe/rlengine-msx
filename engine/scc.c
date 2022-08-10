@@ -65,11 +65,11 @@ void scc_init() __nonbanked
     scc_detect();
 }
 
-void scc_unmute(uint8_t chan) __nonbanked
+void scc_enable(uint8_t chan) __nonbanked
 {
     scc_map();
 
-    SCC_ENABLE = ~chan;
+    SCC_ENABLE = chan;
 
     scc_unmap();
 }
@@ -78,7 +78,7 @@ void scc_mute(uint8_t chan) __nonbanked
 {
     scc_map();
 
-    SCC_ENABLE = chan;
+    SCC_ENABLE = ~chan;
 
     scc_unmap();
 }
@@ -105,7 +105,7 @@ void scc_set_freq(uint8_t chan, uint16_t freq) __nonbanked
 {
     scc_map();
 
-    *(&SCC_FREQ_BASE + chan) = freq;
+    *(&SCC_FREQ_BASE + chan * 2) = freq;
 
     scc_unmap();
 }

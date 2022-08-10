@@ -3,8 +3,8 @@
 		.globl _ascii8_set_data
 		.globl _ascii8_set_code
 		.globl _ascii8_restore_code
-		.globl _ascii8_set_rom_p2
-		.globl _ascii8_set_slot_p2
+		.globl _ascii8_set_rom_page2
+		.globl _ascii8_set_slot_page2
 
 		.area _BOOT
 
@@ -26,12 +26,12 @@ ASCII8_PAGE3	.equ 0x7800
 
 		; Mapper page switching helpers
 		;
-_ascii8_set_rom_p2:
+_ascii8_set_rom_page2:
 		ld a,(romslot)
 		ld h,#0x80
 		call #ENASLT
 		ret
-_ascii8_set_slot_p2:
+_ascii8_set_slot_page2:
 		push ix
 		ld ix,#0
 		add ix,sp
