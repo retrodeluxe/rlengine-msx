@@ -17,12 +17,10 @@
  *
  */
 
-// FIXME: for now this is has a dependency with megarom
 #include "ascii8.h"
 
 #define SCC_SELECT 0x3f
 
-// can we do this with sfr?
 #define SCC_BASE      *((uint8_t *)0x8000)
 #define SCC_SET_PAGE  *((uint8_t *)0x9000)
 #define SCC_WAVE_BASE *((uint8_t *)0x9800)
@@ -41,7 +39,7 @@
 #define scc_map() ascii8_set_slot_page2(scc_slot);
 #define scc_unmap() ascii8_set_rom_page2();
 
-extern void scc_init();
+extern bool scc_init();
 extern void scc_enable(uint8_t chmask);
 extern void scc_mute(uint8_t chmask);
 extern void scc_set_wave(uint8_t chan, uint8_t *data);

@@ -122,6 +122,14 @@ Vortex Tracker Module
 .. c:autodoc:: ../../engine/include/pt3.h
 .. c:autodoc:: ../../engine/pt3.c
 
+SCC Module
+---------------------
+
+The SCC module provides low level access to Konami Sound Custom Chips.
+
+.. c:autodoc:: ../../engine/include/scc.h
+.. c:autodoc:: ../../engine/scc.c
+
 Map Module
 ----------
 

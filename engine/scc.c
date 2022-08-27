@@ -22,11 +22,17 @@
 #include "scc.h"
 #include "log.h"
 
+#pragma CODE_PAGE 2
+
 static uint8_t scc_slot;
 
 #define scc_map() ascii8_set_slot_page2(scc_slot);
 #define scc_unmap() ascii8_set_rom_page2();
 
+/*
+ * Attempts to detect an SCC across all slots and subslots
+ *
+ */
 static void scc_detect() __nonbanked
 {
   uint8_t val;
@@ -60,11 +66,26 @@ static void scc_detect() __nonbanked
   scc_unmap();
 }
 
-void scc_init() __nonbanked
+/**
+ * Initializes an SCC by attempting detection
+ *
+ * :returns: true if the SCC was detected and initialized successfully, false otherwise
+ *
+ */
+bool scc_init() __nonbanked
 {
     scc_detect();
+    if (scc_slot != 255)
+        return true;
+
+    return false;
 }
 
+/**
+ * Enables a set of SCC channels
+ *
+ * :param chan: masked list of channels to be enabled (bits 0-5)
+ */
 void scc_enable(uint8_t chan) __nonbanked
 {
     scc_map();
@@ -74,6 +95,11 @@ void scc_enable(uint8_t chan) __nonbanked
     scc_unmap();
 }
 
+/**
+ * Mutes a set of SCC channels 
+ * 
+ * :param chan: maked list of channels to be muted (0-5) 
+ */
 void scc_mute(uint8_t chan) __nonbanked
 {
     scc_map();
@@ -83,15 +109,32 @@ void scc_mute(uint8_t chan) __nonbanked
     scc_unmap();
 }
 
+/**
+ * Set the the 32-byte wave table for specific channel
+ *
+ *    .. warning::
+ *
+ *       wave data must be placed in an address other than 2 (0x8000-0xBFFF) as that page
+ *       is switched to the ROM slot containing the SCC when calling this function
+ *
+ * :param chan: channel (1-5)
+ * :param data: 32-byte buffer containing the wave table
+ */
 void scc_set_wave(uint8_t chan, uint8_t *data) __nonbanked
 {
     scc_map();
 
-    sys_memcpy(&SCC_WAVE_BASE + SCC_WAVE_LEN * chan, data, 32);
+    sys_memcpy(&SCC_WAVE_BASE + SCC_WAVE_LEN * chan, data, SCC_WAVE_LEN);
 
     scc_unmap();
 }
 
+/**
+ * Set volume for a specific SCC channel
+ * 
+ * :param chan: channel (1-5)
+ * :param vol: Volume (0-15)
+ */
 void scc_set_vol(uint8_t chan, uint8_t vol) __nonbanked
 {
     scc_map();
@@ -101,6 +144,12 @@ void scc_set_vol(uint8_t chan, uint8_t vol) __nonbanked
     scc_unmap();
 }
 
+/**
+ * Set the frequency for a specific SCC channel 
+ *
+ * :param chan: channel (1-5)
+ * :param freq: frequency
+ */
 void scc_set_freq(uint8_t chan, uint16_t freq) __nonbanked
 {
     scc_map();
