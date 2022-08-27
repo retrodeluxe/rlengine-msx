@@ -156,6 +156,23 @@ Lists
 .. c:autodoc:: ../../engine/include/list.h
 .. c:autodoc:: ../../engine/list.c
 
+Dynamic Memory Allocator
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Simple dynamic memory allocator that allows to use the available RAM between
+the end of the DATA segment and the bottom of the Stack.
+
+Note that this allocator is a minimal implementation that doesn't optimize
+for best block fit or do coalescence of unallocated blocks. Repeated calls
+to free and alloc will fragment the heap and result in a very inefficient use
+of memory.
+
+This allocator is best used by only allocating blocks, and not calling free.
+
+.. c:autodoc:: ../../engine/include/mem.h
+.. c:autodoc:: ../../engine/mem.c
+
+
 Debug
 ~~~~~
 
