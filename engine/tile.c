@@ -151,14 +151,14 @@ void tile_set_to_vram_bank_raw(TileSet *tileset, TileBank bank, uint8_t offset) 
  *
  * :param tileset: the TileSet to be allocated and transferred
  *
- * :returns: see :c:type:`rle_result`
+ * :returns: either EOK or error code
  */
-rle_result tile_set_valloc_bank(TileSet *tileset, TileBank bank) {
+int tile_set_valloc_bank(TileSet *tileset, TileBank bank) {
   uint8_t pos = 0, size;
   bool f = false;
 
   if (tileset->allocated) {
-    return RLE_ALREADY_ALLOCATED;
+    return EALREADY;
   }
 
   size = tileset->w * tileset->h;
@@ -171,7 +171,7 @@ rle_result tile_set_valloc_bank(TileSet *tileset, TileBank bank) {
    f = bitmap_find_gap(bitmap_tile_bank2, size, BITMAP_TILEBANK_SIZE - 1, &pos);
 
   if (!f)
-    return RLE_COULD_NOT_ALLOCATE_VRAM;
+    return ENOMEM;
 
   tile_set_to_vram_bank(tileset, bank, pos);
 }
@@ -184,15 +184,15 @@ rle_result tile_set_valloc_bank(TileSet *tileset, TileBank bank) {
  *
  * :param tileset: the TileSet to be allocated and transferred
  *
- * :returns: see :c:type:`rle_result`
+ * :returns: either EOK or error code
  */
-rle_result tile_set_valloc(TileSet *tileset) {
+int tile_set_valloc(TileSet *tileset) {
   uint16_t offset, vsize;
   uint8_t i, pos, size;
   bool found;
 
   if (tileset->allocated) {
-    return RLE_ALREADY_ALLOCATED;
+    return EALREADY;
   }
 
   size = tileset->w * tileset->h;
@@ -200,7 +200,7 @@ rle_result tile_set_valloc(TileSet *tileset) {
   found =
       bitmap_find_gap(bitmap_tile_bank, size, BITMAP_TILEBANK_SIZE - 1, &pos);
   if (!found) {
-    return RLE_COULD_NOT_ALLOCATE_VRAM;
+    return ENOMEM;
   }
 
   for (i = pos; i < pos + size; i++) {
@@ -229,7 +229,7 @@ rle_result tile_set_valloc(TileSet *tileset) {
   }
   tileset->allocated = true;
   tileset->pidx = pos;
-  return RLE_OK;
+  return EOK;
 }
 
 /**

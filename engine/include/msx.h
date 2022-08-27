@@ -94,17 +94,14 @@
  */
 #define unused(x) x
 
+
 /**
- * Defines Engine Result Codes
+ * Error codes 
+ * 
  */
-typedef enum {
-    /** Operation sucessful */
-    RLE_OK,
-    /** Object is already allocated */
-    RLE_ALREADY_ALLOCATED,
-    /** Could not allocate Object in VRAM */
-    RLE_COULD_NOT_ALLOCATE_VRAM
-} rle_result;
+#define EOK       0
+#define ENOMEM    1    // out of memory
+#define EALREADY  2    // already allocated
 
 /* avoids SDCC builtins to break sphinx
  * documentation generation

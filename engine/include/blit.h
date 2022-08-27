@@ -189,7 +189,7 @@ struct BlitObject {
   (TS).raw = false;
 
 extern void blit_init();
-extern rle_result blit_set_valloc(BlitSet *blitset);
+extern int blit_set_valloc(BlitSet *blitset);
 extern void blit_set_vfree(BlitSet *blitset);
 extern void blit_set_to_vram(BlitSet *blitset, uint8_t page,
                     uint16_t xpos, uint16_t ypos) __nonbanked;

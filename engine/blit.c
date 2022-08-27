@@ -33,10 +33,10 @@ void blit_init()
 {
 }
 
-rle_result blit_set_valloc(BlitSet *blitset)
+int blit_set_valloc(BlitSet *blitset)
 {
   unused(blitset);
-  return RLE_OK;
+  return EOK;
 }
 
 void blit_set_vfree(BlitSet *blitset)

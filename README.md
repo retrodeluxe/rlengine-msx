@@ -19,7 +19,6 @@ RLE is a work in progress, but mature enough for development (check the tests fo
 
 # Roadmap
 
- * Mass storage support (megaflashrom sd card), vfat and ext2 filesystems
  * Mode2 sprite assets using OR encoding
  * Arkos Tracker PSG player support
  * Sprite oclussion

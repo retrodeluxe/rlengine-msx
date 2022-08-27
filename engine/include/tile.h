@@ -221,8 +221,8 @@ struct TileObject {
   (TS).raw = true;
 
 extern void tile_init();
-extern rle_result tile_set_valloc(TileSet *tileset);
-extern rle_result tile_set_valloc_bank(TileSet *tileset, TileBank bank);
+extern int tile_set_valloc(TileSet *tileset);
+extern int tile_set_valloc_bank(TileSet *tileset, TileBank bank);
 extern void tile_set_vfree(TileSet *tileset);
 extern void tile_set_to_vram_bank(TileSet *tileset, TileBank bank, uint8_t offset);
 extern void tile_set_to_vram(TileSet *tileset, uint8_t offset);
