@@ -6,6 +6,7 @@ include $(BUILD_SYSTEM)/util.mk
 
 SPR_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_SPR)/*.tga)
 SPR_RES_FILES_PNG := $(wildcard $(LOCAL_BUILD_RES_SPR)/*.png)
+SPR_RES_FILES_JSON := $(wildcard $(LOCAL_BUILD_RES)/*.sprites)
 SPR2_RES_FILES_PNG := $(wildcard $(LOCAL_BUILD_RES_SPR2)/*.png)
 MAP_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_MAP)/*.json)
 TIL_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_TIL)/*.tga)
@@ -24,6 +25,7 @@ PAL_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_PAL)/*.pal)
 
 built_spr_res := $(patsubst $(LOCAL_BUILD_RES_SPR)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SPR_RES_FILES))
 built_spr_res_png := $(patsubst $(LOCAL_BUILD_RES_SPR)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SPR_RES_FILES_PNG))
+built_spr_res_json := $(patsubst $(LOCAL_BUILD_RES)/%.sprites,$(LOCAL_BUILD_OUT_GEN)/%_sprites_init.h,$(SPR_RES_FILES_JSON))
 built_spr2_res_png := $(patsubst $(LOCAL_BUILD_RES_SPR2)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SPR2_RES_FILES_PNG))
 built_map_res := $(patsubst $(LOCAL_BUILD_RES_MAP)/%.json,$(LOCAL_BUILD_OUT_GEN)/%.h,$(MAP_RES_FILES))
 built_til_res := $(patsubst $(LOCAL_BUILD_RES_TIL)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%.h,$(TIL_RES_FILES))
@@ -59,7 +61,7 @@ resources: $(built_spr_res) $(built_map_res) $(built_til_res) $(built_spr_ext_re
 	$(built_fnt_ext_res_png) $(built_spr_res_png) $(built_spr2_res_png) \
 	$(built_spr2_ext_res_png) $(built_til_res_png) $(built_raw_res_png) \
 	$(built_fnt_res_png) $(built_bmp_res) $(built_bmp_ext_res) \
-	$(built_pal_res) | $(TGA2H) $(TILED2H)
+	$(built_pal_res) $(built_spr_res_json)| $(TGA2H) $(TILED2H)
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json | $(TILED2H)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
@@ -106,6 +108,13 @@ $(built_spr_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SPR)/%.png 
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(call print_res, sprite, $^)
 	$(hide) $(PNG2H) -t SPRITE -p $^ -o $@
+	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
+	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sprites.h
+
+$(built_spr_res_json) : $(LOCAL_BUILD_OUT_GEN)/%_sprites_init.h: $(LOCAL_BUILD_RES)/%.sprites |  $(PNG2H)
+	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, sprite, $^)
+	$(hide) $(SPRDEF) -s $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sprites.h
 

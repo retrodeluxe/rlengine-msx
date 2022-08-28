@@ -1,0 +1,79 @@
+{
+    "sprites" : [{
+            "pattern_name" : "SPR_BEE",
+            "mode" : 1,
+            "size" : "16x16",
+            "planes" : 1,
+            "states" : [
+                { "name": "LEFT", "frames" : 2 }, 
+                { "name": "RIGHT", "frames" : 2 }
+            ],
+            "data" : "bee1"
+        },
+        {
+            "pattern_name" : "SPR_DARKBAT",
+            "mode" : 1,
+            "size" : "32x16",
+            "planes" : 1,
+            "states" : [
+                { "name": "LEFT", "frames" : 2 }, 
+                { "name": "RIGHT", "frames" : 2 }
+            ],
+            "data" : "darkbat"
+        },
+        {
+            "pattern_name" : "SPR_DEATH",
+            "mode" : 1,
+            "size" : "32x32",
+            "planes" : 1,
+            "states" : [
+                { "name": "LEFT", "frames" : 3 }, 
+                { "name": "RIGHT", "frames" : 3 }
+            ],
+            "data" : "death"
+        },
+        {
+            "pattern_name" : "SPR_MONK",
+            "mode" : 1,
+            "size" : "16x32",
+            "planes" : 2,
+            "states" : [
+                { "name": "LEFT", "frames" : 3 }, 
+                { "name": "RIGHT", "frames" : 3 }
+            ],
+            "data" : "monk1"
+        },
+        {
+            "pattern_name" : "SPR_RAT",
+            "mode" : 1,
+            "size" : "16x16",
+            "planes" : 1,
+            "states" : [
+                { "name": "LEFT", "frames" : 2 }, 
+                { "name": "RIGHT", "frames" : 2 }
+            ],
+            "data" : "rat"
+        },
+        {
+            "pattern_name" : "SPR_VALLEY",
+            "mode" : 1,
+            "size" : "16x16",
+            "planes" : 3,
+            "states" : [
+                { "name": "LEFT", "frames" : 4 }, 
+                { "name": "RIGHT", "frames" : 4 }
+            ],
+            "data" : "valley2"
+        },
+        {
+            "pattern_name" : "SPR_VALLEY2",
+            "mode" : 2,
+            "size" : "16x16",
+            "planes" : 3,
+            "states" : [
+                { "name": "LEFT", "frames" : 2 }, 
+                { "name": "RIGHT", "frames" : 2 }
+            ],
+            "data" : "valley3"
+        }]
+}

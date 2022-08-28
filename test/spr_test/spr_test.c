@@ -4,26 +4,18 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
 #include "sprite.h"
 #include "log.h"
 #include "gen/spr_test.h"
-#include <stdlib.h>
 
 /**
  * Global data is placed in 0xC000 (RAM page 2) in 32K roms by default
  */
-
- enum spr_patterns_t {
- 	PATRN_BEE,
- 	PATRN_RAT,
- 	PATRN_MONK,
-  PATRN_BAT,
-  PATRN_DEATH,
-  PATRN_KVALLEY
- };
 
 SpriteDef monk;
 SpriteDef kvalley;
@@ -40,12 +32,6 @@ const uint8_t control_colors [1] = {6};
 
 int16_t xpos[10], ypos[10];
 int16_t xpos2[10], ypos2[10];
-
-const uint8_t kv_states[] = {4,4};
-const uint8_t monk_states[] = {3,3};
-const uint8_t two_states[] = {2,2};
-const uint8_t two_states2[] = {3,3};
-const uint8_t four_states[] = {3,3,3,3};
 
 void test_16x16_3layers();
 void test_16x32_2layers();
@@ -87,11 +73,11 @@ void test_16x16_3layers() {
   uint16_t ctr;
 
   spr_init();
-  SPR_DEFINE_PATTERN_SET(PATRN_KVALLEY, SPR_SIZE_16x16, 3, 2, kv_states, valley2);
-  spr_valloc_pattern_set(PATRN_KVALLEY);
+  spr_load_defs();
+  spr_valloc_pattern_set(SPR_VALLEY);
 
   xpos[0] = 200; ypos [0] = 100;
-  spr_init_sprite(&kvalley, PATRN_KVALLEY);
+  spr_init_sprite(&kvalley, SPR_VALLEY);
   spr_set_pos(&kvalley, xpos[0], ypos[0]);
   spr_show(&kvalley);
 
@@ -122,11 +108,11 @@ void test_16x32_2layers() {
   uint16_t ctr;
 
   spr_init();
-  SPR_DEFINE_PATTERN_SET(PATRN_MONK, SPR_SIZE_16x32, 2, 2, monk_states, monk1);
-  spr_valloc_pattern_set(PATRN_MONK);
+  spr_load_defs();
+  spr_valloc_pattern_set(SPR_MONK);
 
   xpos[0] = 50; ypos [0] = 100;
-  spr_init_sprite(&monk, PATRN_MONK);
+  spr_init_sprite(&monk, SPR_MONK);
   spr_set_pos(&monk, xpos[0], ypos[0]);
   spr_show(&monk);
 
@@ -154,11 +140,11 @@ void test_32x16_1layers() {
   int8_t dir;
   uint16_t ctr;
   spr_init();
-  SPR_DEFINE_PATTERN_SET(PATRN_BAT, SPR_SIZE_32x16, 1, 2, two_states, darkbat);
-  spr_valloc_pattern_set(PATRN_BAT);
+  spr_load_defs();
+  spr_valloc_pattern_set(SPR_DARKBAT);
 
   xpos[0] = 20; ypos [0] = 100;
-  spr_init_sprite(&bat, PATRN_BAT);
+  spr_init_sprite(&bat, SPR_DARKBAT);
   spr_set_pos(&bat, xpos[0], ypos[0]);
   spr_show(&bat);
 
@@ -187,11 +173,11 @@ void test_32x32_1layer() {
   uint16_t ctr;
 
   spr_init();
-  SPR_DEFINE_PATTERN_SET(PATRN_DEATH, SPR_SIZE_32x32, 1, 2, two_states2, death);
-  spr_valloc_pattern_set(PATRN_DEATH);
+  spr_load_defs();
+  spr_valloc_pattern_set(SPR_DEATH);
 
   xpos[0] = 50; ypos [0] = 100;
-  spr_init_sprite(&death_spr, PATRN_DEATH);
+  spr_init_sprite(&death_spr, SPR_DEATH);
   spr_set_pos(&death_spr, xpos[0], ypos[0]);
   spr_show(&death_spr);
 
@@ -222,17 +208,13 @@ void test_5th_sprite() {
    * Single layer sprites with animation in two directions
    */
 
-  SPR_DEFINE_PATTERN_SET(PATRN_BEE, SPR_SIZE_16x16, 1, 2,
-    two_states, bee1);
-  SPR_DEFINE_PATTERN_SET(PATRN_RAT, SPR_SIZE_16x16, 1, 2,
-    two_states, rat);
-
-  spr_valloc_pattern_set(PATRN_BEE);
-  spr_valloc_pattern_set(PATRN_RAT);
+  spr_load_defs();
+  spr_valloc_pattern_set(SPR_BEE);
+  spr_valloc_pattern_set(SPR_RAT);
 
   for (i = 0; i< 6; i++) {
-    spr_init_sprite(&bee[i], PATRN_BEE);
-    spr_init_sprite(&rats[i], PATRN_RAT);
+    spr_init_sprite(&bee[i], SPR_BEE);
+    spr_init_sprite(&rats[i], SPR_RAT);
     xpos[i] = i * 20; ypos[i] = 70;
     xpos2[i] = 100 + i * 20; ypos2[i] = 150;
     spr_set_pos(&bee[i], xpos[i], ypos[i]);
@@ -266,12 +248,12 @@ void test_16x16_mode2() {
   uint16_t ctr;
 
   spr_init();
+  spr_load_defs();
   vdp_init_hw_sprites(SPR_SIZE_16, SPR_ZOOM_ON);
-  SPR_DEFINE_PATTERN_SET(PATRN_KVALLEY, SPR_SIZE_16x16, 3, 2, kv_states, valley3);
-  spr_valloc_pattern_set(PATRN_KVALLEY);
+  spr_valloc_pattern_set(SPR_VALLEY2);
 
   xpos[0] = 200; ypos [0] = 100;
-  spr_init_sprite(&kvalley, PATRN_KVALLEY);
+  spr_init_sprite(&kvalley, SPR_VALLEY2);
   spr_set_pos(&kvalley, xpos[0], ypos[0]);
   spr_show(&kvalley);
 
