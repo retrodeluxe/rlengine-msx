@@ -20,8 +20,6 @@
 
 #include "gen/dyntile_test.h"
 
-TileSet giant_ts;
-TileSet tileset_kv;
 TileObject giant_tobj;
 
 uint8_t scr_buf[768];
@@ -34,18 +32,21 @@ void main()
 	sys_irq_init();
 
 	tile_init();
+	tile_load_defs();
 
-	INIT_TILE_SET(tileset_kv, kingsvalley);
-	tile_set_to_vram(&tileset_kv, 1);
+	tile_to_vram(TS_KVALLEY, 1);
 
-	INIT_DYNAMIC_TILE_SET(giant_ts,giant, 4, 7, 2, 2);
-	tile_set_valloc(&giant_ts);
+	// show something regarding this one
+
+	tile_valloc(TS_GIANT);
 	giant_tobj.x = 100;
 	giant_tobj.y = 50;
-	giant_tobj.state = 1;
+	giant_tobj.state = 0;
 	giant_tobj.frame = 0;
-	giant_tobj.tileset = &giant_ts;
+	giant_tobj.tileset = &tile_sets[TS_GIANT];
 	giant_tobj.idx = 0;
+
+	// modify tob to accept also the index?
 
 	do {
 		sys_memset(scr_buf, 0, 768);

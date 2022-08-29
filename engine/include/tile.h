@@ -220,7 +220,23 @@ struct TileObject {
   (TS).states = S;                                                            \
   (TS).raw = true;
 
+
+extern TileSet *tile_sets;
+
 extern void tile_init();
+
+/*
+ * vram transfer using tile indexes
+ */
+extern int tile_valloc(uint8_t tileset_idx);
+extern int tile_valloc_bank(uint8_t tileset_idx, TileBank bank);
+extern void tile_to_vram_bank(uint8_t tileset_idx, TileBank bank, uint8_t offset);
+extern void tile_to_vram(uint8_t tileset_idx, uint8_t offset);
+extern void tile_vfree(uint8_t tileset_idx);
+
+/*
+ * vram transfer suing TileSets (backwards compatible)
+ */
 extern int tile_set_valloc(TileSet *tileset);
 extern int tile_set_valloc_bank(TileSet *tileset, TileBank bank);
 extern void tile_set_vfree(TileSet *tileset);
@@ -228,7 +244,12 @@ extern void tile_set_to_vram_bank(TileSet *tileset, TileBank bank, uint8_t offse
 extern void tile_set_to_vram(TileSet *tileset, uint8_t offset);
 extern void tile_set_to_vram_bank_raw(TileSet *tileset, TileBank bank,
                                       uint8_t offset);
+// deprecated, remove from font module
 extern void tile_set_to_vram_raw(TileSet *tileset, uint8_t offset);
+
+/*
+ * tile objects
+ */
 extern void tile_object_show(TileObject *tileobject, uint8_t *scrbuf,
                              bool refresh_vram) __nonbanked;
 extern void tile_object_hide(TileObject *tileobject, uint8_t *scrbuf,

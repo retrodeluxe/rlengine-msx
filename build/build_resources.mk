@@ -13,6 +13,7 @@ TIL_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_TIL)/*.tga)
 TIL_RES_FILES_PNG := $(wildcard $(LOCAL_BUILD_RES_TIL)/*.png)
 RAW_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_RAW)/*.tga)
 RAW_RES_FILES_PNG := $(wildcard $(LOCAL_BUILD_RES_RAW)/*.png)
+TILE_RES_FILES_JSON := $(wildcard $(LOCAL_BUILD_RES)/*.tiles)
 PT3_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_PT3)/*.pt3)
 SFX_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_SFX)/*.afb)
 PAT_RES_FILES := $(wildcard $(LOCAL_BUILD_RES_SCR)/*.pat)
@@ -32,6 +33,7 @@ built_til_res := $(patsubst $(LOCAL_BUILD_RES_TIL)/%.tga,$(LOCAL_BUILD_OUT_GEN)/
 built_til_res_png := $(patsubst $(LOCAL_BUILD_RES_TIL)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(TIL_RES_FILES_PNG))
 built_raw_res := $(patsubst $(LOCAL_BUILD_RES_RAW)/%.tga,$(LOCAL_BUILD_OUT_GEN)/%.h,$(RAW_RES_FILES))
 built_raw_res_png := $(patsubst $(LOCAL_BUILD_RES_RAW)/%.png,$(LOCAL_BUILD_OUT_GEN)/%.h,$(RAW_RES_FILES_PNG))
+built_tile_res_json := $(patsubst $(LOCAL_BUILD_RES)/%.tiles,$(LOCAL_BUILD_OUT_GEN)/%_tile_init.h,$(TILE_RES_FILES_JSON))
 built_pt3_res := $(patsubst $(LOCAL_BUILD_RES_PT3)/%.pt3,$(LOCAL_BUILD_OUT_GEN)/%.h,$(PT3_RES_FILES))
 built_sfx_res := $(patsubst $(LOCAL_BUILD_RES_SFX)/%.afb,$(LOCAL_BUILD_OUT_GEN)/%.h,$(SFX_RES_FILES))
 built_pat_res := $(patsubst $(LOCAL_BUILD_RES_SCR)/%.pat,$(LOCAL_BUILD_OUT_GEN)/%.pat.h,$(PAT_RES_FILES))
@@ -61,7 +63,7 @@ resources: $(built_spr_res) $(built_map_res) $(built_til_res) $(built_spr_ext_re
 	$(built_fnt_ext_res_png) $(built_spr_res_png) $(built_spr2_res_png) \
 	$(built_spr2_ext_res_png) $(built_til_res_png) $(built_raw_res_png) \
 	$(built_fnt_res_png) $(built_bmp_res) $(built_bmp_ext_res) \
-	$(built_pal_res) $(built_spr_res_json)| $(TGA2H) $(TILED2H)
+	$(built_pal_res) $(built_spr_res_json) $(built_tile_res_json) | $(TGA2H) $(TILED2H)
 
 $(built_map_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_MAP)/%.json | $(TILED2H)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
@@ -111,12 +113,19 @@ $(built_spr_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SPR)/%.png 
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sprites.h
 
-$(built_spr_res_json) : $(LOCAL_BUILD_OUT_GEN)/%_sprites_init.h: $(LOCAL_BUILD_RES)/%.sprites |  $(PNG2H)
+$(built_spr_res_json) : $(LOCAL_BUILD_OUT_GEN)/%_sprites_init.h: $(LOCAL_BUILD_RES)/%.sprites
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(call print_res, sprite, $^)
 	$(hide) $(SPRDEF) -s $^ -o $@
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
 	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sprites.h
+
+$(built_tile_res_json) : $(LOCAL_BUILD_OUT_GEN)/%_tile_init.h: $(LOCAL_BUILD_RES)/%.tiles
+	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
+	$(call print_res, tiles, $^)
+	$(hide) $(TILEDEF) -s $^ -o $@
+	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME).h
+	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_tiles.h
 
 $(built_spr2_res_png) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SPR2)/%.png | $(PNG2H)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)

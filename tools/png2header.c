@@ -232,7 +232,7 @@ void usage(void)
 {
     int i;
 
-    printf("Usage: png2header [OPTION]... [file.tga]\n"
+    printf("Usage: png2header [OPTION]... [file.png]\n"
            "Transform png graphic file into MSX C header\n"
            " -h, --help           Print this help.\n"
            " -f, --full (DEFAULT) full png to scr2/scr5 format conversion,\n"

@@ -36,6 +36,11 @@ uint8_t bitmap_tile_bank0[BITMAP_TILEBANK_SIZE];
 uint8_t bitmap_tile_bank1[BITMAP_TILEBANK_SIZE];
 uint8_t bitmap_tile_bank2[BITMAP_TILEBANK_SIZE];
 
+/*
+ * Dynamically allocated array of TileSets
+ */
+TileSet *tile_sets;
+
 /**
  * This function clears all TileSet allocations.
  */
@@ -278,6 +283,37 @@ void tile_set_vfree(TileSet *tileset) {
     bitmap_set(bitmap_tile_bank, i);
   tileset->allocated = false;
   tileset->pidx = 0;
+}
+
+
+/*
+ * vram transfer using tileset indexes
+ */
+int tile_valloc(uint8_t tileset_idx)
+{
+  return tile_set_valloc(&tile_sets[tileset_idx]);
+}
+
+int tile_valloc_bank(uint8_t tileset_idx, TileBank bank)
+{
+  return tile_set_valloc_bank(&tile_sets[tileset_idx], bank);
+}
+
+void tile_to_vram_bank(uint8_t tileset_idx, TileBank bank, uint8_t offset)
+{
+  // TODO: check for raw flag
+  tile_set_to_vram_bank(&tile_sets[tileset_idx], bank, offset);
+}
+
+void tile_to_vram(uint8_t tileset_idx, uint8_t offset)
+{
+  // TODO: check for raw flag
+  tile_set_to_vram(&tile_sets[tileset_idx], offset);
+}
+
+void tile_vfree(uint8_t tileset_idx)
+{
+  tile_set_vfree(&tile_sets[tileset_idx]);
 }
 
 /**

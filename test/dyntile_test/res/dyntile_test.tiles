@@ -1,0 +1,20 @@
+{
+    "tilesets" : [
+        {
+            "name" : "TS_KVALLEY",
+            "type" : "STATIC",
+            "data" : "kingsvalley",
+            "raw" : false
+        },
+        {
+            "name" : "TS_GIANT",
+            "type" : "DYNAMIC",
+            "frame_w" : 4,
+            "frame_h" : 7,
+            "frames" : 2,
+            "states" : 2,
+            "data" : "giant",
+            "raw" : false
+        }
+    ]
+}
