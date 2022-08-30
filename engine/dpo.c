@@ -110,9 +110,9 @@ void dpo_show_all(uint8_t *scr_buffer) __nonbanked
 {
   list_for_each(elem, &dpo_display_list) {
     dpo = list_entry(elem, DisplayObject, list);
-    if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+    if (dpo->type == DPO_SPRITE && dpo->visible) {
       spr_show(dpo->spr);
-    } else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {
+    } else if (dpo->type == DPO_TILE && dpo->visible) {
       tile_object_show(dpo->tob, scr_buffer, false);
     }
   }

@@ -55,7 +55,7 @@ void add_snow(DisplayObject *obj, uint8_t sprid, enum spr_patterns_t pattidx)
   spr_set_pos(&snow_spr[sprid], x, y);
   spr_show(&snow_spr[sprid]);
 
-  obj->type = DISP_OBJECT_SPRITE;
+  obj->type = DPO_SPRITE;
   obj->spr = &snow_spr[sprid];
   obj->xpos = x;
   obj->ypos = y;
@@ -128,7 +128,7 @@ void add_player(uint8_t x, uint8_t y) {
   dpo_player.xpos = x * 16;
   dpo_player.ypos = 255;
   dpo_player.aux = y * 16;
-  dpo_player.type = DISP_OBJECT_SPRITE;
+  dpo_player.type = DPO_SPRITE;
   dpo_player.state = 0;
   dpo_player.spr = &player_spr;
   dpo_player.visible = true;
@@ -148,7 +148,7 @@ void add_dust(uint16_t x, uint16_t y) {
   spr_init_sprite(&dust_spr[dust_ct], PATRN_DUST);
   dpo_dust[dust_ct].xpos = x;
   dpo_dust[dust_ct].ypos = y + 4;
-  dpo_dust[dust_ct].type = DISP_OBJECT_SPRITE;
+  dpo_dust[dust_ct].type = DPO_SPRITE;
   dpo_dust[dust_ct].state = 0;
   dpo_dust[dust_ct].spr = &dust_spr[dust_ct];
   dpo_dust[dust_ct].visible = true;
@@ -322,9 +322,9 @@ void load_room(uint8_t x, uint8_t y)
 
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
-    if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+    if (dpo->type == DPO_SPRITE && dpo->visible) {
       spr_show(dpo->spr);
-    } else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {
+    } else if (dpo->type == DPO_TILE && dpo->visible) {
       //tile_object_show(dpo->tob, scr_buffer + 256, false);
     }
   }

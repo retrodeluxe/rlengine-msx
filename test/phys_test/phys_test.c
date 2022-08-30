@@ -150,7 +150,7 @@ static void add_sprite(DisplayObject *dpo, uint8_t objidx,
 	spr_init_sprite(&enemy_sprites[objidx], pattidx);
 	spr_set_pos(&enemy_sprites[objidx], x, y);
   spr_update(&enemy_sprites[objidx]);
-	dpo->type = DISP_OBJECT_SPRITE;
+	dpo->type = DPO_SPRITE;
 	dpo->spr = &enemy_sprites[objidx];
 	dpo->xpos = x;
 	dpo->ypos = y;
@@ -252,7 +252,7 @@ void main() __nonbanked
 	/* Show them all */
 	list_for_each(elem, &display_list) {
 		dpo = list_entry(elem, DisplayObject, list);
-		if (dpo->type == DISP_OBJECT_SPRITE) {
+		if (dpo->type == DPO_SPRITE) {
       log_e("show\n");
 			spr_show(dpo->spr);
 		}
@@ -307,7 +307,7 @@ void init_monk()
 	spr_init_sprite(&monk_sprite, PATRN_MONK);
   dpo_monk.xpos = 100;
 	dpo_monk.ypos = 192 - 48;
-	dpo_monk.type = DISP_OBJECT_SPRITE;
+	dpo_monk.type = DPO_SPRITE;
 	dpo_monk.state = 1;
 	dpo_monk.spr = &monk_sprite;
 	dpo_monk.collision_state = 0;
@@ -348,7 +348,7 @@ void throw_arrow(uint8_t xpos, uint8_t ypos)
 	INIT_LIST_HEAD(&dpo_arrow.animator_list);
 	list_add(&animators[2].list, &dpo_arrow.animator_list);
 	spr_set_pos(&arrow_sprite, xpos + 16, ypos + 16);
-	dpo_arrow.type = DISP_OBJECT_SPRITE;
+	dpo_arrow.type = DPO_SPRITE;
 	dpo_arrow.spr = &arrow_sprite;
 	dpo_arrow.xpos = xpos + 16;
 	dpo_arrow.ypos = ypos + 16;
@@ -398,7 +398,7 @@ void throw_bullets(uint8_t xpos, uint8_t ypos)
         INIT_LIST_HEAD(&dpo_bullet[i].animator_list);
         list_add(&animators[1].list, &dpo_bullet[i].animator_list);
         spr_set_pos(&bullet_sprite[i], xpos + 8 * i, ypos - 8);
-        dpo_bullet[i].type = DISP_OBJECT_SPRITE;
+        dpo_bullet[i].type = DPO_SPRITE;
         dpo_bullet[i].spr = &bullet_sprite[i];
         dpo_bullet[i].xpos = xpos + 8 * i;
         dpo_bullet[i].ypos = ypos - 8;

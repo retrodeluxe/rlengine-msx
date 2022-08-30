@@ -24,9 +24,9 @@
 #include "sprite.h"
 #include "tile.h"
 
-#define DISP_OBJECT_SPRITE 1
-#define DISP_OBJECT_TILE 2
-#define DISP_OBJECT_COMBO 3
+#define DPO_SPRITE 1
+#define DPO_TILE 2
+#define DPO_COMBO 3
 
 /**
  * An object to be displayed as part of a display list.

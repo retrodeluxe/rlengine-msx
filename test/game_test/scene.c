@@ -94,7 +94,7 @@ static void add_tileobject(DisplayObject *dpo, uint8_t objidx,
   tileobject[objidx].tileset = &tileset[tileidx];
   tileobject[objidx].idx = 0;
 
-  dpo->type = DISP_OBJECT_TILE;
+  dpo->type = DPO_TILE;
   dpo->tob = &tileobject[objidx];
   dpo->xpos = map_object->x;
   dpo->ypos = map_object->y;
@@ -124,7 +124,7 @@ static void add_sprite(DisplayObject *dpo, uint8_t objidx,
 
   ascii8_set_data(PAGE_MAPOBJECTS);
   spr_set_pos(&enemy_sprites[objidx], map_object->x, map_object->y);
-  dpo->type = DISP_OBJECT_SPRITE;
+  dpo->type = DPO_SPRITE;
   dpo->spr = &enemy_sprites[objidx];
   dpo->xpos = map_object->x;
   dpo->ypos = map_object->y;
@@ -148,7 +148,7 @@ void add_jean() __nonbanked {
 
   dpo_jean.xpos = game_state.jean_x;
   dpo_jean.ypos = game_state.jean_y;
-  dpo_jean.type = DISP_OBJECT_SPRITE;
+  dpo_jean.type = DPO_SPRITE;
   dpo_jean.state = game_state.jean_state;
   dpo_jean.spr = &jean_sprite;
   dpo_jean.visible = true;
@@ -194,7 +194,7 @@ void add_bullet(uint8_t xpos, uint8_t ypos, uint8_t patrn_id, uint8_t anim_id,
   bullet_sprites[idx].frame = 0;
   spr_set_pos(&bullet_sprites[idx], xpos, ypos);
 
-  dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
+  dpo_bullet[idx].type = DPO_SPRITE;
   dpo_bullet[idx].spr = &bullet_sprites[idx];
   dpo_bullet[idx].xpos = xpos;
   dpo_bullet[idx].ypos = ypos;
@@ -240,7 +240,7 @@ void add_tob_bullet(uint8_t xpos, uint8_t ypos, uint8_t tileidx,
   bullet_tob[idx].tileset = &tileset[tileidx];
   bullet_tob[idx].idx = 0;
 
-  dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
+  dpo_tob_bullet[idx].type = DPO_TILE;
   dpo_tob_bullet[idx].tob = &bullet_tob[idx];
   dpo_tob_bullet[idx].xpos = xpos;
   dpo_tob_bullet[idx].ypos = ypos;
@@ -315,7 +315,7 @@ void jean_collision_handler() __nonbanked {
     /** calculate box intersection on all active sprites **/
     list_for_each(coll_elem, &display_list) {
       coll_dpo = list_entry(coll_elem, DisplayObject, list);
-      if (coll_dpo->type == DISP_OBJECT_SPRITE && coll_dpo->check_collision)
+      if (coll_dpo->type == DPO_SPRITE && coll_dpo->check_collision)
         if (jean_check_collision()) {
           dpo_jean.state = STATE_COLLISION;
           return;
@@ -397,7 +397,7 @@ void load_intro_scene() __nonbanked {
   jean_sprite.state = JANE_STATE_RIGHT;
   dpo_jean.xpos = 20;
   dpo_jean.ypos = 80;
-  dpo_jean.type = DISP_OBJECT_SPRITE;
+  dpo_jean.type = DPO_SPRITE;
   dpo_jean.state = STATE_MOVING_RIGHT;
   dpo_jean.spr = &jean_sprite;
   dpo_jean.collision_state = 0;
@@ -411,7 +411,7 @@ void load_intro_scene() __nonbanked {
 
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
-    if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+    if (dpo->type == DPO_SPRITE && dpo->visible) {
       spr_show(dpo->spr);
     }
   }
@@ -916,9 +916,9 @@ void load_room(uint8_t room, bool reload) {
   // show all elements
   list_for_each(elem, &display_list) {
     dpo = list_entry(elem, DisplayObject, list);
-    if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+    if (dpo->type == DPO_SPRITE && dpo->visible) {
       spr_show(dpo->spr);
-    } else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {
+    } else if (dpo->type == DPO_TILE && dpo->visible) {
       tile_object_show(dpo->tob, scr_tile_buffer, false);
     }
   }

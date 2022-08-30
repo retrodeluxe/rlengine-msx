@@ -131,7 +131,7 @@ void main()
 
 	dpo_main.xpos = x;
 	dpo_main.ypos = y;
-	dpo_main.type = DISP_OBJECT_SPRITE;
+	dpo_main.type = DPO_SPRITE;
 	dpo_main.state = 0;
 	dpo_main.spr = &indust;
 	dpo_main.collision_state = 0;

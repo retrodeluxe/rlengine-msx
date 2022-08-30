@@ -56,7 +56,7 @@ void add_explosion(uint8_t xpos, uint8_t ypos, uint8_t anim_id) {
   bullet_tob[idx].tileset = &tileset[TILE_EXPLOSION];
   bullet_tob[idx].idx = 0;
 
-  dpo_tob_bullet[idx].type = DISP_OBJECT_TILE;
+  dpo_tob_bullet[idx].type = DPO_TILE;
   dpo_tob_bullet[idx].tob = &bullet_tob[0];
   dpo_tob_bullet[idx].xpos = xpos;
   dpo_tob_bullet[idx].ypos = ypos;
@@ -247,7 +247,7 @@ void add_satan_bullets(uint8_t xpos, uint8_t ypos) {
   spr_show(&bullet_sprites[idx + 1]);
   spr_show(&bullet_sprites[idx + 2]);
   // asign only the first one, store index in aux
-  dpo_bullet[idx].type = DISP_OBJECT_SPRITE;
+  dpo_bullet[idx].type = DPO_SPRITE;
   dpo_bullet[idx].spr = &bullet_sprites[idx];
   dpo_bullet[idx].xpos = xpos;
   dpo_bullet[idx].ypos = ypos;
