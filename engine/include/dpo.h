@@ -100,7 +100,27 @@ struct Animator {
   void (*run)(DisplayObject *obj);
 };
 
-void dpo_simple_animate(DisplayObject *dpo, signed char dx,
-                        signed char dy) __nonbanked;
+
+/**
+ * Defines the animator with the given index
+ *
+ * :param anim_idx: index of the animator
+ * :param anim: animator function
+ */
+#define dpo_define_animator(ANIMIDX, SYMBOL)  \
+  ascii_get_page(SYMBOL);                 \
+  dpo_animators[ANIMIDX].page = ascii8_page;  \
+  dpo_animators[ANIMIDX].run = SYMBOL;
+
+
+extern void dpo_init();
+extern void dpo_clear();
+extern void dpo_init_animators(uint8_t n_animators);
+extern void dpo_display_list_add(DisplayObject *dpo);
+extern void dpo_add_animator(DisplayObject *dpo, uint8_t animidx);
+extern void dpo_show_all(uint8_t *scr_buffer) __nonbanked;
+extern void dpo_animate_all() __nonbanked;
+
+extern DisplayObject *dpo_new();
 
 #endif

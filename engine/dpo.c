@@ -18,34 +18,118 @@
  */
 #include "dpo.h"
 #include "msx.h"
-#include "phys.h"
-#include "sprite.h"
-#include "log.h"
-/**
- * Handle sprite animation for simple cases of 2 and 4 states with collision
+#include "mem.h"
+#include "list.h"
+#include "ascii8.h"
+
+#pragma CODE_PAGE 2
+
+/*
+ * Dynamically allocated animators
  */
-void dpo_simple_animate(DisplayObject *dpo, signed char dx,
-                        signed char dy) __nonbanked {
-  int16_t x, y;
-  SpriteDef *sp = dpo->spr;
+Animator *dpo_animators;
 
-  x = dpo->xpos;
-  y = dpo->ypos;
+/*
+ * List of display objects
+ */
+List dpo_display_list;
 
-  if (dpo->type == DISP_OBJECT_SPRITE) {
-    spr_animate(sp, dx, dy);
+/*
+ * Auxiliary variables for dpo iteration
+ */
+static List *elem, *elem2;
+static DisplayObject *dpo;
+static Animator *anim;
+static uint8_t page;
 
-    if (!is_colliding_x(dpo)) {
-      dpo->xpos += dx;
-      x += dx;
+/**
+ * Initializes the display list
+ */
+void dpo_init()
+{
+   INIT_LIST_HEAD(&dpo_display_list);
+}
+
+/**
+ * Allocates a new DisplayObject
+ */
+DisplayObject *dpo_new()
+{
+  return mem_alloc(sizeof(DisplayObject));
+}
+
+/**
+ * Does garbage collection of DisplayObjects part of the display list
+ */
+void dpo_clear()
+{
+  list_for_each(elem, &dpo_display_list) {
+    dpo = list_entry(elem, DisplayObject, list);
+    mem_free(dpo);
+  }
+}
+
+/**
+ * Adds a DisplayObject to the display list
+ *
+ * :param dpo: DisplayObject to be added
+ */
+void dpo_display_list_add(DisplayObject *dpo)
+{
+  INIT_LIST_HEAD(&dpo->list);
+  INIT_LIST_HEAD(&dpo->animator_list);
+  list_add(&dpo->list, &dpo_display_list);
+}
+
+/**
+ * Allocates memory for animators
+ *
+ * @param n_animators
+ */
+void dpo_init_animators(uint8_t n_animators)
+{
+  dpo_animators = mem_calloc(n_animators, sizeof(Animator));
+}
+
+/**
+ * Adds an animator to a Display Object
+ *
+ * :param dpo: the DisplayObject
+ * :param animidx: the animator index
+ */
+void dpo_add_animator(DisplayObject *dpo, uint8_t animidx)
+{
+  list_add(&dpo_animators[animidx].list, &dpo->animator_list);
+}
+
+/**
+ * Shows on a screen buffer all DisplayObjects in the display list
+ *
+ */
+void dpo_show_all(uint8_t *scr_buffer) __nonbanked
+{
+  list_for_each(elem, &dpo_display_list) {
+    dpo = list_entry(elem, DisplayObject, list);
+    if (dpo->type == DISP_OBJECT_SPRITE && dpo->visible) {
+      spr_show(dpo->spr);
+    } else if (dpo->type == DISP_OBJECT_TILE && dpo->visible) {
+      tile_object_show(dpo->tob, scr_buffer, false);
     }
+  }
+}
 
-    if (!is_colliding_y(dpo)) {
-      dpo->ypos += dy;
-      y += dy;
+/**
+ * Run animations for all DisplayObjects in the display list
+ */
+void dpo_animate_all() __nonbanked
+{
+  list_for_each(elem, &dpo_display_list) {
+    dpo = list_entry(elem, DisplayObject, list);
+    list_for_each(elem2, &dpo->animator_list) {
+      anim = list_entry(elem2, Animator, list);
+      page = ascii8_set_code(anim->page);
+      anim->run(dpo);
+      ascii8_restore_code(page);
     }
-
-    spr_set_pos(sp, x, y);
-    spr_update(sp);
   }
 }
