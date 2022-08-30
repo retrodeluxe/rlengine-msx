@@ -509,7 +509,7 @@ void anim_joystick(DisplayObject *obj)
 	}
 
 	phys_detect_tile_collisions(obj, map_tilemap, dx, dy, false, false);
-	dpo_simple_animate(obj, dx, dy);
+	//dpo_simple_animate(obj, dx, dy);
 }
 
 /**
@@ -527,7 +527,7 @@ void anim_horizontal_projectile(DisplayObject *obj)
 			dx = -3;
 			break;
 	}
-	dpo_simple_animate(obj, dx, 0);
+	//dpo_simple_animate(obj, dx, 0);
 	phys_detect_tile_collisions(obj, map_tilemap, dx, 0, false, false);
 
 	if (is_colliding_left(obj) || is_colliding_right(obj)) {
@@ -563,7 +563,7 @@ void anim_left_right(DisplayObject *obj)
 			break;
 	}
 	phys_detect_tile_collisions(obj, screen_buf, dx, 4, false, false);
-	dpo_simple_animate(obj, dx, 0);
+	//dpo_simple_animate(obj, dx, 0);
 }
 
 
@@ -631,7 +631,7 @@ void anim_up_down(DisplayObject *obj)
 			break;
 	}
 
-	dpo_simple_animate(obj, 0, dy);
+	//dpo_simple_animate(obj, 0, dy);
 	phys_detect_tile_collisions(obj, map_tilemap, 0, dy, false, false);
 
 	if (is_colliding_down(obj)) {
@@ -660,7 +660,7 @@ void anim_falling_bullets(DisplayObject *obj)
 		dx = -1;
 		dy = -3 + frame_cnt_b++ >> 3;
 	}
-	dpo_simple_animate(obj, dx, dy);
+	//dpo_simple_animate(obj, dx, dy);
 	phys_detect_tile_collisions(obj, map_tilemap, dx, dy, false, false);
 
 	if (is_colliding_down(obj)) {
