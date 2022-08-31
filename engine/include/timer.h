@@ -33,10 +33,18 @@ struct Timer {
 
   /* expiration time in sys_ticks (1/50 or 1/60 secs) */
   uint16_t expires;
+
+  /* indicates if the timer should repeat after expiration */
+  bool repeat;
+
+  /* expiration count */
+  uint16_t count;
 };
 
 extern void timer_init();
-extern void timer_define(Timer *timer, void (*func)(), uint16_t expires);
+extern void timer_define(Timer *timer, void (*func)(uint8_t data),
+                         uint16_t expires, bool repeat);
 extern void timer_add(Timer *timer, uint8_t data);
 extern void timer_del(Timer *timer);
+extern uint16_t timer_msecs_to_tics(uint16_t msecs);
 #endif
