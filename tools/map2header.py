@@ -366,7 +366,7 @@ class ObjectGroupLayer:
                 ## Find Properties that require enums
                 for _property in list(item['properties'].keys()):
                     value = item['properties'][_property]
-                    if (not value.isdigit() and not value.replace('.', '').isdigit()):
+                    if (not isinstance(value, int) and not value.isdigit() and not value.replace('.', '').isdigit()):
                         if not _property in self.enum_properties:
                             self.enum_properties[_property] = {}
                         self.enum_properties[_property][value.encode('ascii', 'ignore')] = '1'
@@ -412,9 +412,9 @@ class ObjectGroupLayer:
                 if _property in self.enum_properties and not value.isdigit():
                     ## this is like TYPE_TEMPLAR
                     print(("%s_%s," % (_property.upper(), value.upper())), end=' ', file=file)
-                elif not value.isdigit() and value.replace('.', '').isdigit:
+                elif not isinstance(value, int) and not value.isdigit() and value.replace('.', '').isdigit:
                     print(("%s," % (value.replace('.', ''))), end=' ', file=file)
-                elif value.isdigit():
+                elif isinstance(value,int) or value.isdigit():
                     wrap = int(value) % 256
                     ## regular numeric value, wrapped to byte
                     print(("%s," % wrap), end=' ', file=file)
@@ -544,7 +544,7 @@ class TileMapWriter:
                     length = len(list(item['properties'].keys()))
                     for _property in list(item['properties'].keys()):
                         value = item['properties'][_property]
-                        if (not value.isdigit() and not value.replace('.', '').isdigit()):
+                        if (not isinstance(value, int) and not value.isdigit() and not value.replace('.', '').isdigit()):
                             if not _property in self.enum_properties:
                                 self.enum_properties[_property] = {}
                             self.enum_properties[_property][value.encode('ascii', 'ignore')] = '1'
