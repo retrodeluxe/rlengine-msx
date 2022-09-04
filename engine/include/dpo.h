@@ -23,6 +23,7 @@
 #include "list.h"
 #include "sprite.h"
 #include "tile.h"
+#include "ascii8.h"
 
 #define DPO_SPRITE 1
 #define DPO_TILE 2
@@ -100,6 +101,7 @@ struct Animator {
   void (*run)(DisplayObject *obj);
 };
 
+extern Animator *dpo_animators;
 
 /**
  * Defines the animator with the given index
@@ -108,7 +110,7 @@ struct Animator {
  * :param anim: animator function
  */
 #define dpo_define_animator(ANIMIDX, SYMBOL)  \
-  ascii_get_page(SYMBOL);                 \
+  ascii8_get_page(SYMBOL);                 \
   dpo_animators[ANIMIDX].page = ascii8_page;  \
   dpo_animators[ANIMIDX].run = SYMBOL;
 
