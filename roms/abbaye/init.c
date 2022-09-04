@@ -20,10 +20,10 @@
 #include "logic.h"
 #include "scene.h"
 
-#include "gen/game_test_fonts_ext.h"
-#include "gen/game_test_raw_tiles_ext.h"
-#include "gen/game_test_sprites_ext.h"
-#include "gen/game_test_tiles_ext.h"
+#include "gen/abbaye_fonts_ext.h"
+#include "gen/abbaye_raw_tiles_ext.h"
+#include "gen/abbaye_sprites_ext.h"
+#include "gen/abbaye_tiles_ext.h"
 #include "gen/map_defs.h"
 
 #include "gen/title_abandoned_church_ext.h"

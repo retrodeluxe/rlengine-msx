@@ -1,6 +1,6 @@
 #pragma DATA_PAGE 13
 
-#include "gen/game_test_sprites.h"
+#include "gen/abbaye_sprites.h"
 #include "msx.h"
 
 const uint8_t two_step_state[] = {2, 2};

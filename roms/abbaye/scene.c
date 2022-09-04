@@ -18,8 +18,8 @@
 #include "logic.h"
 #include "scene.h"
 
-#include "gen/game_test_sprites_ext.h"
-#include "gen/game_test_tiles_ext.h"
+#include "gen/abbaye_sprites_ext.h"
+#include "gen/abbaye_tiles_ext.h"
 #include "gen/map_defs.h"
 
 #include <stdlib.h>

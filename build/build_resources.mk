@@ -144,7 +144,6 @@ $(built_sfx_res) : $(LOCAL_BUILD_OUT_GEN)/%.h: $(LOCAL_BUILD_RES_SFX)/%.afb | $(
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
 	$(call print_res, sfx, $^)
 	$(hide) cd $(LOCAL_BUILD_RES_SFX) && $(XXD) -i $(notdir $^) > $@
-	$(hide) @echo '#include "$@"' >> $(LOCAL_BUILD_OUT_GEN)/$(LOCAL_ROM_NAME)_sfx.h
 
 $(built_til_ext_res) : $(LOCAL_BUILD_OUT_GEN)/%_ext.h: $(LOCAL_BUILD_RES_TIL)/%.tga | $(TGA2H)
 	$(hide) mkdir -p $(LOCAL_BUILD_OUT_GEN)
