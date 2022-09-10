@@ -47,7 +47,7 @@ struct fbit {
 
 struct rgb tms9918_pal[PALSIZE]= {
     { 0  ,0  ,0  },             /* 0 Transparent                   */
-    { 0  ,0  ,0  },             /* 1 Black           0    0    0   */
+    { 1  ,1  ,1  },             /* 1 Black           0    0    0   */
     { 33 ,200,66 },             /* 2 Medium green   33  200   66   */
     { 94 ,220,120},             /* 3 Light green    94  220  120   */
     { 84 ,85 ,237},             /* 4 Dark blue      84   85  237   */
@@ -113,7 +113,7 @@ struct scr2 match_line(uint16_t x,  uint16_t y)
 
     struct scr2 match;
 
-    for (c1 = 1; c1 < 16; c1++) {
+    for (c1 = 0; c1 < 16; c1++) {
         for (c2 = c1 + 1; c2 < 16; c2++) {
             cs = 0; cp = 0;
             for (i = 0; i < 8; i++) {
