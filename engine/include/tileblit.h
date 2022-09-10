@@ -17,14 +17,37 @@
  *
  */
 
- #include <stdint.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include "msx.h"
 
 #ifndef _TILEBLIT_H_
 #define _TILEBLIT_H_
 
-void tileblit_object_show(TileObject *tileobject, uint8_t *buffer) __nonbanked;
+
+ /**
+ * Initialize an Blitable TileSet
+ *
+ * :param TS: a TileSet object
+ * :param DATA: name of data asset
+ * :param W: frame width of the tileset in tile units
+ * :param H: frame heigth of the tileset in tile units
+ * :param F: number of frames per state
+ * :param S: number of states
+ */
+#define INIT_BLIT_TILE_SET(TS, DATA, W, H, F, S)                            \
+  (TS).w = DATA##_tile_w;                                                      \
+  (TS).h = DATA##_tile_h;                                                      \
+  (TS).pattern = DATA##_tile;                                                  \
+  (TS).color = DATA##_tile_color;                                              \
+  (TS).allocated = false;                                                     \
+  (TS).frame_w = W;                                                           \
+  (TS).frame_h = H;                                                           \
+  (TS).frames = F;                                                          \
+  (TS).states = S;                                                            \
+  (TS).raw = false;
+
+void tileblit_object_show(TileObject *tileobject,  TileSet *background, uint8_t *buffer, bool refresh_vram) __nonbanked;
 
 
 #endif /* TILEBLIT_H */

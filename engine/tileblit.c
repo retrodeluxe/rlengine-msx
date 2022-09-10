@@ -24,6 +24,7 @@
 #include "msx.h"
 #include "sys.h"
 #include "vdp.h"
+#include "mem.h"
 
 
 #pragma CODE_PAGE 2
@@ -48,13 +49,13 @@ static void tileblit_object_mask(uint8_t *dst, uint8_t *src, uint8_t w, uint8_t 
     add hl, de
     exx
 la:
-    ld  b,#32
+    ld  b,#32 ; width 4 
 lb:
     exx
-    ld  a,(bc)
-    and (hl)    ; and mask (mask must be 15 on the transparent areas)
+    ld  a,(bc)  ; destinatom
+    or (hl)    ; and mask (mask must be 15 on the transparent areas)
     ex  de,hl
-    or  (hl)    ; or pattern (pattern is 15 on the visible areas)
+    and  (hl)    ; or pattern (pattern is 15 on the visible areas)
     ex  de,hl
     ld  (bc),a
     inc bc
@@ -96,13 +97,61 @@ lb:
 /**
  * Blit tile object with mask
  */
-void tileblit_object_show(TileObject *tileobject, uint8_t *buffer) __nonbanked
+void tileblit_object_show(TileObject *tileobject, TileSet *background, uint8_t *scrbuf, bool refresh_vram) __nonbanked
 {
   TileSet *ts = tileobject->tileset;
   uint8_t *pattern = ts->pattern;
   uint8_t *color = ts->color;
   uint16_t size = ts->frame_w * ts->frame_h * 8;
+  uint8_t i, x, y, k;
 
-  uint16_t offset = (tileobject->x / 8) * 8 + (tileobject->y / 8) * 8 * 32 + tileobject->y % 8;
-  tileblit_object_mask(buffer+offset, pattern, 4, 4);
+  uint16_t offset = tileobject->x / 8 + tileobject->y / 8 * 32;
+  uint8_t *ptr = scrbuf + offset;
+  uint8_t tile_base = tileobject->tileset->pidx;
+  uint8_t tile;
+
+  uint8_t *new_pat, *bg_pat;
+  uint8_t *new_pat_color, *bg_color;
+
+  new_pat = mem_alloc(size);
+  new_pat_color = mem_alloc(size);
+
+  ts->pattern = new_pat;
+  ts->color = new_pat_color;
+
+  sys_memcpy(new_pat, pattern, size);
+  sys_memcpy(new_pat_color, color, size);
+
+  // log_i("source\n");
+  // for (i = 0; i < 8; i++) {
+  //   log_i("pat %d %x\n", i,  *new_pat++);
+  //   log_i("col %d %x\n", i, *new_pat_color++);
+  // }
+
+   k = 0;
+   for (y = 0; y < ts->h; y++) {
+     for (x = 0; x < ts->w; x++) {
+        tile = *(scrbuf + offset);
+        tile += background->pidx - 2;
+        log_i("tile %d\n", tile);
+        bg_pat = background->pattern + tile * 8;
+        bg_color = background->color + tile * 8;
+        for (i = 0; i < 8; i++, k++) {
+          if ((new_pat_color[k] & 0x0f) == 0) {
+            new_pat[k] = ~new_pat[k] & bg_pat[i];
+            new_pat_color[k] = bg_color[i]; 
+          } else if(new_pat_color[i] & 0xf0 == 0) {
+            new_pat[i] |= bg_pat[i];
+          }
+        }
+        offset++;
+     }
+     offset+=32;
+   }
+
+  tile_set_valloc(ts);
+  tile_object_show(tileobject, scrbuf, refresh_vram);
+
+  mem_free(new_pat);
+  mem_free(new_pat_color);
 }
