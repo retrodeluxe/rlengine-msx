@@ -19,6 +19,7 @@
 #include "dpo.h"
 #include "msx.h"
 #include "mem.h"
+#include "sys.h"
 #include "list.h"
 #include "ascii8.h"
 
@@ -55,7 +56,10 @@ void dpo_init()
  */
 DisplayObject *dpo_new()
 {
-  return mem_alloc(sizeof(DisplayObject));
+  DisplayObject *tmp = mem_alloc(sizeof(DisplayObject));
+  sys_memset(tmp, 0, sizeof(DisplayObject));
+  tmp->visible = true;
+  return tmp;
 }
 
 /**
