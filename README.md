@@ -1,3 +1,6 @@
+THIS REPOSITORY HAS BEEN MOVED MIGRATED TO CODEBERG
+
+
 [![Generic badge](https://img.shields.io/badge/build-passing-green.svg)](https://shields.io/) [![Documentation Status](https://readthedocs.org/projects/retrodeluxe-engine-for-msx/badge/?version=latest)](https://retrodeluxe-engine-for-msx.readthedocs.io/en/latest/?badge=latest)
 
 # RetroDeluxe Game Engine for MSX computers
